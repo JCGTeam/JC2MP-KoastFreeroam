@@ -1,0 +1,20 @@
+{
+  "info": {
+    "author": "",
+    "author_url": "",
+    "description": "Auto-generated",
+    "name": "86-Abilities"
+   },
+
+   "resources": {
+
+  "Wingsuit" : "https://i.imgur.com/XY15xUZ.png",
+  "Boost" : "https://i.imgur.com/4yCFAyQ.png",
+  "MoneyBonus" : "https://i.imgur.com/qoJAEJV.png",
+  "SuperNuclearBomb" : "https://i.imgur.com/JZCBJZC.png",
+  "MoreC4" : "https://i.imgur.com/i2mFJeI.png",
+  "LongerGrapple" : "https://i.imgur.com/h9A0Dsu.png",
+  "JesusMode" : "https://i.imgur.com/0RDLeCt.png"
+
+	}
+}

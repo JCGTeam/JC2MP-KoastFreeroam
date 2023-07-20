@@ -1,0 +1,21 @@
+{
+  "info": {
+    "author": "",
+    "author_url": "",
+    "description": "Auto-generated",
+    "name": "15-ServerMenu"
+   },
+
+   "resources": {
+
+  "ManhuntICO" : "https://i.imgur.com/4T60RQr.png",
+	"CarBattlesICO" : "https://i.imgur.com/laNid82.png",
+	"RaceICO" : "https://i.imgur.com/XUln8oI.png",
+	"TronICO" : "https://i.imgur.com/afxbGLK.jpg",
+  "KingHillICO" : "https://i.imgur.com/zdZQPmK.jpg",
+  "PongICO" : "https://i.imgur.com/iUn2tI5.jpg",
+  "TetrisICO" : "https://i.imgur.com/VUhbfOQ.jpg",
+  "CasinoICO" : "https://i.imgur.com/H25OjEm.jpg"
+
+	}
+}

@@ -1,0 +1,19 @@
+	{
+  "info": {
+    "author": "Hallkezz",
+    "author_url": "",
+    "description": "Loading",
+    "name": "75-Loading"
+   },
+
+   "resources": {
+
+	"BackgroundImage" : "https://i.imgur.com/LdL1VJh.jpg",
+	"BackgroundImageTw" : "https://i.imgur.com/R4bsr0r.jpg",
+	"BackgroundImageTh" : "https://i.imgur.com/XPsUHTd.jpg",
+	"BackgroundImageFo" : "https://i.imgur.com/CjUNlUI.jpg",
+	"BackgroundImageFi" : "https://i.imgur.com/zggm8nU.jpg",
+	"BackgroundImageSi" : "https://i.imgur.com/sbEZ33T.jpg"
+
+	}
+}

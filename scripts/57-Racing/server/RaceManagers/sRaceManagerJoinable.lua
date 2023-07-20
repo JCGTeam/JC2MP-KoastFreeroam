@@ -1,0 +1,193 @@
+RaceManagerJoinable.maxQueueSeconds = 120
+
+function RaceManagerJoinable:__init() ; RaceManagerBase.__init(self)
+	self.courseManager = CourseManager("CourseManifest.txt")
+	self.raceIdToRace = {}
+	-- Array of Players.
+	self.playerQueue = {}
+	self.nextCourse = nil
+	self.nextCourseCollisions = true
+	-- Helps with storing position, model id, and inventory and restoring them when they leave.
+	self.playerIdToRacerInfo = {}
+	self.startTimer = Timer()
+	
+	self:SetupNextRace()
+	
+	self:EventSubscribe("RacerFinish")
+	self:EventSubscribe("RaceEnd")
+	self:EventSubscribe("PreTick")
+	self:EventSubscribe("ClientModuleLoad")
+	
+	self:NetworkSubscribe("JoinRace")
+	self:NetworkSubscribe("LeaveRace")
+end
+
+function RaceManagerJoinable:SetupNextRace()
+	Stats.UpdateCache()
+	
+	self.playerQueue = {}
+	self.nextCourse = self.courseManager:LoadRandom()
+	self.nextCourseCollisions = settings.collisionChanceFunc()
+	
+	self:Message( "Присоединяйся к гонке! Главный приз: $" .. settings.prizeMoneyDefault .. "! ( Карта: ".. self.nextCourse.name .. " )" )
+	
+	Network:Broadcast("QueuedRaceCreate" , self:MarshalNextRace())
+end
+
+function RaceManagerJoinable:CreateRace()
+	self:Message("Гонка начинается с "..#self.playerQueue.." игроками")
+	
+	-- Store everyone's position, inventory, and model.
+	self:IteratePlayers(
+		function(player)
+			local info = {}
+			info.position = player:GetPosition()
+			info.modelId = player:GetModelId()
+			info.inventory = player:GetInventory()
+			player:ClearInventory()
+			self.playerIdToRacerInfo[player:GetId()] = info
+		end
+	)
+	
+	local args = {
+		players = self.playerQueue ,
+		course = self.nextCourse ,
+		collisions = self.nextCourseCollisions ,
+		modules = {"Joinable"}
+	}
+	local race = Race(args)
+	self.raceIdToRace[race.id] = race
+	self:SetupNextRace()
+end
+
+function RaceManagerJoinable:MarshalNextRace()
+	return {
+		currentPlayers = #self.playerQueue ,
+		maxPlayers = self.nextCourse:GetMaxPlayers() ,
+		course = self.nextCourse:MarshalInfo() ,
+		collisions = self.nextCourseCollisions ,
+	}
+end
+
+-- PlayerManager callbacks
+
+function RaceManagerJoinable:ManagedPlayerJoin(player)
+	-- Add this player to playerQueue.
+	table.insert(self.playerQueue , player)
+	Network:Send(player , "JoinQueue")
+	-- If the queue becomes full or all players have joined, start a race.
+	if
+		#self.playerQueue == #self.nextCourse.spawns or
+		#self.playerQueue == Server:GetPlayerCount()
+	then
+		self:CreateRace()
+	-- Otherwise, update the player count for everyone.
+	else
+		Network:Broadcast("QueuedRacePlayersChange" , #self.playerQueue)
+	end
+end
+
+function RaceManagerJoinable:ManagedPlayerLeave(player)
+	-- Search playerQueue for this player and remove them.
+	for index , playerToRemove in ipairs(self.playerQueue) do
+		if playerToRemove == player then
+			table.remove(self.playerQueue , index)
+			Network:Send(player , "LeaveQueue")
+			break
+		end
+	end
+	-- Search all Races for this player and remove them.
+	for raceId , race in pairs(self.raceIdToRace) do
+		race:RemovePlayer(player)
+	end
+	-- Give them back their position, model, and inventory, if applicable.
+	-- TODO: I'm not sure if this works perfectly
+	local racerInfo = self.playerIdToRacerInfo[player:GetId()]
+	if racerInfo then
+		player:SetPosition(racerInfo.position)
+		player:SetModelId(racerInfo.modelId)
+		for slot , weapon in pairs(racerInfo.inventory) do
+			player:GiveWeapon(slot , weapon)
+		end
+	end
+	-- Update the player count for everyone.
+	Network:Broadcast("QueuedRacePlayersChange" , #self.playerQueue)
+end
+
+function RaceManagerJoinable:PlayerManagerTerminate()
+	if EGUSM.debug then
+		EGUSM.Print("PlayerManagerTerminate")
+	end
+	-- Terminate all Races.
+	for raceId , race in pairs(self.raceIdToRace) do
+		race:Terminate()
+	end
+end
+
+-- Race events
+
+function RaceManagerJoinable:RacerFinish(args)
+	-- Attempt to find the race.
+	local race = self.raceIdToRace[args.id]
+	-- Make sure this is one of our races.
+	if race == nil then
+		return
+	end
+	
+	local racer = race.playerIdToRacer[args.playerId]
+	racer:Message("Вернитесь в меню гонок, чтобы выйти.")
+end
+
+function RaceManagerJoinable:RaceEnd(args)
+	-- Attempt to find the race.
+	local race = self.raceIdToRace[args.id]
+	-- Make sure this is one of our races.
+	if race == nil then
+		return
+	end
+	
+	-- Remove this race from self.raceIdToRace.
+	for raceId , race in pairs(self.raceIdToRace) do
+		if race == raceThatEnded then
+			raceIdToRace[raceId] = nil
+			break
+		end
+	end
+end
+
+-- Events
+
+function RaceManagerJoinable:PreTick()
+	if #self.playerQueue > 0 then
+		if self.startTimer:GetSeconds() > RaceManagerJoinable.maxQueueSeconds then
+			self:CreateRace()
+		end
+	else
+		self.startTimer = Timer()
+	end
+end
+
+function RaceManagerJoinable:ClientModuleLoad(args)
+	local constructorArgs = {
+		className = "RaceManagerJoinable" ,
+		raceInfo = self:MarshalNextRace()
+	}
+	Network:Send(args.player , "InitializeClass" , constructorArgs)
+end
+
+-- Network events
+
+function RaceManagerJoinable:JoinRace(unused , player)
+	if self.nextCourse:HasDLCConflict(player) then
+		player:SendChatMessage(
+			"[Гонки]", Color.White, "Вы не можете присоединиться, потому что у вас нет DLC для этой карты!" ,
+			Color(220 , 50 , 50)
+		)
+	else
+		self:AddPlayer(player)
+	end
+end
+
+function RaceManagerJoinable:LeaveRace(unused , player)
+	self:RemovePlayer(player)
+end

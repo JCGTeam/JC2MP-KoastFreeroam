@@ -1,0 +1,20 @@
+{
+  "info": {
+    "author": "",
+    "author_url": "",
+    "description": "Auto-generated",
+    "name": "92-Casino"
+   },
+
+   "resources": {
+
+  "CoinFlipICO" : "https://i.imgur.com/H25OjEm.jpg",
+	"TeleportICO" : "https://i.imgur.com/fo5fRZY.jpg",
+	"ClansICO" : "https://i.imgur.com/IVrxM72.jpg",
+	"MessagesICO" : "https://i.imgur.com/09J1JBI.jpg",
+  "SettingsICO" : "https://i.imgur.com/N2rVdg2.jpg",
+  "MainMenuICO" : "https://i.imgur.com/ImRCaxn.jpg",
+  "ArkoICO" : "https://i.imgur.com/eAIR2Mu.jpg"
+
+	}
+}

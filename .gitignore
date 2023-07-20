@@ -1,0 +1,7 @@
+discordia.log
+newsRUS.txt
+newsENG.txt
+ads.txt
+autoreboot.bat
+scripts/3-Tags/server/*.txt
+!scripts/3-Tags/server/readme.txt
