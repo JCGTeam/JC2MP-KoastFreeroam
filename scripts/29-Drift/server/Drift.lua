@@ -82,9 +82,9 @@ function Drift:onDriftRecord( score, player )
 
 			for p in Server:GetPlayers() do
 				if p:GetValue( "Lang" ) == "ENG" then
-					p:SendChatMessage( "[Record] ", Color.White, player:GetName() .. " has broken the player's drift record " .. object:GetValue("N") .. ", his reward: $150!", Color( 255, 150, 0 ) )
+					p:SendChatMessage( "[Record] ", Color.White, player:GetName() .. " has broken the player's drift record " .. object:GetValue("N") .. ", his reward: $50!", Color( 255, 150, 0 ) )
 				else
-					p:SendChatMessage( "[Рекорд] ", Color.White, player:GetName() .. " побил дрифт-рекорд игрока " .. object:GetValue("N") .. ", его награда: $150!", Color( 255, 150, 0 ) )
+					p:SendChatMessage( "[Рекорд] ", Color.White, player:GetName() .. " побил дрифт-рекорд игрока " .. object:GetValue("N") .. ", его награда: $50!", Color( 255, 150, 0 ) )
 				end
 			end
 		else

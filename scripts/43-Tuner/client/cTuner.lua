@@ -41,7 +41,7 @@ function Tuner:__init()
 	self.neons = {}
 
 	self.neonEnabled = false
-	self.maxChassisDirection = 1000000000000000000
+	self.maxValue = 1000000000000000000
 
 	local vehicle = LocalPlayer:GetVehicle()
 	if IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
@@ -630,6 +630,12 @@ function Tuner:InitSuspensionGUI()
 
 	for wheel,v in ipairs(self.gui.susp) do
 		v.setters[1]:Subscribe("ReturnPressed", function( args )
+			if args:GetValue() >= self.maxValue then
+				args:SetText( tostring( self.maxValue ) )
+			elseif args:GetValue() <= -self.maxValue then
+				args:SetText( tostring( -self.maxValue ) )
+			end
+
 			if wheel > self.veh:GetWheelCount() then
 				local count = self.veh:GetWheelCount()
 				for wh = 1, count do
@@ -656,10 +662,10 @@ function Tuner:InitSuspensionGUI()
 		end)
 
 		v.setters[3]:Subscribe("ReturnPressed", function( args )
-			if args:GetValue() >= self.maxChassisDirection then
-				args:SetText( tostring( self.maxChassisDirection ) )
-			elseif args:GetValue() <= -self.maxChassisDirection then
-				args:SetText( tostring( -self.maxChassisDirection ) )
+			if args:GetValue() >= self.maxValue then
+				args:SetText( tostring( self.maxValue ) )
+			elseif args:GetValue() <= -self.maxValue then
+				args:SetText( tostring( -self.maxValue ) )
 			end
 
 			if wheel > self.veh:GetWheelCount() then
@@ -681,10 +687,10 @@ function Tuner:InitSuspensionGUI()
 		end)
 
 		v.setters[4]:Subscribe("ReturnPressed", function( args )
-			if args:GetValue() >= self.maxChassisDirection then
-				args:SetText( tostring( self.maxChassisDirection ) )
-			elseif args:GetValue() <= -self.maxChassisDirection then
-				args:SetText( tostring( -self.maxChassisDirection ) )
+			if args:GetValue() >= self.maxValue then
+				args:SetText( tostring( self.maxValue ) )
+			elseif args:GetValue() <= -self.maxValue then
+				args:SetText( tostring( -self.maxValue ) )
 			end
 
 			if wheel > self.veh:GetWheelCount() then
@@ -702,10 +708,10 @@ function Tuner:InitSuspensionGUI()
 		end)
 
 		v.setters[5]:Subscribe("ReturnPressed", function( args )
-			if args:GetValue() >= self.maxChassisDirection then
-				args:SetText( tostring( self.maxChassisDirection ) )
-			elseif args:GetValue() <= -self.maxChassisDirection then
-				args:SetText( tostring( -self.maxChassisDirection ) )
+			if args:GetValue() >= self.maxValue then
+				args:SetText( tostring( self.maxValue ) )
+			elseif args:GetValue() <= -self.maxValue then
+				args:SetText( tostring( -self.maxValue ) )
 			end
 
 			if wheel > self.veh:GetWheelCount() then

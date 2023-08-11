@@ -14,7 +14,6 @@ function HControls:EngHelp()
 		{
 			name = "Information",
 			text =
-				"Warning! This server is based on open source code and is not official.\n \n" ..
 			    "> Main:\n" ..
                 "    Group in VK              [empty_link]\n" ..
                 "    Group in Steam         [empty_link]\n" ..
@@ -63,7 +62,6 @@ function HControls:ModuleLoad()
 		{
 			name = "Информация",
 			text =
-				"Внимание! Данный сервер основан на открытом исходном коде и не является официальным.\n \n" ..
 			    "> Главное:\n" ..
                 "    Группа в VK               [empty_link]\n" ..
                 "    Группа в Steam         [empty_link]\n" ..
@@ -103,7 +101,11 @@ function HControls:ModuleLoad()
 				"     Cavick (Художник-аферист)\n" ..
 				"     Dragonshifter (Исходный код сервера RUSSIAN FREEROAM MAYHEM)\n \n" ..
 				"> Открытый исходный код:\n" ..
-				"     GitHub - github.com/Hallkezz/KoastFreeroam"
+				"     GitHub - github.com/Hallkezz/KoastFreeroam\n \n" ..
+				"> Спонсорство:\n" ..
+				"     В список спонсоров попадают люди, которые поддержали сервер суммой более 500 рублей.\n" ..
+				"     Для попадания в список - уведомите администрацию.\n \n" ..
+				"Никнеймы спонсоров: Oleg, Arko, Cavick"
 		} )
 end
 

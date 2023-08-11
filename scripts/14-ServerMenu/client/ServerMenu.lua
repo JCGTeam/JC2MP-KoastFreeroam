@@ -42,7 +42,7 @@ function ServerMenu:__init()
 	self.clansimage = Image.Create( AssetLocation.Resource, "ClansICO" )
 	self.pmimage = Image.Create( AssetLocation.Resource, "MessagesICO" )
 	self.settimage = Image.Create( AssetLocation.Resource, "SettingsICO" )
-	self.dedmimage = Image.Create( AssetLocation.Resource, "ArkoICO" )
+	self.dedmimage = Image.Create( AssetLocation.Resource, "DailyTasksICO" )
 	self.mainmenuimage = Image.Create( AssetLocation.Resource, "GameModesICO" )
 	self.abiltiesimage = Image.Create( AssetLocation.Resource, "AbilitiesICO" )
 

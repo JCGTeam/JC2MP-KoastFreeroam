@@ -27,7 +27,7 @@ function WelcomeScreen:Open()
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	end
 
-	self.fireworks = Image.Create( AssetLocation.Resource, "Fireworks" )
+	self.rico = Image.Create( AssetLocation.Resource, "Rico" )
 
 	if not self.Menu_background then
 		self.Menu_background = Rectangle.Create()
@@ -73,9 +73,9 @@ function WelcomeScreen:Render()
 	Chat:SetEnabled( false )
 	Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, 200 ) )
 
-	self.fireworks:SetPosition( Vector2( (Render.Width - 350), (Render.Height - 520) ) )
-	self.fireworks:SetSize( Vector2( 350, 700 ) )
-	self.fireworks:Draw()
+	self.rico:SetPosition( Vector2( (Render.Width - 350), (Render.Height - 520) ) )
+	self.rico:SetSize( Vector2( 350, 700 ) )
+	self.rico:Draw()
 
 	if LocalPlayer:GetValue( "SystemFonts" ) then
 		Render:SetFont( AssetLocation.SystemFont, "Impact" )
@@ -114,8 +114,8 @@ function WelcomeScreen:Menu()
 		self.Help_background = nil
 	end
 
-	if self.fireworks then
-		self.fireworks = nil
+	if self.rico then
+		self.rico = nil
 	end
 
 	Menu:Freeroam()

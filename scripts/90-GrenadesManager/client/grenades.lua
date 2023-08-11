@@ -23,10 +23,10 @@ function Grenades:__init()
 	self.grenadeIMG = Image.Create( AssetLocation.Resource, "Grenade" )
 	self.grenade1 = Image.Create( AssetLocation.Resource, "Grenade1" )
 	self.c4 = Image.Create( AssetLocation.Resource, "C4" )
-	self.clay = Image.Create( AssetLocation.Resource, "Clay" )
-	self.background = Image.Create( AssetLocation.Resource, "Back" )
+	self.clay = Image.Create( AssetLocation.Resource, "Claymore" )
+	self.background = Image.Create( AssetLocation.Resource, "Background" )
 
-	self.textb = Image.Create( AssetLocation.Resource, "TextBa" )
+	self.textb = Image.Create( AssetLocation.Resource, "TextBackground" )
 
 	self.stars = Image.Create( AssetLocation.Resource, "Stars0" )
 	self.stars1 = Image.Create( AssetLocation.Resource, "Stars1" )

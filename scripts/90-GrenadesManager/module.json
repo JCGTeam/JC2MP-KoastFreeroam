@@ -1,26 +1,22 @@
 {
-  "info": {
-    "author": "SK83RJOSH",
-    "author_url": "https://sk83rjo.sh/",
-    "description": "Grenades!",
-    "name": "Grenades"
-  },
-  
-  "resources": {
-	   
-	"Claymore"			: 		"http://vignette2.wikia.nocookie.net/callofduty/images/d/da/Claymore_menu_icon_BO.png",
-	"Back"			: 		"http://i.imgur.com/gN5viLm.png",
-	"Grenade1"			: 		"http://i.imgur.com/Nfga7SI.png",
-	"Grenade"			: 		"http://i.imgur.com/m5YiDm3.png",
-	"C4"			: 		"http://i.imgur.com/t88ZTmZ.png",
-	"Clay"			: 		"http://i.imgur.com/XWXFUL4.png",
-	"TextBa"			: 		"http://i.imgur.com/1yb17UQ.png",
-	"Stars0"			: 		"http://i.imgur.com/WB4sVTC.png",
-	"Stars1"			: 		"http://i.imgur.com/EGNNHxF.png",
-	"Stars2"			: 		"http://i.imgur.com/80lGuZj.png",
-	"Stars3"			: 		"http://i.imgur.com/hLaVKAq.png",
-	"Stars4"			: 		"http://i.imgur.com/v9axEtm.png",
-	"Stars5"			: 		"http://i.imgur.com/BQO9veS.png"
-
+	"info": {
+		"author": "",
+		"author_url": "",
+		"description": "Auto-generated",
+		"name": "90-GrenadesManager"
+	},
+	"resources": {
+		"Background": "http://i.imgur.com/gN5viLm.png",
+		"Grenade1": "http://i.imgur.com/Nfga7SI.png",
+		"Grenade": "http://i.imgur.com/m5YiDm3.png",
+		"C4": "http://i.imgur.com/t88ZTmZ.png",
+		"Claymore": "http://i.imgur.com/XWXFUL4.png",
+		"TextBackground": "http://i.imgur.com/1yb17UQ.png",
+		"Stars0": "http://i.imgur.com/WB4sVTC.png",
+		"Stars1": "http://i.imgur.com/EGNNHxF.png",
+		"Stars2": "http://i.imgur.com/80lGuZj.png",
+		"Stars3": "http://i.imgur.com/hLaVKAq.png",
+		"Stars4": "http://i.imgur.com/v9axEtm.png",
+		"Stars5": "http://i.imgur.com/BQO9veS.png"
 	}
 }

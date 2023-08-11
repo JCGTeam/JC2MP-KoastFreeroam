@@ -21,7 +21,7 @@ function VehicleRadio:__init()
 	Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
 end
 
-function VehicleRadio:Lang( args )
+function VehicleRadio:Lang()
 	self.radioname = "Radio: "
 	self.offname = "Disabled"
 end
@@ -112,7 +112,7 @@ function VehicleRadio:ToggleRadio()
 	end
 end
 
-function VehicleRadio:PreTick( args )
+function VehicleRadio:PreTick()
 	if self.radio then
 		if LocalPlayer:InVehicle() then
 			self.sound:SetPosition( Camera:GetPosition() )
@@ -121,7 +121,7 @@ function VehicleRadio:PreTick( args )
 	end
 end
 
-function VehicleRadio:LocalPlayerEnterVehicle( args )
+function VehicleRadio:LocalPlayerEnterVehicle()
 	Game:ShowPopup( self.radioname .. self.offname, false )
 	self.check = 0
 
@@ -135,7 +135,7 @@ function VehicleRadio:LocalPlayerEnterVehicle( args )
 	end
 end
 
-function VehicleRadio:LocalPlayerExitVehicle( args )
+function VehicleRadio:LocalPlayerExitVehicle()
 	if self.radio then
 		self:ModuleUnload()
 		self.radio = nil

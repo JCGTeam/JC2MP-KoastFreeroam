@@ -4,17 +4,14 @@
     "author_url": "",
     "description": "Auto-generated",
     "name": "86-Abilities"
-   },
-
-   "resources": {
-
-  "Wingsuit" : "https://i.imgur.com/XY15xUZ.png",
-  "Boost" : "https://i.imgur.com/4yCFAyQ.png",
-  "MoneyBonus" : "https://i.imgur.com/qoJAEJV.png",
-  "SuperNuclearBomb" : "https://i.imgur.com/JZCBJZC.png",
-  "MoreC4" : "https://i.imgur.com/i2mFJeI.png",
-  "LongerGrapple" : "https://i.imgur.com/h9A0Dsu.png",
-  "JesusMode" : "https://i.imgur.com/0RDLeCt.png"
-
-	}
+  },
+  "resources": {
+    "Wingsuit": "https://i.imgur.com/vg7wdBy.png",
+    "Boost": "https://i.imgur.com/R1Y4voU.png",
+    "MoneyBonus": "https://i.imgur.com/saDlsPh.png",
+    "SuperNuclearBomb": "https://i.imgur.com/QBQ6Fo8.png",
+    "MoreC4": "https://i.imgur.com/nwZpLO4.png",
+    "LongerGrapple": "https://i.imgur.com/OhtmvVf.png",
+    "JesusMode": "https://i.imgur.com/36na7bY.png"
+  }
 }
