@@ -10,15 +10,15 @@ end
 
 function Banner:PostTick()
 	if self.refreshTimer:GetMinutes() > self.timeDelay then
-		if self.imageIndex < 21 then
+		if self.imageIndex < ImagesRange.Max then
 			self.imageIndex = self.imageIndex + 1
 		else
 			self.imageIndex = 1
 		end
 
-		for p in Server:GetPlayers() do
-			Network:Send( p, "GetImage", tostring( self.imageIndex ) )
-		end
+        for p in Server:GetPlayers() do
+            Network:Send( p, "ChangeImage", self.imageIndex )
+        end
 
 		self.refreshTimer:Restart()
 	end

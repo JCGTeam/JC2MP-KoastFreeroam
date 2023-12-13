@@ -1,16 +1,16 @@
 class 'Load'
 
 function Load:__init()
-	self.loads = {
-		"BackgroundImage",
-		"BackgroundImageTw",
-		"BackgroundImageTh",
-		"BackgroundImageFo",
-		"BackgroundImageFi",
-		"BackgroundImageSi"
+	self.BackgroundImages = {
+		Image.Create( AssetLocation.Resource, "BackgroundImage" ),
+		Image.Create( AssetLocation.Resource, "BackgroundImageTw" ),
+		Image.Create( AssetLocation.Resource, "BackgroundImageTh" ),
+		Image.Create( AssetLocation.Resource, "BackgroundImageFo" ) ,
+		Image.Create( AssetLocation.Resource, "BackgroundImageFi" ),
+		Image.Create( AssetLocation.Resource, "BackgroundImageSi" )
 	}
 
-	self.BackgroundImage = Image.Create( AssetLocation.Resource, self.loads[math.random(#self.loads)] )
+	self.BackgroundImage = self.BackgroundImages[math.random(#self.BackgroundImages)]
 	self.LoadingCircle_Outer = Image.Create( AssetLocation.Game, "fe_initial_load_icon_dif.dds" )
 
 	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
@@ -59,7 +59,7 @@ function Load:GameLoad()
 end
 
 function Load:LocalPlayerDeath()
-	self.BackgroundImage = Image.Create( AssetLocation.Resource, self.loads[math.random(#self.loads)] )
+	self.BackgroundImage = self.BackgroundImages[math.random(#self.BackgroundImages)]
 	self.FadeInTimer = Timer()
 end
 

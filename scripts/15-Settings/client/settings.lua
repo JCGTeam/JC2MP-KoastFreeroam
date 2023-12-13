@@ -42,6 +42,9 @@ function Settings:__init()
 	self.SkyImage6 = Image.Create( AssetLocation.Resource, "Sky6" )
 	self.SkyImage7 = Image.Create( AssetLocation.Resource, "Sky6" )
 
+	self.AnimeImage1 = Image.Create( AssetLocation.Resource, "Anime1" )
+	self.AnimeImage2 = Image.Create( AssetLocation.Resource, "Anime2" )
+
 	self.active = false
 	self.actvCH = LocalPlayer:GetValue( "CustomCrosshair" )
 	self.actvSn = false
@@ -686,9 +689,9 @@ function Settings:GameRender()
 		local speed = 1
 		if self.timer then
 			if self.timer:GetSeconds() <= speed then
-				self.SkyImage7 = Image.Create( AssetLocation.Resource, "Anime1" )
+				self.SkyImage7 = self.AnimeImage1
 			else
-				self.SkyImage7 = Image.Create( AssetLocation.Resource, "Anime2" )
+				self.SkyImage7 = self.AnimeImage2
 			end
 			if self.timer:GetSeconds() >= speed * 2 then
 				self.timer:Restart()

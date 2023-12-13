@@ -28,12 +28,14 @@ function Grenades:__init()
 
 	self.textb = Image.Create( AssetLocation.Resource, "TextBackground" )
 
+--[[
 	self.stars = Image.Create( AssetLocation.Resource, "Stars0" )
 	self.stars1 = Image.Create( AssetLocation.Resource, "Stars1" )
 	self.stars2 = Image.Create( AssetLocation.Resource, "Stars2" )
 	self.stars3 = Image.Create( AssetLocation.Resource, "Stars3" )
 	self.stars4 = Image.Create( AssetLocation.Resource, "Stars4" )
 	self.stars5 = Image.Create( AssetLocation.Resource, "Stars5" )
+]]--
 end
 
 function Grenades:CheckList( tableList, modelID )
