@@ -51,7 +51,7 @@ function PDA:__init()
 	else
 		MTSetWp = "[СКМ] / [1] - поставить точку назначения"
 		MTPToggle = "[ПКМ] - показать/скрыть имена игроков"
-		MTExtract = "[R] - запросить перемещение"
+		MTExtract = "[R] - телепортация"
 	end
 
 	labels = 0
@@ -68,7 +68,7 @@ end
 function PDA:Lang()
 	MTSetWp = "[Middle Click] / [1] - Set Waypoint"
 	MTPToggle = "[Right Click] - Show/Hide players names"
-	MTExtract = "[R] - Request Travel"
+	MTExtract = "[R] - Teleportation"
 end
 
 function PDA:PlayerUpdate( args )
@@ -300,7 +300,7 @@ function PDA:KeyUp( args )
 		if LocalPlayer:GetWorld() ~= DefaultWorld then
 			PDA:Toggle()
 			--and Map.ActiveLocation
-			Events:Fire( "CastCenterText", { text = "Вы не можете использовать это здесь!", time = 3, color = Color.Red } )
+			Events:Fire( "CastCenterText", { text = LocalPlayer:GetValue( "Lang" ) == "ENG" and "Can't use it here!" or "Невозможно использовать это здесь!", time = 3, color = Color.Red } )
 			return
 		end
 

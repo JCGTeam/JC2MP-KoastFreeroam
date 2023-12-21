@@ -1,7 +1,7 @@
 class 'HitReg'
 
 function HitReg:__init()
-    self.cooldownTable = { [2] = 400, [4] = 2000, [5] = 10, [6] = 1500, [11] = 250, [13] = 1750, [14] = 6500, [26] = 250, [28] = 150, [43] = 15, [100] = 250, [103] = 1000, [129] = 250 }
+    self.cooldownTable = { [2] = 400, [4] = 2000, [5] = 15, [6] = 1500, [11] = 250, [13] = 1750, [14] = 6500, [26] = 250, [28] = 150, [43] = 15, [100] = 250, [103] = 1000, [129] = 250 }
     self.continuousFireTable = { [11] = true, [5] = true, [26] = true, [43] = true, [28] = true }
 
     self.myTimer = Timer()
@@ -55,7 +55,7 @@ function HitReg:Fire()
 
         if results.entity then
 			if results.entity.__type == "Vehicle" then
-				if myWeapon.ammo_clip > 0 and myWeapon.ammo_clip < 20 then
+				if myWeapon.ammo_clip > 0 then
 					local args = {}
                     args.weapon = myWeapon.id
                     args.target = results.entity

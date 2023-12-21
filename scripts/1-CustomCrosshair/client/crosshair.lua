@@ -1,9 +1,10 @@
 class 'Crosshair'
 
-local blacklist = {64, 24, 53, 20, 75, 30, 47, 83, 32, 90, 61, 89, 43, 74, 21, 11}
+local blacklist = { 64, 24, 53, 20, 75, 30, 47, 83, 32, 90, 61, 89, 43, 74, 21, 11 }
 
 function Crosshair:__init()
 	LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
+
 	self.cooltime = 0
 	self.alpha = 0
 	self.size = 3
@@ -16,9 +17,11 @@ function Crosshair:__init()
 			[Action.LookLeft] = false,
 			[Action.LookRight] = false
 		},
+
 		animations = { 
 			[AnimationState.SDead] = true,
 		},
+
 		animations2 = { 
 			[AnimationState.SReeledFireHook] = true,
 			[AnimationState.SHangFireHook] = true,
@@ -35,10 +38,12 @@ function Crosshair:__init()
 			[AnimationState.SHitreactGetUpBlendin] = true,
 			[AnimationState.SUncontrolledSkydive] = true,
 		},
+
 		animations3 = { 
 			[AnimationState.SSkydive] = true,
 			[AnimationState.SSkydiveDash] = true,
 		},
+
 		animations4 = { 
 			[AnimationState.SRollLeft] = true,
 			[AnimationState.SReelStart] = true,
@@ -121,10 +126,8 @@ function Crosshair:GetRotation()
 end
 
 function Crosshair:Render()
-	if self.popalTimer then
-    	if self.popalTimer:GetSeconds() >= 0.1 then
-    		self.popalTimer = nil
-    	end
+	if self.popalTimer and self.popalTimer:GetSeconds() >= 0.1 then
+		self.popalTimer = nil
 	end
 
 	if Game:GetState() ~= GUIState.Game then return end
@@ -146,7 +149,7 @@ function Crosshair:Render()
 	local las = LocalPlayer:GetLeftArmState()
 
 	if self.blacklist.animations[bs] then return end
-	--self.size = Render.Height/400
+	--self.size = Render.Height / 400
 	local pos_2d = Vector2( Render.Size.x / 2, Render.Size.y / 2 )
 	--[[if not LocalPlayer:InVehicle() and not self.blacklist.animations2[bs] and LocalPlayer:GetEquippedSlot() <= 3 and not self.blacklist.animations3[bs] and not LocalPlayer:GetValue( "Passive" ) then
 		--Тут хуйня для рисовки перекрестья
@@ -159,6 +162,7 @@ function Crosshair:Render()
 	local velocity = -LocalPlayer:GetAngle() * LocalPlayer:GetLinearVelocity()
 	self.velocity = -velocity.z
 	local ray = Physics:Raycast( Camera:GetPosition(), Camera:GetAngle() * Vector3.Forward, 0, 1000 )
+
 	if ray.distance < 83 and ray.distance > 1 then
 		self:GetRotation()
 		self.distance = ray.distance
@@ -171,6 +175,7 @@ function Crosshair:Render()
 	if LocalPlayer:GetVehicle() and LocalPlayer:InVehicle() then
 		local vehicle = LocalPlayer:GetVehicle()
 		local LocalVehicleModel	= vehicle:GetModelId()
+
 		if LocalPlayer:GetSeat() ~= 6 and LocalPlayer:GetSeat() ~= 7 and not self:CheckList( blacklist, LocalVehicleModel ) then
 			if vehicle:GetModelId() == 88 then
 				if vehicle:GetTemplate() == "Default" then return end
@@ -224,14 +229,15 @@ function Crosshair:Render()
 	end
 
 	if not self.blacklist.animations2[bs] then
-		Render:FillCircle( Vector2.Zero, self.size/2, self.crosscolor )
-		Render:DrawCircle( Vector2.Zero, self.size/2, Color.Black )
+		Render:FillCircle( Vector2.Zero, self.size / 2, self.crosscolor )
+		Render:DrawCircle( Vector2.Zero, self.size / 2, Color.Black )
 	end
 end
 
 function Crosshair:LocalPlayerInput( args )
 	if args.input == Action.ShoulderCam then
 		local time = Client:GetElapsedSeconds()
+
 		if time < self.cooltime then
 			return
 		else
@@ -239,11 +245,7 @@ function Crosshair:LocalPlayerInput( args )
 				if LocalPlayer:GetUpperBodyState() == 347 then
 					LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
 				else
-					if LocalPlayer:GetValue( "CustomCrosshairVisible" ) then
-						LocalPlayer:SetValue( "CustomCrosshairVisible", nil )
-					else
-						LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
-					end
+					LocalPlayer:SetValue( "CustomCrosshairVisible", tonumber( not LocalPlayer:GetValue( "CustomCrosshairVisible" ) ) )
 				end
 			end
 		end

@@ -9,7 +9,7 @@ function Jesus:__init()
 	else
 		self.disabletxt = " отключён"
 		self.enabletxt = " включён"
-		self.notusable = "Вы не можете использовать это здесь!"
+		self.notusable = "Невозможно использовать это здесь!"
 	end
 
 	self.SurfaceHeight = 199.8

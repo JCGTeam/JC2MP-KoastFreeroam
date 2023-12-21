@@ -44,7 +44,7 @@ end
 
 function Home:GoHome( args, sender )
 	if sender:GetWorld() ~= DefaultWorld then
-        Events:Fire( "CastCenterText", { target = sender, text = "Вы не можете использовать это здесь!", time = 3, color = Color.Red } )
+        Events:Fire( "CastCenterText", { target = sender, text = sender:GetValue( "Lang" ) == "ENG" and "Can't use it here!" or "Невозможно использовать это здесь!", time = 3, color = Color.Red } )
         return
     end
 
@@ -122,7 +122,7 @@ end
 
 function Home:GoHomeTw( args, sender )
 	if sender:GetWorld() ~= DefaultWorld then
-        Events:Fire( "CastCenterText", { target = sender, text = "Вы не можете использовать это здесь!", time = 3, color = Color.Red } )
+        Events:Fire( "CastCenterText", { target = sender, text = sender:GetValue( "Lang" ) == "ENG" and "Can't use it here!" or "Невозможно использовать это здесь!", time = 3, color = Color.Red } )
         return
     end
 

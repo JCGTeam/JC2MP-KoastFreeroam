@@ -343,6 +343,7 @@ function Admin:LoadPanel()
 	self.panel.main.chatMessage:SetDock( GwenPosition.Fill )
 	self.panel.main.chatMessage:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
 	self.panel.main.chatMessage:Subscribe( "ReturnPressed", self, self.sendChatMessage )
+	self.panel.main.chatMessage:Subscribe( "EscPressed", function() self.panel.main.chatMessage:Blur() end )
 
 	self.panel.main.clearMessage = GUI:Button( "Очистить", Vector2 ( 0.44, 0.66 ), Vector2 ( 0.05, 0.04 ), self.panel.main.chatBottomLabel, "adminchat.clearmessages" )
 	self.panel.main.clearMessage:SetDock( GwenPosition.Right )

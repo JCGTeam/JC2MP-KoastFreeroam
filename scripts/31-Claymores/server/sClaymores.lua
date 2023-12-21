@@ -48,9 +48,7 @@ function sClaymores:removeClaymore( args, player )
 	local trigger = WorldNetworkObject.GetById(args.id)
 	if object then object:Remove() end
 	if trigger then trigger:Remove() end
-	for p in Server:GetPlayers() do
-		Network:Send(p, "EffectClay", {position = args.position, angle = args.angle})
-	end
+	Network:Broadcast("EffectClay", {position = args.position, angle = args.angle})
 end
 
 sclaymores = sClaymores()

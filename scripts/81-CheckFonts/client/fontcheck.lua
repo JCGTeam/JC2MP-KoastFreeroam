@@ -10,6 +10,7 @@ function FontCheck:ModuleLoad()
 	self.checkFont:SetFont( AssetLocation.SystemFont, "Impact" )
 	self.checkFont:SetVisible( false )
 	self.checkFont:SetText( "" )
+
 	self:LoadFonts()
 end
 
@@ -19,16 +20,18 @@ function FontCheck:LoadFonts()
 		self.checkFont = nil
 	end
 
-	Network:Send( "FontsFound" )
+	Network:Send( "ToggleSystemFonts", { enabled = true } )
 end
 
 function FontCheck:FontToggle( args )
+	local print_txt = "Font set:"
+
 	if args.text == "default" then
-		Network:Send( "FontDisable" )
-		print( "Font set: Default" )
+		Network:Send( "ToggleSystemFonts", { enabled = nil } )
+		print( print_txt .. " " .. "Default" )
 	elseif args.text == "server" then
-		Network:Send( "FontsFound" )
-		print( "Font set: Server font" )
+		Network:Send( "ToggleSystemFonts", { enabled = true } )
+		print( print_txt .. " " .. "Server" )
 	end
 end
 

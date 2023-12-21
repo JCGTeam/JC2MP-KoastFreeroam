@@ -16,9 +16,7 @@ function Banner:PostTick()
 			self.imageIndex = 1
 		end
 
-        for p in Server:GetPlayers() do
-            Network:Send( p, "ChangeImage", self.imageIndex )
-        end
+		Network:Broadcast( "ChangeImage", self.imageIndex )
 
 		self.refreshTimer:Restart()
 	end

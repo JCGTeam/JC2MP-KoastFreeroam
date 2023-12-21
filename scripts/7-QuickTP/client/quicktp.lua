@@ -1,167 +1,171 @@
-fontColor       = Color( 255, 255, 255 )
-fontUpper       = true
-showGroupCount  = true
+class 'QuickTP'
 
-menuColor       = Color( 173, 216, 230, 170 )
-backgroundColor = Color( 10, 10, 10, 200 )
-highlightColor  = Color( 173, 216, 230, 130 )
-innerRadius     = 60
+function QuickTP:__init()
+	self.fontColor       = Color( 255, 255, 255 )
+	self.fontUpper       = true
+	self.showGroupCount  = true
 
-collection  = nil
-selection   = nil
+	self.menuColor       = Color( 173, 216, 230, 170 )
+	self.backgroundColor = Color( 10, 10, 10, 200 )
+	self.highlightColor  = Color( 173, 216, 230, 130 )
+	self.innerRadius     = 60
 
-subRender   = nil
-subMouse    = nil
-subKey      = nil
+	self.menuOpen = false
 
-menuOpen    = false
+	Network:Subscribe( "WarpDoPoof", self, self.WarpDoPoof )
 
-WarpDoPoof = function( position )
+	self.subRecTP = Network:Subscribe( "TPList", self, self.ReceiveTPList )
+
+	Network:Send( "RequestTPList" )
+end
+
+function QuickTP:WarpDoPoof( position )
     ClientEffect.Play( AssetLocation.Game, {effect_id = 250, position = position, angle = Angle()} )
 end
 
-Network:Subscribe( "WarpDoPoof", WarpDoPoof )
+function QuickTP:ReceiveTPList( args )
+	self.collection = args
 
-ReceiveTPList = function( args )
-	collection = args
-	if not subKey then
-		subKey = Events:Subscribe( "KeyDown", OnKeyDown )
+	if not self.subKey then
+		self.subKey = Events:Subscribe( "KeyDown", self, self.KeyDown )
 	end
 
-	if subRecTP then
-		Network:Unsubscribe( subRecTP )
-		subRecTP = nil
+	if self.subRecTP then
+		Network:Unsubscribe( self.subRecTP )
+		self.subRecTP = nil
 	end
 end
 
-subRecTP = Network:Subscribe( "TPList", ReceiveTPList ) 
-Network:Send( "RequestTPList" )
-
-OnKeyDown = function( args )
+function QuickTP:KeyDown( args )
 	if args.key == 74 and Game:GetState() == GUIState.Game then
-		if subKey then
-			Events:Unsubscribe( subKey )
-			subKey = nil
+		if self.subKey then
+			Events:Unsubscribe( self.subKey )
+			self.subKey = nil
 		end
 
-		if not subKey then
-			subKey = Events:Subscribe( "KeyUp", OnKeyUp )
+		if not self.subKey then
+			self.subKey = Events:Subscribe( "KeyUp", self, self.KeyUp )
 		end
-		OpenMenu()
+
+		self:OpenMenu()
 	end
 end
 
-OnKeyUp = function( args )
+function QuickTP:KeyUp( args )
 	if args.key == 74 then
-		if subKey then
-			Events:Unsubscribe( subKey )
-			subKey = nil
+		if self.subKey then
+			Events:Unsubscribe( self.subKey )
+			self.subKey = nil
 		end
 
-		if timerF then
-			timerF = nil
+		if self.timerF then
+			self.timerF = nil
 		end
 
-		if not subKey then
-			subKey = Events:Subscribe( "KeyDown", OnKeyDown )
+		if not self.subKey then
+			self.subKey = Events:Subscribe( "KeyDown", self, self.KeyDown )
 		end
-		if menuOpen then CloseMenu() end
+
+		if self.menuOpen then
+			self:CloseMenu()
+		end
 	end
 end
 
-OnMouseClick = function( args )
-	if type(menu[selection + 2]) == "table" then
-		menu = menu[selection + 2]
-		sound = ClientSound.Create(AssetLocation.Game, {
+function QuickTP:MouseDown( args )
+	if type( self.menu[self.selection + 2] ) == "table" then
+		self.menu = self.menu[self.selection + 2]
+		self.sound = ClientSound.Create(AssetLocation.Game, {
 					bank_id = 18,
 					sound_id = 1,
 					position = Camera:GetPosition(),
 					angle = Angle()
 		})
 
-		sound:SetParameter(0,1)
+		self.sound:SetParameter(0,1)
 		return
 	end
 
-	sendArgs = {}
-	sendArgs.target = menu[selection + 2]
+	local sendArgs = {}
+	sendArgs.target = self.menu[self.selection + 2]
 	sendArgs.button = args.button
+
 	Network:Send( "QuickTP", sendArgs )
-	CloseMenu()
+
+	self:CloseMenu()
 end
 
---
-
-OpenMenu = function()
+function QuickTP:OpenMenu()
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
-	if not subRender then
-		subRender = Events:Subscribe( "PostRender", RenderMenu )
+
+	if not self.subRender then
+		self.subRender = Events:Subscribe( "PostRender", self, self.PostRender )
 	end
 
-	if not subMouse then
-		subMouse = Events:Subscribe( "MouseDown", OnMouseClick )
+	if not self.subMouse then
+		self.subMouse = Events:Subscribe( "MouseDown", self, self.MouseDown )
 	end
 
 	Mouse:SetPosition( Vector2( Render.Width / 2, Render.Height / 2 ) )
 	Mouse:SetVisible( true )
 	Input:SetEnabled( false )
 
-	if not timerF then
-		timerF = Timer()
+	if not self.timerF then
+		self.timerF = Timer()
 	end
 
-	menu     = collection
-	menuOpen = true
+	self.menu = self.collection
+	self.menuOpen = true
 end
 
-CloseMenu = function( args )
-	if subRender then
-		Events:Unsubscribe( subRender )
-		subRender = nil
+function QuickTP:CloseMenu( args )
+	if self.subRender then
+		Events:Unsubscribe( self.subRender )
+		self.subRender = nil
 	end
 
-	if subMouse then
-		Events:Unsubscribe( subMouse )
-		subMouse = nil
+	if self.subMouse then
+		Events:Unsubscribe( self.subMouse )
+		self.subMouse = nil
 	end
 
 	Mouse:SetVisible( false )
 	Input:SetEnabled( true )
 
-	border = false
+	self.border = false
 
-	if timerF then
-		timerF = nil
+	if self.timerF then
+		self.timerF = nil
 	end
 
-	if sound then
-		sound =nil
+	if self.sound then
+		self.sound = nil
 	end
 
-	menuOpen = false
+	self.menuOpen = false
 end
 
-RenderMenu = function( args )
+function QuickTP:PostRender( args )
 	if Game:GetState() ~= GUIState.Game then return end
 
-	if timerF then
+	if self.timerF then
 		alpha = 0
 
-		if timerF:GetSeconds() > 0 and timerF:GetSeconds() < 0.1 then
-			alpha = math.clamp( 0 + (timerF:GetSeconds() * 10), 0, 100 )
-			border = false
+		if self.timerF:GetSeconds() > 0 and self.timerF:GetSeconds() < 0.1 then
+			alpha = math.clamp( self.timerF:GetSeconds() * 10, 0, 100 )
+			self.border = false
 			animplay = false
-		elseif timerF:GetSeconds() > 0.1 then
-			border = true
+		elseif self.timerF:GetSeconds() > 0.1 then
+			self.border = true
 			animplay = true
-			timerF = nil
+			self.timerF = nil
 		end
 	end
 
 	if LocalPlayer:GetValue( "SystemFonts" ) then
 		Render:SetFont( AssetLocation.SystemFont, "Impact" )
 	end
-	local count    = #menu - 1
+	local count    = #self.menu - 1
 	local size     = 42 - count * 1.4
 	if size < 12 then size = 12 end
 
@@ -176,48 +180,38 @@ RenderMenu = function( args )
 
 	local mouseP   = Mouse:GetPosition()
 	local mouseA   = math.atan2(mouseP.y - center.y, mouseP.x - center.x)
-	selection      = math.floor(((mouseA + angle - current) / (math.pi * 2)) * count)
+	self.selection = math.floor(((mouseA + angle - current) / (math.pi * 2)) * count)
 
-	if selection < 0 then selection = selection + count end
+	if self.selection < 0 then self.selection = self.selection + count end
 
-	if border then
-		Render:FillArea( Vector2( 0, 0 ), Render.Size, backgroundColor )
+	if self.border then
+		Render:FillArea( Vector2( 0, 0 ), Render.Size, self.backgroundColor )
 	end
 
-	if sound then
-		sound:SetPosition( Camera:GetPosition() )
+	if self.sound then
+		self.sound:SetPosition( Camera:GetPosition() )
 	end
 
 	Render:FillArea( Vector2( 0, 0 ), Render.Size, Color( 10, 10, 10, 200 * alpha ) )
 
 	if animplay then
-		if count < 3 then Render:FillArea(
-			Vector2( ( selection == 0 and count == 2 ) and center.x or 0, 0 ),
-			Vector2( count == 1 and Render.Width or center.x, Render.Height ),
-			highlightColor
-		) else Render:FillTriangle(
-			center,
-			Vector2( math.cos(selection * (angle*2) - angle + current) * drawRad, math.sin(selection * (angle*2) - angle + current) * drawRad) + center,
-			Vector2( math.cos(selection * (angle*2) + angle + current) * drawRad, math.sin(selection * (angle*2) + angle + current) * drawRad) + center,
-			highlightColor
-		) end
+		if count < 3 then
+			Render:FillArea( Vector2( ( self.selection == 0 and count == 2 ) and center.x or 0, 0 ), Vector2( count == 1 and Render.Width or center.x, Render.Height ), self.highlightColor )
+		else
+			Render:FillTriangle( center, Vector2( math.cos(self.selection * (angle*2) - angle + current) * drawRad, math.sin(self.selection * (angle*2) - angle + current) * drawRad) + center, Vector2( math.cos(self.selection * (angle*2) + angle + current) * drawRad, math.sin(self.selection * (angle*2) + angle + current) * drawRad) + center, self.highlightColor )
+		end
 	else
-		if count < 3 then Render:FillArea(
-			Vector2( ( selection == 0 and count == 2 ) and center.x or 0, 0 ),
-			Vector2( count == 1 and Render.Width or center.x, Render.Height ),
-			Color( 173, 216, 230, 130 * alpha )
-		) else Render:FillTriangle(
-			center,
-			Vector2( math.cos(selection * (angle*2) - angle + current) * drawRad, math.sin(selection * (angle*2) - angle + current) * drawRad) + center,
-			Vector2( math.cos(selection * (angle*2) + angle + current) * drawRad, math.sin(selection * (angle*2) + angle + current) * drawRad) + center,
-			Color( 173, 216, 230, 130 * alpha )
-		) end
+		if count < 3 then
+			Render:FillArea( Vector2( ( self.selection == 0 and count == 2 ) and center.x or 0, 0 ), Vector2( count == 1 and Render.Width or center.x, Render.Height ), Color( 173, 216, 230, 130 * alpha ) )
+		else
+			Render:FillTriangle( center, Vector2( math.cos(self.selection * (angle*2) - angle + current) * drawRad, math.sin(self.selection * (angle*2) - angle + current) * drawRad) + center, Vector2( math.cos(self.selection * (angle*2) + angle + current) * drawRad, math.sin(self.selection * (angle*2) + angle + current) * drawRad) + center, Color( 173, 216, 230, 130 * alpha ) )
+		end
 	end
 
-	for i=2, #menu, 1 do
-		local t = menu[i]
-		if type(t) == "table" then t = t[1] .. (showGroupCount and " [" .. tostring(#t - 1) .. "]" or "") end
-		if fontUpper then t = string.upper(t) end
+	for i=2, #self.menu, 1 do
+		local t = self.menu[i]
+		if type(t) == "table" then t = t[1] .. (self.showGroupCount and " [" .. tostring(#t - 1) .. "]" or "") end
+		if self.fontUpper then t = string.upper(t) end
 
 		textSize = Render:GetTextSize(t, size) 
 		coord.x  = math.cos(current) * radius + center.x - textSize.x / 2
@@ -226,30 +220,25 @@ RenderMenu = function( args )
 
 		if animplay then
 			Render:DrawText( coord + Vector2.One, t, Color( 25, 25, 25, 150 ), size )
-			Render:DrawText( coord, t, fontColor, size )
+			Render:DrawText( coord, t, self.fontColor, size )
 
-			Render:DrawLine(
-				Vector2( math.cos(current) * innerRadius, math.sin(current) * innerRadius) + center, 
-				Vector2( math.cos(current) * drawRad, math.sin(current) * drawRad) + center, 
-				menuColor
-			)
+			Render:DrawLine( Vector2( math.cos(current) * self.innerRadius, math.sin(current) * self.innerRadius) + center, Vector2( math.cos(current) * drawRad, math.sin(current) * drawRad) + center, self.menuColor )
 		else
 			Render:DrawText( coord + Vector2.One, t, Color( 25, 25, 25, 150 * alpha ), size )
 			Render:DrawText( coord, t, Color( 255, 255, 255, 255 * alpha ), size )
-			Render:DrawLine(
-				Vector2( math.cos(current) * innerRadius, math.sin(current) * innerRadius) + center, 
-				Vector2( math.cos(current) * drawRad, math.sin(current) * drawRad) + center, 
-				Color( 173, 216, 230, 170 * alpha )
-			)
+			Render:DrawLine( Vector2( math.cos(current) * self.innerRadius, math.sin(current) * self.innerRadius) + center, Vector2( math.cos(current) * drawRad, math.sin(current) * drawRad) + center, Color( 173, 216, 230, 170 * alpha ) )
 		end
+
 		current = current + angle
 	end
 
 	if animplay then
-		Render:FillCircle( center, innerRadius, backgroundColor )
-		Render:DrawCircle( center, innerRadius, menuColor )
+		Render:FillCircle( center, self.innerRadius, self.backgroundColor )
+		Render:DrawCircle( center, self.innerRadius, self.menuColor )
 	else
-		Render:FillCircle( center, innerRadius, Color( 10, 10, 10, 200 * alpha ) )
-		Render:DrawCircle( center, innerRadius, Color( 173, 216, 230, 170 * alpha ) )
+		Render:FillCircle( center, self.innerRadius, Color( 10, 10, 10, 200 * alpha ) )
+		Render:DrawCircle( center, self.innerRadius, Color( 173, 216, 230, 170 * alpha ) )
 	end
 end
+
+quicktp = QuickTP()

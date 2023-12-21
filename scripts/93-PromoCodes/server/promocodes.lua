@@ -27,12 +27,11 @@ end
 
 function PromoCodes:SetPromocode( args )
     local successfully_txt = "Successfully. PromoCode: " .. args.text
+
     print( successfully_txt )
     Events:Fire( "ToDiscordConsole", { text = successfully_txt } )
 
-    for p in Server:GetPlayers() do
-        Network:Send( p, "SetPromoCode", { promocode = args.text } )
-    end
+    Network:Broadcast( "SetPromoCode", { promocode = args.text } )
 
     self.promocode = args.text
 end

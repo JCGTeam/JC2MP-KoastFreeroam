@@ -97,9 +97,7 @@ function ResourceItems:PlayerEnterCheckpoint( args )
 				if ent2.checkpoint:GetId() == args.checkpoint:GetId() then
 					args.player:SetMoney( args.player:GetMoney() + 10 )
 
-					for p in Server:GetPlayers() do
-						Network:Send( p, "SyncTriggersRemove", { id = ent2.ent:GetId() } )
-					end
+					Network:Broadcast( "SyncTriggersRemove", { id = ent2.ent:GetId() } )
 
 					local count = 0
 					Network:Send( args.player, "CrateTaken", count )

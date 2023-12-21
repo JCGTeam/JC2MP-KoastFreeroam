@@ -18,8 +18,11 @@ function WeatherManager:PostTick( args )
 	end
 	DefaultWorld:SetWeatherSeverity( self.weather )
 
-	print( "Weather set to " .. self.weather )
-	Events:Fire( "ToDiscordConsole", { text = "[Weather] Weather set to " .. self.weather })
+	local setweather_txt = "Weather set to "
+
+	print( setweather_txt .. self.weather )
+	Events:Fire( "ToDiscordConsole", { text = setweather_txt .. self.weather })
+
 	self.timer:Restart()
 end
 

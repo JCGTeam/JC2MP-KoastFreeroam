@@ -53,7 +53,7 @@ function HControls:EngHelp()
 				"     Cavick (Artist)\n" ..
 				"     Dragonshifter (RUSSIAN FREEROAM MAYHEM server source code)\n \n" ..
 				"> Open source:\n" ..
-				"     GitHub - github.com/Hallkezz/KoastFreeroam"
+				"     GitHub - github.com/JCGTeam/KoastFreeroam"
 		} )
 end
 
@@ -101,7 +101,7 @@ function HControls:ModuleLoad()
 				"     Cavick (Художник-аферист)\n" ..
 				"     Dragonshifter (Исходный код сервера RUSSIAN FREEROAM MAYHEM)\n \n" ..
 				"> Открытый исходный код:\n" ..
-				"     GitHub - github.com/Hallkezz/KoastFreeroam\n \n" ..
+				"     GitHub - github.com/JCGTeam/KoastFreeroam\n \n" ..
 				"> Спонсорство:\n" ..
 				"     В список спонсоров попадают люди, которые поддержали сервер суммой более 500 рублей.\n" ..
 				"     Для попадания в список - уведомите администрацию.\n \n" ..

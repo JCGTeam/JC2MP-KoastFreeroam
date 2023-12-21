@@ -15,9 +15,7 @@ end
 
 function Settings:PostTick( args )
 	if self.timer:GetHours() >= 1 then
-		for p in Server:GetPlayers() do
-			Network:Send( p, "Bonus" )
-		end
+		Network:Broadcast( "Bonus" )
 		self.timer:Restart()
 	end
 end

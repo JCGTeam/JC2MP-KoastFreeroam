@@ -242,8 +242,6 @@ end
 
 function BetterChat:ResolutionChange( args )
 	Chat:SetPosition( self.customchatpos )
-
-	print(">>>")
 end
 
 function BetterChat:ChatPosReset()

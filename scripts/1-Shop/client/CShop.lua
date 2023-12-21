@@ -75,7 +75,6 @@ function Shop:__init()
 	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
 		self:Lang()
 	else
-		self.nameBM = "Вы заказали: "
 		self.noVipText = "У вас отсувствует VIP-статус :("
 		self.pvpblock = "Вы не можете использовать это во время боя!"
 		self.dlcwarning_txt = "ВНИМАНИЕ! DLC-контент не сможет наносить урон и не будет виден игрокам, которые его не имеют."
@@ -125,7 +124,6 @@ function Shop:__init()
 
 	Network:Subscribe( "Shop", self, self.Shop )
 	Network:Subscribe( "PlayerFired", self, self.Sound )
-	Network:Subscribe( "Text", self, self.Text )
 	Network:Subscribe( "NoVipText", self, self.NoVipText )
 	Network:Subscribe( "Parachute", self, self.Parachute )
 
@@ -141,7 +139,6 @@ function Shop:Lang( args )
 		self.buy_button:SetText( "Get" )
 	end
 
-	self.nameBM = "You ordered: "
 	self.noVipText = "Needed VIP status not found."
 	self.pvpblock = "You cannot use this during combat!"
 	self.dlcwarning_txt = "WARNING: DLC content will not be able to deal damage and will not be visible to players who do not have it."
@@ -1029,10 +1026,6 @@ function Shop:Close( args )
 			angle = Angle()
 		})
 	end
-end
-
-function Shop:Text( message )
-	Events:Fire( "CastCenterText", { text = self.nameBM .. message, time = 6, color = Color.Gold } )
 end
 
 function Shop:NoVipText()

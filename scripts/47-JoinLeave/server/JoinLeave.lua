@@ -24,9 +24,7 @@ function JoinLeave:PlayerJoin( args )
 		args.player:SetNetworkValue( "Country", "N/A" )
 	end
 
-	for p in Server:GetPlayers() do
-		Network:Send( p, "PlayerJoin", { player = args.player } )
-	end
+	Network:Broadcast( "PlayerJoin", { player = args.player } )
 
 	Events:Fire( "ToDiscordConsole", { text = ">" .. args.player:GetName() .. " joined to the server. |" .. " SteamID: " .. tostring( args.player:GetSteamId() ) .. " IP: " .. tostring( args.player:GetIP() ) } )
 
@@ -53,9 +51,7 @@ function JoinLeave:PlayerJoin( args )
 end
 
 function JoinLeave:PlayerQuit( args )
-	for p in Server:GetPlayers() do
-		Network:Send( p, "PlayerQuit", { player = args.player } )
-	end
+	Network:Broadcast( "PlayerQuit", { player = args.player } )
 
 	Events:Fire( "ToDiscordConsole", { text = ">" .. args.player:GetName() .. " left the server." } )
 end

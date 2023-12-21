@@ -763,7 +763,7 @@ function Admin:executeAction ( args, player )
 			elseif ( args [ 1 ] == "general.tab_adminchat" ) then
 				for _, thePlayer in pairs ( self.canChat ) do
 					Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() ..": ".. args [ 2 ] } )
-					thePlayer:SendChatMessage( "[Админ-чат] ", Color.White, player:GetName() ..": ".. args [ 2 ], Color.Yellow )
+					thePlayer:SendChatMessage( "[Админ-чат] ", Color.White, player:GetName(), player:GetColor(), ": ".. args [ 2 ], Color.Yellow )
 				end
 				print( "[Admin Chat] " .. player:GetName() .. ": ".. args [ 2 ] )
 				Events:Fire( "ToDiscordConsole", { text = "[Admin Chat] " .. player:GetName() .. ": ".. args [ 2 ] } )

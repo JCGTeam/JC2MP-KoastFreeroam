@@ -2,7 +2,7 @@ class 'HitReg'
 
 function HitReg:__init()
     self.explodedVehicles = {}
-    self.damage = { [2] = .11, [4] = .3, [5] = .005, [6] = .17, [13] = .25, [11] = .075, [14] = .3334, [26] = .5, [28] = .03, [43] = 0.00001, [100] = .15, [103] = .2, [129] = .3 }
+    self.damage = { [2] = .0075, [4] = .075, [5] = .0045, [6] = .17, [13] = .25, [11] = .075, [14] = .3334, [26] = .25, [28] = .03, [43] = 0.00001, [100] = .15, [103] = .2, [129] = .3 }
 
     Events:Subscribe( "PostTick", self, self.PostTick )
     Network:Subscribe( "Shoot", self, self.Shoot )

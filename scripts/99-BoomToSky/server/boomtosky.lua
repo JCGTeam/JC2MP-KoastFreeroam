@@ -1,6 +1,6 @@
 class 'BoomToSky'
 
-local warning = "Вы не можете использовать это здесь!"
+local warning = "Невозможно использовать это здесь!"
 local inVehicle = "Вы должны находиться внутри транспорта и быть водителем!"
 
 function confirmationMessage( player, message )

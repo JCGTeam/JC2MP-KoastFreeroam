@@ -4,17 +4,17 @@ function BloozeMod:__init()
     self.default_fov = Camera:GetFOV()
 
     Events:Subscribe( "BloozingStart", self, self.BloozingStart )
-    Events:Subscribe( "LocalPlayerDeath", self, self.LocalPlayerDeath )
-    Events:Subscribe( "LocalPlayerWorldChange", self, self.LocalPlayerWorldChange )
-    Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
+    Events:Subscribe( "LocalPlayerDeath", function() self:BloozingStop() end )
+    Events:Subscribe( "LocalPlayerWorldChange", function() self:BloozingStop() end )
+    Events:Subscribe( "ModuleUnload", function() self:BloozingStop() end )
 end
 
 function BloozeMod:InputPoll()
 	if Input:GetValue( Action.TurnRight ) == 0 and Input:GetValue( Action.TurnLeft ) == 0 then
 		if self.timer:GetSeconds() <= 5 then
-			Input:SetValue(Action.TurnRight, self.num)
+			Input:SetValue( Action.TurnRight, self.num )
 		else
-			Input:SetValue(Action.TurnLeft, self.num)
+			Input:SetValue( Action.TurnLeft, self.num )
 		end
 	end
 end
@@ -58,6 +58,7 @@ end
 
 function BloozeMod:BloozingStart()
     Network:Send( "MinusHP" )
+
 	local sound = ClientSound.Create(AssetLocation.Game, {
         bank_id = 12,
         sound_id = 19,
@@ -117,18 +118,6 @@ function BloozeMod:BloozingStop()
             self.CalcViewEvent = nil
         end
     end
-end
-
-function BloozeMod:LocalPlayerDeath()
-    self:BloozingStop()
-end
-
-function BloozeMod:LocalPlayerWorldChange()
-    self:BloozingStop()
-end
-
-function BloozeMod:ModuleUnload()
-    self:BloozingStop()
 end
 
 bloozemod = BloozeMod()

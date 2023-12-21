@@ -19,7 +19,7 @@ local gladmins = {}
 local creators = {}
 
 local invalidArgs = "Вы ввели недопустимые аргументы!"
-local warning = "Вы не можете использовать это здесь!"
+local warning = "Невозможно использовать это здесь!"
 local invalidNum = "Вы ввели недопустимый номер!"
 local nullPlayer = "Этот игрок не существует!"
 local kicked = " кикнут с сервера!"
@@ -351,9 +351,9 @@ function Admin:PostTick( args )
 					if args.member then
 						p:SetMoney(p:GetMoney() + paydayCash)
 						if p:GetValue( "Lang" ) == "ENG" then
-							p:SendChatMessage( "[Reward №" .. paydayCount .. "] ", Color.White, "$15 for subscribed on the Koast Freeroam group! :3", Color( 255, 180, 3 ) )
+							p:SendChatMessage( "[Reward №" .. paydayCount .. "] ", Color.White, "$" .. paydayCash .. " for subscribed on the Koast Freeroam group! :3", Color( 255, 180, 3 ) )
 						else
-							p:SendChatMessage( "[Награда №" .. paydayCount .. "] ", Color.White, "$15 за участие в группе Koast Freeroam! :3", Color( 255, 180, 3 ) )
+							p:SendChatMessage( "[Награда №" .. paydayCount .. "] ", Color.White, "$" .. paydayCash .. " за участие в группе Koast Freeroam! :3", Color( 255, 180, 3 ) )
 						end
 					end
 				end )
@@ -832,9 +832,7 @@ function Admin:PlayerChat( args )
 
 			local stringname = args.text:sub(9, 256)
 
-			for p in Server:GetPlayers() do
-				Network:Send( p, "Notice", { text = stringname } )
-			end
+			Network:Broadcast( "Notice", { text = stringname } )
 		end
 
 		if (cmd_args[1]) == "/addmoney" then
@@ -865,7 +863,8 @@ function Admin:PlayerChat( args )
 			end
 
 			player:SetMoney(player:GetMoney() + tonumber(cmd_args[3]))
-			confirmationMessage( player, args.player:GetName() .. " добавил вам $" .. cmd_args[3] .. "!" )
+			confirmationMessage( sender, "Вы добавили $" .. cmd_args[3] .. " игроку " .. player:GetName() .. "!" )
+			confirmationMessage( player, sender:GetName() .. " добавил вам $" .. cmd_args[3] .. "!" )
 			return true
 		end
 

@@ -1,9 +1,9 @@
 function Player:SendErrorMessage( str )
-	self:SendChatMessage( "[Чёрный рынок] ", Color.White, str, Color.DarkGray )
+	Events:Fire( "CastCenterText", { target = self, text = str, time = 3, color = Color.Red } )
 end
 
 function Player:SendSuccessMessage( str )
-	self:SendChatMessage( "[Чёрный рынок] ", Color.White, str, Color( 255, 170, 0 ) )
+	Events:Fire( "CastCenterText", { target = self, text = str, time = 6, color = Color.Gold } )
 end
 
 function Shop:__init()
@@ -44,6 +44,19 @@ function Shop:__init()
         ["ModerD"] = true,
         ["VIP"] = true
     }
+
+	self.map_limit = 16000
+
+    self.allowed_vehicles = {
+        [5] = true, [6] = true, [16] = true, [19] = true,
+        [25] = true, [27] = true, [28] = true, [38] = true,
+        [45] = true, [50] = true, [53] = true, [69] = true,
+        [80] = true, [88] = true,
+        [3] = true, [14] = true, [37] = true, [57] = true,
+        [62] = true, [64] = true, [65] = true, [67] = true,
+        [24] = true, [30] = true, [34] = true, [39] = true,
+        [51] = true, [59] = true, [81] = true, [85] = true
+	}
 
 	self:CreateItems()
 	self.skin = nil
@@ -111,7 +124,7 @@ function Shop:ColorChanged( args, sender )
 			if self.vehicles[sender:GetId()]:GetId() == veh:GetId() then
 				veh:SetColors( args.tone1, args.tone2 )
 			else
-				sender:SendChatMessage( "Это не ваш транспорт!", Color( 255, 0, 0 ) )
+				sender:SendChatMessage( player:GetValue( "Lang" ) == "ENG" and "This isn't your vehicle!" or "Это не ваш транспорт!", Color( 255, 0, 0 ) )
 			end
 		end
     end
@@ -193,14 +206,14 @@ function Shop:PlayerFired( args, player )
     local tone2             = args[5]
 
     if player:GetWorld() ~= DefaultWorld then
-        player:SendErrorMessage( "Вы не можете использовать это здесь!" )
+        player:SendErrorMessage( player:GetValue( "Lang" ) == "ENG" and "Can't use it here!" or "Невозможно использовать это здесь!" )
         return
     end
 
     local item = self.items[category_id][subcategory_name][index]
 
     if item == nil then
-        player:SendErrorMessage( "Недопустимый элемент!" )
+        player:SendErrorMessage( player:GetValue( "Lang" ) == "ENG" and "Invalid item!" or "Недопустимый элемент!" )
         return
     end
 
@@ -221,9 +234,9 @@ function Shop:PlayerFired( args, player )
 	if success then
 		Network:Send( player, "PlayerFired" )
 
-        local str = string.format( "%s!", item:GetName() )
+        local str = string.format( ( player:GetValue( "Lang" ) == "ENG" and "You ordered:" or "Вы заказали:" ) .. " %s!", item:GetName() )
 
-		Network:Send( player, "Text", str )
+		player:SendSuccessMessage( str )
     else
         player:SendErrorMessage( err )
     end
@@ -237,16 +250,23 @@ function Shop:BuyVehicle( player, item, tone1, tone2 )
 			self:ExecuteVehicle( player, item, tone1, tone2 )
 			return true, ""
 		else
-			return false, "У вас отсутствует VIP статус! Приобрести можно в группе в VK - [empty_link]", Network:Send( player, "NoVipText" )
+			return false, player:GetValue( "Lang" ) == "ENG" and "You do not have VIP status!" or "У вас отсутствует VIP статус!", Network:Send( player, "NoVipText" )
 		end
 	end
 
 	if not player:HasVehicleDLC(item:GetModelId()) then
-		return false, "У вас отсутствует DLC!"
+		return false, player:GetValue( "Lang" ) == "ENG" and "You don't have this DLC!" or "У вас отсутствует данное DLC!"
 	end
 
 	if player:GetState() == PlayerState.InVehiclePassenger then
-        return false, "Вы не можете заказать транспорт на пассажирском месте!"
+        return false, player:GetValue( "Lang" ) == "ENG" and "You cannot order vehicle in the passenger seat!" or "Невозможно заказать транспорт на пассажирском месте!"
+	end
+
+	local coordString = player:GetPosition()
+	if coordString.z < -self.map_limit or coordString.z > self.map_limit then
+        if not self.allowed_vehicles[item:GetModelId()] then
+        	return false, player:GetValue( "Lang" ) == "ENG" and "You cannot order this vehicle in the current zone!" or "Невозможно заказать данный транспорт в текущей зоне!"
+		end
 	end
 
 	self:ExecuteVehicle( player, item, tone1, tone2 )
@@ -319,7 +339,7 @@ function Shop:BuyWeapon( player, item )
 			self:ExecuteWeapon( player, item )
 			return true, ""
 		else
-			return false, "У вас отсутствует VIP статус! Приобрести можно в группе в VK - [empty_link]", Network:Send( player, "NoVipText" )
+			return false, player:GetValue( "Lang" ) == "ENG" and "You do not have VIP status!" or "У вас отсутствует VIP статус!", Network:Send( player, "NoVipText" )
 		end
 	end
 
@@ -345,7 +365,7 @@ function Shop:BuyModel( player, item )
 			self:ExecuteModel( player, item )
 			return true, ""
 		else
-			return false, "У вас отсутствует VIP статус! Приобрести можно в группе в VK - [empty_link]", Network:Send( player, "NoVipText" )
+			return false, player:GetValue( "Lang" ) == "ENG" and "You do not have VIP status!" or "У вас отсутствует VIP статус!", Network:Send( player, "NoVipText" )
 		end
 	end
 	self:ExecuteModel( player, item )
@@ -366,7 +386,7 @@ function Shop:BuyAppearance( player, item )
 			self:ExecuteAppearance( player, item )
 			return true, ""
 		else
-			return false, "У вас отсутствует VIP статус! Приобрести можно в группе в VK - [empty_link]", Network:Send( player, "NoVipText" )
+			return false, player:GetValue( "Lang" ) == "ENG" and "You do not have VIP status!" or "У вас отсутствует VIP статус!", Network:Send( player, "NoVipText" )
 		end
 	end
 	self:ExecuteAppearance( player, item )

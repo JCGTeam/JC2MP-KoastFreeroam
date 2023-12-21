@@ -54,7 +54,7 @@ client:on('messageCreate', function(message)
 	if not jcmp then return end
 	local author = message.author
 	if author == client.user then return end
-	if message.channel.id ~= '865978337712799754' then return end
+	if message.channel.id ~= channelId then return end
 	if message.content == "reboot" then
 		os.execute("shutdown /r /t 0") end
 	udp:send(encode{message.content}, jcmp.ip, jcmp.port)
@@ -63,7 +63,7 @@ end)
 
 client:on('messageDelete', function(message)
 
-	client:getChannel('865978337712799754')
+	client:getChannel(channelId)
 
 end)
 

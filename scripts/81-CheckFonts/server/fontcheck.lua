@@ -1,16 +1,13 @@
 class 'FontCheck'
 
 function FontCheck:__init()
-	Network:Subscribe( "FontsFound", self, self.FontsFound )
-	Network:Subscribe( "FontDisable", self, self.FontDisable )
+	Network:Subscribe( "ToggleSystemFonts", self, self.ToggleSystemFonts )
 end
 
-function FontCheck:FontsFound( args, sender )
-	sender:SetNetworkValue( "SystemFonts", true )
-end
+function FontCheck:ToggleSystemFonts( args, sender )
+	if not args.enabled then return end
 
-function FontCheck:FontDisable( args, sender )
-	sender:SetNetworkValue( "SystemFonts", nil )
+	sender:SetNetworkValue( "SystemFonts", args.enabled )
 end
 
 fontcheck = FontCheck()

@@ -12,7 +12,7 @@ function Passive:__init()
 		self.pvpblock = "Вы не можете использовать мирный режим во время боя!"
 		self.w = "Подождите "
 		self.ws = " секунд, чтобы включить/отключить мирный!"
-		self.notusable = "Вы не можете использовать это здесь!"
+		self.notusable = "Невозможно использовать это здесь!"
 	end
 
 	self.passiveColor = Color( 255, 255, 255, 55 )
