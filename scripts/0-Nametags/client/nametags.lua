@@ -346,16 +346,17 @@ function Nametags:Render()
 	if not self.enabled or Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue( "HiddenHUD" ) then return end
 
 	if LocalPlayer:GetValue( "TagHide" ) then
-		local width = Render:GetTextWidth( "/hidetag" )
-		local textpos = Vector2( Render.Width / 4 - width/1.8 + Render:GetTextWidth( "/hidetag", 18 ) / 15, 2 )
+		local text = "/hidetag"
+		local width = Render:GetTextWidth( text )
+		local text_pos = Vector2( Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) / 15, 2 )
 
-		Render:FillArea( Vector2( Render.Width/4 - width/1.8, 0 ), Vector2( Render:GetTextWidth( "/hidetag", 18 ) + 5, Render:GetTextHeight( "/hidetag", 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+		Render:FillArea( Vector2( Render.Width/4 - width/1.8, 0 ), Vector2( Render:GetTextWidth( text, 18 ) + 5, Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
 
-		Render:FillTriangle( Vector2( (Render.Width / 4 - width/1.8 - 10), 0 ), Vector2( (Render.Width / 4 - width/1.8), 0 ), Vector2( (Render.Width / 4 - width/1.8), Render:GetTextHeight( "/hidetag", 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
-		Render:FillTriangle( Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( "/hidetag", 18 ) + 15), 0 ), Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( "/hidetag", 18 ) + 5), 0 ), Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( "/hidetag", 18 ) + 5 ), Render:GetTextHeight( "/hidetag", 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+		Render:FillTriangle( Vector2( (Render.Width / 4 - width/1.8 - 10), 0 ), Vector2( (Render.Width / 4 - width/1.8), 0 ), Vector2( (Render.Width / 4 - width/1.8), Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+		Render:FillTriangle( Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 15), 0 ), Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 5), 0 ), Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 5 ), Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
 
-		Render:DrawText( textpos + Vector2.One, "/hidetag", Color.Black, 18 )
-		Render:DrawText( textpos, "/hidetag", Color.LightBlue, 18 )
+		Render:DrawText( text_pos + Vector2.One, text, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), 18 )
+		Render:DrawText( text_pos, text, Color( 173, 216, 230, Game:GetSetting(4) * 2.25 ), 18 )
 	end
 
 	-- Create some prerequisite variables

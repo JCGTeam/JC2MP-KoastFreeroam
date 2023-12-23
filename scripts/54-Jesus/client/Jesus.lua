@@ -15,7 +15,6 @@ function Jesus:__init()
 	self.SurfaceHeight = 199.8
 	self.UnderWaterOffset = 0.157
 	self.MaxDistance = 50
-	self.color = Color( 255, 255, 255, 55 )
 
 	self.Model = ""
 	self.Collision = "areaset01.blz/gb245_lod1-d_col.pfx"
@@ -158,22 +157,20 @@ function Jesus:Render()
 	end
 
     local width = Render:GetTextWidth( self.name )
-    local textpos = Vector2( Render.Width/1.3 - width/1.8 + Render:GetTextWidth( self.nameSizer, 18 ) / 5.5, 2 )
+    local text_pos = Vector2( Render.Width/1.3 - width/1.8 + Render:GetTextWidth( self.nameSizer, 18 ) / 5.5, 2 )
 
 	Render:FillArea( Vector2( Render.Width/1.3 - width/1.8, 0 ), Vector2( Render:GetTextWidth( self.nameSizer, 18 ) + 5, Render:GetTextHeight( self.name, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
 
 	Render:FillTriangle( Vector2( (Render.Width / 1.3 - width/1.8 - 10), 0 ), Vector2( (Render.Width / 1.3 - width/1.8), 0 ), Vector2( (Render.Width / 1.3 - width/1.8), Render:GetTextHeight( self.name, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
 	Render:FillTriangle( Vector2( (Render.Width / 1.3 - width/1.8 + Render:GetTextWidth( self.nameSizer, 18 ) + 15), 0 ), Vector2( (Render.Width / 1.3 - width/1.8 + Render:GetTextWidth( self.nameSizer, 18 ) + 5), 0 ), Vector2( (Render.Width / 1.3 - width/1.8 + Render:GetTextWidth( self.nameSizer, 18 ) + 5 ), Render:GetTextHeight( self.name, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
 
-	if LocalPlayer:GetValue( "WaterWalk" ) then
-		Render:DrawText( textpos + Vector2.One, self.name, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), 18 )
+	local waterwalk_enabled = LocalPlayer:GetValue( "WaterWalk" )
 
-		self.color = Color( 173, 216, 230, Game:GetSetting(4) * 2.25 )
-	else
-		self.color = Color( 255, 255, 255, Game:GetSetting(4) * 2.25 / 4 )
+	if waterwalk_enabled then
+		Render:DrawText( text_pos + Vector2.One, self.name, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), 18 )
 	end
 
-	Render:DrawText( textpos, self.name, self.color, 18 )
+	Render:DrawText( text_pos, self.name, waterwalk_enabled and Color( 173, 216, 230, Game:GetSetting(4) * 2.25 ) or Color( 255, 255, 255, Game:GetSetting(4) * 2.25 / 4 ), 18 )
 end
 
 function Jesus:CheckList( tableList, modelID )
