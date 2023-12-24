@@ -43,6 +43,8 @@ function Speedometer:__init()
 	self:CreateSettings()
 	self.speed_text_size = TextSize.Gigantic
 	self.unit_text_size = TextSize.Huge
+
+	self.bHealth = Color( 100, 100, 100 )
 	self.zHealth = Color( 255, 150, 150 )
 	self.fHealth = Color( 255, 140, 50 )
 
@@ -272,7 +274,7 @@ function Speedometer:Render()
 	local factor = math.clamp( vehicle:GetHealth() - 0.4, 0.0, 0.6 ) * 2.5
 
 	local textcol
-	local col = math.lerp( self.zHealth, self.fHealth, factor )
+	local col = math.lerp( LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.zHealth, LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.fHealth, factor )
 
 	textcol = col
 
@@ -303,14 +305,6 @@ function Speedometer:Render()
 	bar_len = bar_len * vehicle:GetHealth()
 	Render:FillArea( bar_pos, final_pos, Color( 0, 0, 0, 100 ) )
 	Render:FillArea( bar_pos, Vector2(bar_len, 5), col)
-
-	if LocalPlayer:GetValue( "VehBrake" ) then
-		self.fHealth = Color( 100, 100, 100 )
-		self.zHealth = Color( 100, 100, 100 )
-	else
-		self.zHealth = Color( 255, 150, 150 )
-		self.fHealth = Color( 255, 140, 50 )
-	end
 end
 
 function Speedometer:GameRender()
@@ -349,7 +343,7 @@ function Speedometer:GameRender()
 	local factor = math.clamp( vehicle:GetHealth() - 0.4, 0.0, 0.6 ) * 2.5
 
 	local textcol
-	local col = math.lerp( self.zHealth, self.fHealth, factor )
+	local col = math.lerp( LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.zHealth, LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.fHealth, factor )
 
 	textcol = col
 
@@ -396,14 +390,6 @@ function Speedometer:GameRender()
 	Render:FillArea( bar_pos + Vector3( 1, 1, 4 ), Vector3( bar_len, 16, 0 ), col )
 	Render:FillArea( bar_pos + Vector3( 1, 1, 3 ), Vector3( text_size.x, 20, 0 ), Color( 0, 0, 0, 100 ) )
 	Render:FillArea( bar_pos, Vector3( bar_len, 16, 0 ), col )
-
-	if LocalPlayer:GetValue( "VehBrake" ) then
-		self.fHealth = Color( 100, 100, 100 )
-		self.zHealth = Color( 100, 100, 100 )
-	else
-		self.zHealth = Color( 255, 150, 150 )
-		self.fHealth = Color( 255, 140, 50 )
-	end
 end
 
 function Speedometer:Active()
