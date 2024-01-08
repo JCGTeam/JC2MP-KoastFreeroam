@@ -39,11 +39,11 @@ function Passive:TogglePVPMode( args, sender )
 end
 
 function Passive:Toggle( state, sender )
-	sender:SetNetworkValue("Passive", state or nil)
+	sender:SetNetworkValue( "Passive", state or nil )
 
 	local vehicle = sender:GetVehicle()
 	if IsValid(vehicle) and vehicle:GetDriver() == sender then
-		vehicle:SetInvulnerable(state == true)
+		vehicle:SetInvulnerable( state == true )
 	end
 
 	if sender:GetValue( "Lang" ) and sender:GetValue( "Lang" ) == "ENG" then
@@ -72,7 +72,7 @@ end
 
 function Passive:ClientModuleLoad( args )
 	local state = self.passives[args.player:GetSteamId().id]
-	args.player:SetNetworkValue("Passive", state)
+	args.player:SetNetworkValue( "Passive", state )
 
 	local vehicle = args.player:GetVehicle()
 	if IsValid(vehicle) and vehicle:GetDriver() == args.player then

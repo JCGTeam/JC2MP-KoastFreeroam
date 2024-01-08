@@ -60,10 +60,12 @@ function Tasks:__init()
 	self.windowL2:SetDock( GwenPosition.Top )
 	self.windowL2:SetTextSize( 15 )
 	self.windowL2:SetHeight( Render:GetTextHeight( self.windowL2:GetText(), 15 ) )
+
 	self.windowL3:SetText( self.vehicletip .. "Вилка" )
 	self.windowL3:SetDock( GwenPosition.Top )
 	self.windowL3:SetMargin( Vector2( 0, 10 ), Vector2() )
 	self.windowL3:SetHeight( Render:GetTextHeight( self.windowL3:GetText() ) )
+
 	self.windowL1:SetText( "-" )
 	self.windowL1:SetDock( GwenPosition.Top )
 	self.windowL1:SetHeight( Render:GetTextHeight( self.windowL1:GetText() ) )
@@ -84,7 +86,7 @@ function Tasks:__init()
 	Network:Subscribe( "JobStart", self, self.JobStart )
 	Network:Subscribe( "JobFinish", self, self.JobFinish )
 	Network:Subscribe( "JobsUpdate", self, self.JobsUpdate )
-	Network:Subscribe( "JobCancel", self, self.JobCancel )
+	Network:Subscribe( "JobFailed", self, self.JobFailed )
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick )
@@ -177,7 +179,6 @@ end
 function Tasks:JobFinish()
 	if not self.job then return end
 
-	self.markers = true
 	Events:Fire( "CastCenterText", { text = self.taskcompletedtxt, time = 6, color = Color( 0, 255, 0 ) } )
 	self.sound = ClientSound.Create(AssetLocation.Game, {
 		bank_id = 25,
@@ -186,44 +187,15 @@ function Tasks:JobFinish()
 		angle = Camera:GetAngle()
 	})
 	self.sound:SetParameter(0,1)
-	self.flooder = true
-	Waypoint:Remove()
-	self.job = nil
 	self.taskscomplatedcount = self.taskscomplatedcount + 1
 	Game:ShowPopup( self.taskcomplatedcounttxt .. self.taskscomplatedcount, true )
 
-	if self.locationsAutoHide then
-		self.locationsVisible = true
-	end
-
-	if self.InJobPostTickEvent then
-		Events:Unsubscribe( self.InJobPostTickEvent )
-		self.InJobPostTickEvent = nil
-		self.jobCompleteTimer = nil
-	end
-
-	if not self.LocalPlayerInputEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
-
-	if not self.KeyUpEvent then
-		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
-	end
-
-	if not self.GameRenderOpaqueEvent then
-		self.GameRenderOpaqueEvent = Events:Subscribe( "GameRenderOpaque", self, self.GameRenderOpaque )
-	end
-
-	if not self.PostTickEvent then
-		self.jobCheckTimer = Timer()
-		self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick )
-	end
+	self:JobCancel()
 end
 
-function Tasks:JobCancel()
+function Tasks:JobFailed()
 	if not self.job then return end
 
-	self.markers = true
 	Events:Fire( "CastCenterText", { text = self.taskfailedtxt, time = 6, color = Color.Red } )
 	self.sound = ClientSound.Create(AssetLocation.Game, {
 		bank_id = 25,
@@ -232,8 +204,16 @@ function Tasks:JobCancel()
 		angle = Camera:GetAngle()
 	})
 	self.sound:SetParameter(0,1)
+
+	self:JobCancel()
+end
+
+function Tasks:JobCancel()
+	self.markers = true
 	self.flooder = true
+
 	Waypoint:Remove()
+
 	self.job = nil
 
 	if self.locationsAutoHide then
@@ -321,6 +301,7 @@ function Tasks:InJobPostTick()
 		self.jobCompleteTimer:Restart()
 		local pVehicle = LocalPlayer:GetVehicle()
 		local jDist = self.locations[self.job.destination].position:Distance( pVehicle:GetPosition() )
+
 		if jDist < 20 then
 			Network:Send( "CompleteJob", nil )
 		end
@@ -329,8 +310,10 @@ end
 
 function Tasks:KeyUp( a )
 	if Game:GetState() ~= GUIState.Game then return end
+
 	local args = {}
 	args.job = self.availableJobKey
+
 	if a.key == string.byte("X") and args.job ~= 0 then
 		Network:Send( "TakeJob", args )
 		self.StartJobLabel:SetTextColor( Color( 255, 0, 0 ) )
@@ -342,8 +325,10 @@ end
 
 function Tasks:LocalPlayerInput( a )
 	if Game:GetState() ~= GUIState.Game then return end
+
 	local args = {}
 	args.job = self.availableJobKey
+
 	if Game:GetSetting(GameSetting.GamepadInUse) == 1 then
 		if self.flooder then
 			if a.input == Action.EquipBlackMarketBeacon and args.job ~= 0 then
@@ -414,9 +399,6 @@ function Tasks:DrawLocation2( k, v, dist, dir, jobDistance )
 end
 
 function Tasks:DrawTargetArrow( args )
-	lastCameraPosition = cameraPosition or Vector3()
-	cameraPosition = Camera:GetPosition()
-
 	local position = Camera:GetPosition() + Render:ScreenToWorldDirection( NormVector2( 0, -0.65 ) ) * 8.5
 
 	local angle = Angle.FromVectors( Vector3( 0, 0, -1 ), args.checkpointPosition - LocalPlayer:GetPosition() )

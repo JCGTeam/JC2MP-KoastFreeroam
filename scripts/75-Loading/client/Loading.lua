@@ -72,23 +72,22 @@ function Load:PostRender()
 		local TxtPos = Vector2( ( Render.Size.x/2 ) - ( TxtSize.x/2 ), Render.Size.y / 1.100 )
 		local Rotation = self:GetRotation()
 		local Pos = Vector2( 40, Render.Size.y / 1.075 )
-		local PosTw = Vector2( 40.5, Render.Size.y / 1.074 )
-		local PosTh = Vector2( (Render.Width - 60), 60 )
+		local PosTw = Vector2( Render.Width - 60, 60 )
 
 		self.BackgroundImage:SetPosition( Vector2.Zero )
 		self.BackgroundImage:SetSize( Vector2( Render.Width, Render.Height ) )
 		self.BackgroundImage:Draw()
 
-		Render:FillArea( TxtPos-self.border_width, Vector2( Render.Width, 100 ) + self.border_width*2, Color( 0, 0, 0, 150 ) )
+		Render:FillArea( TxtPos - self.border_width, Vector2( Render.Width, 100 ) + self.border_width * 2, Color( 0, 0, 0, 150 ) )
 
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			Render:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
-		Render:DrawText( PosTw, self.name, Color( 0, 0, 0 ), TxtSizePos )
+		Render:DrawText( Pos + Vector2.One, self.name, Color( 0, 0, 0 ), TxtSizePos )
 		Render:DrawText( Pos, self.name, Color.White, TxtSizePos )
 
 		if self.FadeInTimer then
-			TransformOuter:Translate( PosTh )
+			TransformOuter:Translate( PosTw )
 			TransformOuter:Rotate( math.pi * Rotation )
 
 			Render:SetTransform( TransformOuter )

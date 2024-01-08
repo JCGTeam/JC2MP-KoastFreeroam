@@ -1,4 +1,4 @@
 ImagesRange = {
     Min = 0,
-    Max = 21
+    Max = 20
 }

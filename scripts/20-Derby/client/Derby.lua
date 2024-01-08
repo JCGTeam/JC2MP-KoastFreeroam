@@ -163,14 +163,12 @@ function Derby:Render()
 	if (self.state == "Lobby") then
 		local text = self.lobbyplayers_txt .. self.playerCount
 		local textinfo = self:TextPos( text, TextSize.Large, 0, -Render.Height + 150 )
-		local textinfoTw = self:TextPos( text, TextSize.Large, 2, -Render.Height + 152 )
-		Render:DrawText( textinfoTw, text, Color( 25, 25, 25, 150 ), TextSize.Large )   
+		Render:DrawText( textinfo + Vector2.One, text, Color( 25, 25, 25, 150 ), TextSize.Large )   
 		Render:DrawText( textinfo, text, Color.White, TextSize.Large )
 		
 		local text = self.lobbymap_txt .. self.courseName
 		local textinfo = self:TextPos( text, 25, 0, -Render.Height + 215 )
-		local textinfoTw = self:TextPos( text, 25, 2, -Render.Height + 217 )
-		Render:DrawText( textinfoTw, text, Color( 25, 25, 25, 150 ), 25 )
+		Render:DrawText( textinfo + Vector2.One, text, Color( 25, 25, 25, 150 ), 25 )
 		Render:DrawText( textinfo, text, Color( 165, 165, 165 ), 25 )
 	end
 

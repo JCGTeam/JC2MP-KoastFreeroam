@@ -112,7 +112,7 @@ end
 function ServerMenu:LoadCategories()
 	self.window = Window.Create()
 	self.window:SetSizeRel( Vector2( 0.55, 0.5 ) )
-	self.window:SetMinimumSize( Vector2( 500, 442 ) )
+	self.window:SetMinimumSize( Vector2( 700, 442 ) )
 	self.window:SetPositionRel( Vector2( 0.7, 0.5 ) - self.window:GetSizeRel()/2 )
 	self.window:SetVisible( self.active )
 	self.window:SetTitle( "▧ Меню сервера" )
@@ -671,11 +671,7 @@ function ServerMenu:UpdateMoneyString( money )
     end
 
     if LocalPlayer:GetValue( "Lang" ) then
-		if LocalPlayer:GetValue( "Lang" ) == "РУС" then
-			self.level:SetText( "Баланс: $" .. formatNumber( money ) )
-		else
-			self.level:SetText( "Money: $" .. formatNumber( money ) )
-		end
+		self.level:SetText( LocalPlayer:GetValue( "Lang" ) == "ENG" and "Money: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
     end
 end
 
@@ -691,14 +687,14 @@ function math.round( number, decimals, method )
 end
 
 function formatNumber( amount )
-	local formatted = tostring( amount );
+	local formatted = tostring( amount )
 	while true do  
-		formatted, k = string.gsub( formatted, "^(-?%d+)(%d%d%d)", '%1.%2' );
+		formatted, k = string.gsub( formatted, "^(-?%d+)(%d%d%d)", '%1.%2' )
 		if (k==0) then
 			break
 		end
 	end
-	return formatted;
+	return formatted
 end
 
 servermenu = ServerMenu()

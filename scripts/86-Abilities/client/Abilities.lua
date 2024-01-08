@@ -523,95 +523,21 @@ function Abilities:MoreC4Unlocker()
 end
 
 function Abilities:UpdateButtons()
-    if LocalPlayer:GetMoney() >= Prices.Wingsuit then
-        self.wingsuitbutton:SetEnabled( true )
-    else
-        self.wingsuitbutton:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.Boost_1 then
-        self.boost_1button:SetEnabled( true )
-    else
-        self.boost_1button:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.Boost_2 then
-        self.boost_2button:SetEnabled( true )
-    else
-        self.boost_2button:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.Boost_3 then
-        self.boost_3button:SetEnabled( true )
-    else
-        self.boost_3button:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.BonusMoney then
-        self.bonusmoneybutton:SetEnabled( true )
-    else
-        self.bonusmoneybutton:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.MoreC4_5 then
-        self.moreC4_5button:SetEnabled( true )
-    else
-        self.moreC4_5button:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.MoreC4_8 then
-        self.moreC4_8button:SetEnabled( true )
-    else
-        self.moreC4_8button:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.MoreC4_10 then
-        self.moreC4_10button:SetEnabled( true )
-    else
-        self.moreC4_10button:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.MoreC4_15 then
-        self.moreC4_15button:SetEnabled( true )
-    else
-        self.moreC4_15button:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.SuperNuclearBomb then
-        self.supernuclearbombbutton:SetEnabled( true )
-    else
-        self.supernuclearbombbutton:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.LongerGrapple_150 then
-        self.longergrapple_150button:SetEnabled( true )
-    else
-        self.longergrapple_150button:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.LongerGrapple_200 then
-        self.longergrapple_200button:SetEnabled( true )
-    else
-        self.longergrapple_200button:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.LongerGrapple_350 then
-        self.longergrapple_350button:SetEnabled( true )
-    else
-        self.longergrapple_350button:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.LongerGrapple_500 then
-        self.longergrapple_500button:SetEnabled( true )
-    else
-        self.longergrapple_500button:SetEnabled( false )
-    end
-
-    if LocalPlayer:GetMoney() >= Prices.JesusMode then
-        self.jesusmode_button:SetEnabled( true )
-    else
-        self.jesusmode_button:SetEnabled( false )
-    end
+    self.wingsuitbutton:SetEnabled( LocalPlayer:GetMoney() >= Prices.Wingsuit )
+    self.boost_1button:SetEnabled( LocalPlayer:GetMoney() >= Prices.Boost_1 )
+    self.boost_2button:SetEnabled( LocalPlayer:GetMoney() >= Prices.Boost_2 )
+    self.boost_3button:SetEnabled( LocalPlayer:GetMoney() >= Prices.Boost_3 )
+    self.bonusmoneybutton:SetEnabled( LocalPlayer:GetMoney() >= Prices.BonusMoney )
+    self.moreC4_5button:SetEnabled( LocalPlayer:GetMoney() >= Prices.MoreC4_5 )
+    self.moreC4_8button:SetEnabled( LocalPlayer:GetMoney() >= Prices.MoreC4_8 )
+    self.moreC4_10button:SetEnabled( LocalPlayer:GetMoney() >= Prices.MoreC4_10 )
+    self.moreC4_15button:SetEnabled( LocalPlayer:GetMoney() >= Prices.MoreC4_15 )
+    self.supernuclearbombbutton:SetEnabled( LocalPlayer:GetMoney() >= Prices.SuperNuclearBomb )
+    self.longergrapple_150button:SetEnabled( LocalPlayer:GetMoney() >= Prices.LongerGrapple_150 )
+    self.longergrapple_200button:SetEnabled( LocalPlayer:GetMoney() >= Prices.LongerGrapple_200 )
+    self.longergrapple_350button:SetEnabled( LocalPlayer:GetMoney() >= Prices.LongerGrapple_350 )
+    self.longergrapple_500button:SetEnabled( LocalPlayer:GetMoney() >= Prices.LongerGrapple_500 )
+    self.jesusmode_button:SetEnabled( LocalPlayer:GetMoney() >= Prices.JesusMode )
 end
 
 function Abilities:SuperNuclearBombUnlocker()
@@ -744,13 +670,8 @@ function Abilities:Open()
         end
 
         if LocalPlayer:GetValue( "Lang" ) then
-			if LocalPlayer:GetValue( "Lang" ) == "РУС" then
-                self.money_text:SetText( "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
-                self.money_text:SizeToContents()
-            else
-                self.money_text:SetText( "Money: $" .. formatNumber( LocalPlayer:GetMoney() ) )
-                self.money_text:SizeToContents()
-            end
+            self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "ENG" and "Money: $" .. formatNumber( LocalPlayer:GetMoney() ) or "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
+            self.money_text:SizeToContents()
         end
 
         if LocalPlayer:GetValue( "Wingsuit" ) then
@@ -937,13 +858,8 @@ function Abilities:UpdateMoneyString( money )
     end
 
     if LocalPlayer:GetValue( "Lang" ) then
-        if LocalPlayer:GetValue( "Lang" ) == "РУС" then
-            self.money_text:SetText( "Баланс: $" .. formatNumber( money ) )
-            self.money_text:SizeToContents()
-        else
-            self.money_text:SetText( "Money: $" .. formatNumber( money ) )
-            self.money_text:SizeToContents()
-        end
+        self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "ENG" and "Money: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
+        self.money_text:SizeToContents()
     end
 end
 
@@ -991,14 +907,14 @@ function Abilities:WindowClosed()
 end
 
 function formatNumber( amount )
-	local formatted = tostring( amount );
+	local formatted = tostring( amount )
 	while true do  
-		formatted, k = string.gsub( formatted, "^(-?%d+)(%d%d%d)", '%1.%2' );
+		formatted, k = string.gsub( formatted, "^(-?%d+)(%d%d%d)", '%1.%2' )
 		if (k==0) then
 			break
 		end
 	end
-	return formatted;
+	return formatted
 end
 
 abilities = Abilities()

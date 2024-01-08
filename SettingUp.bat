@@ -26,7 +26,7 @@ move /y "%tempfile%" "%dtojc_file%"
 
 echo Discord token successfully removed. Path: %dtojc_file%
 
-set "links_to_replace=https://cclx.win/FGXd0 vk.com/rusjc steamcommunity.com/groups/rusjc t.me/rusjc https://cclx.win/NFXd0 62.122.214.141:7777 62.122.214.141:6666 vk.com/jcsurv"
+set "links_to_replace=clck.ru/37FZrU vk.com/rusjc steamcommunity.com/groups/rusjc t.me/rusjc clck.ru/37FZkT 62.122.214.141:7777 62.122.214.141:6666 vk.com/jcsurv"
 set "replacement=[empty_link]"
 
 for /r "scripts" %%I in (*.lua) do (

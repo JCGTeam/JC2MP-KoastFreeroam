@@ -96,7 +96,7 @@ function WhatsNew:Render()
 
 	if self.usepause then
 		Game:FireEvent( "ply.pause" )
-		Render:DrawText( Vector2( 20, (Render.Height - 40) ), "© JCGTeam 2023", Color.White, 15 )
+		Render:DrawText( Vector2( 20, (Render.Height - 40) ), "© JCGTeam 2024", Color.White, 15 )
 	end
 end
 
@@ -139,6 +139,10 @@ function WhatsNew:Close()
 
 	if self.usepause then
 		Game:FireEvent( "ply.unpause" )
+
+		if LocalPlayer:GetValue( "Passive" ) then
+			Game:FireEvent( "ply.invulnerable" )
+		end
 	end
 
 	Game:FireEvent( "gui.hud.show" )

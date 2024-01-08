@@ -121,7 +121,7 @@ function Bank:CreateSendMoneyWindow()
 	self.plist.balance:SetDock( GwenPosition.Top )
 	self.plist.balance:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
 	self.plist.balance:SetTextSize( 20 )
-	self.plist.balance:SetText( "Баланс: " .. formatNumber( LocalPlayer:GetMoney() ) )
+	self.plist.balance:SetText( "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
 	self.plist.balance:SetTextColor( Color( 251, 184, 41 ) )
 	self.plist.balance:SizeToContents()
 
@@ -274,6 +274,7 @@ function Bank:Render()
 			self.message_timer = nil
 			self.message = nil
 			self.submessage = nil
+
 			if self.RenderEvent then
 				Events:Unsubscribe( self.RenderEvent )
 				self.RenderEvent = nil
@@ -302,46 +303,34 @@ function Bank:MoneyChange( args )
     end
 
     if LocalPlayer:GetValue( "Lang" ) then
-		if LocalPlayer:GetValue( "Lang" ) == "РУС" then
-			self.plist.balance:SetText( "Баланс: $" .. formatNumber( args.new_money ) )
-		else
-			self.plist.balance:SetText( "Money: $" .. formatNumber( args.new_money ) )
-		end
+		self.plist.balance:SetText( LocalPlayer:GetValue( "Lang" ) == "ENG" and "Money: $" .. formatNumber( args.new_money ) or "Баланс: $" .. formatNumber( args.new_money ) )
     end
 
 	if Game:GetState() ~= GUIState.Game then return end
+
 	if not self.RenderEvent then
 		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
 	end
-	local diff = args.new_money - args.old_money
 
 	-- Very unlikely you'll be able to get any money in the first 2 seconds!
-	if diff > 0 and self.timer:GetSeconds() > 2 then
-		self.message_timer = Timer()
-		self.message = "+ $" .. formatNumber( diff )
-		self.submessage = self.money .. formatNumber( args.new_money )
-		self.colour = Color( 251, 184, 41 )
-	end
-
-	local diff = args.old_money - args.new_money
-
-	if diff > 0 and self.timer:GetSeconds() > 2 then
-		self.message_timer = Timer()
-		self.message = "- $" .. formatNumber( diff )
-		self.submessage = self.money .. formatNumber( args.new_money )
-		self.colour = Color.OrangeRed
-	end
+    local diff = args.new_money - args.old_money
+    if diff ~= 0 and self.timer:GetSeconds() > 2 then
+        self.message_timer = Timer()
+        self.message = ( diff > 0 and "+" or "-" ) .. " $" .. formatNumber( math.abs( diff ) )
+        self.submessage = self.money .. formatNumber( args.new_money )
+        self.colour = diff > 0 and Color( 251, 184, 41 ) or Color.OrangeRed
+    end
 end
 
 function formatNumber( amount )
-	local formatted = tostring( amount );
+	local formatted = tostring( amount )
 	while true do  
-		formatted, k = string.gsub( formatted, "^(-?%d+)(%d%d%d)", '%1.%2' );
+		formatted, k = string.gsub( formatted, "^(-?%d+)(%d%d%d)", '%1.%2' )
 		if (k==0) then
 			break
 		end
 	end
-	return formatted;
+	return formatted
 end
 
 bank = Bank()

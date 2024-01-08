@@ -1,12 +1,14 @@
 class 'Banner'
 
 function Banner:__init()
+	self.pos = Vector3( 1052.8500000000, 218.0000000000, -1897.4930000000 )
+	self.angle = Angle( -2.919954, -0.000000, 0.000000 )
+
+	self.distance = 1500
+
 	self.defaultImage = Image.Create( AssetLocation.Resource, "NotFound" )
 
     self.model = self:CreateSprite( self.defaultImage )
-
-	self.pos = Vector3( 1052.8500000000, 218.0000000000, -1897.4930000000 )
-	self.angle = Angle( -2.919954, -0.000000, 0.000000 )
 
 	Network:Subscribe( "ChangeImage", self, self.ChangeImage )
 	Events:Subscribe( "GameRenderOpaque", self, self.GameRenderOpaque )
@@ -23,18 +25,25 @@ function Banner:LoadImages()
 end
 
 function Banner:ChangeImage( index )
-	self:LoadImages()
+	if Vector3.Distance( Camera:GetPosition(), self.pos ) >= self.distance then return end
 
+	self:LoadImages()
     self.model:SetTexture( self.images and self.images[index] or self.defaultImage )
 end
 
+
 function Banner:GameRenderOpaque()
+	if Vector3.Distance( Camera:GetPosition(), self.pos ) >= self.distance then return end
+
 	local rotateAngle = Angle.Zero
 	local t = Transform3()
 
 	t:Translate( self.pos ):Rotate( self.angle )
 	Render:SetTransform( t )
 
+	local minDist = 500
+
+	self.model:SetTextureAlpha( 255 - math.clamp( ( Vector3.Distance( Camera:GetPosition(), self.pos ) - minDist ) / ( self.distance - minDist ) * 255, 0, 255 ) )
 	self.model:Draw()
 end
 

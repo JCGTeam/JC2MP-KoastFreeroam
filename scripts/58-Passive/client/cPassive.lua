@@ -55,7 +55,7 @@ function Passive:LocalPlayerInput( args )
 end
 
 function Passive:InputPoll( args )
-	if not LocalPlayer:GetValue("Passive") then return end
+	if not LocalPlayer:GetValue( "Passive" ) then return end
 
 	Input:SetValue( Action.VehicleFireLeft, 0 )
 	Input:SetValue( Action.VehicleFireRight, 0 )
@@ -86,15 +86,14 @@ function Passive:PassiveOn( args )
 		end
 	end
 
-	Network:Send( "Toggle", not LocalPlayer:GetValue("Passive") )
+	Network:Send( "Toggle", not LocalPlayer:GetValue( "Passive" ) )
 	self.cooltime = time + self.cooldown
 	return false
 end
 
 function Passive:LocalPlayerDamage( args )
-	if LocalPlayer:GetValue("Passive") or args.attacker and args.attacker.__type == 'Player' and (args.attacker:GetValue("Passive")
-		or args.attacker:InVehicle() and args.attacker:GetVehicle():GetInvulnerable()) then
-	return false
+	if LocalPlayer:GetValue( "Passive" ) or args.attacker and args.attacker.__type == 'Player' and ( args.attacker:GetValue( "Passive" ) or args.attacker:InVehicle() and args.attacker:GetVehicle():GetInvulnerable() ) then
+		return false
 	end
 
 	if not LocalPlayer:GetValue( "Passive" ) then

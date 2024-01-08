@@ -212,7 +212,7 @@ function Member:getPermissions(channel)
 			ret = ret:union(everyone:getAllowedPermissions())
 		end
 
-		local allow, deny = 0, 0
+		local allow, deny = Permissions(), Permissions()
 		for role in self.roles:iter() do
 			if role.id ~= guild.id then -- just in case
 				local overwrite = overwrites:get(role.id)
@@ -352,6 +352,7 @@ end
 voice connection in the current guild. Due to complexities in voice state
 handling, the member's `voiceChannel` property will update asynchronously via
 WebSocket; not as a result of the HTTP request.
+Not supplying an ID will result in the member being disconnected from the channel.
 ]=]
 function Member:setVoiceChannel(id)
 	id = id and Resolver.channelId(id)
@@ -531,9 +532,9 @@ function get.roles(self)
 end
 
 --[=[@p name string If the member has a nickname, then this will be equivalent to that nickname.
-Otherwise, this is equivalent to `Member.user.username`.]=]
+Otherwise, this is equivalent to `Member.user.name`.]=]
 function get.name(self)
-	return self._nick or self._user._username
+	return self._nick or self._user.name
 end
 
 --[=[@p nickname string/nil The member's nickname, if one is set.]=]

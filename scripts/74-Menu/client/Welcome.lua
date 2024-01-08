@@ -83,7 +83,7 @@ function WelcomeScreen:Render()
 
 	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.title, Render.Size.x / 40 ) / 2, Render.Size.x / 7 ), self.title, Color.White, Render.Size.x / 40 )
 	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.text, Render.Size.x / 70 ) / 2, Render.Size.x / 5 ), self.text, Color.White, Render.Size.x / 70 )
-	Render:DrawText( Vector2( 20, (Render.Height - 40) ), "© JCGTeam 2023", Color.White, 15 )
+	Render:DrawText( Vector2( 20, (Render.Height - 40) ), "© JCGTeam 2024", Color.White, 15 )
 end
 
 function WelcomeScreen:Menu()

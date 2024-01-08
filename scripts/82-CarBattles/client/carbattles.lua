@@ -1,10 +1,7 @@
 class 'CarBattles'
 
 function CarBattles:__init()
-	self.ErrorImage = Image.Create( AssetLocation.Resource, "ErrorImage" )
 	self.check = true
-	self.warning = false
-	self.antiboom = false
 
 	self.pts = 0
 	self.scores = {}

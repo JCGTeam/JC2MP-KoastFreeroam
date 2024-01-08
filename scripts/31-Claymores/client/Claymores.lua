@@ -41,7 +41,7 @@ function Claymores:LocalPlayerInput( args )
 	if LocalPlayer:GetValue( "ServerMap" ) then return end
 
 	if not LocalPlayer:GetValue("Passive") then
-		if args.input == Action.ThrowGrenade and LocalPlayer:GetValue("exp") == 3 then
+		if args.input == Action.ThrowGrenade and LocalPlayer:GetValue("Explosive") == 3 then
 			if self.placing then return end
 			if self.timer:GetMilliseconds() < self.cooldown then return end
 			if LocalPlayer:GetBaseState() ~= AnimationState.SUprightIdle then return end

@@ -357,7 +357,7 @@ function Tasks:PreTick( args )
 					end
 					self.playerJobs[pId] = nil
 				end
-				Network:Send( player, "JobCancel", true )
+				Network:Send( player, "JobFailed", true )
 				self.jobsToCancel[pId] = false
 			end
 		end
@@ -454,7 +454,7 @@ function Tasks:PlayerCompleteJob( args, player )
 			player:SendChatMessage( jobp, Color.White, jobRewardText .. reward, Color( 0, 255, 0 ) )
 			self.playerJobTimers[playerId]:Restart()
 		else
-			Network:Send( player, "JobCancel", true )
+			Network:Send( player, "JobFailed", true )
 			self.playerJobs[playerId] = nil
 			self.playerJobTimers[playerId]:Restart()
 		end
