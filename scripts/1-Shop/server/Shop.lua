@@ -124,7 +124,7 @@ function Shop:ColorChanged( args, sender )
 			if self.vehicles[sender:GetId()]:GetId() == veh:GetId() then
 				veh:SetColors( args.tone1, args.tone2 )
 			else
-				sender:SendChatMessage( player:GetValue( "Lang" ) == "ENG" and "This isn't your vehicle!" or "Это не ваш транспорт!", Color( 255, 0, 0 ) )
+				sender:SendChatMessage( sender:GetValue( "Lang" ) == "ENG" and "This isn't your vehicle!" or "Это не ваш транспорт!", Color( 255, 0, 0 ) )
 			end
 		end
     end
