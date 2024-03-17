@@ -2,12 +2,12 @@
   "info": {
     "author": "",
     "author_url": "",
-    "description": "A script that renders notifications when they are called",
-    "name": "0-Notifications"
+    "description": "Auto-generated",
+    "name": "76-Notifications"
   },
   "resources": {
-    "Upgrade": "http://i.imgur.com/dMUMJvC.png",
-    "Information": "http://i.imgur.com/ByhIuHL.png",
-    "Warning": "http://i.imgur.com/2RYuJGK.png"
+    "Upgrade": "https://i.ibb.co/d6KfHmr/update.png",
+    "Information": "https://i.ibb.co/VpWz2CY/info.png",
+    "Warning": "https://i.ibb.co/J5jr5bm/warning.png"
   }
 }

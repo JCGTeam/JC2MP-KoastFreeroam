@@ -93,11 +93,11 @@ function DailyTasks:__init()
             self.hidetexttip:SetText( "Выполняй эти задания, чтобы получить свой приз. Задания обновляются каждый день." )
         end
         self.hunttask_txt = "Убейте "
-        self.hunttask2_txt = " человек в режиме 'Охота'"
-        self.hunttip_txt = "Зайдите в развлечения через меню сервера, чтобы присоединиться к режиму 'Охота'"
+        self.hunttask2_txt = ' человек в режиме "Охота"'
+        self.hunttip_txt = 'Зайдите в развлечения через меню сервера, чтобы присоединиться к режиму "Охота"'
         self.trontask_txt = "Выиграте в режиме 'Трон' более "
         self.trontask2_txt = "-х раз"
-        self.trontip_txt = "Зайдите в развлечения через меню сервера, чтобы присоединиться к режиму 'Трон'"
+        self.trontip_txt = 'Зайдите в развлечения через меню сервера, чтобы присоединиться к режиму "Трон"'
         self.earn_txt = "Наберите "
         self.tetristask_txt = "+ очков в тетрисе"
         self.tetristip_txt = "Зайдите в развлечения через меню сервера, чтобы поиграть в тетрис"
@@ -105,7 +105,7 @@ function DailyTasks:__init()
         self.wingtask_txt = "+ очков полёта на вингсьюте"
         self.wingtip_txt = "Нажмите на Q во время полёта, чтобы раскрыть вингсьют"
         self.bloozingtask_txt = "Расслабьтесь и бухните :)"
-        self.bloozingtip_txt = "Нажмите V, чтобы открыть меню действий, а затем нажмите кнопку 'Бухнуть'"
+        self.bloozingtip_txt = 'Нажмите V, чтобы открыть меню действий, а затем нажмите кнопку "Бухнуть"'
         self.fireworkstask_txt = "Время фейерверков! Взорвите "
         self.fireworkstask2_txt = " осколочных гранат ( ͡° ͜ʖ ͡°)"
         self.fireworkstip_txt = "Нажмите на G, чтобы выбрать гранату"
@@ -124,11 +124,11 @@ function DailyTasks:Lang()
         self.prize_btn:SetText( "Get award " .. "( $10.000 )" )
     end
     self.hunttask_txt = "Kill "
-    self.hunttask2_txt = " players in 'Hunt' mode"
-    self.hunttip_txt = "Go to the minigames section through the server menu to go to the 'Hunt' mode"
+    self.hunttask2_txt = ' players in "Hunt" mode'
+    self.hunttip_txt = 'Go to the minigames section through the server menu to go to the "Hunt" mode'
     self.trontask_txt = "Win 'Tron' mode more than "
     self.trontask2_txt = " times"
-    self.trontip_txt = "Go to the minigames section through the server menu to go to the 'Tron' mode"
+    self.trontip_txt = 'Go to the minigames section through the server menu to go to the "Tron" mode'
     self.earn_txt = "Get "
     self.tetristask_txt = "+ points in Tetris"
     self.tetristip_txt = "Go to the minigames section through the server menu to to play Tetris"
@@ -136,7 +136,7 @@ function DailyTasks:Lang()
     self.wingtask_txt = "+ wingsuit flight points"
     self.wingtip_txt = "Press Q while flying to open the wingsuit"
     self.bloozingtask_txt = "Relax and drink :)"
-    self.bloozingtip_txt = "Press V to open the actions menu and then press the 'Drink' button"
+    self.bloozingtip_txt = 'Press V to open the actions menu and then press the "Drink" button'
     self.fireworkstask_txt = "Fireworks time! Detonate "
     self.fireworkstask2_txt = " frag grenades ( ͡° ͜ʖ ͡°)"
     self.fireworkstip_txt = "Press G to select grenade"

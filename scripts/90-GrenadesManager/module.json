@@ -6,17 +6,16 @@
 		"name": "90-GrenadesManager"
 	},
 	"resources": {
-		"Background": "http://i.imgur.com/gN5viLm.png",
-		"Grenade1": "http://i.imgur.com/Nfga7SI.png",
-		"Grenade": "http://i.imgur.com/m5YiDm3.png",
-		"C4": "http://i.imgur.com/t88ZTmZ.png",
-		"Claymore": "http://i.imgur.com/XWXFUL4.png",
-		"TextBackground": "http://i.imgur.com/1yb17UQ.png",
-		"Stars0": "http://i.imgur.com/WB4sVTC.png",
-		"Stars1": "http://i.imgur.com/EGNNHxF.png",
-		"Stars2": "http://i.imgur.com/80lGuZj.png",
-		"Stars3": "http://i.imgur.com/hLaVKAq.png",
-		"Stars4": "http://i.imgur.com/v9axEtm.png",
-		"Stars5": "http://i.imgur.com/BQO9veS.png"
+		"Background": "https://i.ibb.co/0XsZ0pd/hud-background.png",
+		"Grenade": "https://i.ibb.co/YQQhfJ0/grenade.png",
+		"C4": "https://i.ibb.co/pQJTkyd/C4.png",
+		"Claymore": "https://i.ibb.co/bzqgX73/claymore.png",
+		"TextBackground": "https://i.ibb.co/gwvxgJR/hud-backgroundtext.png",
+		"Stars0": "https://i.ibb.co/NVr2fsR/stars.png",
+		"Stars1": "https://i.ibb.co/TrHHmBH/stars1.png",
+		"Stars2": "https://i.ibb.co/W0Pkp5k/stars2.png",
+		"Stars3": "https://i.ibb.co/FJ8G2C7/stars3.png",
+		"Stars4": "https://i.ibb.co/tBSg56X/stars4.png",
+		"Stars5": "https://i.ibb.co/fpRysfc/stars5.png"
 	}
 }

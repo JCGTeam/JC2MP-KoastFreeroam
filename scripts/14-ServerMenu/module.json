@@ -1,18 +1,18 @@
 {
   "info": {
-    "author": "",
+    "author": "Hallkezz",
     "author_url": "",
     "description": "Auto-generated",
     "name": "15-ServerMenu"
   },
   "resources": {
-    "BlackMarketICO": "https://i.imgur.com/rvjA8jM.jpg",
-    "TeleportICO": "https://i.imgur.com/BWAcgjr.jpg",
-    "ClansICO": "https://i.imgur.com/fajelFy.jpg",
-    "MessagesICO": "https://i.imgur.com/g4xf5Ru.jpg",
-    "SettingsICO": "https://i.imgur.com/9VftlLW.jpg",
-    "GameModesICO": "https://i.imgur.com/YKoT76X.jpg",
-    "AbilitiesICO": "https://i.imgur.com/qsKIV2O.jpg",
-    "DailyTasksICO": "https://i.imgur.com/McswZvB.jpg"
+    "BlackMarketICO": "https://i.ibb.co/X5NQHNS/blackmarket.jpg",
+    "TeleportICO": "https://i.ibb.co/PgdfhhD/tp.jpg",
+    "ClansICO": "https://i.ibb.co/Y3LSnCd/clans.jpg",
+    "MessagesICO": "https://i.ibb.co/n8562R5/pm.jpg",
+    "SettingsICO": "https://i.ibb.co/wBxHty1/sett.jpg",
+    "GameModesICO": "https://i.ibb.co/GTY2b03/gamemodes.jpg",
+    "AbilitiesICO": "https://i.ibb.co/1fw0XjF/abilities.jpg",
+    "DailyTasksICO": "https://i.ibb.co/tPJfKpg/dailytasks.jpg"
   }
 }

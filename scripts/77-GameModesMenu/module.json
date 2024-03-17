@@ -1,18 +1,18 @@
 {
   "info": {
-    "author": "",
+    "author": "Hallkezz",
     "author_url": "",
     "description": "Auto-generated",
     "name": "15-ServerMenu"
   },
   "resources": {
-    "ManhuntICO": "https://i.imgur.com/1NATzBE.jpg",
-    "CarBattlesICO": "https://i.imgur.com/reg2zSx.jpg",
-    "RaceICO": "https://i.imgur.com/4ljslIb.jpg",
-    "TronICO": "https://i.imgur.com/aPUqDOx.jpg",
-    "KingHillICO": "https://i.imgur.com/SSHUEaF.jpg",
-    "PongICO": "https://i.imgur.com/kW2sBEE.jpg",
-    "TetrisICO": "https://i.imgur.com/80lJiTU.jpg",
-    "CasinoICO": "https://i.imgur.com/4POKsGt.jpg"
+    "ManhuntICO": "https://i.ibb.co/Rc1B79H/manhunt.jpg",
+    "CarBattlesICO": "https://i.ibb.co/WnbxDGD/carbattles.jpg",
+    "RaceICO": "https://i.ibb.co/frZDR8D/racing.jpg",
+    "TronICO": "https://i.ibb.co/mqjz95t/tron.jpg",
+    "KingHillICO": "https://i.ibb.co/MsQxz5Q/kinghill.jpg",
+    "PongICO": "https://i.ibb.co/47NMMdP/pong.jpg",
+    "TetrisICO": "https://i.ibb.co/pxYdRW3/tetris.jpg",
+    "CasinoICO": "https://i.ibb.co/tznfSHg/casino.jpg"
   }
 }

@@ -23,7 +23,6 @@ function Grenades:__init()
 	Events:Subscribe( "Render", self, self.Render )
 
 	self.grenadeIMG = Image.Create( AssetLocation.Resource, "Grenade" )
-	self.grenade1 = Image.Create( AssetLocation.Resource, "Grenade1" )
 	self.c4 = Image.Create( AssetLocation.Resource, "C4" )
 	self.clay = Image.Create( AssetLocation.Resource, "Claymore" )
 	self.background = Image.Create( AssetLocation.Resource, "Background" )

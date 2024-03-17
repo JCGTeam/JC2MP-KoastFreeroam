@@ -1,17 +1,17 @@
 {
   "info": {
-    "author": "",
+    "author": "Hallkezz",
     "author_url": "",
     "description": "Auto-generated",
     "name": "86-Abilities"
   },
   "resources": {
-    "Wingsuit": "https://i.imgur.com/vg7wdBy.png",
-    "Boost": "https://i.imgur.com/R1Y4voU.png",
-    "MoneyBonus": "https://i.imgur.com/saDlsPh.png",
-    "SuperNuclearBomb": "https://i.imgur.com/QBQ6Fo8.png",
-    "MoreC4": "https://i.imgur.com/nwZpLO4.png",
-    "LongerGrapple": "https://i.imgur.com/OhtmvVf.png",
-    "JesusMode": "https://i.imgur.com/36na7bY.png"
+    "Wingsuit": "https://i.ibb.co/Lv2cy4N/wingsuit.png",
+    "Boost": "https://i.ibb.co/JCGz3Hg/vehicleboost.png",
+    "MoneyBonus": "https://i.ibb.co/JnGzgPh/bonusmoney.png",
+    "SuperNuclearBomb": "https://i.ibb.co/pQw1xsX/supernuclearbomb.png",
+    "MoreC4": "https://i.ibb.co/HPNBMKv/c4.png",
+    "LongerGrapple": "https://i.ibb.co/ssmKm6y/longergrapple.png",
+    "JesusMode": "https://i.ibb.co/sFTHPk8/jesusmode.png"
   }
 }
