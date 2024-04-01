@@ -241,7 +241,7 @@ function Admin:AddYouTuber( args )
 	file:write("\n" .. text)
 	file:close()
 
-	self:loadVips( "server/youtubers.txt" )
+	self:loadYouTubers( "server/youtubers.txt" )
 	self:ModuleLoad()
 
 	print( "YouTuber added: " .. args.text )
