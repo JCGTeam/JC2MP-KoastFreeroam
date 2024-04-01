@@ -42,7 +42,7 @@ function Admin:loadVips(filename)
 	local i = 0
 
 	if file == nil then
-		print( "YouTubers were not found" )
+		print( "Vips were not found" )
 		return
 	end
 
