@@ -21,6 +21,7 @@ function Reports:SendReport( args, sender )
         local fullreportmessage = 
         "**=== РЕПОРТ [" .. os.date("%H:%M | %d.%m.%y") .. "] ===**" .. 
         "\n> Отправитель: " .. sender:GetName() .. 
+        ( (args.reportemail ~= "" ) and ( "\n> Почта: " ..  args.reportemail ) or "") ..
         "\n> SteamID: " .. tostring( sender:GetSteamId() ) .. 
         "\n> IP: " .. tostring( sender:GetIP() ) .. " (" .. tostring( sender:GetValue( "Country" ) ) .. ")" .. 
         "\n> Уровень: " .. level .. 

@@ -13,7 +13,7 @@ function LoadNews:Lang( args )
 end
 
 function LoadNews:ModuleLoad( args )
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		Network:Send( "GetRUSNews" )

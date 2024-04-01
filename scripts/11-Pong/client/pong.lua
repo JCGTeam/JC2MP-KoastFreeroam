@@ -1,7 +1,7 @@
 class 'Pong'
 
 function Pong:__init()
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.tip_txt = "Подсказка: Используйте мышку для перемещения платформы."
@@ -70,16 +70,11 @@ function Pong:Render( args )
 		Render:FillArea( pong_draw_start + Vector2( pong_table_width - ping_width - 10, ping_pos_opp ), Vector2( ping_width, ping_height ), Color( 255, 255, 255 ) )
 		Render:FillArea( pong_draw_start + ball_pos, Vector2( ball_width, ball_height ), Color( 255, 255, 255 ) )
 
-		Render:DrawText( pong_draw_start + Vector2( 0, pong_table_height + 5 ) + Vector2.One, self.you_txt .. scores[1], Color( 25, 25, 25, 150 ) )
-		Render:DrawText( pong_draw_start + Vector2( pong_table_width - 65, pong_table_height + 5 ) + Vector2.One, self.enemy_txt .. scores[2], Color( 25, 25, 25, 150 ) )
-		Render:DrawText( pong_draw_start + Vector2( pong_table_width / 2 - Render:GetTextWidth( self.limit_txt ) / 2, pong_table_height + 5 ) + Vector2.One, self.limit_txt .. score_limit, Color( 25, 25, 25, 150 ) )
+		Render:DrawShadowedText( pong_draw_start + Vector2( 0, pong_table_height + 5 ), self.you_txt .. scores[1], Color( 255, 255, 255 ), Color( 25, 25, 25, 150 ) )
+		Render:DrawShadowedText( pong_draw_start + Vector2( pong_table_width - 65, pong_table_height + 5 ), self.enemy_txt .. scores[2], Color( 255, 255, 255 ), Color( 25, 25, 25, 150 ) )
+		Render:DrawShadowedText( pong_draw_start + Vector2( pong_table_width / 2 - Render:GetTextWidth( self.limit_txt ) / 2, pong_table_height + 5 ), self.limit_txt .. score_limit, Color( 255, 255, 255 ), Color( 25, 25, 25, 150 ) )
 
-		Render:DrawText( pong_draw_start + Vector2( 0, pong_table_height + 5 ), self.you_txt .. scores[1], Color( 255, 255, 255 ) )
-		Render:DrawText( pong_draw_start + Vector2( pong_table_width - 65, pong_table_height + 5 ), self.enemy_txt .. scores[2], Color( 255, 255, 255 ) )
-		Render:DrawText( pong_draw_start + Vector2( pong_table_width / 2 - Render:GetTextWidth( self.limit_txt ) / 2, pong_table_height + 5 ), self.limit_txt .. score_limit, Color( 255, 255, 255 ) )
-
-		Render:DrawText( pong_draw_start + Vector2( pong_table_width / 2 - Render:GetTextWidth( self.tip_txt, 18 ) / 2, pong_table_height + 50 ) + Vector2.One, self.tip_txt, Color( 25, 25, 25, 150 ), 18 )
-		Render:DrawText( pong_draw_start + Vector2( pong_table_width / 2 - Render:GetTextWidth( self.tip_txt, 18 ) / 2, pong_table_height + 50 ), self.tip_txt, Color( 255, 255, 255 ), 18 )
+		Render:DrawShadowedText( pong_draw_start + Vector2( pong_table_width / 2 - Render:GetTextWidth( self.tip_txt, 18 ) / 2, pong_table_height + 50 ), self.tip_txt, Color( 255, 255, 255 ), Color( 25, 25, 25, 150 ), 18 )
 
 		if paused then
 			Render:DrawText( pong_draw_start + pong_table_center + Vector2( Render:GetTextWidth( status_text, TextSize.Huge ) * -0.5, Render:GetTextHeight( status_text, TextSize.Huge) * -0.5 ), status_text, status_colour, TextSize.Huge )

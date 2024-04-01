@@ -12,7 +12,7 @@ end
 
 function Jetpack:EnableJetpack( args, sender )
 	if sender:GetWorld() ~= DefaultWorld then
-        Chat:Send( sender, self.messages["Prefix"], Color.White, sender:GetValue( "Lang" ) == "ENG" and "Can't use it here!" or "Невозможно использовать это здесь!", Color.DarkGray )
+        Chat:Send( sender, self.messages["Prefix"], Color.White, sender:GetValue( "Lang" ) == "EN" and "Can't use it here!" or "Невозможно использовать это здесь!", Color.DarkGray )
         return
     end
 

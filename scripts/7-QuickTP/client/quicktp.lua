@@ -219,13 +219,11 @@ function QuickTP:PostRender( args )
 		current  = current + angle
 
 		if animplay then
-			Render:DrawText( coord + Vector2.One, t, Color( 25, 25, 25, 150 ), size )
-			Render:DrawText( coord, t, self.fontColor, size )
+			Render:DrawShadowedText( coord, t, self.fontColor, Color( 25, 25, 25, 150 ), size )
 
 			Render:DrawLine( Vector2( math.cos(current) * self.innerRadius, math.sin(current) * self.innerRadius) + center, Vector2( math.cos(current) * drawRad, math.sin(current) * drawRad) + center, self.menuColor )
 		else
-			Render:DrawText( coord + Vector2.One, t, Color( 25, 25, 25, 150 * alpha ), size )
-			Render:DrawText( coord, t, Color( 255, 255, 255, 255 * alpha ), size )
+			Render:DrawShadowedText( coord, t, Color( 255, 255, 255, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), size )
 			Render:DrawLine( Vector2( math.cos(current) * self.innerRadius, math.sin(current) * self.innerRadius) + center, Vector2( math.cos(current) * drawRad, math.sin(current) * drawRad) + center, Color( 173, 216, 230, 170 * alpha ) )
 		end
 

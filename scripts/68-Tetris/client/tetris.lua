@@ -245,7 +245,7 @@ function Tetris:__init()
 
 	self:PopulateGrid()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.window:SetTitle( "▧ Тетрис - Список лидеров" )
@@ -315,8 +315,7 @@ function Tetris:Render()
 				local record = object:GetValue("S")
 				local text = self.tWidg
 				local position = Vector2( 20, Render.Height * 0.4 )
-				Render:DrawText( position + Vector2.One, text, Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 15 )
-				Render:DrawText( position, text, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), 15 )
+				Render:DrawShadowedText( position, text, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 15 )
 				Render:DrawText( position + Vector2( Render:GetTextWidth( self.tWidgTw, 15 ), 0 ), self.tTetris, Color( 255, 165, 0, Game:GetSetting(4) * 2.25 ), 15 )
 				local height = Render:GetTextHeight("A") * 1.2
 				position.y = position.y + height
@@ -337,8 +336,7 @@ function Tetris:Render()
 
 					position.y = position.y + height * 0.95
 					Render:SetFont( AssetLocation.Disk, "LeagueGothic.ttf" )
-					Render:DrawText( position + Vector2.One, text, Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 13 )
-					Render:DrawText( position, text, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), 13 )
+					Render:DrawShadowedText( position, text, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 13 )
 					if LocalPlayer:GetValue( "SystemFonts" ) then
 						Render:SetFont( AssetLocation.SystemFont, "Impact" )
 					end
@@ -348,19 +346,16 @@ function Tetris:Render()
 							position.y = position.y + height * 0.6
 							local alpha = math.min(self.attempt[3], 1)
 							text = tostring( self.attempt[1] ) .. " - " .. player:GetName()
-							Render:DrawText( position + Vector2.One, text, Color(0, 0, 0, 100 * alpha), 16 )
-							Render:DrawText( position, text, Color(255, 255, 255, 255 * alpha), 16 )
+							Render:DrawShadowedText(position, text, Color(255, 255, 255, 255 * alpha), Color(0, 0, 0, 100 * alpha), 16 )
 							text = tostring( self.attempt[1] )
-							Render:DrawText( position + Vector2.One, text, Color(0, 0, 0, 100 * alpha), 16 )
-							Render:DrawText( position, text, Color(240, 220, 70, 255 * alpha), 16 )
+							Render:DrawShadowedText( position, text, Color(240, 220, 70, 255 * alpha), Color(0, 0, 0, 100 * alpha), 16 )
 							self.attempt[3] = self.attempt[3] - 0.02
 							if self.attempt[3] < 0.02 then self.attempt = nil end
 						end
 					end
 				else
 					text = "–"
-					Render:DrawText( position + Vector2.One, text, Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 16 )
-					Render:DrawText( position, text, Color( 200, 200, 200, Game:GetSetting(4) * 2.25 ), 16 )
+					Render:DrawShadowedText( position, text, Color( 200, 200, 200, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 16 )
 				end
 			end
 		end
@@ -518,40 +513,24 @@ function Tetris:ShowScore()
 	end
 
 	local pos = Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tScores .. tostring(self.totalScore), 20 ) / 2, 50 )
-	Render:DrawText( pos + Vector2.One, self.tScores .. tostring(self.totalScore), Color( 25, 25, 25, 150 ), 20 )
-	Render:DrawText( pos, self.tScores .. tostring(self.totalScore), Color( 255, 255, 0 ), 20 )
+	Render:DrawShadowedText( pos, self.tScores .. tostring(self.totalScore), Color( 255, 255, 0 ), Color( 25, 25, 25, 150 ), 20 )
 
 	if not self.inGame then
 		if self.firstGo then
 			local pos = ( Render.Size - Render:GetTextSize( self.tSetHelp, 32 ) ) / 2
-			Render:DrawText( pos + Vector2.One, self.tSetHelp, Color( 25, 25, 25, 150 ), 32 )
+			Render:DrawShadowedText( pos, self.tSetHelp, Color.White, Color( 25, 25, 25, 150 ), 32 )
 			pos = ( Render.Size - Render:GetTextSize( self.tSetHelp2, 32 ) ) / 2
-			Render:DrawText( pos + Vector2.One, self.tSetHelp2, Color( 25, 25, 25, 150 ), 32 )		
-
-			local pos = ( Render.Size - Render:GetTextSize( self.tSetHelp, 32 ) ) / 2
-			Render:DrawText( pos, self.tSetHelp, Color.White, 32 )
-			pos = ( Render.Size - Render:GetTextSize( self.tSetHelp2, 32 ) ) / 2
-			Render:DrawText( pos, self.tSetHelp2, Color.White, 32 )
+			Render:DrawShadowedText( pos, self.tSetHelp2, Color.White, Color( 25, 25, 25, 150 ), 32 )
 		else
 			local pos = ( Render.Size - Render:GetTextSize( self.tDied, 32 ) ) / 2
-			Render:DrawText( pos + Vector2.One, self.tDied, Color( 25, 25, 25, 150 ), 32 )
+			Render:DrawShadowedText( pos, self.tDied, Color.Red, Color( 25, 25, 25, 150 ), 32 )
 			local msg = self.tSetGOver .. tostring( self.totalScore )
 			pos = ( Render.Size - Render:GetTextSize( msg, 32 ) ) / 2
-			Render:DrawText( pos + Vector2.One, msg, Color( 25, 25, 25, 150 ), 32 )
+			Render:DrawShadowedText( pos, msg, Color.White, Color( 25, 25, 25, 150 ), 32 )
 			pos = ( Render.Size - Render:GetTextSize( self.tSetGOver2, 32 ) ) / 2
-			Render:DrawText( pos + Vector2.One, self.tSetGOver2, Color( 25, 25, 25, 150 ), 32 )
+			Render:DrawShadowedText( pos, self.tSetGOver2, Color.White, Color( 25, 25, 25, 150 ), 32 )
 			pos = ( Render.Size - Render:GetTextSize( self.tSetGOver3, 32 ) ) / 2
-			Render:DrawText( pos + Vector2.One, self.tSetGOver3, Color( 25, 25, 25, 150 ), 32 )
-
-			local pos = ( Render.Size - Render:GetTextSize( self.tDied, 32 ) ) / 2
-			Render:DrawText( pos, self.tDied, Color.Red, 32 )
-			local msg = self.tSetGOver .. tostring( self.totalScore )
-			pos = ( Render.Size - Render:GetTextSize( msg, 32 ) ) / 2
-			Render:DrawText( pos, msg, Color.White, 32 )
-			pos = ( Render.Size - Render:GetTextSize( self.tSetGOver2, 32 ) ) / 2
-			Render:DrawText( pos, self.tSetGOver2, Color.White, 32 )
-			pos = ( Render.Size - Render:GetTextSize( self.tSetGOver3, 32 ) ) / 2
-			Render:DrawText( pos, self.tSetGOver3, Color.White, 32 )
+			Render:DrawShadowedText( pos, self.tSetGOver3, Color.White, Color( 25, 25, 25, 150 ), 32 )
 		end
 	end
 end

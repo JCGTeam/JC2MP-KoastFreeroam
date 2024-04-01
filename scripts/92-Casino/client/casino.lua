@@ -28,7 +28,7 @@ function Casino:__init()
 	self.size = Vector2( 736, 472 )
     self:CreateWindow()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	end
 
@@ -73,7 +73,7 @@ function Casino:UpdateMoneyString( money )
     end
 
     if LocalPlayer:GetValue( "Lang" ) then
-		if LocalPlayer:GetValue( "Lang" ) == "РУС" then
+		if LocalPlayer:GetValue( "Lang" ) == "RU" then
 			self.coinflip.balance_txt:SetText( "Баланс: $" .. formatNumber( money ) )
 		else
 			self.coinflip.balance_txt:SetText( "Money: $" .. formatNumber( money ) )

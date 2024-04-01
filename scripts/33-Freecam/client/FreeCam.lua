@@ -82,8 +82,7 @@ function FreeCam:Render()
 
 	if self.tip then
 		Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
-		Render:DrawText( Vector2( 50, 50 ) + Vector2.One, self.controltip, Color.Black, 15 )
-		Render:DrawText( Vector2( 50, 50 ), self.controltip, Color.White, 15 )
+		Render:DrawShadowedText( Vector2( 50, 50 ), self.controltip, Color.White, Color.Black, 15 )
 	end
 end
 

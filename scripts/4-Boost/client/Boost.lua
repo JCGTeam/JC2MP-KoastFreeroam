@@ -22,7 +22,7 @@ function Boost:__init()
 	self.windowOpen   = false
 	self.delta        = 0
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.name = "Нажмите "
@@ -193,8 +193,7 @@ function Boost:Render( args )
 		local size = Render:GetTextSize( text, 15 )
 		local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - 10 )
 
-		Render:DrawText( pos + Vector2.One, text, Color( 0, 0, 0, alpha ), 15 )
-		Render:DrawText( pos, text, Color( 255, 255, 255, alpha ), 15 )
+		Render:DrawShadowedText( pos, text, Color( 255, 255, 255, alpha ), Color( 0, 0, 0, alpha ), 15 )
 	end
 end
 

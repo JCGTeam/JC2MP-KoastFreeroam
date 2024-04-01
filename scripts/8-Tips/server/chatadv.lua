@@ -41,7 +41,7 @@ function ChatAdv:PostTick( args )
 				self.currentAd = 1
 			end
 			for p in Server:GetPlayers() do
-				if p:GetValue( "Lang" ) == "РУС" then
+				if p:GetValue( "Lang" ) == "RU" then
 					p:SendChatMessage( "[Реклама] ", Color.White, self.ads[self.currentAd], Color.DarkGray )
 				end
 			end

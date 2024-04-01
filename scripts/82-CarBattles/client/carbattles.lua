@@ -6,7 +6,7 @@ function CarBattles:__init()
 	self.pts = 0
 	self.scores = {}
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.name = "Загрузка..."
@@ -223,8 +223,7 @@ function CarBattles:Render()
 --	local text = "До конца игры: " .. self.Time
 --	if self.Time then
 --		local pos = Vector2 ((Render.Size.x / 2) - (Render:GetTextSize(text, 18).x / 2), 30 )
---		Render:DrawText( pos + Vector2.One, tostring( text ), Color.Black, 18 )
---		Render:DrawText( pos, tostring( text ), Color.White, 18 )
+--		Render:DrawShadowedText( pos, tostring( text ), Color.White, Color.Black, 18 )
 --	end
 
 	if self.warning then
@@ -232,13 +231,11 @@ function CarBattles:Render()
 		local text_width = Render:GetTextWidth(text, TextSize.VeryLarge)
 		local text_height = Render:GetTextHeight(text, TextSize.VeryLarge)
 		local pos = Vector2((Render.Width - text_width)/2, (Render.Height - text_height - 200)/2)
-		Render:DrawText( pos + Vector2.One, text, Color( 25, 25, 25, 150 ), TextSize.VeryLarge )
-		Render:DrawText( pos, text, Color.White, TextSize.VeryLarge )
+		Render:DrawShadowedText( pos, text, Color.White, Color( 25, 25, 25, 150 ), TextSize.VeryLarge )
 		local text = self.nameTw
 		pos.y = pos.y + 45
 		pos.x = (Render.Width - Render:GetTextWidth(text, TextSize.Default))/2
-		Render:DrawText( pos + Vector2.One, text, Color( 25, 25, 25, 150 ), TextSize.Default )
-		Render:DrawText( pos, text, Color.DarkGray, TextSize.Default )
+		Render:DrawShadowedText( pos, text, Color.DarkGray, Color( 25, 25, 25, 150 ), TextSize.Default )
 	end
 end
 

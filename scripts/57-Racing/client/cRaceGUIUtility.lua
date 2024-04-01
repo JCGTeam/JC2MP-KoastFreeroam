@@ -45,6 +45,5 @@ DrawText = function(pos , text , color , size , alignment , scale)
 	local shadowColor = Copy(settings.shadowColor)
 	shadowColor.a = color.a
 	
-	Render:DrawText( pos + Vector2(1 , 1) , text , shadowColor , size , scale or 1 )
-	Render:DrawText( pos , text , color , size , scale or 1 )
+	Render:DrawShadowedText( pos , text , color , shadowColor , size , scale or 1 )
 end

@@ -13,7 +13,7 @@ function Load:__init()
 	self.BackgroundImage = self.BackgroundImages[math.random(#self.BackgroundImages)]
 	self.LoadingCircle_Outer = Image.Create( AssetLocation.Game, "fe_initial_load_icon_dif.dds" )
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.name = "СОВЕТ: Нажмите [ B ], чтобы открыть меню сервера."
@@ -83,8 +83,7 @@ function Load:PostRender()
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			Render:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
-		Render:DrawText( Pos + Vector2.One, self.name, Color( 0, 0, 0 ), TxtSizePos )
-		Render:DrawText( Pos, self.name, Color.White, TxtSizePos )
+		Render:DrawShadowedText( Pos, self.name, Color.White, Color( 0, 0, 0 ), TxtSizePos )
 
 		if self.FadeInTimer then
 			TransformOuter:Translate( PosTw )

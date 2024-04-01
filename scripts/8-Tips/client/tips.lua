@@ -3,7 +3,7 @@ class 'Tips'
 function Tips:__init()
 	self.active = true
 
-	if LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.text = "Чат: T  I Меню сервера: B I Меню действий: V"
@@ -49,8 +49,7 @@ function Tips:Render()
 			end
 
 			local textpos = chatPos + Vector2( 1, 11 )
-			Render:DrawText( textpos + Vector2.One, self.text, Color( 25, 25, 25, 150 ), 14 )
-			Render:DrawText( textpos, self.text, Color( 215, 215, 215 ), 14 )
+			Render:DrawShadowedText( textpos, self.text, Color( 215, 215, 215 ), Color( 25, 25, 25, 150 ), 14 )
 		end
 	end
 end

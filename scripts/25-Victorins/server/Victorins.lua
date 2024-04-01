@@ -17,7 +17,7 @@ function Victorins:PostTick( args )
 	self.reward = rewards[math.random(#rewards)]
 
 	for p in Server:GetPlayers() do
-		if p:GetValue( "Lang" ) == "ENG" then
+		if p:GetValue( "Lang" ) == "EN" then
 			p:SendChatMessage( "[Quiz] ", Color.White, "Who first write reply right will get $" .. self.reward .. "!", Color.Yellow )
 			p:SendChatMessage( "[Quiz] ", Color.White, first .. " + " .. second .. " = ???", Color.Yellow )
 		else
@@ -32,7 +32,7 @@ function Victorins:PlayerChat( args )
 	if string.find( args.text, tostring( self.quizAnswer ) ) then
 		if self.quizAnswer then
 			for p in Server:GetPlayers() do
-				if p:GetValue( "Lang" ) == "ENG" then
+				if p:GetValue( "Lang" ) == "EN" then
 					p:SendChatMessage( "[Quiz] ", Color.White, args.player:GetName() .. " the first written right reply, and won $" .. self.reward .. "! Right reply: " .. self.quizAnswer, Color.Yellow )
 				else
 					p:SendChatMessage( "[Викторина] ", Color.White, args.player:GetName() .. " первым написал правильный ответ, и выиграл $" .. self.reward .. "! Ответ был: " .. self.quizAnswer, Color.Yellow )

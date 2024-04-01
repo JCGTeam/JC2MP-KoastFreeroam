@@ -99,8 +99,7 @@ function VTOL:Render()
 				pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - 10 )
 			end
 
-			Render:DrawText( pos + Vector2.One, self.namept, Color( 0, 0, 0, alpha ), 14 )
-			Render:DrawText( pos, self.namept, Color( 255, 255, 255, alpha ), 14 )
+			Render:DrawShadowedText( pos, self.namept, Color( 255, 255, 255, alpha ), Color( 0, 0, 0, alpha ), 14 )
 		end
 	end
 end

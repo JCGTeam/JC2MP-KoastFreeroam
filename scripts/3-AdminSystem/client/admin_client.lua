@@ -1008,11 +1008,9 @@ function Admin:spectateRender()
 	local spectate_txt = "Наблюдение: "
 	if self.victim and self.spVictimPos and self.spVictimAng and IsValid( self.victim, false ) then
 		local info_txt = spectate_txt .. self.victim:GetName() .. " (ID: " .. self.victim:GetId() .. "| HP: " .. math.floor( self.victim:GetHealth() * 100 ) .. " | GM: " .. self.victim:GetValue( "GameMode" ) .. ")"
-		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( info_txt, 20 ) / 2, Render.Size.y - 65 ) + Vector2.One, info_txt, Color.Black, 20 )
-		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( info_txt, 20 ) / 2, Render.Size.y - 65 ), info_txt, Color.White, 20 )
+		Render:DrawShadowedText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( info_txt, 20 ) / 2, Render.Size.y - 65 ), info_txt, Color.White, Color.Black, 20 )
 	else
-		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( spectate_txt .. "Х/З", 20 ) / 2, Render.Size.y - 65 ) + Vector2.One, spectate_txt .. "Х/З", Color.Black, 20 )
-		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( spectate_txt .. "Х/З", 20 ) / 2, Render.Size.y - 65 ), spectate_txt .. "Х/З", Color.White, 20 )
+		Render:DrawShadowedText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( spectate_txt .. "Х/З", 20 ) / 2, Render.Size.y - 65 ), spectate_txt .. "Х/З", Color.White, Color.Black, 20 )
 	end
 end
 
@@ -1196,11 +1194,8 @@ function Admin:shout( args )
 end
 
 function Admin:renderShout()
-	Render:DrawText( Vector2( Render.Width / 2 - ( Render:GetTextWidth( self.shoutName, 30 ) / 2 ), self.sy / 1.8 ) + Vector2.One, self.shoutName, Color( 0, 0, 0, 150 ), 30 )
-	Render:DrawText( Vector2( Render.Width / 2 - ( Render:GetTextWidth( self.shoutMessage, 30 ) / 2 ), self.sy / 1.8 + 50 ) + Vector2.One, self.shoutMessage, Color( 0, 0, 0, 150 ), 30 )
-
-	Render:DrawText( Vector2( Render.Width / 2 - ( Render:GetTextWidth( self.shoutName, 30 ) / 2 ), self.sy / 1.8 ), self.shoutName, Color( 255, 200, 0 ), 30 )
-	Render:DrawText( Vector2( Render.Width / 2 - ( Render:GetTextWidth( self.shoutMessage, 30 ) / 2 ), self.sy / 1.8 + 50 ), self.shoutMessage, Color( 255, 200, 0 ), 30 )
+	Render:DrawShadowedText( Vector2( Render.Width / 2 - ( Render:GetTextWidth( self.shoutName, 30 ) / 2 ), self.sy / 1.8 ), self.shoutName, Color( 255, 200, 0 ), Color( 0, 0, 0, 150 ), 30 )
+	Render:DrawShadowedText( Vector2( Render.Width / 2 - ( Render:GetTextWidth( self.shoutMessage, 30 ) / 2 ), self.sy / 1.8 + 50 ), self.shoutMessage, Color( 255, 200, 0 ), Color( 0, 0, 0, 150 ), 30 )
 end
 
 function Admin:removeShout()

@@ -49,9 +49,11 @@ function Tuner:__init()
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	end
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
+		self.gear = "Передача: "
+
 		self.gui.window:SetTitle( "▧ Тюнинг" )
 	end
 
@@ -68,7 +70,112 @@ function Tuner:__init()
 end
 
 function Tuner:Lang()
+	self.gear = "Gear: "
+
 	self.gui.window:SetTitle( "▧ Tuning" )
+
+	if self.gui.veh.labels then
+		self.gui.veh.labels[1]:SetText( "Name" )
+		self.gui.veh.labels[2]:SetText( "Driver" )
+		self.gui.veh.labels[3]:SetText( "Vehicle ID" )
+		self.gui.veh.labels[4]:SetText( "Class" )
+		self.gui.veh.labels[5]:SetText( "Type" )	
+		self.gui.veh.labels[6]:SetText( "Decal" )
+		self.gui.veh.labels[7]:SetText( "Health" )
+		self.gui.veh.labels[8]:SetText( "Mass" )
+		self.gui.veh.labels[9]:SetText( "Wheels" )
+		self.gui.veh.labels[10]:SetText( "Max RPM" )
+		self.gui.veh.labels[11]:SetText( "Current RPM" )
+		self.gui.veh.labels[12]:SetText( "Torque" )
+		self.gui.veh.labels[13]:SetText( "Peak torque" )
+		self.gui.veh.labels[14]:SetText( "Wheel torque" )
+		self.gui.veh.labels[15]:SetText( "Top speed" )
+		self.gui.veh.labels[16]:SetText( "Current speed" )
+		self.gui.veh.labels[17]:SetText( "Peak speed" )
+		self.gui.veh.labels[18]:SetText( "0-100 km/h" )
+
+		for i, label in ipairs( self.gui.veh.labels ) do
+			label:SetPosition( Vector2( 5, 5 + 22 * (i - 1) ) )
+			label:SizeToContents()
+		end
+	end
+
+	if self.gui.trans.labels then
+		self.gui.trans.labels[1]:SetText( "Upshift RPM" )
+		self.gui.trans.labels[2]:SetText( "Downshift RPM" )
+		self.gui.trans.labels[3]:SetText( "Max gear" )
+		self.gui.trans.labels[4]:SetText( "Is manual (Num 1/2)" )
+		self.gui.trans.labels[5]:SetText( "Clutch delay" )
+		self.gui.trans.labels[6]:SetText( "Current gear" )
+		self.gui.trans.labels[7]:SetText( "1st gear ratio" )
+		self.gui.trans.labels[8]:SetText( "2st gear ratio" )
+		self.gui.trans.labels[9]:SetText( "3st gear ratio" )
+		self.gui.trans.labels[10]:SetText( "4th gear ratio" )
+		self.gui.trans.labels[11]:SetText( "5th gear ratio" )
+		self.gui.trans.labels[12]:SetText( "6th gear ratio" )
+		self.gui.trans.labels[13]:SetText( "Reverse ratio" )
+		self.gui.trans.labels[14]:SetText( "Primary ratio" )
+		self.gui.trans.labels[15]:SetText( "Wheel 1 torque ratio" )
+		self.gui.trans.labels[16]:SetText( "Wheel 2 torque ratio" )
+		self.gui.trans.labels[17]:SetText( "Wheel 3 torque ratio" )
+		self.gui.trans.labels[18]:SetText( "Wheel 4 torque ratio" )
+		self.gui.trans.labels[19]:SetText( "Wheel 5 torque ratio" )
+		self.gui.trans.labels[20]:SetText( "Wheel 6 torque ratio" )
+		self.gui.trans.labels[21]:SetText( "Wheel 7 torque ratio" )
+		self.gui.trans.labels[22]:SetText( "Wheel 8 torque ratio" )
+
+		for i, label in ipairs(self.gui.trans.labels) do
+			label:SetPosition( Vector2( 5, 5 + 22 * (i - 1) ) )
+			label:SizeToContents()
+		end
+
+		self.gui.aero.labels[1]:SetText( "Air density" )
+		self.gui.aero.labels[2]:SetText( "Frontal area" )
+		self.gui.aero.labels[3]:SetText( "Drag coeff" )
+		self.gui.aero.labels[4]:SetText( "Lift coeff" )
+		self.gui.aero.labels[5]:SetText( "Extra gravity X" )
+		self.gui.aero.labels[6]:SetText( "Extra gravity Y" )
+		self.gui.aero.labels[7]:SetText( "Extra gravity Z" )
+
+		for i, label in ipairs(self.gui.aero.labels) do
+			label:SetPosition( Vector2( 5, 5 + 22 * (i - 1) )) 
+			label:SizeToContents()
+		end
+
+	end
+	
+	if self.gui.susp.labels then
+		self.gui.susp.labels[1]:SetText( "Length" )
+		self.gui.susp.labels[2]:SetText( "Strength" )
+		self.gui.susp.labels[3]:SetText( "Chassis direction X" )
+		self.gui.susp.labels[4]:SetText( "Chassis direction Y" )
+		self.gui.susp.labels[5]:SetText( "Chassis direction Z" )
+		self.gui.susp.labels[6]:SetText( "Chassis position X" )
+		self.gui.susp.labels[7]:SetText( "Chassis position Y" )
+		self.gui.susp.labels[8]:SetText( "Chassis position Z" )
+		self.gui.susp.labels[9]:SetText( "Damping compression" )
+		self.gui.susp.labels[10]:SetText( "Damping relaxation" )
+
+		self.gui.susp.labels[11]:SetText( "Length" )
+		self.gui.susp.labels[12]:SetText( "Strength" )
+		self.gui.susp.labels[13]:SetText( "Chassis direction X" )
+		self.gui.susp.labels[14]:SetText( "Chassis direction Y" )
+		self.gui.susp.labels[15]:SetText( "Chassis direction Z" )
+		self.gui.susp.labels[16]:SetText( "Chassis position X" )
+		self.gui.susp.labels[17]:SetText( "Chassis position Y" )
+		self.gui.susp.labels[18]:SetText( "Chassis position Z" )
+		self.gui.susp.labels[19]:SetText( "Damping compression" )
+		self.gui.susp.labels[20]:SetText( "Damping relaxation" )
+
+		for i, label in ipairs(self.gui.susp.labels) do
+			label:SetPosition( Vector2( 5, 5 + 22 * (i - 1) ) )
+			label:SizeToContents()
+		end
+	end
+
+	if self.gui.aero.flyT then
+		self.gui.aero.flyT:SetText( "Vertical takeoff (Z button)" )
+	end
 end
 
 function Tuner:CheckList( tableList, modelID )
@@ -290,7 +397,7 @@ function Tuner:InitGUI()
 	neontoggle:SetText( "Включить/отключить неон" )
 	neontoggle:SetToolTip( "Только для транспорта из чёрного рынка" )
 	neontoggle:SetTextSize( 15 )
-	neontoggle:SetSize( Vector2( 0, 30 ) )
+	neontoggle:SetHeight( 30 )
 	neontoggle:SetDock( GwenPosition.Bottom )
 	neontoggle:Subscribe( "Up", function() Network:Send( "Change") Network:Send( "UpdateNeonColor", { neoncolor = neoncolor:GetColor() } ) self:ToggleNeon() end )
 	self.gui.neon.button:Subscribe( "Press", function()
@@ -358,12 +465,12 @@ function Tuner:InitTransmissionGUI()
 	self.gui.trans.labels[1]:SetText( "Передачи RPM" )
 	self.gui.trans.labels[2]:SetText( "Пониж. передачи RPM" )
 	self.gui.trans.labels[3]:SetText( "Макс. передач" )
-	self.gui.trans.labels[4]:SetText( "Ручное" )
+	self.gui.trans.labels[4]:SetText( "Ручное (Num 1/2)" )
 	self.gui.trans.labels[5]:SetText( "Задержка сцепления" )
-	self.gui.trans.labels[6]:SetText( "Текущая передача ")
-	self.gui.trans.labels[7]:SetText( "1-я передача ")
-	self.gui.trans.labels[8]:SetText( "2-я передача ")
-	self.gui.trans.labels[9]:SetText( "3-я передача ")
+	self.gui.trans.labels[6]:SetText( "Текущая передача" )
+	self.gui.trans.labels[7]:SetText( "1-я передача" )
+	self.gui.trans.labels[8]:SetText( "2-я передача" )
+	self.gui.trans.labels[9]:SetText( "3-я передача" )
 	self.gui.trans.labels[10]:SetText( "4-я передача" )
 	self.gui.trans.labels[11]:SetText( "5-я передача" )
 	self.gui.trans.labels[12]:SetText( "6-я передача" )
@@ -1028,9 +1135,8 @@ end
 
 function Tuner:KeyUp( args )
 	if Game:GetState() ~= GUIState.Game then return end
-	vehicle = LocalPlayer:GetVehicle()
 
-	if args.key == string.byte("N") and IsValid(self.veh) then
+	if args.key == string.byte("N") and IsValid( self.veh ) then
 		if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 		self:SetWindowVisible( not self.active )
 		self.timer = nil
@@ -1053,19 +1159,19 @@ function Tuner:KeyUp( args )
 		end
 	end
 
-	if args.key == VirtualKey.Numpad1 and IsValid(self.veh) then
-		if self.peredacha < self.trans:GetMaxGear() then
-			self.peredacha = self.peredacha + 1
-			self.trans:SetGear( self.peredacha )
-			Game:ShowPopup( "Передача: " .. self.peredacha, false )
-		end
-	end
-
-	if args.key == VirtualKey.Numpad2 and IsValid(self.veh) then
-		if self.peredacha > 1 then
-			self.peredacha = self.peredacha - 1
-			self.trans:SetGear( self.peredacha )
-			Game:ShowPopup( "Передача: " .. self.peredacha, false )
+	if self.trans and self.trans:GetManual() and IsValid( self.veh ) then
+		if args.key == VirtualKey.Numpad1 then
+			if self.peredacha < self.trans:GetMaxGear() then
+				self.peredacha = self.peredacha + 1
+				self.trans:SetGear( self.peredacha )
+				Game:ShowPopup( self.gear .. self.peredacha, false )
+			end
+		elseif args.key == VirtualKey.Numpad2 then
+			if self.peredacha > 1 then
+				self.peredacha = self.peredacha - 1
+				self.trans:SetGear( self.peredacha )
+				Game:ShowPopup( self.gear .. self.peredacha, false )
+			end
 		end
 	end
 end
@@ -1134,7 +1240,7 @@ end
 function Tuner:EnterVehicle( args )
 	self:InitGUI()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.gui.window:SetTitle( "▧ Тюнинг" )

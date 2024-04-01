@@ -5,7 +5,7 @@ function Passive:__init()
 	self.tagOffset = 10
 	self.textSize = 16
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.name = "Мирный"

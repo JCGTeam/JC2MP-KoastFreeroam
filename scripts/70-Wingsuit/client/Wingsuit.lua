@@ -6,7 +6,7 @@ function Pigeon:__init()
 	self.score = 0
 	self.superspeed = false
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.name = "Нажмите Shift или RB чтобы ускориться. Нажмите Ctrl чтобы сбавить скорость."
@@ -93,6 +93,7 @@ end
 function Pigeon:Lang( args )
 	self.name = "Press Shift or RB to boost. Press Ctrl to slow down."
 	self.nameTh = "%i km/h %i m\n"
+	self.tip = "Press Q to use wingsuit."
 
 	self.tWidg = "Fantastic Pigeon:"
 	self.tWidgTw = "Fantastic "
@@ -122,8 +123,7 @@ function Pigeon:Render( args )
 				local record = object:GetValue("S")
 				local text = self.tWidg
 				local position = Vector2( 20, Render.Height * 0.4 )
-				Render:DrawText( position + Vector2.One, text, Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 15 )
-				Render:DrawText( position, text, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), 15 )
+				Render:DrawShadowedText( position, text, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 15 )
 				Render:DrawText( position + Vector2( Render:GetTextWidth( self.tWidgTw, 15 ), 0 ), self.tDrift, Color( 255, 165, 0, Game:GetSetting(4) * 2.25 ), 15 )
 				local height = Render:GetTextHeight("A") * 1.2
 				position.y = position.y + height
@@ -143,8 +143,7 @@ function Pigeon:Render( args )
 					for i = 1, object:GetValue("E") do text = text .. ">" end
 					position.y = position.y + height * 0.95
 					Render:SetFont( AssetLocation.Disk, "LeagueGothic.ttf" )
-					Render:DrawText( position + Vector2.One, text, Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 13 )
-					Render:DrawText( position, text, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), 13 )
+					Render:DrawShadowedText( position, text, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 13 )
 					if LocalPlayer:GetValue( "SystemFonts" ) then
 						Render:SetFont( AssetLocation.SystemFont, "Impact" )
 					end
@@ -154,19 +153,16 @@ function Pigeon:Render( args )
 							position.y = position.y + height * 0.6
 							local alpha = math.min(self.attempt[3], 1)
 							text = tostring( self.attempt[1] ) .. " - " .. player:GetName()
-							Render:DrawText( position + Vector2.One, text, Color( 25, 25, 25, 150 * alpha ), 16 )
-							Render:DrawText( position, text, Color( 255, 255, 255, 255 * alpha ), 16 )
+							Render:DrawShadowedText( position, text, Color( 255, 255, 255, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), 16 )
 							text = tostring( self.attempt[1] )
-							Render:DrawText( position + Vector2.One, text, Color( 25, 25, 25, 150 * alpha ), 16 )
-							Render:DrawText( position, text, Color( 240, 220, 70, 255 * alpha ), 16 )
+							Render:DrawShadowedText( position, text, Color( 240, 220, 70, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), 16 )
 							self.attempt[3] = self.attempt[3] - 0.02
 							if self.attempt[3] < 0.02 then self.attempt = nil end
 						end
 					end
 				else
 					text = "–"
-					Render:DrawText( position + Vector2.One, text, Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 16 )
-					Render:DrawText( position, text, Color( 200, 200, 200, Game:GetSetting(4) * 2.25 ), 16 )
+					Render:DrawShadowedText( position, text, Color( 200, 200, 200, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 16 )
 				end
 			end
 		end
@@ -401,15 +397,13 @@ function Pigeon:SetVelocity()
 	local hud_str = string.format( self.nameTh, speed, altitude )
 	local screen_pos = Vector2( 0.5 * Render.Width - 0.5 * Render:GetTextWidth( hud_str, TextSize.Large ), Render.Height - Render:GetTextHeight( hud_str, TextSize.Large) )
 
-	Render:DrawText( screen_pos + Vector2(1,1), hud_str, Color( 0, 0, 0, 100 ), TextSize.Large )
-	Render:DrawText( screen_pos, hud_str, self.BoostColor, TextSize.Large )
+	Render:DrawShadowedText( screen_pos, hud_str, self.BoostColor, Color( 0, 0, 0, 100 ), TextSize.Large )
 
 	text = self.name
 	Render:SetFont( AssetLocation.SystemFont, "Impact" )
 	local size = Render:GetTextSize(text, 15)
 	local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - 10 )
-	Render:DrawText( pos + Vector2.One, text, Color( 0, 0, 0, 180 ), 15 )
-	Render:DrawText( pos, text, Color.White, 15 )
+	Render:DrawShadowedText( pos, text, Color.White, Color( 0, 0, 0, 180 ), 15 )
 end
 
 function Pigeon:Glide()

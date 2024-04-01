@@ -55,7 +55,7 @@ function Abilities:__init()
     self.window:SetVisible( self.active )
     self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
 
-    if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+    if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
         self.needed_txt = "Цена"
@@ -670,7 +670,7 @@ function Abilities:Open()
         end
 
         if LocalPlayer:GetValue( "Lang" ) then
-            self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "ENG" and "Money: $" .. formatNumber( LocalPlayer:GetMoney() ) or "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
+            self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Money: $" .. formatNumber( LocalPlayer:GetMoney() ) or "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
             self.money_text:SizeToContents()
         end
 
@@ -858,7 +858,7 @@ function Abilities:UpdateMoneyString( money )
     end
 
     if LocalPlayer:GetValue( "Lang" ) then
-        self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "ENG" and "Money: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
+        self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Money: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
         self.money_text:SizeToContents()
     end
 end
@@ -904,17 +904,6 @@ function Abilities:WindowClosed()
             self.LocalPlayerInputEvent = nil
         end
 	end
-end
-
-function formatNumber( amount )
-	local formatted = tostring( amount )
-	while true do  
-		formatted, k = string.gsub( formatted, "^(-?%d+)(%d%d%d)", '%1.%2' )
-		if (k==0) then
-			break
-		end
-	end
-	return formatted
 end
 
 abilities = Abilities()

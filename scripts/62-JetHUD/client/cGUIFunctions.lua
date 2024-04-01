@@ -114,15 +114,11 @@ function printC( color , ... )
 		n = n + 1
 		x = x + Render:GetTextWidth(stringToPrint)
 		stringToPrint = tostring(v)
-		Render:DrawText(
-			Vector2( x , y ) + Vector2.One ,
-			stringToPrint ,
-			black
-		)
-		Render:DrawText(
+		Render:DrawShadowedText(
 			Vector2( x , y ) ,
 			stringToPrint ,
-			color
+			color ,
+			black
 		)
 	end
 

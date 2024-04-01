@@ -3,7 +3,7 @@ class "Jetpack"
 function Jetpack:__init()
 	self:initVars()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.enable_txt = "Реактивный ранец включён"

@@ -30,7 +30,7 @@ function AntiSpam:PlayerChat( args )
 			local warnings = tonumber ( self.playerWarnings [ steamID ] ) or 0
 			if ( warnings < self.maxWarnings ) then
 				self.playerWarnings [ steamID ] = ( warnings + 1 )
-				if args.player:GetValue( "Lang" ) == "ENG" then
+				if args.player:GetValue( "Lang" ) == "EN" then
 					args.player:SendChatMessage ( "[Anti-Flood] ", Color.White, "Please do not flood. Warnings: ".. tostring ( self.playerWarnings [ steamID ] ) .."/".. tostring ( self.maxWarnings ), Color.Yellow )
 				else
 					args.player:SendChatMessage ( "[Анти-Флуд] ", Color.White, "Пожалуйста, не флудите. Предупреждений: ".. tostring ( self.playerWarnings [ steamID ] ) .."/".. tostring ( self.maxWarnings ), Color.Yellow )

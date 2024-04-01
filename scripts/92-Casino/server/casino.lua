@@ -32,7 +32,7 @@ function CoinFlip:Coinflip( args, sender )
         sender:SetMoney( sender:GetMoney() + amount * 2 )
 
         local wintext = "Вы выиграли "
-        if sender:GetValue( "Lang" ) and sender:GetValue( "Lang" ) == "ENG" then
+        if sender:GetValue( "Lang" ) and sender:GetValue( "Lang" ) == "EN" then
             wintext = "You won "
         end
 
@@ -41,7 +41,7 @@ function CoinFlip:Coinflip( args, sender )
         sender:SetMoney( sender:GetMoney() - amount )
 
         local losetext = "Вы проиграли "
-        if sender:GetValue( "Lang" ) and sender:GetValue( "Lang" ) == "ENG" then
+        if sender:GetValue( "Lang" ) and sender:GetValue( "Lang" ) == "EN" then
             losetext = "You lost "
         end
 

@@ -56,7 +56,7 @@ function ResourceItems:CrateTaken()
 	})
 	sound:SetParameter(0,1)
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "РУС" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "RU" then
 		Game:ShowPopup( "Ящики: " .. self.numcrates .. "/3754", true )
 	else
 		Game:ShowPopup( "Resource items: " .. self.numcrates .. "/3754", true )

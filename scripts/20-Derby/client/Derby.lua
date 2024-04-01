@@ -20,7 +20,7 @@ function Derby:__init()
 
 	self.handbrake = nil
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.nameT = "Игроки"
@@ -47,11 +47,10 @@ end
 
 function DrawCenteredShadowedText( position, text, color, textsize )
 	local textsize = textsize or TextSize.Default
-	local bounds = Render:GetTextSize(text, textsize)
+	local bounds = Render:GetTextSize( text, textsize )
 
-	if not IsNaN(position) then
-		Render:DrawText( position - (bounds / 2) + (Vector2.One * math.max(textsize / 32, 1)), text, Color( 25, 25, 25, 150 ), textsize )
-		Render:DrawText( position - (bounds / 2), text, color, textsize )
+	if not IsNaN( position ) then
+		Render:DrawShadowedText( position - (bounds / 2), text, color, Color( 25, 25, 25, 150 ), textsize )
 	end
 end
 
@@ -163,25 +162,21 @@ function Derby:Render()
 	if (self.state == "Lobby") then
 		local text = self.lobbyplayers_txt .. self.playerCount
 		local textinfo = self:TextPos( text, TextSize.Large, 0, -Render.Height + 150 )
-		Render:DrawText( textinfo + Vector2.One, text, Color( 25, 25, 25, 150 ), TextSize.Large )   
-		Render:DrawText( textinfo, text, Color.White, TextSize.Large )
+		Render:DrawShadowedText(textinfo, text, Color.White, Color( 25, 25, 25, 150 ), TextSize.Large )
 		
 		local text = self.lobbymap_txt .. self.courseName
 		local textinfo = self:TextPos( text, 25, 0, -Render.Height + 215 )
-		Render:DrawText( textinfo + Vector2.One, text, Color( 25, 25, 25, 150 ), 25 )
-		Render:DrawText( textinfo, text, Color( 165, 165, 165 ), 25 )
+		Render:DrawShadowedText( textinfo, text, Color( 165, 165, 165 ), Color( 25, 25, 25, 150 ), 25 )
 	end
 
 	if (self.state == "Setup") then
         local text = self.loading_txt
         local textinfo = self:TextPos( text, TextSize.VeryLarge, 0, -200 )
-		Render:DrawText( textinfo + Vector2.One, text, Color( 25, 25, 25, 150 ), TextSize.VeryLarge )
-        Render:DrawText( textinfo, text, Color.White, TextSize.VeryLarge )
+        Render:DrawShadowedText( textinfo, text, Color.White, Color( 25, 25, 25, 150 ), TextSize.VeryLarge )
 
         local text = self.pleasewait_txt
         local textinfo = self:TextPos( text, TextSize.Default, 0, -140 )
-		Render:DrawText( textinfo + Vector2.One, text, Color( 25, 25, 25, 150 ), TextSize.Default )
-        Render:DrawText( textinfo, text, Color( 165, 165, 165 ), TextSize.Default )
+        Render:DrawShadowedText( textinfo, text, Color( 165, 165, 165 ), Color( 25, 25, 25, 150 ), TextSize.Default )
 		for k, player in ipairs(players) do
 			local color = Color.Black or Color.Gray
 
@@ -198,8 +193,7 @@ function Derby:Render()
 		local message = {self.cdgo_txt, "1", "2", "3"}
 		local text = message[time + 1]
         local textinfo = self:TextPos( text, TextSize.Huge, 0, -200 )
-		Render:DrawText( textinfo + Vector2.One, text, Color( 25, 25, 25, 150 ), TextSize.Huge ) 
-        Render:DrawText( textinfo, text, Color.White, TextSize.Huge )
+        Render:DrawShadowedText( textinfo, text, Color.White, Color( 25, 25, 25, 150 ), TextSize.Huge )
 
 		for k, player in ipairs(players) do
 			local color = Color.Black or Color.Gray
@@ -215,8 +209,7 @@ function Derby:Render()
 	elseif (self.state == "Running") then
 		local text = self.lobbyplayers_txt .. self.playerCount
 		local textinfo = self:TextPos( text, TextSize.Large, 0, -Render.Height + 215 )
-		Render:DrawText( textinfo + Vector2.One, text, Color( 25, 25, 25, 150 ), TextSize.Large )
-		Render:DrawText( textinfo, text, Color.White, TextSize.Large )
+		Render:DrawShadowedText( textinfo, text, Color.White, Color( 25, 25, 25, 150 ), TextSize.Large )
 
 		for k, player in ipairs(players) do
 			local color = Color.Black or Color.Gray
@@ -234,13 +227,11 @@ function Derby:Render()
 			local text_width = Render:GetTextWidth(text, TextSize.VeryLarge)
 			local text_height = Render:GetTextHeight(text, TextSize.VeryLarge)
 			local pos = Vector2((Render.Width - text_width)/2, (Render.Height - text_height - 200)/2)
-			Render:DrawText(pos + Vector2.One, text, Color( 25, 25, 25, 150 ), TextSize.VeryLarge)
-			Render:DrawText(pos, text, Color( 255, 69, 0 ), TextSize.VeryLarge)
+			Render:DrawShadowedText(pos, text, Color( 255, 69, 0 ), Color( 25, 25, 25, 150 ), TextSize.VeryLarge)
 			local text = self.vehicleHealthLost .. self.vehicledamaged_txt
 			pos.y = pos.y + 45
 			pos.x = (Render.Width - Render:GetTextWidth(text, TextSize.Default))/2
-			Render:DrawText( pos, text, Color( 25, 25, 25, 150 ), TextSize.Default )
-			Render:DrawText( pos, text, Color.White, TextSize.Default )
+			Render:DrawShadowedText( pos, text, Color.White, Color( 25, 25, 25, 150 ), TextSize.Default )
 		end
 		--OUT OF VEHICLE
 		if (self.inVehicleTimer ~= nil) then

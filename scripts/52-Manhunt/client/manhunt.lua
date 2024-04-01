@@ -4,7 +4,7 @@ function Manhunt:__init()
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "GoHunt", self, self.GoHunt )
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.yourscorestxt = "Ваши очки: "
@@ -123,13 +123,6 @@ function Manhunt:Render()
 	if LocalPlayer:GetValue( "SystemFonts" ) then
 		Render:SetFont(AssetLocation.SystemFont, "Impact")
 	end
-	local text = self.nameTh
-	local text_width = Render:GetTextWidth( text, TextSize.Gigantic )
-	local text_height = Render:GetTextHeight( text, TextSize.Gigantic )
-
-    local pos = Vector2( (Render.Width - text_width)/2, (Render.Height - text_height)/2 )
-
-	Render:DrawText( pos, text, Color( 0, 0, 0 ), TextSize.Gigantic )
 
 	local text = self.nameTh
 	local text_width = Render:GetTextWidth( text, TextSize.Gigantic )
@@ -137,7 +130,7 @@ function Manhunt:Render()
 
 	local pos = Vector2( (Render.Width - text_width)/2, (Render.Height - text_height)/2 )
 
-	Render:DrawText( pos, text, Color.Red, TextSize.Gigantic )
+	Render:DrawShadowedText( pos, text, Color.Red, Color( 0, 0, 0 ), TextSize.Gigantic )
 end
 
 manhunt = Manhunt()

@@ -29,7 +29,7 @@ function Speedometer:__init()
 	self.unit = 1
 	self.position = LocalPlayer:GetPosition()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.name = "м/с"
@@ -216,7 +216,6 @@ function Speedometer:DrawShadowedText3( pos, text, colour, size, scale )
 	local shadow_colour = Color( 0, 0, 0, 150 )
 	shadow_colour = shadow_colour * 0.4
 
-	Render:DrawText( pos + Vector3( 1, 1, 4 ), text, colour, size, scale )
 	Render:DrawText( pos + Vector3( 5, 5, 3 ), text, shadow_colour, size, scale )
 	Render:DrawText( pos, text, colour, size, scale )
 end
@@ -228,8 +227,7 @@ function Speedometer:DrawShadowedText2( pos, text, colour, size, scale )
 	local shadow_colour = Color( 0, 0, 0, 255 )
 	shadow_colour = shadow_colour * 0.4
 
-	Render:DrawText( pos + Vector2.One, text, shadow_colour, size, scale )
-	Render:DrawText( pos, text, colour, size, scale )
+	Render:DrawShadowedText( pos, text, colour, shadow_colour, size, scale )
 end
 
 function Speedometer:PreTick()

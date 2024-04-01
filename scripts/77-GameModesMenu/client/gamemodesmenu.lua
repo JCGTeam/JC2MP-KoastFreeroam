@@ -33,7 +33,7 @@ function GameModesMenu:__init()
 	self.resizer_txt = "Черный ниггер"
     self:CreateWindow()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	end
 

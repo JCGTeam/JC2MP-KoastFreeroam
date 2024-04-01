@@ -48,7 +48,7 @@ function ServerMenu:__init()
 
 	self:LoadCategories()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.pigeonmodtxt = "Режим голубя"
@@ -82,7 +82,7 @@ function ServerMenu:Lang()
 		self.pm_button:SetText( "Messages" )
 		self.pm_button:SetToolTip( "Communicate personally with the players." )
 		self.sett_button:SetText( "Settings" )
-		self.sett_button:SetToolTip( "Server Settings." )
+		self.sett_button:SetToolTip( "Server settings." )
 		self.tasks_button:SetToolTip( "Daily tasks for which you get rewards." )
 		self.tasks_button:SetText( "Daily Tasks" )
 		self.minigames_button:SetText( "Minigames" )
@@ -386,7 +386,7 @@ function ServerMenu:Render()
     local hh, timedec = math.modf( gettime )
     local mm, _ = math.modf( 59 * timedec )
 
-	if LocalPlayer:GetValue( "Lang" ) == "РУС" then
+	if LocalPlayer:GetValue( "Lang" ) == "RU" then
 		self.gametime:SetText( "Игровое время: " .. string.format("%d:%02d", hh, mm) )
 	else
 		self.gametime:SetText( "Game Time: " .. string.format("%d:%02d", hh, mm) )
@@ -440,7 +440,7 @@ function ServerMenu:SetWindowVisible( visible )
 		end
 
 		if LocalPlayer:GetValue( "Lang" ) then
-			if LocalPlayer:GetValue( "Lang" ) == "РУС" then
+			if LocalPlayer:GetValue( "Lang" ) == "RU" then
 				self.level:SetText( "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
 
 				self.passiveon_btn:SetText( LocalPlayer:GetValue( "Passive" ) and "Отключить" or "Включить" )
@@ -657,7 +657,7 @@ end
 function ServerMenu:Bonus()
 	if LocalPlayer:GetValue( "MoneyBonus" ) then
 		self.bonus_btn:SetEnabled( true )
-		if LocalPlayer:GetValue( "Lang" ) == "ENG" then
+		if LocalPlayer:GetValue( "Lang" ) == "EN" then
 			Chat:Print( "[Bonus] ", Color.White, "Money bonus is available! Open the server menu to get it!", Color.GreenYellow )
 		else
 			Chat:Print( "[Бонус] ", Color.White, "Доступен денежный бонус! Откройте меню сервера, чтобы получить его.", Color.GreenYellow )
@@ -671,7 +671,7 @@ function ServerMenu:UpdateMoneyString( money )
     end
 
     if LocalPlayer:GetValue( "Lang" ) then
-		self.level:SetText( LocalPlayer:GetValue( "Lang" ) == "ENG" and "Money: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
+		self.level:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Money: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
     end
 end
 
@@ -684,17 +684,6 @@ function math.round( number, decimals, method )
     local factor = 10 ^ decimals
     if (method == "ceil" or method == "floor") then return math[method](number * factor) / factor
     else return tonumber(("%."..decimals.."f"):format(number)) end
-end
-
-function formatNumber( amount )
-	local formatted = tostring( amount )
-	while true do  
-		formatted, k = string.gsub( formatted, "^(-?%d+)(%d%d%d)", '%1.%2' )
-		if (k==0) then
-			break
-		end
-	end
-	return formatted
 end
 
 servermenu = ServerMenu()

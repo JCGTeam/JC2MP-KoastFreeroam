@@ -46,7 +46,7 @@ function PDA:__init()
 	self.dragging          = false
 	self.lastMousePosition = Mouse:GetPosition()
 	
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		MTSetWp = "[СКМ] / [1] - поставить точку назначения"
@@ -300,7 +300,7 @@ function PDA:KeyUp( args )
 		if LocalPlayer:GetWorld() ~= DefaultWorld then
 			PDA:Toggle()
 			--and Map.ActiveLocation
-			Events:Fire( "CastCenterText", { text = LocalPlayer:GetValue( "Lang" ) == "ENG" and "Can't use it here!" or "Невозможно использовать это здесь!", time = 3, color = Color.Red } )
+			Events:Fire( "CastCenterText", { text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Can't use it here!" or "Невозможно использовать это здесь!", time = 3, color = Color.Red } )
 			return
 		end
 

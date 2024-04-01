@@ -73,8 +73,7 @@ end
 
 function Location:DrawTitle(position, scale)
 	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
-	Render:DrawText( position - (Render:GetTextSize(self.name, 21) / 2) + (Vector2.Down * (Location.Icon.Size.y / 2) * scale) + (Vector2.Down * 21 / 2) + Vector2.One, self.name, Color.Black, 21 )
-	Render:DrawText( position - (Render:GetTextSize(self.name, 21) / 2) + (Vector2.Down * (Location.Icon.Size.y / 2) * scale) + (Vector2.Down * 21 / 2), self.name, Color.White, 21 )
+	Render:DrawShadowedText( position - (Render:GetTextSize(self.name, 21) / 2) + (Vector2.Down * (Location.Icon.Size.y / 2) * scale) + (Vector2.Down * 21 / 2), self.name, Color.White, Color.Black, 21 )
 end
 
 Map = {
@@ -582,8 +581,7 @@ function Map:Draw()
 
 				if labels ~= 0 then
 					Render:FillArea( position + Render.Size * 0.003, Vector2( Render:GetTextWidth( str, text_size ), Render:GetTextHeight( str, text_size ) ), Color( 0, 0, 0, 150 ) )
-					Render:DrawText( position + Render.Size * 0.003 + Vector2.One, str, Color.Black, text_size )
-					Render:DrawText( position + Render.Size * 0.003, str, player.col, text_size )
+					Render:DrawShadowedText( position + Render.Size * 0.003, str, player.col, Color.Black, text_size )
 				end
 			end
 		end
@@ -637,25 +635,12 @@ function Map:Draw()
 		local txty = "Y: " .. string.format( "%.0f", tonumber( position.z ) )
 		local tips_pos = Vector2( 41, 46 )
 
-		Render:DrawText( tips_pos, txtx .. "\n" .. txty, Color.Black, 15 )
-		Render:DrawText( tips_pos - Vector2.One, txtx .. "\n" .. txty, Color.White, 15 )
+		Render:DrawShadowedText( tips_pos - Vector2.One, txtx .. "\n" .. txty, Color.White, Color.Black, 15 )
 
 		local height = Render:GetTextHeight("A") * 2.5
 		tips_pos.y = tips_pos.y + height
 
-		Render:DrawText( tips_pos, MTSetWp, Color.Black, 15 )
-		Render:DrawText( tips_pos - Vector2.One, MTSetWp, Color.White, 15 )
-
-		height = Render:GetTextHeight("A") * 1.1
-		tips_pos.y = tips_pos.y + height
-
-		Render:DrawText( tips_pos, MTPToggle, Color.Black, 15 )
-		Render:DrawText( tips_pos - Vector2.One, MTPToggle, Color.White, 15 )
-
-		tips_pos.y = tips_pos.y + height
-
-		Render:DrawText( tips_pos, MTExtract, Color.Black, 15 )
-		Render:DrawText( tips_pos - Vector2.One, MTExtract, Color.White, 15 )
+		Render:DrawShadowedText( tips_pos - Vector2.One, MTSetWp .. "\n" .. MTPToggle .. "\n" .. MTExtract, Color.White, Color.Black, 15 )
 	end
 
 	if extraction_timer then

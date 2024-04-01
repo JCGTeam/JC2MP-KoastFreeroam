@@ -19,7 +19,7 @@ function WhatsNew:__init()
 		[16] = true
 	}
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.continue_txt = "Продолжить ( ͡° ͜ʖ ͡°)"

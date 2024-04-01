@@ -25,7 +25,7 @@ function Tasks:__init()
 	local args = { path = "Models/TargetArrow", type = OBJLoader.Type.Single }
 	OBJLoader.Request( args, self, self.ModelReceive )
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.rewardtip = "Награда: $"
@@ -469,8 +469,7 @@ function Tasks:Render()
 		local text = self.target .. self.delivto .. self.job.description
 
 		textPos = textPos - Vector2( Render:GetTextWidth( text ) / 2, 0 )
-		Render:DrawText( textPos + Vector2.One, text, Color( 0, 0, 0, 80 ) )
-		Render:DrawText( textPos, text, Color( 192, 255, 192 ) )
+		Render:DrawShadowedText( textPos, text, Color( 192, 255, 192 ), Color( 0, 0, 0, 80 ) )
 
 		local destPos = self.locations[self.job.destination].position
 		local destDist = Vector3.Distance( destPos, LocalPlayer:GetPosition() )

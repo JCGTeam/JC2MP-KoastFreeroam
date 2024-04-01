@@ -19,9 +19,8 @@ function Admin:PostRender()
 
 		local size = Render.Size.x / 40
 		local testpos = Vector2( (Render.Size.x / 1.9) - (Render:GetTextSize( self.message, size ).x / 2), 80 )
-
-		Render:DrawText( testpos + Vector2.One, self.message, Color( 0, 0, 0 ), size )		
-		Render:DrawText( testpos, self.message, Color( 255, 210, 0 ), size )
+	
+		Render:DrawShadowedText( testpos, self.message, Color( 255, 210, 0 ), Color( 0, 0, 0 ), size )
 
 		if self.timer:GetSeconds() > 10 then
 			self.timer = nil

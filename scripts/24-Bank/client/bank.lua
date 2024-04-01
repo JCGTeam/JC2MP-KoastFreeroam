@@ -26,7 +26,7 @@ function Bank:__init()
 	self.rows = {}
 	self:CreateSendMoneyWindow()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.money = "Баланс: $"
@@ -291,9 +291,8 @@ function Bank:Render()
 		local colS = Copy( Color( 25, 25, 25, 150 ) )
 		col.a = col.a * alpha
 		colS.a = colS.a * alpha
-	
-		Render:DrawText( pos_2d + Vector2.One, self.message .. " | " .. self.submessage, colS, self.submessage_size )
-		Render:DrawText( pos_2d, self.message .. " | " .. self.submessage, col, self.submessage_size )
+
+		Render:DrawShadowedText( pos_2d, self.message .. " | " .. self.submessage, col, colS, self.submessage_size )
 	end
 end
 
@@ -303,7 +302,7 @@ function Bank:MoneyChange( args )
     end
 
     if LocalPlayer:GetValue( "Lang" ) then
-		self.plist.balance:SetText( LocalPlayer:GetValue( "Lang" ) == "ENG" and "Money: $" .. formatNumber( args.new_money ) or "Баланс: $" .. formatNumber( args.new_money ) )
+		self.plist.balance:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Money: $" .. formatNumber( args.new_money ) or "Баланс: $" .. formatNumber( args.new_money ) )
     end
 
 	if Game:GetState() ~= GUIState.Game then return end
@@ -320,17 +319,6 @@ function Bank:MoneyChange( args )
         self.submessage = self.money .. formatNumber( args.new_money )
         self.colour = diff > 0 and Color( 251, 184, 41 ) or Color.OrangeRed
     end
-end
-
-function formatNumber( amount )
-	local formatted = tostring( amount )
-	while true do  
-		formatted, k = string.gsub( formatted, "^(-?%d+)(%d%d%d)", '%1.%2' )
-		if (k==0) then
-			break
-		end
-	end
-	return formatted
 end
 
 bank = Bank()

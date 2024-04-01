@@ -22,12 +22,13 @@ function Reports:__init()
 	}
 
 	self.maxmessagesymbols = 500
+	self.maxemailsymbols = 50
 
 	self.sendbutton_txt = "Отправить"
 
 	self:CreateWindow()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.sendbuttonsending_txt = "Отправка..."
@@ -44,7 +45,7 @@ end
 function Reports:CreateWindow()
     self.window = Window.Create()
 	self.window:SetSizeRel( Vector2( 0.3, 0.4 ) )
-	self.window:SetMinimumSize( Vector2( 500, 442 ) )
+	self.window:SetMinimumSize( Vector2( 500, 455 ) )
 	self.window:SetPositionRel( Vector2( 0.8, 0.5 ) - self.window:GetSizeRel()/2 )
     self.window:SetTitle( "▧ Обратная связь" )
     self.window:SetVisible( false )
@@ -77,8 +78,23 @@ function Reports:CreateWindow()
 	self.messageSymbolsLimitLabel:SetText( "0/" .. self.maxmessagesymbols )
 	self.messageSymbolsLimitLabel:SetDock( GwenPosition.Top )
 	self.messageSymbolsLimitLabel:SetAlignment( GwenPosition.Right )
-	self.messageSymbolsLimitLabel:SetMargin( Vector2( 0, 0 ), Vector2( 10, 10 ) )
+	self.messageSymbolsLimitLabel:SetMargin( Vector2( 0, 0 ), Vector2( 10, 0 ) )
 	self.messageSymbolsLimitLabel:SizeToContents()
+
+	self.eMailLabel = Label.Create( self.window )
+    self.eMailLabel:SetText( "Почта для связи: (необязательно)" )
+    self.eMailLabel:SetDock( GwenPosition.Top )
+	self.eMailLabel:SetMargin( Vector2( 5, 0 ), Vector2( 5, 0 ) )
+    self.eMailLabel:SizeToContents()
+
+    self.eMailTextBox = TextBox.Create( self.window )
+    self.eMailTextBox:SetDock( GwenPosition.Top )
+	self.eMailTextBox:SetHeight( 25 )
+    self.eMailTextBox:SetMargin( Vector2( 5, 5 ), Vector2( 5, 20 ) )
+	self.eMailTextBox:Subscribe( "TextChanged", self, self.ChangelLText )
+    self.eMailTextBox:Subscribe( "Focus", self, self.Focus )
+    self.eMailTextBox:Subscribe( "Blur", self, self.Blur )
+	self.eMailTextBox:Subscribe( "EscPressed", self, self.EscPressed )
 
     self.categoryLabel = Label.Create( self.window )
     self.categoryLabel:SetText( "Категория:" )
@@ -89,7 +105,7 @@ function Reports:CreateWindow()
     self.categoryComboBox = ComboBox.Create( self.window )
     self.categoryComboBox:SetDock( GwenPosition.Top )
     self.categoryComboBox:SetHeight( 25 )
-    self.categoryComboBox:SetMargin( Vector2( 5, 5 ), Vector2( 5, 40 ) )
+    self.categoryComboBox:SetMargin( Vector2( 5, 5 ), Vector2( 5, 15 ) )
     self.categoryComboBox:AddItem( "Жалобы" )
 	self.categoryComboBox:AddItem( "Пожелания" )
 	self.categoryComboBox:AddItem( "Сообщить об ошибке" )
@@ -107,7 +123,6 @@ function Reports:CreateWindow()
     self.infoLabel:SetDock( GwenPosition.Fill )
 	self.infoLabel:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
 	self.infoLabel:SetWrap( true )
-    self.infoLabel:SizeToContents()
 end
 
 function Reports:Lang()
@@ -119,6 +134,7 @@ function Reports:Lang()
 		self.window:SetTitle( "▧ Feedback" )
 		self.titleLabel:SetText( "FEEDBACK" )
 		self.messageLabel:SetText( "Enter your message:" )
+		self.eMailLabel:SetText( "Contact E-Mail: (optional)" )
 		self.categoryLabel:SetText( "Category:" )
 		self.categoryComboBox:Clear()
 		self.categoryComboBox:AddItem( "Complaints" )
@@ -132,7 +148,7 @@ end
 
 function Reports:ReportSend()
 	if self.messageTextBox:GetText():len() <= self.maxmessagesymbols then
-		Network:Send( "SendReport", { reportmessage = self.messageTextBox:GetText(), category = self.categoryComboBox:GetSelectedItem():GetText() } )
+		Network:Send( "SendReport", { reportmessage = self.messageTextBox:GetText(), reportemail = self.eMailTextBox:GetText(), category = self.categoryComboBox:GetSelectedItem():GetText() } )
 
 		self.sendButton:SetEnabled( false )
 		self.sendButton:SetText( self.sendbuttonsending_txt )
@@ -145,6 +161,7 @@ function Reports:SuccessfullySended()
 	self.sendButton:SetText( self.sendbutton_txt)
 
     self.messageTextBox:SetText( "" )
+	self.eMailTextBox:SetText( "" )
 
 	self:ReportMenuClosed()
 
@@ -162,10 +179,20 @@ function Reports:ChangelLText()
 	else
 		self.messageSymbolsLimitLabel:SetTextColor( Color.White )
 		if not self.sending then
-			if self.messageTextBox:GetText() == "" then
-				self.sendButton:SetEnabled( false )
+			if self.eMailTextBox:GetText() ~= "" then
+				if self.messageTextBox:GetText() ~= "" then
+					if self.eMailTextBox:GetText():len() >= self.maxemailsymbols then
+						self.sendButton:SetEnabled( false )
+					else
+						local isValidEmail = string.match( self.eMailTextBox:GetText(), "^[%w!#%$%%&'%+%-^_`{|}%.=%?~]+@[%w%-]+%.[%w%-]+$" )
+
+						self.sendButton:SetEnabled( isValidEmail ~= nil )
+					end
+				else
+					self.sendButton:SetEnabled( false )
+				end
 			else
-				self.sendButton:SetEnabled( true )
+				self.sendButton:SetEnabled( ( self.messageTextBox:GetText() ~= "" ) and true or false )
 			end
 		end
 	end
@@ -181,6 +208,7 @@ end
 
 function Reports:EscPressed()
 	self:Blur()
+
 	if self.window:GetVisible() == true then
 		self:WindowClosed()
 	end

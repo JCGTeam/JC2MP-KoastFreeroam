@@ -1,7 +1,7 @@
 class 'ActionsMenu'
 
 function ActionsMenu:__init()
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
         self.title = "▧ Меню действий"

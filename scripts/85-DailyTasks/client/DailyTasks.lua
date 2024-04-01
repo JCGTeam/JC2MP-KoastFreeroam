@@ -84,7 +84,7 @@ function DailyTasks:__init()
 	self.list:AddColumn( "Задание:" )
     self.list:AddColumn( "√/x", 50 )
 
-    if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+    if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
         if self.window then

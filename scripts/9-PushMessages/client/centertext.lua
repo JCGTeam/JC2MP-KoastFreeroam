@@ -44,8 +44,7 @@ function CenterText:Render( args )
         colS = Copy( Color( 0, 0, 0, 80 ) )
         colS.a = colS.a * alpha	
 
-        Render:DrawText( pos + Vector2.One, self.textF, colS, self.size )
-        Render:DrawText( pos, self.textF, col, self.size )
+        Render:DrawShadowedText( pos, self.textF, col, colS, self.size )
 	end
 end
 

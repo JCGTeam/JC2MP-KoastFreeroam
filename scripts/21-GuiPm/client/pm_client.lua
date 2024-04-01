@@ -133,7 +133,7 @@ function PM:__init( player )
 		self:addPlayerToList ( player )
 	end
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.newmsgtxt = "Новое сообщение!"

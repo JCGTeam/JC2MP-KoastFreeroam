@@ -205,11 +205,15 @@ function ClanSystem:SyncPlayers()
 		for player in Server:GetPlayers() do
 			local clan = self:GetPlayerClan ( player )
 			self.playerList [ player:GetId() ] = clan
-			
+
 			if clan then
-				getclantag = tostring ( clan )
-				player:SetNetworkValue( "ClanTag", getclantag )
+				local colour = ( self.clans [ clan ].colour:split ( "," ) or { 255, 255, 255 } )
+				local r, g, b = table.unpack ( colour )
+
+				player:SetNetworkValue( "ClanColor", Color( tonumber( r ), tonumber( g ), tonumber( b ) ) )
 			end
+
+			player:SetNetworkValue( "ClanTag", clan )
 		end
 
 		self.LastTick = Server:GetElapsedSeconds()
@@ -333,7 +337,7 @@ function ClanSystem:AddMember( args )
 			local pClan = self:GetPlayerClan ( player )
 			if ( pClan ) then
 				if ( pClan == clan ) then
-					player:SendChatMessage( "[Клан] ", Color( tonumber( r ), tonumber( g ), tonumber( b ) ) , tostring( pName ) .. " присоеденился к клану!", Color.White )
+					player:SendChatMessage( "[" .. tostring( clan ) .. "] ", Color( tonumber( r ), tonumber( g ), tonumber( b ) ) , tostring( pName ), args.player:GetColor(), " присоеденился к клану", Color.White )
 				end
 			end
 		end
@@ -395,7 +399,6 @@ function ClanSystem:LeaveClan( _, player )
 					args.steamID = steamID
 					self:RemoveMember ( args )
 					player:Message ( "Вы покинули клан!", "warn" )
-					player:SetNetworkValue( "ClanTag", nil )
 					self:AddMessage ( clan, "log", player:GetName ( ) .." покинул клан." )
 				else
 					player:Message ( "Вы не можете покинуть клан, поскольку вы его лидер!", "err" )
@@ -491,7 +494,7 @@ function ClanSystem:AcceptInvite( args, player )
 end
 
 function ClanSystem:GetClans( _, player )
-	Network:Send ( player, "Clans:ReceiveClans", self.clans )
+	Network:Send ( player, "Clans:ReceiveClans", { clans = self.clans, clanMembers = self.clanMembers } )
 end
 
 function ClanSystem:JoinClan( clan, player )
@@ -539,7 +542,6 @@ function ClanSystem:KickPlayer( args, player )
 					margs.steamID = args.steamID
 					self:RemoveMember ( margs )
 					player:Message ( "Вас выгнал из клана ".. tostring ( args.name ) .."!", "warn" )
-					player:SetNetworkValue( "ClanTag", nil )
 					self:GetData ( nil, player )
 					self:AddMessage ( clan, "log", player:GetName ( ) .." выгнал ".. tostring ( args.name ) .."." )
 				else
@@ -659,7 +661,7 @@ function ClanSystem:IsPlayerAllowedTo( args )
 end
 
 function Player:Message( msg, color )
-	self:SendChatMessage ( "[Клан] ", Color.White, msg, msgColors [ color ] )
+	self:SendChatMessage ( "[Кланы] ", Color.White, msg, msgColors [ color ] )
 end
 
 function ClanSystem:AddMessage( clan, type, msg )
@@ -699,7 +701,7 @@ function ClanSystem:FactionChat( args )
 					local pClan = self:GetPlayerClan ( player )
 					if ( pClan ) then
 						if ( pClan == clan ) then
-							player:SendChatMessage( "[Клан] ", Color( tonumber( r ), tonumber( g ), tonumber( b ) ) , tostring( pName ), pColor, ": " .. text, Color.White )
+							player:SendChatMessage( "[" .. tostring( clan ) .. "] ", Color( tonumber( r ), tonumber( g ), tonumber( b ) ) , tostring( pName ), pColor, ": " .. text, Color.White )
 						end
 					end
 				end

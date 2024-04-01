@@ -4,7 +4,7 @@ function Jesus:__init()
 	self.name = "Иисус"
 	self.nameSizer = "Мирный"
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.disabletxt = " отключён"

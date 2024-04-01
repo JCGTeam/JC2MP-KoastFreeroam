@@ -62,14 +62,14 @@ function Pigeon:onFlyingRecord( score, player )
 	if object:GetValue("N") ~= player:GetName() then
 		if object:GetValue("N") ~= nil then
 			player:SetMoney( player:GetMoney() + 50 )
-			if player:GetValue( "Lang" ) == "ENG" then
+			if player:GetValue( "Lang" ) == "EN" then
 				player:SendChatMessage( "[Record] ", Color.White, "Reward: $50 for a new pigeon flying record!", Color( 255, 150, 0 ) )
 			else
 				player:SendChatMessage( "[Рекорд] ", Color.White, "Награда: $50 за новый рекорд по полётам на вингсьюте!", Color( 255, 150, 0 ) )
 			end
 
 			for p in Server:GetPlayers() do
-				if p:GetValue( "Lang" ) == "ENG" then
+				if p:GetValue( "Lang" ) == "EN" then
 					p:SendChatMessage( "[Record] ", Color.White, player:GetName() .. " has broken the player's flying record " .. object:GetValue("N") .. ", his reward: $50!", Color( 255, 150, 0 ) )
 				else
 					p:SendChatMessage( "[Рекорд] ", Color.White, player:GetName() .. " побил рекорд по полётам игрока " .. object:GetValue("N") .. ", его награда: $50!", Color( 255, 150, 0 ) )
@@ -77,14 +77,14 @@ function Pigeon:onFlyingRecord( score, player )
 			end
 		else
 			player:SetMoney( player:GetMoney() + 50 )
-			if player:GetValue( "Lang" ) == "ENG" then
+			if player:GetValue( "Lang" ) == "EN" then
 				player:SendChatMessage( "[Record] ", Color.White, "Reward: $50 for a new pigeon flying record!", Color( 255, 150, 0 ) )
 			else
 				player:SendChatMessage( "[Рекорд] ", Color.White, "Награда: $50 за новый рекорд по полётам!", Color( 255, 150, 0 ) )
 			end
 
 			for p in Server:GetPlayers() do
-				if p:GetValue( "Lang" ) == "ENG" then
+				if p:GetValue( "Lang" ) == "EN" then
 					p:SendChatMessage( "[Record] ", Color.White, player:GetName() .. " set a new pigeon flying record: " .. score .. "!", Color( 255, 150, 0 ) )
 				else
 					p:SendChatMessage( "[Рекорд] ", Color.White, player:GetName() .. " установил новый рекорд по полётам на вингсьюте: " .. score .. "!", Color( 255, 150, 0 ) )
@@ -93,7 +93,7 @@ function Pigeon:onFlyingRecord( score, player )
 		end
 	else
 		for p in Server:GetPlayers() do
-			if p:GetValue( "Lang" ) == "ENG" then
+			if p:GetValue( "Lang" ) == "EN" then
 				p:SendChatMessage( "[Record] ", Color.White, player:GetName() .. " updated a fantastic pigeon record: " .. score .. "!", Color( 255, 150, 0 ) )
 			else
 				p:SendChatMessage( "[Рекорд] ", Color.White, player:GetName() .. " обновил хорошечный рекорд по полётам на вингсьюте: " .. score .. "!", Color( 255, 150, 0 ) )
@@ -125,21 +125,21 @@ function Pigeon:Reward( name, last )
 		if player:GetName() == name then
 			if not last then
 				player:SetMoney( player:GetMoney() + 15 )
-				if player:GetValue( "Lang" ) == "ENG" then
+				if player:GetValue( "Lang" ) == "EN" then
 					player:SendChatMessage( "[Record] ", Color.White, "Reward: $15 for keeping flying record!", Color( 255, 150, 0 ) )
 				else
 					player:SendChatMessage( "[Рекорд] ", Color.White, "Награда: $15 за удержание рекорда по полёту!", Color( 255, 150, 0 ) )
 				end
 			else
 				player:SetMoney( player:GetMoney() + 500 )
-				if player:GetValue( "Lang" ) == "ENG" then
+				if player:GetValue( "Lang" ) == "EN" then
 					player:SendChatMessage( "[Record] ", Color.White, "You won a fantastic pigeon! Your reward: $500!", Color( 255, 150, 0 ) )
 				else
 					player:SendChatMessage( "[Рекорд] ", Color.White, "Вы победили в хорошечном голубе! Ваша награда: $500!", Color( 255, 150, 0 ) )
 				end
 
 				for p in Server:GetPlayers() do
-					if p:GetValue( "Lang" ) == "ENG" then
+					if p:GetValue( "Lang" ) == "EN" then
 						p:SendChatMessage( "[Record] ", Color.White, player:GetName() .. " won a fantastic pigeon and won $500!", Color( 255, 150, 0 ) )
 					else
 						p:SendChatMessage( "[Рекорд] ", Color.White, player:GetName() .. " победил в хорошечном голубе и выиграл $500!", Color( 255, 150, 0 ) )

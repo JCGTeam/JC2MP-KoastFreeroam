@@ -68,11 +68,11 @@ function Shop:__init()
 	self.buy_button:SetTextHoveredColor( Color.LightBlue )
 	self.buy_button:SetTextPressedColor( Color.LightBlue )
 	self.buy_button:SetTextSize( 15 )
-	self.buy_button:SetSize( Vector2( 0, 30 ) )
+	self.buy_button:SetHeight( 30 )
 	self.buy_button:SetDock( GwenPosition.Bottom )
 	self.buy_button:Subscribe( "Press", self, self.Buy )
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.noVipText = "У вас отсувствует VIP-статус :("
@@ -670,7 +670,7 @@ function Shop:CreateSubCategory( category, subcategory_name )
 	subcategory_name == "Трактора" or subcategory_name == "Вертолёты" or subcategory_name == "Самолёты" or subcategory_name == "Лодки" or subcategory_name == "DLC") then
 		local skin = RadioButtonController.Create( t.window )
 		skin:SetMargin( Vector2( 0, 5 ), Vector2( 0, 0 ) )
-		skin:SetSize( Vector2( 0, 20 ) )
+		skin:SetHeight( 20 )
 		skin:SetDock( GwenPosition.Bottom )
 		local units = { "Декаль Панау", "Декаль Японцев", "Декаль Уларов", "Декаль Жнецов", "Декаль Тараканов"}
 		for i, v in ipairs( units ) do
@@ -763,7 +763,7 @@ function Shop:LoadCategories()
 			setColorBtn:SetTextHoveredColor( Color.GreenYellow )
 			setColorBtn:SetTextPressedColor( Color.GreenYellow )
 			setColorBtn:SetTextSize( 15 )
-			setColorBtn:SetSize( Vector2( 0, 30 ) )
+			setColorBtn:SetHeight( 30 )
 			setColorBtn:SetDock( GwenPosition.Bottom )
 			setColorBtn:Subscribe( "Down", function()
 				Network:Send( "ColorChanged", { tone1 = self.tone1, tone2 = self.tone2 } )

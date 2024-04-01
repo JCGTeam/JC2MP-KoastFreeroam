@@ -15,13 +15,11 @@ function Clock:Render()
 	local textDate = os.date( "%d/%m/%Y" )
 
 	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
-	Render:DrawText( position + Vector2.One, textTime, Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 24 )
-	Render:DrawText( position, textTime, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), 24 )
+	Render:DrawShadowedText( position, textTime, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 24 )
 
 	local height = Render:GetTextHeight("A") * 1.5
 	position.y = position.y + height
-	Render:DrawText( position + Vector2.One, textDate, Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 16 )
-	Render:DrawText( position, textDate, Color( 255, 165, 0, Game:GetSetting(4) * 2.25 ), 16 )		
+	Render:DrawShadowedText( position, textDate, Color( 255, 165, 0, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 16 )		
 end
 
 clock = Clock()

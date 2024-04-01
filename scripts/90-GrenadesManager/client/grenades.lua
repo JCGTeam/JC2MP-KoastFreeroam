@@ -223,7 +223,7 @@ function Grenades:Render()
 
 		if LocalPlayer:GetValue( "Explosive" ) == 1 then
 			imga = self.grenadeIMG
-			text = LocalPlayer:GetValue( "Lang" ) == "ENG" and "Fragmentation Grenade" or "Осколочная граната"
+			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Fragmentation Grenade" or "Осколочная граната"
 			text_timer = "R"
 
 			if self.TossTimer then
@@ -237,19 +237,19 @@ function Grenades:Render()
 			end
 		elseif LocalPlayer:GetValue( "Explosive" ) == 2 then
 			imga = self.c4
-			text = LocalPlayer:GetValue( "Lang" ) == "ENG" and "Triggered Explosive" or "Бомбы-липучки"
+			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Triggered Explosive" or "Бомбы-липучки"
 			text_max = self.C4Max
 			text_timer = LocalPlayer:GetValue( "C4Count" ) and tostring( LocalPlayer:GetValue( "C4Count" ) ) or "0"
 
 			self.c4actv = true
 		elseif LocalPlayer:GetValue( "Explosive" ) == 3 then
 			imga = self.clay
-			text = LocalPlayer:GetValue( "Lang" ) == "ENG" and "Claymore Mine" or "Мины Клеймор"
+			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Claymore Mine" or "Мины Клеймор"
 			text_timer = "∞"
 
 			self.c4actv = false
 		elseif LocalPlayer:GetValue( "Explosive" ) == 4 then
-			text = LocalPlayer:GetValue( "Lang" ) == "ENG" and "Firework Grenade" or "Фейерверковая граната"
+			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Firework Grenade" or "Фейерверковая граната"
 			text_timer = "R"
 
 			if self.TossTimer then
@@ -262,7 +262,7 @@ function Grenades:Render()
 				end
 			end
 		elseif LocalPlayer:GetValue( "Explosive" ) == 5 then
-			text = LocalPlayer:GetValue( "Lang" ) == "ENG" and "Nuclear Grenade" or "Ядерная граната"
+			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Nuclear Grenade" or "Ядерная граната"
 			text_timer = "R"
 
 			if self.TossTimer then
@@ -275,7 +275,7 @@ function Grenades:Render()
 				end
 			end
 		elseif LocalPlayer:GetValue( "Explosive" ) == 6 then
-			text = LocalPlayer:GetValue( "Lang" ) == "ENG" and "SUPER Nuclear Grenade" or "СУПЕР Ядерная граната"
+			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "SUPER Nuclear Grenade" or "СУПЕР Ядерная граната"
 			text_timer = "R"
 
 			if self.TossTimer then
@@ -323,14 +323,9 @@ function Grenades:Render()
 			self.background:Draw()
 			imga:Draw()
 
-			Render:DrawText( pos_2d_text + Vector2.One, text, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), self.textb:GetSize().y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) )
-			Render:DrawText( pos_2d_text, text, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), self.textb:GetSize().y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) )
-
-			Render:DrawText( pos_2d_timer, text_timer, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), imga:GetSize().y / 0.13 / Render:GetTextWidth( "00" ) )
-			Render:DrawText( pos_2d_timer, text_timer, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), imga:GetSize().y / 0.13 / Render:GetTextWidth( "00" ) )
-
-			Render:DrawText( pos_2d_c4max, text_max, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), imga:GetSize().y / 0.18 / Render:GetTextWidth( "00" ) )
-			Render:DrawText( pos_2d_c4max, text_max, Color( 169, 169, 169, Game:GetSetting(4) * 2.25 ), imga:GetSize().y / 0.18 / Render:GetTextWidth( "00" ) )
+			Render:DrawShadowedText( pos_2d_text, text, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), self.textb:GetSize().y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) )
+			Render:DrawShadowedText( pos_2d_timer, text_timer, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), imga:GetSize().y / 0.13 / Render:GetTextWidth( "00" ) )
+			Render:DrawShadowedText( pos_2d_c4max, text_max, Color( 169, 169, 169, Game:GetSetting(4) * 2.25 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), imga:GetSize().y / 0.18 / Render:GetTextWidth( "00" ) )
 		end
 	end
 end

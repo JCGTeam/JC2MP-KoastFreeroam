@@ -49,7 +49,6 @@ function ClanSystem:ModuleLoad()
 	self.playerToRow = {}
 	self.clansRow = {}
 
-	Network:Send( "Clans:GetClans" )
 	self.clanMenu.window = GUI:Window( "✽ Кланы", Vector2( 0.54, 0.4 ) - Vector2( 0.3, 0.45 ) / 2, Vector2( 0.6, 0.70 ) )
 	self.clanMenu.window:SetVisible( self.active )
 	self.clanMenu.window:Subscribe( "WindowClosed", self, self.WindowClosed )
@@ -66,6 +65,7 @@ function ClanSystem:ModuleLoad()
 	self.clanMenu.list:AddColumn( "Клан" )
 	self.clanMenu.list:AddColumn( "Основатель" )
 	self.clanMenu.list:AddColumn( "Тип" )
+	self.clanMenu.list:AddColumn( "Участников" )
 	self.clanMenu.list:Subscribe( "RowSelected", self, self.GetClanInfo )
 
 	self.clanMenu.bkpanelsLabel = Label.Create( clanslist )
@@ -75,30 +75,30 @@ function ClanSystem:ModuleLoad()
 
 	self.clanMenu.cLabel = GroupBox.Create( self.clanMenu.bkpanelsLabel )
 	self.clanMenu.cLabel:SetDock( GwenPosition.Top )
-	self.clanMenu.cLabel:SetSize( Vector2( 0, 100 ) )
+	self.clanMenu.cLabel:SetHeight( 100 )
 
 	self.clanMenu.manageClan = Button.Create( self.clanMenu.cLabel )
 	self.clanMenu.manageClan:SetDock( GwenPosition.Top )
 	self.clanMenu.manageClan:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.clanMenu.manageClan:SetSize( Vector2( 0, 45 ) )
+	self.clanMenu.manageClan:SetHeight( 45 )
 	self.clanMenu.manageClan:SetTextSize( 15 )
 	self.clanMenu.manageClan:Subscribe( "Press", self, self.ManageClan )
 
 	self.clanMenu.lClan = Button.Create( self.clanMenu.cLabel )
 	self.clanMenu.lClan:SetDock( GwenPosition.Top )
 	self.clanMenu.lClan:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.clanMenu.lClan:SetSize( Vector2( 0, 30 ) )
+	self.clanMenu.lClan:SetHeight( 30 )
 	self.clanMenu.lClan:SetTextSize( 15 )
 	self.clanMenu.lClan:Subscribe( "Press", self, self.ClanMenu )
 
 	self.clanMenu.pLabel = GroupBox.Create( self.clanMenu.bkpanelsLabel )
 	self.clanMenu.pLabel:SetDock( GwenPosition.Bottom )
-	self.clanMenu.pLabel:SetSize( Vector2( 0, 160 ) )
+	self.clanMenu.pLabel:SetHeight( 160 )
 
 	self.clanMenu.join = Button.Create( self.clanMenu.pLabel )
 	self.clanMenu.join:SetDock( GwenPosition.Top )
 	self.clanMenu.join:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.clanMenu.join:SetSize( Vector2( 0, 35 ) )
+	self.clanMenu.join:SetHeight( 35 )
 	self.clanMenu.join:SetTextSize( 15 )
 	self.clanMenu.join:SetTextHoveredColor( Color.SpringGreen )
 	self.clanMenu.join:Subscribe( "Press", self, self.JoinClan )
@@ -106,28 +106,28 @@ function ClanSystem:ModuleLoad()
 	self.clanMenu.playersList = Button.Create( self.clanMenu.pLabel )
 	self.clanMenu.playersList:SetDock( GwenPosition.Top )
 	self.clanMenu.playersList:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.clanMenu.playersList:SetSize( Vector2( 0, 30 ) )
+	self.clanMenu.playersList:SetHeight( 30 )
 	self.clanMenu.playersList:SetTextSize( 15 )
 	self.clanMenu.playersList:Subscribe( "Press", self, self.ClanList )
 
 	self.clanMenu.invitations = Button.Create( self.clanMenu.pLabel )
 	self.clanMenu.invitations:SetDock( GwenPosition.Top )
 	self.clanMenu.invitations:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.clanMenu.invitations:SetSize( Vector2( 0, 30 ) )
+	self.clanMenu.invitations:SetHeight( 30 )
 	self.clanMenu.invitations:SetTextSize( 15 )
 	self.clanMenu.invitations:Subscribe( "Press", self, self.Invitations )
 
 	self.clanMenu.create = Button.Create( self.clanMenu.pLabel )
 	self.clanMenu.create:SetDock( GwenPosition.Top )
 	self.clanMenu.create:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.clanMenu.create:SetSize( Vector2( 0, 30 ) )
+	self.clanMenu.create:SetHeight( 30 )
 	self.clanMenu.create:SetTextSize( 15 )
 	self.clanMenu.create:Subscribe( "Press", self, self.ShowCreate )
 
 	self.clanMenu.iLabel = GroupBox.Create( self.clanMenu.bkpanelsLabel )
 	self.clanMenu.iLabel:SetMargin( Vector2( 0, 0 ), Vector2( 0, 20 ) )
 	self.clanMenu.iLabel:SetDock( GwenPosition.Bottom )
-	self.clanMenu.iLabel:SetSize( Vector2( 0, 160 ) )
+	self.clanMenu.iLabel:SetHeight( 160 )
 	self.clanMenu.iLabel:SetVisible( false )
 
 	self.clanMenu.scrollpanelLabel = ScrollControl.Create( self.clanMenu.iLabel )
@@ -137,10 +137,11 @@ function ClanSystem:ModuleLoad()
 	self.clanMenu.bkpanelsLabel = Label.Create( self.clanMenu.scrollpanelLabel )
 	self.clanMenu.bkpanelsLabel:SetWrap( true )
 	self.clanMenu.bkpanelsLabel:SetDock( GwenPosition.Fill )
+	self.clanMenu.bkpanelsLabel:SetText( "..." )
 
 	self.clanMenu.searchClansEdit = TextBox.Create( clanslist )
 	self.clanMenu.searchClansEdit:SetDock( GwenPosition.Bottom )
-	self.clanMenu.searchClansEdit:SetSize( Vector2( 0, 30 ) )
+	self.clanMenu.searchClansEdit:SetHeight( 30 )
 	self.clanMenu.searchClansEdit:SetMargin( Vector2( 0, 5 ), Vector2( 5, 0 ) )
 	self.clanMenu.searchClansEdit:Subscribe( "TextChanged", self, self.SearchClans )
 	self.clanMenu.searchClansEdit:Subscribe( "Focus", self, self.Focus )
@@ -162,7 +163,7 @@ function ClanSystem:ModuleLoad()
 
 	self.createClan.pLabel = GroupBox.Create( self.createClan.bkpanelsLabel )
 	self.createClan.pLabel:SetDock( GwenPosition.Bottom )
-	self.createClan.pLabel:SetSize( Vector2( 0, 100 ) )
+	self.createClan.pLabel:SetHeight( 100 )
 
 	self.createClan.dLabel = Label.Create( self.createClan.pLabel )
 	self.createClan.dLabel:SetDock( GwenPosition.Top )
@@ -173,14 +174,14 @@ function ClanSystem:ModuleLoad()
 	self.createClan.create = Button.Create( self.createClan.pLabel )
 	self.createClan.create:SetDock( GwenPosition.Top )
 	self.createClan.create:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.createClan.create:SetSize( Vector2( 0, 30 ) )
+	self.createClan.create:SetHeight( 30 )
 	self.createClan.create:SetTextSize( 15 )
 	self.createClan.create:Subscribe( "Press", self, self.Create )
 
 	self.createClan.back = Button.Create( self.createClan.pLabel )
 	self.createClan.back:SetDock( GwenPosition.Top )
 	self.createClan.back:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.createClan.back:SetSize( Vector2( 0, 30 ) )
+	self.createClan.back:SetHeight( 30 )
 	self.createClan.back:SetTextSize( 15 )
 	self.createClan.back:Subscribe( "Press", self, self.ShowCreate )
 
@@ -192,9 +193,13 @@ function ClanSystem:ModuleLoad()
 	self.createClan.nEdit = TextBox.Create( clancreate )
 	self.createClan.nEdit:SetDock( GwenPosition.Top )
 	self.createClan.nEdit:SetSize( Vector2( 260, 25 ) )
+	self.createClan.nEdit:Subscribe( "TextChanged", function() self.createClan.clanColorPreview:SetText( self.createClan.nEdit:GetText() ~= "" and self.createClan.nEdit:GetText() or "..." ) end )
 	self.createClan.nEdit:Subscribe( "Focus", self, self.Focus )
 	self.createClan.nEdit:Subscribe( "Blur", self, self.Blur )
 	self.createClan.nEdit:Subscribe( "EscPressed", self, self.EscPressed )
+
+	local defaultColor = self.createClan.nEdit:GetTextColor()
+	self.createClan.nEdit:Subscribe( "TextChanged", function() self.createClan.nEdit:SetTextColor( ( self.createClan.nEdit:GetText():len() <= 20 ) and defaultColor or Color.Red ) end )
 
 	self.createClan.tLabel = Label.Create( clancreate )
 	self.createClan.tLabel:SetDock( GwenPosition.Top )
@@ -203,26 +208,42 @@ function ClanSystem:ModuleLoad()
 
 	self.createClan.tEdit = TextBoxMultiline.Create( clancreate )
 	self.createClan.tEdit:SetDock( GwenPosition.Top )
-	self.createClan.tEdit:SetSize( Vector2( 0, 80 ) )
+	self.createClan.tEdit:SetHeight( 80 )
 	self.createClan.tEdit:Subscribe( "Focus", self, self.Focus )
 	self.createClan.tEdit:Subscribe( "Blur", self, self.Blur )
 	self.createClan.tEdit:Subscribe( "EscPressed", self, self.EscPressed )
 
 	self.createClan.ttLabel = Label.Create( clancreate )
 	self.createClan.ttLabel:SetDock( GwenPosition.Top )
-	self.createClan.ttLabel:SetMargin( Vector2( 0, 10 ), Vector2( 0, 2 ) )
+	self.createClan.ttLabel:SetMargin( Vector2( 0, 20 ), Vector2( 0, 2 ) )
 	self.createClan.ttLabel:SizeToContents()
 
 	self.createClan.type = ComboBox.Create( clancreate )
 	self.createClan.type:SetDock( GwenPosition.Top )
-	self.createClan.type:SetSize( Vector2( 0, 20 ) )
+	self.createClan.type:SetHeight( 20 )
 	self.createClan.type:AddItem( "Открытый" )
 	self.createClan.type:AddItem( "По приглашению" )
 
-	self.createClan.picker = HSVColorPicker.Create( clancreate )
-	self.createClan.picker:SetDock( GwenPosition.Top )
-	self.createClan.picker:SetMargin( Vector2( 0, 20 ), Vector2( 0, 0 ) )
-	self.createClan.picker:SetSize( Vector2( 0, 250 ) )
+	self.createClan.subcategory = GroupBox.Create( clancreate )
+	self.createClan.subcategory:SetDock( GwenPosition.Fill )
+	self.createClan.subcategory:SetMargin( Vector2( 5, 10 ), Vector2( 0, 0 ) )
+
+	self.createClan.subcategory2 = Label.Create( self.createClan.subcategory )
+	self.createClan.subcategory2:SetDock( GwenPosition.Top )
+	self.createClan.subcategory2:SetMargin( Vector2( 5, 10 ), Vector2( 0, 0 ) )
+	self.createClan.subcategory2:SizeToContents()
+
+	self.createClan.clanColorPreview = Label.Create( self.createClan.subcategory )
+	self.createClan.clanColorPreview:SetText( "..." )
+	self.createClan.clanColorPreview:SetDock( GwenPosition.Top )
+	self.createClan.clanColorPreview:SetMargin( Vector2( 5, 0 ), Vector2( 0, 4 ) )
+	self.createClan.clanColorPreview:SizeToContents()
+
+	self.createClan.picker = HSVColorPicker.Create( self.createClan.subcategory )
+	self.createClan.picker:SetDock( GwenPosition.Fill )
+	self.createClan.picker:SetMargin( Vector2( 0, 5 ), Vector2( 0, 5 ) )
+	self.createClan.picker:SetColor( Color.White )
+	self.createClan.picker:Subscribe( "ColorChanged", function() self.createClan.clanColorPreview:SetTextColor( self.createClan.picker:GetColor() ) end )
 	self.createClan.colour = { 255, 255, 255 }
 
 	self.manageClan = {}
@@ -248,26 +269,26 @@ function ClanSystem:ModuleLoad()
 
 	self.manageClan.mcLabel = GroupBox.Create( self.manageClan.mBkpanelsLabel )
 	self.manageClan.mcLabel:SetDock( GwenPosition.Top )
-	self.manageClan.mcLabel:SetSize( Vector2( 0, 100 ) )
+	self.manageClan.mcLabel:SetHeight( 100 )
 
 	self.manageClan.manageClan = Button.Create( self.manageClan.mcLabel )
 	self.manageClan.manageClan:SetDock( GwenPosition.Top )
 	self.manageClan.manageClan:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.manageClan.manageClan:SetSize( Vector2( 0, 45 ) )
+	self.manageClan.manageClan:SetHeight( 45 )
 	self.manageClan.manageClan:SetTextSize( 15 )
 	self.manageClan.manageClan:Subscribe( "Press", self, self.ManageClan )
 
 	self.manageClan.lClan = Button.Create( self.manageClan.mcLabel )
 	self.manageClan.lClan:SetDock( GwenPosition.Top )
 	self.manageClan.lClan:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.manageClan.lClan:SetSize( Vector2( 0, 30 ) )
+	self.manageClan.lClan:SetHeight( 30 )
 	self.manageClan.lClan:SetTextSize( 15 )
 	self.manageClan.lClan:Subscribe( "Press", self, self.ClanMenu )
 
 	self.manageClan.newsLabel = GroupBox.Create( self.manageClan.mBkpanelsLabel )
 	self.manageClan.newsLabel:SetMargin( Vector2( 0, 10 ), Vector2( 0, 10 ) )
 	self.manageClan.newsLabel:SetDock( GwenPosition.Top )
-	self.manageClan.newsLabel:SetSize( Vector2( 0, 100 ) )
+	self.manageClan.newsLabel:SetHeight( 100 )
 
 	self.manageClan.scrollpanelLabel = ScrollControl.Create( self.manageClan.newsLabel )
 	self.manageClan.scrollpanelLabel:SetDock( GwenPosition.Fill )
@@ -279,19 +300,19 @@ function ClanSystem:ModuleLoad()
 
 	self.manageClan.mpLabel = GroupBox.Create( self.manageClan.mBkpanelsLabel )
 	self.manageClan.mpLabel:SetDock( GwenPosition.Bottom )
-	self.manageClan.mpLabel:SetSize( Vector2( 0, 85 ) )
+	self.manageClan.mpLabel:SetHeight( 85 )
 
 	self.manageClan.playersList = Button.Create( self.manageClan.mpLabel )
 	self.manageClan.playersList:SetDock( GwenPosition.Top )
 	self.manageClan.playersList:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.manageClan.playersList:SetSize( Vector2( 0, 30 ) )
+	self.manageClan.playersList:SetHeight( 30 )
 	self.manageClan.playersList:SetTextSize( 15 )
 	self.manageClan.playersList:Subscribe( "Press", self, self.ClanList )
 
 	self.manageClan.leaveClan = Button.Create( self.manageClan.mpLabel )
 	self.manageClan.leaveClan:SetDock( GwenPosition.Top )
 	self.manageClan.leaveClan:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.manageClan.leaveClan:SetSize( Vector2( 0, 30 ) )
+	self.manageClan.leaveClan:SetHeight( 30 )
 	self.manageClan.leaveClan:SetTextSize( 15 )
 	self.manageClan.leaveClan:SetTextHoveredColor( Color.DarkOrange )
 	self.manageClan.leaveClan:SetTextPressedColor( Color.DarkOrange )
@@ -300,11 +321,11 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.mDownpanelsLabel = Label.Create( hometab )
 	self.manageClan.mDownpanelsLabel:SetDock( GwenPosition.Bottom )
 	self.manageClan.mDownpanelsLabel:SetMargin( Vector2( 0, 10 ), Vector2( 0, 0 ) )
-	self.manageClan.mDownpanelsLabel:SetSize( Vector2( 0, 110 ) )
+	self.manageClan.mDownpanelsLabel:SetHeight( 110 )
 
 	self.manageClan.cInfoLabel = GroupBox.Create( self.manageClan.mDownpanelsLabel )
 	self.manageClan.cInfoLabel:SetDock( GwenPosition.Left )
-	self.manageClan.cInfoLabel:SetSize( Vector2( 280, 0 ) )
+	self.manageClan.cInfoLabel:SetWidth( 280 )
 
 	self.manageClan.ciLabel = Label.Create( self.manageClan.cInfoLabel )
 	self.manageClan.ciLabel:SetDock( GwenPosition.Bottom )
@@ -317,7 +338,7 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.ranks = ComboBox.Create( self.manageClan.psettLabel )
 	self.manageClan.ranks:SetDock( GwenPosition.Top )
 	self.manageClan.ranks:SetMargin( Vector2( 0, 5 ), Vector2( 0, 0 ) )
-	self.manageClan.ranks:SetSize( Vector2( 0, 20 ) )
+	self.manageClan.ranks:SetHeight( 20 )
 	self.manageClan.ranks:AddItem( "Главный" )
 	self.manageClan.ranks:AddItem( "Заместитель" )
 	self.manageClan.ranks:AddItem( "Редактор" )
@@ -327,14 +348,14 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.setRank = Button.Create( self.manageClan.psettLabel )
 	self.manageClan.setRank:SetDock( GwenPosition.Top )
 	self.manageClan.setRank:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.manageClan.setRank:SetSize( Vector2( 0, 30 ) )
+	self.manageClan.setRank:SetHeight( 30 )
 	self.manageClan.setRank:SetTextSize( 15 )
 	self.manageClan.setRank:Subscribe( "Press", self, self.SetRank )
 
 	self.manageClan.kick = Button.Create( self.manageClan.psettLabel )
 	self.manageClan.kick:SetDock( GwenPosition.Top )
 	self.manageClan.kick:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.manageClan.kick:SetSize( Vector2( 0, 30 ) )
+	self.manageClan.kick:SetHeight( 30 )
 	self.manageClan.kick:SetTextSize( 15 )
 	self.manageClan.kick:SetTextHoveredColor( Color.DarkOrange )
 	self.manageClan.kick:Subscribe( "Press", self, self.Kick )
@@ -345,7 +366,7 @@ function ClanSystem:ModuleLoad()
 	self.log = {}
 	self.log.clear = Button.Create( clanlogs )
 	self.log.clear:SetDock( GwenPosition.Bottom )
-	self.log.clear:SetSize( Vector2( 0, 35 ) )
+	self.log.clear:SetHeight( 35 )
 	self.log.clear:SetTextSize( 15 )
 	self.log.clear:Subscribe( "Press", self, self.ClearLog )
 
@@ -365,7 +386,7 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.newsmngLabel = GroupBox.Create( self.manageClan.bkpanelsLabel )
 	self.manageClan.newsmngLabel:SetMargin( Vector2( 0, 10 ), Vector2( 0, 10 ) )
 	self.manageClan.newsmngLabel:SetDock( GwenPosition.Top )
-	self.manageClan.newsmngLabel:SetSize( Vector2( 0, 140 ) )
+	self.manageClan.newsmngLabel:SetHeight( 140 )
 
 	self.manageClan.newsEdit = TextBoxMultiline.Create( self.manageClan.newsmngLabel )
 	self.manageClan.newsEdit:SetDock( GwenPosition.Fill )
@@ -378,13 +399,13 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.newsApply = Button.Create( self.manageClan.newsmngLabel )
 	self.manageClan.newsApply:SetDock( GwenPosition.Bottom )
 	self.manageClan.newsApply:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.manageClan.newsApply:SetSize( Vector2( 0, 30 ) )
+	self.manageClan.newsApply:SetHeight( 30 )
 	self.manageClan.newsApply:SetTextSize( 15 )
 	self.manageClan.newsApply:Subscribe( "Press", self, self.ChangeClanNews )
 
 	self.manageClan.pLabel = GroupBox.Create( self.manageClan.bkpanelsLabel )
 	self.manageClan.pLabel:SetDock( GwenPosition.Bottom )
-	self.manageClan.pLabel:SetSize( Vector2( 0, 100 ) )
+	self.manageClan.pLabel:SetHeight( 100 )
 
 	self.manageClan.dLabel = Label.Create( self.manageClan.pLabel )
 	self.manageClan.dLabel:SetDock( GwenPosition.Top )
@@ -395,14 +416,14 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.create = Button.Create( self.manageClan.pLabel )
 	self.manageClan.create:SetDock( GwenPosition.Top )
 	self.manageClan.create:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.manageClan.create:SetSize( Vector2( 0, 30 ) )
+	self.manageClan.create:SetHeight( 30 )
 	self.manageClan.create:SetTextSize( 15 )
 	self.manageClan.create:Subscribe( "Press", self, self.ChangeDescription )
 
 	self.manageClan.remove = Button.Create( self.manageClan.pLabel )
 	self.manageClan.remove:SetDock( GwenPosition.Top )
 	self.manageClan.remove:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.manageClan.remove:SetSize( Vector2( 0, 30 ) )
+	self.manageClan.remove:SetHeight( 30 )
 	self.manageClan.remove:SetTextSize( 15 )
 	self.manageClan.remove:SetTextHoveredColor( Color.DarkOrange )
 	self.manageClan.remove:Subscribe( "Press", self, self.Remove )
@@ -414,7 +435,7 @@ function ClanSystem:ModuleLoad()
 
 	self.manageClan.tEdit = TextBoxMultiline.Create( clansettings )
 	self.manageClan.tEdit:SetDock( GwenPosition.Top )
-	self.manageClan.tEdit:SetSize( Vector2( 0, 80 ) )
+	self.manageClan.tEdit:SetHeight( 80 )
 	self.manageClan.tEdit:Subscribe( "Focus", self, self.Focus )
 	self.manageClan.tEdit:Subscribe( "Blur", self, self.Blur )
 	self.manageClan.tEdit:Subscribe( "EscPressed", self, self.EscPressed )
@@ -426,24 +447,48 @@ function ClanSystem:ModuleLoad()
 
 	self.manageClan.type = ComboBox.Create( clansettings )
 	self.manageClan.type:SetDock( GwenPosition.Top )
-	self.manageClan.type:SetSize( Vector2( 0, 20 ) )
+	self.manageClan.type:SetHeight( 20 )
 	self.manageClan.type:AddItem( "Открытый" )
 	self.manageClan.type:AddItem( "По приглашению" )
 
-	self.manageClan.picker = HSVColorPicker.Create( clansettings )
-	self.manageClan.picker:SetDock( GwenPosition.Top )
-	self.manageClan.picker:SetMargin( Vector2( 0, 20 ), Vector2( 0, 0 ) )
-	self.manageClan.picker:SetSize( Vector2( 0, 250 ) )
+	self.manageClan.subcategory = GroupBox.Create( clansettings )
+	self.manageClan.subcategory:SetDock( GwenPosition.Fill )
+	self.manageClan.subcategory:SetMargin( Vector2( 5, 10 ), Vector2( 0, 0 ) )
+
+	self.manageClan.subcategory2 = Label.Create( self.manageClan.subcategory )
+	self.manageClan.subcategory2:SetDock( GwenPosition.Top )
+	self.manageClan.subcategory2:SetMargin( Vector2( 5, 10 ), Vector2( 0, 0 ) )
+	self.manageClan.subcategory2:SizeToContents()
+
+	local row = self.clanMenu.list:GetSelectedRow()
+
+	self.manageClan.clanColorPreview = Label.Create( self.manageClan.subcategory )
+	self.manageClan.clanColorPreview:SetText( row and row:GetCellText( 0 ) or "..." )
+	self.manageClan.clanColorPreview:SetDock( GwenPosition.Top )
+	self.manageClan.clanColorPreview:SetMargin( Vector2( 5, 0 ), Vector2( 0, 4 ) )
+	self.manageClan.clanColorPreview:SizeToContents()
+
+	self.manageClan.picker = HSVColorPicker.Create( self.manageClan.subcategory )
+	self.manageClan.picker:SetDock( GwenPosition.Fill )
+	self.manageClan.picker:SetMargin( Vector2( 0, 5 ), Vector2( 0, 5 ) )
+	self.manageClan.picker:SetHeight( 250 )
+	self.manageClan.picker:Subscribe( "ColorChanged", function() self.manageClan.clanColorPreview:SetTextColor( self.manageClan.picker:GetColor() ) end )
 	self.manageClan.colour = { 255, 255, 255 }
 
 	self.confirm = {}
 	self.confirm.action = ""
 	self.confirm.window = GUI:Window( "Подтвердить действие", Vector2( 0.86, 0.65 ) - Vector2( 0.13, 0.13 ) / 2, Vector2( 0.19, 0.13 ) )
 	self.confirm.window:SetVisible( false )
-	self.confirm.label = GUI:Label( "Вы уверены, что хотите это сделать?", Vector2( 0.03, 0.1 ), Vector2( 0.90, 0.23 ), self.confirm.window )
+	self.confirm.label = Label.Create( self.confirm.window )
+	self.confirm.label:SetDock( GwenPosition.Fill )
+	self.confirm.label:SetAlignment( GwenPosition.Center )
+	self.confirm.label:SetText( "Вы уверены, что хотите это сделать?" )
 	self.confirm.label:SetTextColor( Color.DarkOrange )
-	self.confirm.accept = GUI:Button( "Да", Vector2( 0, 0.35 ), Vector2( 0.95, 0.3 ), self.confirm.window )
+	self.confirm.accept = Button.Create( self.confirm.window )
+	self.confirm.accept:SetDock( GwenPosition.Bottom )
+	self.confirm.accept:SetText( "Да" )
 	self.confirm.accept:SetTextHoveredColor( Color.DarkOrange )
+	self.confirm.accept:SetHeight( 30 )
 	self.confirm.accept:Subscribe( "Press", self, self.Confirm )
 
 	self.invitations = {}
@@ -457,7 +502,7 @@ function ClanSystem:ModuleLoad()
 	self.invitations.join = Button.Create( self.invitations.window )
 	self.invitations.join:SetDock( GwenPosition.Bottom )
 	self.invitations.join:SetMargin( Vector2( 0, 5 ), Vector2( 0, 0 ) )
-	self.invitations.join:SetSize( Vector2( 0, 35 ) )
+	self.invitations.join:SetHeight( 35 )
 	self.invitations.join:SetTextSize( 15 )
 	self.invitations.join:SetTextHoveredColor( Color.SpringGreen )
 	self.invitations.join:Subscribe( "Press", self, self.AcceptInvite )
@@ -479,14 +524,14 @@ function ClanSystem:ModuleLoad()
 	self.clanList.invitePlayer = Button.Create( self.clanList.window )
 	self.clanList.invitePlayer:SetDock( GwenPosition.Bottom )
 	self.clanList.invitePlayer:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
-	self.clanList.invitePlayer:SetSize( Vector2( 0, 35 ) )
+	self.clanList.invitePlayer:SetHeight( 35 )
 	self.clanList.invitePlayer:SetTextSize( 15 )
 	self.clanList.invitePlayer:SetTextHoveredColor( Color.SpringGreen )
 	self.clanList.invitePlayer:Subscribe( "Press", self, self.InvitePlayer )
 
 	self.clanList.searchEdit = TextBox.Create( self.clanList.window )
 	self.clanList.searchEdit:SetDock( GwenPosition.Bottom )
-	self.clanList.searchEdit:SetSize( Vector2( 0, 30 ) )
+	self.clanList.searchEdit:SetHeight( 30 )
 	self.clanList.searchEdit:SetMargin( Vector2( 2, 0 ), Vector2( 2, 2 ) )
 	self.clanList.searchEdit:Subscribe( "TextChanged", self, self.SearchPlayer )
 	self.clanList.searchEdit:Subscribe( "Focus", self, self.Focus )
@@ -506,7 +551,7 @@ function ClanSystem:ModuleLoad()
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.clanMenu.cLabel:SetText( "Клан" )
@@ -518,7 +563,6 @@ function ClanSystem:ModuleLoad()
 		self.clanMenu.invitations:SetText( "Приглашения" )
 		self.clanMenu.create:SetText( "Создать клан" )
 		self.clanMenu.iLabel:SetText( "Информация" )
-		self.clanMenu.bkpanelsLabel:SetText( "Название: Х/З\nОснователь: Х/З\nДата создания: Х/З\nТип: Х/З\nОписание: Х/З" )
 		self.clanMenu.searchClansEdit:SetToolTip( "Поиск" )
 		self.createClan.pLabel:SetText( "Управление" )
 		self.createClan.dLabel:SetText( "Требуется " .. formatNumber( Prices.CreateClan ) .. ", чтобы создать клан" )
@@ -527,6 +571,8 @@ function ClanSystem:ModuleLoad()
 		self.createClan.nLabel:SetText( "Название клана:" )
 		self.createClan.nEdit:SetToolTip( "(макс. 20 символов)" )
 		self.createClan.tLabel:SetText( "Описание клана:" )
+		self.createClan.subcategory:SetText( "Цвет" )
+		self.createClan.subcategory2:SetText( "Предосмотр:" )
 		self.createClan.ttLabel:SetText( "Тип клана:" )
 		self.manageClan.mcLabel:SetText( "Клан" )
 		self.manageClan.manageClan:SetText( "★ Ваш клан ★" )
@@ -549,6 +595,8 @@ function ClanSystem:ModuleLoad()
 		self.manageClan.create:SetText( "Применить изменения" )
 		self.manageClan.remove:SetText( "Удалить клан" )
 		self.manageClan.tLabel:SetText( "Описание клана:" )
+		self.manageClan.subcategory:SetText( "Цвет" )
+		self.manageClan.subcategory2:SetText( "Предосмотр:" )
 		self.manageClan.ttLabel:SetText( "Тип клана:" )
 		self.invitations.join:SetText( "» Присоединиться к клану" )
 		self.clanList.invitePlayer:SetText( "» Пригласить игрока" )
@@ -568,7 +616,6 @@ function ClanSystem:Lang()
 	self.clanMenu.invitations:SetText( "Invitations" )
 	self.clanMenu.create:SetText( "Create clan" )
 	self.clanMenu.iLabel:SetText( "Information" )
-	self.clanMenu.bkpanelsLabel:SetText( "Name: N/A\nFounder: N/A\nCreation date: N/A\nType: N/A\nDescription: N/A" )
 	self.clanMenu.searchClansEdit:SetToolTip( "Search" )
 	self.createClan.pLabel:SetText( "Manage" )
 	self.createClan.dLabel:SetText( "Requires " .. formatNumber( Prices.CreateClan ) .. " to create clan" )
@@ -577,6 +624,8 @@ function ClanSystem:Lang()
 	self.createClan.nLabel:SetText( "Clan name:" )
 	self.createClan.nEdit:SetToolTip( "(max 20 characters)" )
 	self.createClan.tLabel:SetText( "Clan description:" )
+	self.createClan.subcategory:SetText( "Color" )
+	self.createClan.subcategory2:SetText( "Preview:" )
 	self.createClan.ttLabel:SetText( "Clan type:" )
 	self.manageClan.mcLabel:SetText( "Clan" )
 	self.manageClan.manageClan:SetText( "★ Your clan ★" )
@@ -599,6 +648,8 @@ function ClanSystem:Lang()
 	self.manageClan.create:SetText( "Apply changes" )
 	self.manageClan.remove:SetText( "Remove clan" )
 	self.manageClan.tLabel:SetText( "Clan description:" )
+	self.manageClan.subcategory:SetText( "Color" )
+	self.manageClan.subcategory2:SetText( "Preview:" )
 	self.manageClan.ttLabel:SetText( "Clan type:" )
 	self.confirm.window:SetTitle( "Confirm action" )
 	self.confirm.label:SetText( "Are you sure you want to do this?" )
@@ -613,10 +664,10 @@ end
 function ClanSystem:GetClanInfo()
 	local row = self.clanMenu.list:GetSelectedRow()
 	if ( row ~= nil ) then
-		if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
-			self.clanMenu.bkpanelsLabel:SetText( "Name: " .. row:GetCellText( 0 ) .. "\nCreation date: " .. row:GetName():sub( 0, 17 ) .. "\nFounder: " .. row:GetCellText( 1 ) .. "\nType: " .. row:GetCellText( 2 ) .. "\nDescription: " .. row:GetName():sub( 18 ) )
+		if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+			self.clanMenu.bkpanelsLabel:SetText( "Name: " .. row:GetCellText( 0 ) .. "\nCreation date: " .. row:GetName():sub( 0, 17 ) .. "\nFounder: " .. row:GetCellText( 1 ) .. "\nType: " .. row:GetCellText( 2 ) .. "\nMembers: " .. row:GetCellText( 3 ) .. "\nDescription: " .. row:GetName():sub( 18 ) )
 		else
-			self.clanMenu.bkpanelsLabel:SetText( "Название: " .. row:GetCellText( 0 ) .. "\nДата создания: " .. row:GetName():sub( 0, 17 ) .. "\nОснователь: " .. row:GetCellText( 1 ) .. "\nТип: " .. row:GetCellText( 2 ) .. "\nОписание: " .. row:GetName():sub( 18 ) )
+			self.clanMenu.bkpanelsLabel:SetText( "Название: " .. row:GetCellText( 0 ) .. "\nДата создания: " .. row:GetName():sub( 0, 17 ) .. "\nОснователь: " .. row:GetCellText( 1 ) .. "\nТип: " .. row:GetCellText( 2 ) .. "\nУчастников: " .. row:GetCellText( 3 ) .. "\nОписание: " .. row:GetName():sub( 18 ) )
 		end
 		self.clanMenu.bkpanelsLabel:SizeToContents()
 		self.clanMenu.iLabel:SetVisible( true )
@@ -775,14 +826,17 @@ function ClanSystem:AcceptInvite()
 	end
 end
 
-function ClanSystem:ReceiveClans( clans )
+function ClanSystem:ReceiveClans( args )
 	self.clanMenu.list:Clear()
-	for name, data in pairs ( clans ) do
+	for name, data in pairs ( args.clans ) do
 		local colour = ( data.colour:split ( "," ) or { 255, 255, 255 } )
 		local r, g, b = table.unpack ( colour )
+		local membersCount = args.clanMembers[name] and #args.clanMembers[name] or 0
+
 		local item = self.clanMenu.list:AddItem( tostring ( name ) )
 		item:SetCellText( 1, data.creator )
 		item:SetCellText( 2, ( data.type == "Открытый" and "Публичный" or "По приглашению" ) )
+		item:SetCellText( 3, tostring( membersCount ) )
 		item:SetName( tostring( data.creationDate ) .. tostring( data.description ) )
 		item:SetTextColor( Color( tonumber( r ), tonumber( g ), tonumber( b ) ) )
 		table.insert( self.clanList.rows, item )
@@ -796,6 +850,8 @@ function ClanSystem:JoinClan()
 		local clan = row:GetCellText( 0 )
 		Network:Send( "Clans:JoinClan", clan )
 	end
+
+	Network:Send( "Clans:GetClans" )
 end
 
 function ClanSystem:ShowCreate()
@@ -836,29 +892,46 @@ function ClanSystem:ReceiveData( args )
 	self.manageClan.newstbLabel:SetText( args.newstext )
 	self.manageClan.newstbLabel:SizeToContents()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self.manageClan.ciLabel:SetText(
-			"> Clan name: " .. tostring ( args.clanData.name ) ..
+			"> Clan name: " .. tostring( args.clanData.name ) ..
 			"\n\n★ Clan type: " .. ( args.clanData.type == "Открытый" and "Публичный" or "По приглашению" ) ..
-			"\n\nツ Total members: " .. tostring ( #args.members ) ..
-			"\n\n● Creation date: ".. tostring ( args.clanData.creationDate ) )
+			"\n\nツ Members: " .. tostring( #args.members ) ..
+			"\n\n● Creation date: ".. tostring( args.clanData.creationDate ) )
 	else
 		self.manageClan.ciLabel:SetText(
-			"> Название клана: " .. tostring ( args.clanData.name ) ..
+			"> Название клана: " .. tostring( args.clanData.name ) ..
 			"\n\n★ Тип клана: " .. ( args.clanData.type == "Открытый" and "Публичный" or "По приглашению" ) ..
-			"\n\nツ Всего участников: " .. tostring ( #args.members ) ..
-			"\n\n● Дата создания: ".. tostring ( args.clanData.creationDate ) )
+			"\n\nツ Участников: " .. tostring( #args.members ) ..
+			"\n\n● Дата создания: ".. tostring( args.clanData.creationDate ) )
 	end
+
 	self.manageClan.ciLabel:SizeToContents()
 	self.manageClan.mList:Clear()
+
+	self.manageClan.newsEdit:SetText( tostring( args.clanData.clannews ) )
+	self.manageClan.tEdit:SetText( tostring( args.clanData.description ) )
+
+	local colour = ( args.clanData.colour:split ( "," ) or { 255, 255, 255 } )
+	local r, g, b = table.unpack ( colour )
+
+	self.manageClan.picker:SetColor( Color( tonumber( r ), tonumber( g ), tonumber( b ) ) )
+
+	self.manageClan.clanColorPreview:SetText( tostring ( args.clanData.name ) )
+	self.manageClan.clanColorPreview:SetTextColor( self.manageClan.picker:GetColor() )
+
+	self.manageClan.newsApply:SetEnabled( true )
+
 	for _, member in ipairs( args.members ) do
 		local item = self.manageClan.mList:AddItem( tostring( member.name ) )
-		item:SetCellText( 1, tostring ( member.rank ) )
-		item:SetCellText( 2, tostring ( member.joinDate ) )
+		item:SetCellText( 1, tostring( member.rank ) )
+		item:SetCellText( 2, tostring( member.joinDate ) )
 		item:SetDataString( "id", member.steamID )
 		table.insert( self.manageClan.rows, item )
 	end
+
 	self.log.list:Clear()
+
 	if ( type ( args.messages ) == "table" ) then
 		for _, msg in ipairs( args.messages ) do
 			if ( msg.type == "log" ) then
@@ -904,8 +977,10 @@ function ClanSystem:Confirm()
 	elseif ( self.confirm.action == "leave" ) then
 		Network:Send( "Clans:Leave" )
 	end
+
+	Network:Send( "Clans:GetClans" )
 	self:ClanMenu()
-	self:SetActive( false )
+	self.confirm.window:SetVisible( false )
 end
 
 function ClanSystem:addPlayerToList( player )
@@ -1048,7 +1123,7 @@ end
 clanSystem = ClanSystem()
 
 function LocalPlayer:Message( msg, color )
-	Chat:Print( "[Клан] ", Color.White, msg, msgColors [ color ] )
+	Chat:Print( "[Кланы] ", Color.White, msg, msgColors [ color ] )
 end
 
 function convertNumberToString( value )

@@ -7,7 +7,7 @@ function Tron:__init()
 	self.queueMin = 0
 	self.queueMax = 0
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "ENG" then
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
 		self.nameT = "Игроки"
@@ -76,11 +76,10 @@ end
 
 function DrawCenteredShadowedText( position, text, color, textsize )
 	local textsize = textsize or TextSize.Default
-	local bounds = Render:GetTextSize(text, textsize)
+	local bounds = Render:GetTextSize( text, textsize )
 
-	if not IsNaN(position) then
-		Render:DrawText( position - (bounds / 2) + (Vector2.One * math.max(textsize / 32, 1)), text, Color( 25, 25, 25, 150 ), textsize )
-		Render:DrawText( position - (bounds / 2), text, color, textsize )
+	if not IsNaN( position ) then
+		Render:DrawShadowedText( position - (bounds / 2), text, color, Color( 25, 25, 25, 150 ), textsize )
 	end
 end
 

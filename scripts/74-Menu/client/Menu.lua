@@ -50,7 +50,6 @@ function Menu:__init()
 	self.eng_button:SetSize( Vector2( Render.Size.x / 5.5, Render.Size.x / 7 ) )
 	self.eng_button:SetPosition( self.eng_image:GetPosition() )
 	self.eng_button:SetText( "English [EN]" )
-	self.eng_button:SetToolTip( "Not full. Recommended playing on Alpha's Salt Factory" )
 	self.eng_button:SetTextPadding( Vector2( 0, Render.Size.x / 9 ), Vector2.Zero )
 	self.eng_button:SetTextSize( Render.Size.x / 0.75 / Render:GetTextWidth( "BTextResoliton" ) )
 	self.eng_button:Subscribe( "Press", self, self.Eng )
@@ -370,7 +369,6 @@ function Menu:Eng()
 
 	self.tofreeroamtext = "Welcome to freeroam mode!"
 
-	Events:Fire( "EngHelp" )
 	Events:Fire( "Lang" )
 
 	local type = 0

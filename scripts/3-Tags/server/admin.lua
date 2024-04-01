@@ -350,7 +350,7 @@ function Admin:PostTick( args )
 				p:RequestGroupMembership( SteamId("103582791460674447"), function(args)
 					if args.member then
 						p:SetMoney(p:GetMoney() + paydayCash)
-						if p:GetValue( "Lang" ) == "ENG" then
+						if p:GetValue( "Lang" ) == "EN" then
 							p:SendChatMessage( "[Reward №" .. paydayCount .. "] ", Color.White, "$" .. paydayCash .. " for subscribed on the Koast Freeroam group! :3", Color( 255, 180, 3 ) )
 						else
 							p:SendChatMessage( "[Награда №" .. paydayCount .. "] ", Color.White, "$" .. paydayCash .. " за участие в группе Koast Freeroam! :3", Color( 255, 180, 3 ) )

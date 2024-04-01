@@ -46,7 +46,7 @@ function Passive:Toggle( state, sender )
 		vehicle:SetInvulnerable( state == true )
 	end
 
-	if sender:GetValue( "Lang" ) and sender:GetValue( "Lang" ) == "ENG" then
+	if sender:GetValue( "Lang" ) and sender:GetValue( "Lang" ) == "EN" then
 		Network:Send( sender, "Text", "Passive mode " .. (state and "enabled" or "disabled") )
 	else
 		Network:Send( sender, "Text", "Мирный режим " .. (state and "включён" or "отключён") )

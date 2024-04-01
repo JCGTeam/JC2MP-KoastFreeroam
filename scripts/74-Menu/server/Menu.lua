@@ -30,7 +30,7 @@ end
 function Menu:SetEng( args, sender )
 	sender:SetNetworkValue( "Warned", 1 )
 
-	sender:SetNetworkValue( "Lang", "ENG" )
+	sender:SetNetworkValue( "Lang", "EN" )
 
 	local pcountry = sender:GetValue( "Country" )
 
@@ -50,7 +50,7 @@ function Menu:SetRus( args, sender )
 		sender:SetNetworkValue( "Warned", 1 )
 	end
 
-	sender:SetNetworkValue( "Lang", "РУС" )
+	sender:SetNetworkValue( "Lang", "RU" )
 
 	if sender:GetValue( "Country" ) and sender:GetValue( "Country" ) == "N/A" then
 		sender:SetNetworkValue( "Country", "RU" )

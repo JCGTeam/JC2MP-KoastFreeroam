@@ -42,8 +42,7 @@ function SuperGrapple:Render()
 					local pos 		= 		Vector2( Render.Size.x / 2 - Render:GetTextWidth(str, size) / 2, 30 )
 					local color 	= 		Color( 0, 0, 0, Game:GetSetting(4) * 2.25 )
 
-					Render:DrawText( pos + Vector2.One, str, color, size )
-					Render:DrawText( pos, str, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), size )
+					Render:DrawShadowedText( pos, str, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), color, size )
 				end
 			end
 		end

@@ -26,7 +26,6 @@ function Help:__init()
 	self.window = Window.Create()
 	self.window:SetSizeRel( Vector2( 0.58, 0.7 ) )
 	self.window:SetPositionRel( Vector2( 0.69, 0.5 ) - self.window:GetSizeRel()/2 )
-	self.window:SetTitle( "ⓘ Помощь" )
 	self.window:SetVisible( self.HelpActive )
 	self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
 
@@ -35,6 +34,12 @@ function Help:__init()
 	self.tab_control:SetTabStripPosition( GwenPosition.Top )
 
 	self.tabs = {}
+
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+		self:Lang()
+	else
+		self.window:SetTitle( "ⓘ Помощь" )
+	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "OpenHelpMenu", self, self.OpenHelpMenu )
