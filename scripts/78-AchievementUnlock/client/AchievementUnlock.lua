@@ -6,7 +6,7 @@ function AchievementUnlock:__init()
 	Events:Subscribe( "PlayerAchievementUnlock", self, self.PlayerAchievementUnlock )
 end
 
-function AchievementUnlock:Lang( args )
+function AchievementUnlock:Lang()
 	self.unlocktext = " has unlocked the achievement "
 end
 

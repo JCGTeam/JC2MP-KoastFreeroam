@@ -58,7 +58,7 @@ function CarBattles:PostTick()
 	end
 end
 
-function CarBattles:Lang( args )
+function CarBattles:Lang()
 	self.name = "Loading..."
 	self.nameTw = "Loading very long? Reconnect to the server."
 	self.healtxt = "++ Healing ++"

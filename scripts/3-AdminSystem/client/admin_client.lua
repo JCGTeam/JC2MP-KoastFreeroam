@@ -93,9 +93,17 @@ function Admin:__init()
 		self.vehicleModelFromName [ name ] = model
 	end
 	table.sort ( self.vehicleList, function ( a, b ) return ( a < b ) end )
+
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+		self:Lang()
+	else
+		self.friend_txt = "Друг"
+	end
+
 	self:LoadPanel()
 
 	-- Normal events
+	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "KeyUp", self, self.KeyUp )
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
@@ -114,6 +122,10 @@ function Admin:__init()
 	Network:Subscribe( "admin.displayACL", self, self.displayACL )
 	Network:Subscribe( "admin.displayModules", self, self.displayModules )
 	Network:Subscribe( "admin.setSpectatorVictim", self, self.setSpectatorVictim )
+end
+
+function Admin:Lang()
+	self.friend_txt = "Friend"
 end
 
 function Admin:LoadPanel()
@@ -553,7 +565,7 @@ function Admin:addPlayerToList( player )
 	local tcolor = player:GetColor()
 
 	if LocalPlayer:IsFriend( player ) then
-		item:SetToolTip( "Друг" )
+		item:SetToolTip( self.friend_txt )
 	end
 
 	item:SetTextColor ( tcolor )

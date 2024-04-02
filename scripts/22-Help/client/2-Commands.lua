@@ -14,10 +14,11 @@ function HCommands:EngHelp()
 		text =
 			"* All commands must be entered in the game chat (T).\n \n" ..
 			"> Basic:\n" ..
-			"    /pos                      Get Coordinates.\n" ..
+			"    /pos                      Get your coordinates.\n" ..
+			"    /angle                   Get character angle.\n" ..
 			"    /stats                    Show account information on the server.\n" ..
 			"    /bind                     Key binding.\n" ..
-			"    /myhomes             Get home coordinates.\n" ..
+			"    /myhomes            Get home coordinates.\n" ..
 			"    /mass <value>      Change vehicle mass.\n \n" ..
 			"> Chat:\n" ..
 			"    /me <text>        Action.\n" ..
@@ -25,7 +26,7 @@ function HCommands:EngHelp()
 			"    /cd <time>        Countdown.\n" ..
 			"    /pm <player> <message>      Send a private message.\n \n" ..
 			"> Mini-games:\n" ..
-			"    /tron             Join/Leave on Tron.\n" ..
+			"    /tron              Join/Leave on Tron.\n" ..
 			"    /khill              Join/Leave on King Of The Hill.\n" ..
 			"    /derby            Join/Leave on Derby.\n" ..
 			"    /race              Open Racing Menu.\n" ..
@@ -43,7 +44,8 @@ function HCommands:RusHelp()
 		text =
 			"* Все команды нужно вводить в игровой чат (T).\n \n" ..
 			"> Часто используемые:\n" ..
-			"    /pos                      Узнать координаты.\n" ..
+			"    /pos                      Узнать ваши координаты.\n" ..
+			"    /angle                   Узнать угол персонажа.\n" ..
 			"    /stats                    Показать данные об аккаунте на сервере.\n" ..
 			"    /bind                    Привязка клавиш.\n" ..
 			"    /myhomes           Получить координаты домов.\n" ..

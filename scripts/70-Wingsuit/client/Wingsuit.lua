@@ -90,7 +90,7 @@ function Pigeon:onFlyingAttempt( data )
 	self.attempt[3] = 4
 end
 
-function Pigeon:Lang( args )
+function Pigeon:Lang()
 	self.name = "Press Shift or RB to boost. Press Ctrl to slow down."
 	self.nameTh = "%i km/h %i m\n"
 	self.tip = "Press Q to use wingsuit."

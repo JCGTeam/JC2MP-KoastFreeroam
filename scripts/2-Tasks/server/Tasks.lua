@@ -1,9 +1,7 @@
 class 'Tasks'
 
-local jobp = "[Задания] "
-
-local jobWaitText = "Подождите немного прежде, чем начинать новое задание!"
-local jobRewardText = "Задание выполнено! Награда: $"
+local jobp_ru = "[Задания] "
+local jobp_en = "[Tasks] "
 
 local groundVehicles = {66, 12, 54, 23, 33, 68, 78, 8, 35, 44, 2, 7, 29, 70, 55, 15, 91, 21, 83, 32, 79, 22, 9, 4, 41, 49, 71, 42, 76, 31}
 local offroadVehicles = {11, 36, 72, 73, 26, 63, 86, 77, 48, 84, 46, 10, 52, 13, 60, 87, 74, 43, 89, 90, 61, 47, 18, 56, 40}
@@ -379,7 +377,7 @@ function Tasks:PlayerTakeJob( args, player )
     end
 	--cooldown timer
 	if self.playerJobTimers[player:GetId()]:GetSeconds() < jobCooldownTime then
-		player:SendChatMessage( jobp, Color.White, jobWaitText, Color.DarkGray )
+		player:SendChatMessage( player:GetValue( "Lang" ) == "EN" and jobp_en or jobp_ru, Color.White, player:GetValue( "Lang" ) == "EN" and "Wait a bit before starting a new task!" or "Подождите немного прежде, чем начинать новое задание!", Color.DarkGray )
 		return false
 	end
 	--make sure the job is valid
@@ -451,7 +449,7 @@ function Tasks:PlayerCompleteJob( args, player )
 			player:SetMoney(player:GetMoney() + reward)
 			self.playerJobs[playerId] = nil
 			Network:Send( player, "JobFinish", reward)
-			player:SendChatMessage( jobp, Color.White, jobRewardText .. reward, Color( 0, 255, 0 ) )
+			player:SendChatMessage( player:GetValue( "Lang" ) == "EN" and jobp_en or jobp_ru, Color.White, ( player:GetValue( "Lang" ) == "EN" and "Task completed! Reward: $" or "Задание выполнено! Награда: $" ) .. reward, Color( 0, 255, 0 ) )
 			self.playerJobTimers[playerId]:Restart()
 		else
 			Network:Send( player, "JobFailed", true )

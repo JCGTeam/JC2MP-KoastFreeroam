@@ -1,8 +1,10 @@
 class 'WarpGui'
 
 function WarpGui:__init()
+	self.tag_ru = "[Телепорт] "
+	self.tag_en = "[Teleport] "
+
 	self.textColor = Color( 200, 50, 200 )
-	self.tag = "[Телепорт] "
 	self.storeInSql = true
 
 	-- Set up SQL
@@ -26,14 +28,14 @@ function WarpGui:WarpMessageTo( args )
 	if args.centertext then
 		Network:Send( args.target, "CenterText", { text = args.message, time = 6 } )
 	else
-		Chat:Send( args.target, self.tag, Color.White, args.message, self.textColor )
+		Chat:Send( args.target, args.target:GetValue( "Lang" ) == "EN" and self.tag_en or self.tag_ru, Color.White, args.message, self.textColor )
 	end
 end
 
 function WarpGui:WarpTo( args )
-	Network:Send( args.target, "CenterText", { text = args.requester:GetName() .. " телепортировался к вам", time = 3 } )
-	Chat:Send( args.target, self.tag, Color.White, args.requester:GetName() .. " телепортировался к вам.", self.textColor )
-	Network:Send( args.requester, "CenterText", { text = "Вы были телепортированы к " .. args.target:GetName(), time = 3 } )
+	Network:Send( args.target, "CenterText", { text = args.requester:GetName() .. ( args.target:GetValue( "Lang" ) == "EN" and " teleported to you." or " телепортировался к вам." ), time = 3 } )
+	Chat:Send( args.target, ( args.target:GetValue( "Lang" ) == "EN" and self.tag_en or self.tag_ru ), Color.White, args.requester:GetName() .. ( args.target:GetValue( "Lang" ) == "EN" and " teleported to you." or " телепортировался к вам." ), self.textColor )
+	Network:Send( args.requester, "CenterText", { text = ( args.requester:GetValue( "Lang" ) == "EN" and "You have been teleported to " or "Вы были телепортированы к " ) .. args.target:GetName(), time = 3 } )
 
 	-- Poof
 	Network:SendNearby( args.requester, "WarpDoPoof", args.requester:GetPosition() )

@@ -10,7 +10,7 @@ function CBoardHud:__init( CBoardClient, width, height, columns )
 		["Vip"] = { status = "[VIP] ", color = Color( 255, 100, 232 ) },
 		["YouTuber"] = { status = "[YouTube Деятель] ", color = Color( 255, 0, 50 ) }
 	}
-	
+
 	local tag = LocalPlayer:GetValue( "Tag" )
 	if tag and tagTable[tag] then
 		self.status = tagTable[tag].status
@@ -56,11 +56,22 @@ function CBoardHud:__init( CBoardClient, width, height, columns )
 	self.iSlotsInfoTextSize = 20
 	self.tSlotsInfoTextPadding = {right = 10, top = 10}
 
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+		self:Lang()
+	else
+		self.players_txt = "Игроки: "
+	end
+
 	self:Update()
 
 	self.admin_pic = Image.Create( AssetLocation.Resource, "admin_PIC" )
 	-- Attach events handlers
+	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "PostRender", self, self.Render )
+end
+
+function CBoardHud:Lang()
+	self.players_txt = "Players: "
 end
 
 function CBoardHud:Update()
@@ -224,7 +235,7 @@ function CBoardHud:DrawScrollLine()
 end
 
 function CBoardHud:DrawSlotsInfo()
-	local text = "Игроки: " .. tostring( self.CBoardClient:getPlayersCount() ) .. "/" .. tostring( self.CBoardClient:getServerSlots() )
+	local text = self.players_txt .. tostring( self.CBoardClient:getPlayersCount() ) .. "/" .. tostring( self.CBoardClient:getServerSlots() )
 	local width = Render:GetTextWidth( text, self.iSlotsInfoTextSize, 1 )
 	Render:DrawBorderedText( Vector2( self.BoardPosition.x + self.BoardSize.width - self.tSlotsInfoTextPadding.right - width, self.BoardPosition.y + self:getBoardRealHeight() + self.tSlotsInfoTextPadding.top ), text, self.Color_SlotsInfo, self.iSlotsInfoTextSize, 1 )
 	return self

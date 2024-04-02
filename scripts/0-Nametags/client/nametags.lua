@@ -66,8 +66,8 @@ function Nametags:CreateSettings()
 
 	self.window = Window.Create()
 	self.window:SetSize( Vector2( 200, 246 ) )
-	self.window:SetPosition( (Render.Size - self.window:GetSize())/2 )
-
+	self.window:SetPosition( ( Render.Size - self.window:GetSize() ) / 2 )
+	self.window:SetTitle( "Настройка тегов" )
 	self.window:SetVisible( self.window_open )
 	self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
 

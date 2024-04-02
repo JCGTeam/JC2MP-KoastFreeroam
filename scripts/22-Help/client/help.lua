@@ -197,7 +197,7 @@ function Help:GetConsoleHelp()
 	"  r_fontscale (scale) - changes the scale of all text rendered, default is 1.\n" ..
 	"  profiler_sample (seconds) - get server modules consumption.\n" ..
 	"Server commands:\n" ..
-	"  font <default/server> - enable/disable server font." )
+	"  font <default/server> - toggle server font." )
 end
 
 help = Help()

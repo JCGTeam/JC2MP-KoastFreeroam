@@ -28,7 +28,7 @@ function Manhunt:__init()
 	self.isIt = false
 end
 
-function Manhunt:Lang( args )
+function Manhunt:Lang()
 	self.yourscorestxt = "Your points: "
 	self.leaderboardtxt = "[Leaders]"
 	self.nameTh = "You're leaving the island!"

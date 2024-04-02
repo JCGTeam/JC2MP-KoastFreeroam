@@ -77,9 +77,18 @@ function WarpGui:__init()
 		self.tag = "[Телепорт] "
 		self.w = "Подождите "
 		self.ws = " секунд, чтобы вновь отправить запрос!"
-		self.gonnawarp = " хотел бы телепортироваться к вам. Нажмите 'B' и зайдите в меню 'Телепортация', чтобы принять."
-		self.tprequesttxt = "Запрос на телепорт!"
-		self.prequestertxt = "Игрок: "
+		self.gonnawarp = ' хотел бы телепортироваться к вам. Нажмите "B" и зайдите в меню "Телепортация", чтобы принять.'
+		self.tprequest_txt = "Запрос на телепорт!"
+		self.prequester_txt = "Игрок: "
+		self.friend_txt = "Друг"
+		self.teleport_txt = "Телепорт ≫"
+		self.accept_txt = "Принять √"
+		self.autotp_txt = "Авто-ТП"
+		self.blacklist_txt = "Заблок."
+		self.teleportrequest_txt = "Запрос на телепортацию отправлен. Ожидайте принятия запроса."
+		self.teleportrequest2_txt = "Запрос на телепортацию отправлен, но игрок находится в другом режиме."
+		self.teleportrequest3_txt = " хотел телепортироваться к вам, но вы находитесь в другом режиме."
+		self.noteleport_txt = " не просил вас телепортироваться."
 
 		if self.window then
 			self.window:SetTitle( "▧ Телепорт к игрокам" )
@@ -114,9 +123,18 @@ function WarpGui:Lang()
 	self.tag = "[Teleport] "
 	self.w = "Wait "
 	self.ws = " seconds to send the request again!"
-	self.gonnawarp = " sent you a teleport request. Press 'B' and go to the 'Teleportation' menu to accept."
-	self.tprequesttxt = "Teleport request!"
-	self.prequestertxt = "Sender: "
+	self.gonnawarp = ' sent you a teleport request. Press "B" and go to the "Teleportation" menu to accept.'
+	self.tprequest_txt = "Teleport request!"
+	self.prequester_txt = "Sender: "
+	self.friend_txt = "Friend"
+	self.teleport_txt = "Teleport ≫"
+	self.accept_txt = "Accept √"
+	self.autotp_txt = "Auto-TP"
+	self.blacklist_txt = "Blocked"
+	self.teleportrequest_txt = "Teleport request has been sent. Wait for the request to be accepted."
+	self.teleportrequest2_txt = "Teleport request has been sent, but the player is in a different game mode."
+	self.teleportrequest3_txt = " wanted teleport to you, but you are in a different game mode."
+	self.noteleport_txt = " did not ask you to warp."
 
 	if self.window then
 		self.window:SetTitle( "▧ Teleport to players" )
@@ -150,21 +168,21 @@ function WarpGui:AddPlayer( player )
 	local item = self.playerList:AddItem( playerId )
 
 	if LocalPlayer:IsFriend( player ) then
-		item:SetToolTip( "Друг" )
+		item:SetToolTip( self.friend_txt )
 	end
 
-	local warpToButton = self:CreateListButton( "Телепорт ≫", true, item )
+	local warpToButton = self:CreateListButton( self.teleport_txt, true, item )
 	warpToButton:Subscribe( "Press", function() self:WarpToPlayerClick(player) end )
 
-	local acceptButton = self:CreateListButton( "Принять √", false, item )
+	local acceptButton = self:CreateListButton( self.accept_txt, false, item )
 	acceptButton:Subscribe( "Press", function() self:AcceptWarpClick(player) end )
 	self.acceptButtons[playerId] = acceptButton
 
 	local whitelist = self.whitelist[playerId]
 	local whitelistButtonText = "-"
 	if whitelist ~= nil then
-		if whitelist == 1 then whitelistButtonText = "Авто-ТП"
-		elseif whitelist == 2 then whitelistButtonText = "Заблок."
+		if whitelist == 1 then whitelistButtonText = self.autotp_txt
+		elseif whitelist == 2 then whitelistButtonText = self.blacklist_txt
 		end
 	end
 	local whitelistButton = self:CreateListButton( whitelistButtonText, true, item )
@@ -251,7 +269,7 @@ function WarpGui:AcceptWarpClick( player )
 	local playerId = tostring(player:GetSteamId().id)
 
 	if self.warpRequests[playerId] == nil then
-		Chat:Print( self.tag, Color.White, player:GetName() .. " не просил вас телепортироваться.", self.textColor )
+		Chat:Print( self.tag, Color.White, player:GetName() .. self.noteleport_txt, self.textColor )
 		return
 	else
 		local acceptButton = self.acceptButtons[playerId]
@@ -294,12 +312,12 @@ function WarpGui:WarpRequest( args )
 			acceptButton:SetEnabled( true )
 			self.warpRequests[playerId] = true
 			if LocalPlayer:GetWorld() ~= DefaultWorld then
-				Network:Send( "WarpMessageTo", {target = requestingPlayer, message = "Запрос на телепортацию отправлен, но игрок находится в другом режиме.", centertext = true } )
-				Chat:Print( self.tag, Color.White, requestingPlayer:GetName() .. " хотел телепортироваться к вам, но вы находитесь в другом режиме.", self.textColor )
+				Network:Send( "WarpMessageTo", {target = requestingPlayer, message = self.teleportrequest2_txt, centertext = true } )
+				Chat:Print( self.tag, Color.White, requestingPlayer:GetName() .. self.teleportrequest3_txt, self.textColor )
 				return
 			end
-			Network:Send( "WarpMessageTo", {target = requestingPlayer, message = "Запрос на телепортацию отправлен. Ожидайте принятия запроса.", centertext = true } )
-			Events:Fire( "SendNotification", { txt = self.tprequesttxt, image = "Information", subtxt = self.prequestertxt .. requestingPlayer:GetName() } )
+			Network:Send( "WarpMessageTo", {target = requestingPlayer, message = self.teleportrequest_txt, centertext = true } )
+			Events:Fire( "SendNotification", { txt = self.tprequest_txt, image = "Information", subtxt = self.prequester_txt .. requestingPlayer:GetName() } )
 			Chat:Print( self.tag, Color.White, requestingPlayer:GetName() .. self.gonnawarp, self.textColor )
 
 			if not self.PostTickEvent then
@@ -345,10 +363,10 @@ function WarpGui:SetWhitelist( playerId, whitelisted, sendToServer )
 		whitelistButton:SetText( "-" )
 		whitelistButton:SetTextSize( 13 )
 	elseif whitelisted == 1 then
-		whitelistButton:SetText( "Авто-ТП" )
+		whitelistButton:SetText( self.autotp_txt )
 		whitelistButton:SetTextSize( 13 )
 	elseif whitelisted == 2 then
-		whitelistButton:SetText( "Заблок." )
+		whitelistButton:SetText( self.blacklist_txt )
 		whitelistButton:SetTextSize( 13 )
 	end
 

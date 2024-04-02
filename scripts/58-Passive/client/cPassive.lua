@@ -35,11 +35,11 @@ function Passive:__init()
 	Events:Subscribe( "LocalPlayerWorldChange", self, self.LocalPlayerWorldChange )
 end
 
-function Passive:Lang( args )
+function Passive:Lang()
 	self.name = "Passive"
 	self.pvpblock = "You cannot use Passive Mode during combat!"
 	self.w = "Wait "
-	self.ws = " seconds to enable/disable passive mode!"
+	self.ws = " seconds to toggle passive mode!"
 	self.notusable = "You cannot use it here!"
 end
 
@@ -129,10 +129,7 @@ function Passive:Render()
 	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 	if not LocalPlayer:GetValue( "PassiveModeVisible" ) or LocalPlayer:GetValue( "HiddenHUD" ) then return end
-
-	if LocalPlayer:GetValue( "SystemFonts" ) then
-		Render:SetFont( AssetLocation.SystemFont, "Impact" )
-	end
+	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 	--if LocalPlayer:GetValue("Passive") then
 	--	if LocalPlayer:GetVehicle() then
@@ -142,21 +139,23 @@ function Passive:Render()
 	--	end
 	--end
 
-    local width = Render:GetTextWidth( self.name )
-    local text_pos = Vector2( Render.Width/1.52 - width/1.8 + Render:GetTextWidth( self.name, 18 ) / 25, 2 )
+	local text_size = 18
+    local text_width = Render:GetTextWidth( self.name, text_size )
+	local text_height = Render:GetTextHeight( self.name, text_size )
+    local text_pos = Vector2( Render.Width / 1.52 - text_width / 1.8 + text_width / 25, 2 )
 
-	Render:FillArea( Vector2( Render.Width/1.52 - width/1.8, 0 ), Vector2( Render:GetTextWidth( self.name, 18 ) + 5, Render:GetTextHeight( self.name, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+	Render:FillArea( Vector2( Render.Width / 1.52 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
 
-	Render:FillTriangle( Vector2( (Render.Width / 1.52 - width/1.8 - 10), 0 ), Vector2( (Render.Width / 1.52 - width/1.8), 0 ), Vector2( (Render.Width / 1.52 - width/1.8), Render:GetTextHeight( self.name, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
-	Render:FillTriangle( Vector2( (Render.Width / 1.52 - width/1.8 + Render:GetTextWidth( self.name, 18 ) + 15), 0 ), Vector2( (Render.Width / 1.52 - width/1.8 + Render:GetTextWidth( self.name, 18 ) + 5), 0 ), Vector2( (Render.Width / 1.52 - width/1.8 + Render:GetTextWidth( self.name, 18 ) + 5 ), Render:GetTextHeight( self.name, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.52 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 ), text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
 
 	local passive_enabled = LocalPlayer:GetValue( "Passive" ) or LocalPlayer:GetValue( "FreecamEnabled" )
 
 	if passive_enabled then
-		Render:DrawText( text_pos + Vector2.One, self.name, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), 18 )
+		Render:DrawText( text_pos + Vector2.One, self.name, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), text_size )
 	end
 
-	Render:DrawText( text_pos, self.name, passive_enabled and Color( 0, 250, 154, Game:GetSetting(4) * 2.25 ) or Color( 255, 255, 255, Game:GetSetting(4) * 2.25 / 4 ), 18 )
+	Render:DrawText( text_pos, self.name, passive_enabled and Color( 0, 250, 154, Game:GetSetting(4) * 2.25 ) or Color( 255, 255, 255, Game:GetSetting(4) * 2.25 / 4 ), text_size )
 end
 
 passive = Passive()

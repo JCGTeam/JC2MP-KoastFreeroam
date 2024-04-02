@@ -932,12 +932,12 @@ function Admin:PlayerChat( args )
 
 	if (cmd_args[1]) == "/pos" or (cmd_args[1]) == "/coords" then
 		local pos = args.player:GetPosition()
-		Chat:Send( args.player, "Ваши координаты: ", Color.White, tostring( pos.x .. ", " .. pos.y .. ", " .. pos.z ), Color.DarkGray )
+		Chat:Send( args.player, args.player:GetValue( "Lang" ) == "EN" and "Your coordinates: " or "Ваши координаты: ", Color.White, tostring( pos.x .. ", " .. pos.y .. ", " .. pos.z ), Color.DarkGray )
 		print( "Coordinates: (" .. tostring( pos.x .. ", " .. pos.y .. ", " .. pos.z ) .. ")" )
 	end
 
 	if (cmd_args[1]) == "/angle" then
-		Chat:Send( args.player, "Ваш угол: ", Color.White, tostring( args.player:GetAngle() ), Color.DarkGray )
+		Chat:Send( args.player, args.player:GetValue( "Lang" ) == "EN" and "Your angle: " or "Ваш угол: ", Color.White, tostring( args.player:GetAngle() ), Color.DarkGray )
 		print( "Angle: (" .. tostring( args.player:GetAngle() ) .. ")" )
 	end
 

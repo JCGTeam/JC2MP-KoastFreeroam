@@ -554,6 +554,8 @@ function ClanSystem:ModuleLoad()
 	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
+		self.friend_txt = "Друг"
+
 		self.clanMenu.cLabel:SetText( "Клан" )
 		self.clanMenu.manageClan:SetText( "★ Ваш клан ★" )
 		self.clanMenu.lClan:SetText( "Список кланов" )
@@ -605,6 +607,8 @@ function ClanSystem:ModuleLoad()
 end
 
 function ClanSystem:Lang()
+	self.friend_txt = "Friend"
+
 	self.clanMenu.window:SetTitle( "✽ Clans" )
 	self.manageClan.mcLabel:SetText( "Clan" )
 	self.clanMenu.cLabel:SetText( "Clan" )
@@ -988,7 +992,7 @@ function ClanSystem:addPlayerToList( player )
 	local playerColor = player:GetColor()
 	
 	if LocalPlayer:IsFriend( player ) then
-		item:SetToolTip( "Друг" )
+		item:SetToolTip( self.friend_txt )
 	end
 	
 	item:SetVisible( true )

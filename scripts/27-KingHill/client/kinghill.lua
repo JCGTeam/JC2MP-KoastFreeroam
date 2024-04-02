@@ -44,7 +44,7 @@ function KingHil:__init()
 	Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
 end
 
-function KingHil:Lang( args )
+function KingHil:Lang()
 	self.nameT = "Players"
 	self.nameTTw = "Current Queue"
 	self.nameTTh = "Waiting for other players..."

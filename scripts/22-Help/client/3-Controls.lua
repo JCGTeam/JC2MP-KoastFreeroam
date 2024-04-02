@@ -14,11 +14,11 @@ function HControls:EngHelp()
 		text =
 			"> Main:\n" ..
 			"    'F1'              Open game map.\n" ..
-			"    'F2' or 'M'      Open players map (you can teleport).\n" ..
+			"    'F2' or 'M'    Open players map (you can teleport).\n" ..
 			"    'F3'              Disable/Enable chat.\n" ..
 			"    'F4'              Open Console.\n" ..
 			"    'F5'		       Open Players List.\n" ..
-			"    'F6'              Enable/Disable firstperson.\n" ..
+			"    'F6'              Toggle firstperson.\n" ..
 			"    'F11'             Hide server interface.\n" ..
 			"    'B'               Open Server Menu.\n" ..
 			"    'G'               Grenades Selector.\n" ..
@@ -28,7 +28,7 @@ function HControls:EngHelp()
 			"    'O'               Enable FREECAM.\n" ..
 			"    'L'               Open the door of military bases.\n \n" ..
 			"> Vehicles:\n" ..
-			"    'Shift'           Boost for vehicles.\n" ..
+			"    'Shift'         Boost for vehicles.\n" ..
 			"    'X'               Hand brake.\n" ..
 			"    'F'               VEHICLE SUPERBRAKE SYSTEM.\n" ..
 			"    'C'               Change the camera view.\n" .. 

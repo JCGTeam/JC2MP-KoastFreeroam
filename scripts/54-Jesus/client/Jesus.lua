@@ -152,25 +152,25 @@ function Jesus:Render()
 	if not LocalPlayer:GetValue( "JesusModeEnabled" ) then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 	if not LocalPlayer:GetValue( "JesusModeVisible" ) or LocalPlayer:GetValue( "HiddenHUD" ) then return end
-	if LocalPlayer:GetValue( "SystemFonts" ) then
-		Render:SetFont( AssetLocation.SystemFont, "Impact" )
-	end
+	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
-    local width = Render:GetTextWidth( self.name )
-    local text_pos = Vector2( Render.Width/1.3 - width/1.8 + Render:GetTextWidth( self.nameSizer, 18 ) / 5.5, 2 )
+	local text_size = 18
+    local text_width = Render:GetTextWidth( self.nameSizer, text_size )
+	local text_height = Render:GetTextHeight( self.nameSizer, text_size )
+    local text_pos = Vector2( Render.Width / 1.3 - text_width / 1.8 + text_width / 5.5, 2 )
 
-	Render:FillArea( Vector2( Render.Width/1.3 - width/1.8, 0 ), Vector2( Render:GetTextWidth( self.nameSizer, 18 ) + 5, Render:GetTextHeight( self.name, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+	Render:FillArea( Vector2( Render.Width / 1.3 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
 
-	Render:FillTriangle( Vector2( (Render.Width / 1.3 - width/1.8 - 10), 0 ), Vector2( (Render.Width / 1.3 - width/1.8), 0 ), Vector2( (Render.Width / 1.3 - width/1.8), Render:GetTextHeight( self.name, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
-	Render:FillTriangle( Vector2( (Render.Width / 1.3 - width/1.8 + Render:GetTextWidth( self.nameSizer, 18 ) + 15), 0 ), Vector2( (Render.Width / 1.3 - width/1.8 + Render:GetTextWidth( self.nameSizer, 18 ) + 5), 0 ), Vector2( (Render.Width / 1.3 - width/1.8 + Render:GetTextWidth( self.nameSizer, 18 ) + 5 ), Render:GetTextHeight( self.name, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
 
 	local waterwalk_enabled = LocalPlayer:GetValue( "WaterWalk" )
 
 	if waterwalk_enabled then
-		Render:DrawText( text_pos + Vector2.One, self.name, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), 18 )
+		Render:DrawText( text_pos + Vector2.One, self.name, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), text_size )
 	end
 
-	Render:DrawText( text_pos, self.name, waterwalk_enabled and Color( 173, 216, 230, Game:GetSetting(4) * 2.25 ) or Color( 255, 255, 255, Game:GetSetting(4) * 2.25 / 4 ), 18 )
+	Render:DrawText( text_pos, self.name, waterwalk_enabled and Color( 173, 216, 230, Game:GetSetting(4) * 2.25 ) or Color( 255, 255, 255, Game:GetSetting(4) * 2.25 / 4 ), text_size )
 end
 
 function Jesus:CheckList( tableList, modelID )

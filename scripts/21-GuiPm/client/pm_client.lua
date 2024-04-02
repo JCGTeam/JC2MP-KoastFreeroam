@@ -136,8 +136,15 @@ function PM:__init( player )
 	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
-		self.newmsgtxt = "Новое сообщение!"
-		self.sendermsgtxt = "Игрок: "
+		self.tag = "[Сообщения] "
+		self.friend_txt = "Друг"
+		self.newmsg_txt = "Новое сообщение!"
+		self.sendermsg_txt = "Игрок: "
+		self.limit_txt = "Вы привысили допустимый лимит!"
+		self.playeroffline_txt = "Игрок не в сети!"
+		self.playernotselected_txt = "Игрок не выбран!"
+		self.clearmessages_txt = "Сообщения очищены."
+
 		if self.GUI.window then
 			self.GUI.filter:SetToolTip( "Поиск" )
 		end
@@ -154,6 +161,15 @@ function PM:__init( player )
 end
 
 function PM:Lang()
+	self.tag = "[Messages] "
+	self.friend_txt = "Friend"
+	self.newmsg_txt = "New message!"
+	self.sendermsg_txt = "Sender: "
+	self.limit_txt = "You have exceeded the allowed limit!"
+	self.playeroffline_txt = "Player is offline!"
+	self.playernotselected_txt = "Player not selected!"
+	self.clearmessages_txt = "Messages cleared."
+
 	if self.GUI.window then
 		self.GUI.window:SetTitle( "[▼] Private Messages" )
 		self.GUI.labelM:SetText( "Messages:" )
@@ -161,9 +177,6 @@ function PM:Lang()
 		self.GUI.PMDistrub:SetText( "Do not disturb" )
 		self.GUI.filter:SetToolTip( "Search" )
 	end
-
-	self.newmsgtxt = "New message!"
-	self.sendermsgtxt = "Sender: "
 end
 
 function PM:ChangelLText()
@@ -272,7 +285,7 @@ function PM:addPlayerToList( player )
 	local color = player:GetColor()
 
 	if LocalPlayer:IsFriend( player ) then
-		item:SetToolTip( "Друг" )
+		item:SetToolTip( self.friend_txt )
 	end
 
 	item:SetTextColor( color )
@@ -313,7 +326,7 @@ function PM:loadMessages()
 end
 
 function PM:notification( args )
-	Events:Fire( "SendNotification", { txt = self.newmsgtxt, image = "Information", subtxt = self.sendermsgtxt .. args.msgsender } )
+	Events:Fire( "SendNotification", { txt = self.newmsg_txt, image = "Information", subtxt = self.sendermsg_txt .. args.msgsender } )
 end
 
 function PM:addMessage( data )
@@ -350,18 +363,18 @@ function PM:sendMessage()
 					self.GUI.message:Focus()
 				end
 			else
-				Chat:Print( "[Сообщения] ", Color.White, "Вы привысили допустимый лимит!", Color.DarkGray )
+				Chat:Print( self.tag, Color.White, self.limit_txt, Color.DarkGray )
 			end
 		else
-			Chat:Print("[Сообщения] ", Color.White, "Игрок не в сети!", Color.DarkGray )
+			Chat:Print( self.tag, Color.White, self.playeroffline_txt, Color.DarkGray )
 		end
 	else
-		Chat:Print( "[Сообщения] ", Color.White, "Игрок не выбран!", Color.DarkGray )
+		Chat:Print( self.tag, Color.White, self.playernotselected_txt, Color.DarkGray )
 	end
 end
 
 function PM:clearMessage()
-	self.GUI.messagesLabel:SetText( "Сообщения очищены." )
+	self.GUI.messagesLabel:SetText( self.clearmessages_txt )
 end
 
 function PM:refreshList()

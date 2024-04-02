@@ -21,7 +21,7 @@ function Pong:__init()
 	Network:Subscribe( "StartUp", self, self.StartUp )
 end
 
-function Pong:Lang( args )
+function Pong:Lang()
 	self.tip_txt = "Hint: Move the mouse to move the platform."
 	self.you_txt = "You: "
 	self.enemy_txt = "Gopnik: "

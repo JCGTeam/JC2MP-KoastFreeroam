@@ -49,7 +49,7 @@ function Tron:__init()
 	Events:Subscribe( "Render", self, self.Render )
 end
 
-function Tron:Lang( args )
+function Tron:Lang()
 	self.nameT = "Players"
 	self.nameTTw = "Current Queue"
 	self.nameTTh = "Waiting for other players..."

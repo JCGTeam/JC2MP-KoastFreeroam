@@ -8,7 +8,7 @@ function LoadNews:__init()
 	Network:Subscribe( "LoadNews", self, self.LoadNews )
 end
 
-function LoadNews:Lang( args )
+function LoadNews:Lang()
 	Network:Send( "GetENGNews" )
 end
 

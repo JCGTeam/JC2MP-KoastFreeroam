@@ -72,7 +72,7 @@ function SkydivingStats:LocalPlayerExitVehicle()
 	end
 end
 
-function SkydivingStats:Lang( args )
+function SkydivingStats:Lang()
 	self.name = " m/s"
 	self.nameTw = " km/h"
 	self.nameTh = " mph"

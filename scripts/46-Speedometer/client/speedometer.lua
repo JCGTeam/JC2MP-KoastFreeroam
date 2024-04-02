@@ -82,7 +82,7 @@ function Speedometer:LocalPlayerExitVehicle()
 	end
 end
 
-function Speedometer:Lang( args )
+function Speedometer:Lang()
 	self.name = "m/s"
 	self.nameTw = "km/h"
 	self.nameTh = "mph"

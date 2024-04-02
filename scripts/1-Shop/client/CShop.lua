@@ -130,7 +130,7 @@ function Shop:__init()
 	Network:Subscribe( "BuyMenuSavedColor", self, self.SavedColor )
 end
 
-function Shop:Lang( args )
+function Shop:Lang()
 	if self.window then
 		self.window:SetTitle( "▧ Black Market" )
 	end
