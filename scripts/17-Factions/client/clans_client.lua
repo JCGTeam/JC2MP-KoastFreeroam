@@ -516,10 +516,6 @@ function ClanSystem:ModuleLoad()
 	self.clanList.playersList:SetDock( GwenPosition.Fill )
 	self.clanList.playersList:SetBackgroundVisible( false )
 	self.clanList.playersList:AddColumn( "Игроки:" )
-	for player in Client:GetPlayers() do
-		self:addPlayerToList( player )
-	end
-	self:addPlayerToList( LocalPlayer )
 
 	self.clanList.invitePlayer = Button.Create( self.clanList.window )
 	self.clanList.invitePlayer:SetDock( GwenPosition.Bottom )
@@ -604,6 +600,11 @@ function ClanSystem:ModuleLoad()
 		self.clanList.invitePlayer:SetText( "» Пригласить игрока" )
 		self.clanList.searchEdit:SetToolTip( "Поиск" )
 	end
+
+	for player in Client:GetPlayers() do
+		self:addPlayerToList( player )
+	end
+	self:addPlayerToList( LocalPlayer )
 end
 
 function ClanSystem:Lang()

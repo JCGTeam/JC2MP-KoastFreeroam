@@ -129,9 +129,6 @@ function PM:__init( player )
 
 	self.GUI.window:Subscribe( "WindowClosed", self, self.CloseWindow )
 	self.playerToRow = {}
-	for player in Client:GetPlayers() do
-		self:addPlayerToList ( player )
-	end
 
 	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
@@ -149,6 +146,11 @@ function PM:__init( player )
 			self.GUI.filter:SetToolTip( "Поиск" )
 		end
 	end
+
+	for player in Client:GetPlayers() do
+		self:addPlayerToList ( player )
+	end
+	--self:addPlayerToList( LocalPlayer )
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "PlayerJoin", self, self.playerJoin )
