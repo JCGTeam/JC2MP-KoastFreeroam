@@ -23,7 +23,7 @@ function Stats:PlayerChat( args )
 		Chat:Send( args.player, "ID: ", Color.White, tostring( args.player:GetId() ), Color.Yellow )
 		Chat:Send( args.player, args.player:GetValue( "Lang" ) == "EN" and "Character ID: " or "ID персонажа: ", Color.White, tostring( args.player:GetModelId() ), Color.Yellow )
 		Chat:Send( args.player, args.player:GetValue( "Lang" ) == "EN" and "Nickname color: " or "Цвет ника: ", Color.White, tostring( args.player:GetColor() ), args.player:GetColor() )
-		Chat:Send( args.player, args.player:GetValue( "Lang" ) == "EN" and "Money: " or "Деньги: ", Color.White, "$" .. tostring( args.player:GetMoney() ), Color.Yellow )
+		Chat:Send( args.player, args.player:GetValue( "Lang" ) == "EN" and "Balance: " or "Деньги: ", Color.White, "$" .. tostring( args.player:GetMoney() ), Color.Yellow )
 		Chat:Send( args.player, args.player:GetValue( "Lang" ) == "EN" and "Vehicle: " or "Транспорт: ", Color.White, tostring( args.player:GetVehicle() ), Color.Yellow )
 		Chat:Send( args.player, "==============", Color.White )
         return false

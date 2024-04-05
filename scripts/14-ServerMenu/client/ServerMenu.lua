@@ -93,7 +93,7 @@ function ServerMenu:Lang()
 		self.passive:SizeToContents()
 		self.jesusmode:SetText( "Jesus mode:" )
 		self.jesusmode:SizeToContents()
-		self.hideme:SetText( "Marker hide:" )
+		self.hideme:SetText( "Invisible marker:" )
 		self.pigeonmod:SetText( "Pigeon mod:" )
 		self.bonus:SetText( "Bonus:" )
 		self.bonus:SizeToContents()
@@ -102,7 +102,7 @@ function ServerMenu:Lang()
 	end
 
 	self.pigeonmodtxt = "Pigeon mod"
-	self.hidemetxt = "Marker hide"
+	self.hidemetxt = "Invisible marker"
 	self.disabletxt = " disabled"
 	self.enabletxt = " enabled"
 	self.disabletxt_2 = " disabled"
@@ -436,7 +436,7 @@ function ServerMenu:SetWindowVisible( visible )
 			self.pigeonmod_btn:SetVisible( true )
 		else
 			self.pigeonmod:SetVisible( false )
-			self.pigeonmod_btn:SetVisible( false )	
+			self.pigeonmod_btn:SetVisible( false )
 		end
 
 		if LocalPlayer:GetValue( "Lang" ) then
@@ -449,7 +449,7 @@ function ServerMenu:SetWindowVisible( visible )
 				self.pigeonmod_btn:SetText( LocalPlayer:GetValue( "PigeonMod" ) and "Отключить" or "Включить" )
 				self.bonus_btn:SetText( LocalPlayer:GetValue( "MoneyBonus" ) and "$$ Денежный бонус $$" or "Недоступно :(" )
 			else
-				self.level:SetText( "Money: $" .. formatNumber( LocalPlayer:GetMoney() ) )
+				self.level:SetText( "Balance: $" .. formatNumber( LocalPlayer:GetMoney() ) )
 
 				self.passiveon_btn:SetText( LocalPlayer:GetValue( "Passive" ) and "Disable" or "Enable" )
 				self.jesusmode_btn:SetText( LocalPlayer:GetValue( "WaterWalk" ) and "Disable" or "Enable" )
@@ -469,7 +469,7 @@ function ServerMenu:SetWindowVisible( visible )
 				self.jesusmode_btn:SetEnabled( false )
 			end
 			self.hideme_btn:SetEnabled( true )
-			self.pigeonmod_btn:SetEnabled( true )
+			self.pigeonmod_btn:SetEnabled( LocalPlayer:GetValue( "Wingsuit" ) and true or false )
 		else
 			self.shop_button:SetEnabled( false )
 			self.tp_button:SetEnabled( false )
@@ -671,7 +671,7 @@ function ServerMenu:UpdateMoneyString( money )
     end
 
     if LocalPlayer:GetValue( "Lang" ) then
-		self.level:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Money: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
+		self.level:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Balance: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
     end
 end
 

@@ -15,7 +15,7 @@ function HControls:EngHelp()
 			"> Main:\n" ..
 			"    'F1'              Open game map.\n" ..
 			"    'F2' or 'M'    Open players map (you can teleport).\n" ..
-			"    'F3'              Disable/Enable chat.\n" ..
+			"    'F3'              Toggle chat.\n" ..
 			"    'F4'              Open Console.\n" ..
 			"    'F5'		       Open Players List.\n" ..
 			"    'F6'              Toggle firstperson.\n" ..

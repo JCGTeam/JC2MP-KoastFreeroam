@@ -49,13 +49,13 @@ end
 function Bank:Lang()
 	if self.plist.window then
 		self.plist.window:SetTitle( "▧ Send money" )
-		self.plist.balance:SetText( "Money: " .. formatNumber( LocalPlayer:GetMoney() ) )
+		self.plist.balance:SetText( "Balance: " .. formatNumber( LocalPlayer:GetMoney() ) )
 		self.plist.text:SetText( "Specify the amount to be sent:" )
 		self.plist.okay:SetText( "Send" )
 		self.plist.filter:SetToolTip( "Search" )
 	end
 
-	self.money = "Money: $"
+	self.money = "Balance: $"
 	self.nomoney_txt = "You don't have that much money!"
 	self.playernotselected_txt = "Player is not selected!"
 end
@@ -302,7 +302,7 @@ function Bank:MoneyChange( args )
     end
 
     if LocalPlayer:GetValue( "Lang" ) then
-		self.plist.balance:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Money: $" .. formatNumber( args.new_money ) or "Баланс: $" .. formatNumber( args.new_money ) )
+		self.plist.balance:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Balance: $" .. formatNumber( args.new_money ) or "Баланс: $" .. formatNumber( args.new_money ) )
     end
 
 	if Game:GetState() ~= GUIState.Game then return end

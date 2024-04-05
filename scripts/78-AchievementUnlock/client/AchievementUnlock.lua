@@ -1,7 +1,12 @@
 class 'AchievementUnlock'
 
 function AchievementUnlock:__init()
-	self.unlocktext = " получил достижение "
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+		self:Lang()
+	else
+		self.unlocktext = " получил достижение "
+	end
+
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "PlayerAchievementUnlock", self, self.PlayerAchievementUnlock )
 end

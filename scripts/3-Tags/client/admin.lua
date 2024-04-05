@@ -3,12 +3,7 @@ class 'Admin'
 function Admin:__init()
 	self.message = ""
 
-	Events:Subscribe( "Lang", self, self.Lang )
 	Network:Subscribe( "Notice", self, self.ClientFunction )
-end
-
-function Admin:Lang()
-	self.pvpblock = "You cannot use this during combat!"
 end
 
 function Admin:PostRender()

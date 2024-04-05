@@ -44,7 +44,7 @@ function Casino:Lang()
 		self.largeName:SetText( "Casino" )
 		self.coinflip.stavka_txt:SetText( "Your bet:" )
 		self.coinflip.stavka_ok_btn:SetText( "$ MAKE A BET $" )
-		self.coinflip.balance_txt:SetText( "Money: $" .. LocalPlayer:GetMoney() )
+		self.coinflip.balance_txt:SetText( "Balance: $" .. LocalPlayer:GetMoney() )
 	end
 end
 
@@ -76,7 +76,7 @@ function Casino:UpdateMoneyString( money )
 		if LocalPlayer:GetValue( "Lang" ) == "RU" then
 			self.coinflip.balance_txt:SetText( "Баланс: $" .. formatNumber( money ) )
 		else
-			self.coinflip.balance_txt:SetText( "Money: $" .. formatNumber( money ) )
+			self.coinflip.balance_txt:SetText( "Balance: $" .. formatNumber( money ) )
 		end
     end
 end

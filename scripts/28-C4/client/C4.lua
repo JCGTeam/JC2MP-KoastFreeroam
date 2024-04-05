@@ -82,6 +82,7 @@ function C4Controller:FireC4( args )
 		local anglePitch = Camera:GetAngle().pitch
 
 		if distance < C4Controller.MaxPlantDistance then
+			if LocalPlayer:InVehicle() then return end
 			self.crouched = anglePitch < -math.pi / 4
 			self.tossed = not self.crouched and anglePitch > math.pi / 8
 			self.underhand = not self.crouched and not self.tossed and distance > C4Controller.MaxPlantDistance - 2

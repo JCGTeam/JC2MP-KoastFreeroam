@@ -670,7 +670,7 @@ function Abilities:Open()
         end
 
         if LocalPlayer:GetValue( "Lang" ) then
-            self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Money: $" .. formatNumber( LocalPlayer:GetMoney() ) or "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
+            self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Balance: $" .. formatNumber( LocalPlayer:GetMoney() ) or "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
             self.money_text:SizeToContents()
         end
 
@@ -858,7 +858,7 @@ function Abilities:UpdateMoneyString( money )
     end
 
     if LocalPlayer:GetValue( "Lang" ) then
-        self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Money: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
+        self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Balance: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
         self.money_text:SizeToContents()
     end
 end

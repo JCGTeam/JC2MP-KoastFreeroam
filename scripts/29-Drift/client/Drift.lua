@@ -2,11 +2,12 @@ class "Drift"
 
 function Drift:__init()
 	self.textSize = 36
+
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "Render", self, self.Render )
-	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
 
 	--Automass (Drifting is better, but the cars become unmanageable)
+	--Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
 	--Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
 	--Events:Subscribe( "LocalPlayerDeath", self, self.LocalPlayerDeath )
 
@@ -63,7 +64,7 @@ function Drift:LocalPlayerDeath()
 			Network:Send("setmas", {veh = LocalPlayer:GetVehicle(), bool = self.mass})
 		end
 	end
-end--]]
+end
 
 function Drift:PlayerQuit( args )
 	if args.player == LocalPlayer then
@@ -74,7 +75,7 @@ function Drift:PlayerQuit( args )
 			end
 		end
 	end
-end
+end--]]
 
 function Drift:Render()
 	local object = NetworkObject.GetByName("Drift")
@@ -137,6 +138,7 @@ function Drift:Render()
 		end
 	end
 
+	--[[
 	if self.slide then
 		if self.slide == 0 then
 			if not self.mass then
@@ -155,6 +157,7 @@ function Drift:Render()
 			Network:Send("setmas", {veh = LocalPlayer:GetVehicle(), bool = self.mass})
 		end
 	end
+	]]--
 
 	if self.score and not self.timer and self.score >= 100 then
 		self.slide = self.slide + (1 * self.multipler)

@@ -66,7 +66,7 @@ function DevKit:Render()
         pos.y = pos.y + 20
 
         pos.y = pos.y + 20
-        Render:DrawShadowedText( pos, "MONEY: " .. "$" .. tostring( LocalPlayer:GetMoney() ), Color.Orange, Color.Black, textSize )
+        Render:DrawShadowedText( pos, "Balance: " .. "$" .. tostring( LocalPlayer:GetMoney() ), Color.Orange, Color.Black, textSize )
 
         if LocalPlayer:GetValue( "PlayerLevel" ) then
             pos.y = pos.y + 20

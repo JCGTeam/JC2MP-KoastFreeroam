@@ -27,7 +27,7 @@ function Pong:Lang()
 	self.enemy_txt = "Gopnik: "
 	self.limit_txt = "Hit limit: "
 	self.win_txt = "Well done!"
-	self.lose_txt = "You lose!"
+	self.lose_txt = "You suck!"
 end
 
 function Pong:LocalPlayerInput( args )

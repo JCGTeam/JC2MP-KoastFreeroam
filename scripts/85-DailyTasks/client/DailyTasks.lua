@@ -95,7 +95,7 @@ function DailyTasks:__init()
         self.hunttask_txt = "Убейте "
         self.hunttask2_txt = ' человек в режиме "Охота"'
         self.hunttip_txt = 'Зайдите в развлечения через меню сервера, чтобы присоединиться к режиму "Охота"'
-        self.trontask_txt = "Выиграте в режиме 'Трон' более "
+        self.trontask_txt = 'Выиграте в режиме "Трон" более '
         self.trontask2_txt = "-х раз"
         self.trontip_txt = 'Зайдите в развлечения через меню сервера, чтобы присоединиться к режиму "Трон"'
         self.earn_txt = "Наберите "
@@ -126,7 +126,7 @@ function DailyTasks:Lang()
     self.hunttask_txt = "Kill "
     self.hunttask2_txt = ' players in "Hunt" mode'
     self.hunttip_txt = 'Go to the minigames section through the server menu to go to the "Hunt" mode'
-    self.trontask_txt = "Win 'Tron' mode more than "
+    self.trontask_txt = 'Win "Tron" mode more than '
     self.trontask2_txt = " times"
     self.trontip_txt = 'Go to the minigames section through the server menu to go to the "Tron" mode'
     self.earn_txt = "Get "

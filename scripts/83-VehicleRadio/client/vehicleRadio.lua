@@ -1,8 +1,12 @@
 class 'VehicleRadio'
 
 function VehicleRadio:__init()
-	self.radioname = "Магнитола: "
-	self.offname = "Выключено"
+	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+		self:Lang()
+	else
+		self.radioname = "Магнитола: "
+		self.offname = "Выключено"
+	end
 
 	self.check = 0
 
