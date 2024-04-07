@@ -5,8 +5,6 @@ function FontCheck:__init()
 end
 
 function FontCheck:ToggleSystemFonts( args, sender )
-	if not args.enabled then return end
-
 	sender:SetNetworkValue( "SystemFonts", args.enabled )
 end
 

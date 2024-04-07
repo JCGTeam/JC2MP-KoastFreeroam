@@ -8,7 +8,7 @@ function Drift:__init()
 	Network:Subscribe( "01", self, self.onDriftRecord )
 	Network:Subscribe( "02", self, self.onDriftAttempt )
 	Network:Subscribe( "03", self, self.DriftRecordTask )
-	--Network:Subscribe( "setmas", self, self.SetMas ) -- сука блять, майхем, не ломай физику
+	Network:Subscribe( "SetMas", self, self.SetMas )
 end
 
 function Drift:initVars()
@@ -16,18 +16,15 @@ function Drift:initVars()
 	self.delay = 240
 end
 
---[[
-function Drift:SetMas( args, ply )
+function Drift:SetMas( args, sender )
 	if IsValid(args.veh) then
 		if args.bool then
 			args.veh:SetMass( args.veh:GetMass()/2 )
 		else
 			args.veh:SetMass( args.veh:GetMass()*2 )
 		end
-	else
 	end
 end
-]]--
 
 function Drift:ModuleLoad()
 	NetworkObject.Create("Drift")

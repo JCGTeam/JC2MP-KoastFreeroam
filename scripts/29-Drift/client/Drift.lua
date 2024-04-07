@@ -7,9 +7,10 @@ function Drift:__init()
 	Events:Subscribe( "Render", self, self.Render )
 
 	--Automass (Drifting is better, but the cars become unmanageable)
-	--Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
-	--Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
-	--Events:Subscribe( "LocalPlayerDeath", self, self.LocalPlayerDeath )
+	Events:Subscribe( "NetworkObjectValueChange", self, self.NetworkObjectValueChange )
+	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
+	Events:Subscribe( "LocalPlayerDeath", self, self.LocalPlayerDeath )
+	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
 
 	Network:Subscribe( "03", self, self.onDriftAttempt )
 
@@ -48,34 +49,47 @@ function Drift:Lang()
 	self.tRecord = "Personal drift record: "
 end
 
---[[function Drift:LocalPlayerExitVehicle()
-	if IsValid( LocalPlayer:GetVehicle() ) then
-		if self.mass then 
-			self.mass = false
-			Network:Send("setmas", {veh = LocalPlayer:GetVehicle(), bool = self.mass})
+function Drift:ResetMass()
+	if self.mass then 
+		self.mass = false
+		Network:Send( "SetMas", { veh = LocalPlayer:GetVehicle(), bool = self.mass } )
+	end
+end
+
+function Drift:NetworkObjectValueChange( args )
+	if args.key == "DriftPhysics" and args.object.__type == "LocalPlayer" then
+		if not args.value then
+			if IsValid( LocalPlayer:GetVehicle() ) then
+				self:ResetMass()
+				print("RESET")
+			end
 		end
+	end
+end
+
+function Drift:LocalPlayerExitVehicle()
+	if not LocalPlayer:GetValue( "DriftPhysics" ) then return end
+
+	if IsValid( LocalPlayer:GetVehicle() ) then
+		self:ResetMass()
 	end
 end
 
 function Drift:LocalPlayerDeath()
+	if not LocalPlayer:GetValue( "DriftPhysics" ) then return end
+
 	if IsValid( LocalPlayer:GetVehicle() ) then
-		if self.mass then 
-			self.mass = false
-			Network:Send("setmas", {veh = LocalPlayer:GetVehicle(), bool = self.mass})
-		end
+		self:ResetMass()
 	end
 end
 
 function Drift:PlayerQuit( args )
+	if not LocalPlayer:GetValue( "DriftPhysics" ) then return end
+
 	if args.player == LocalPlayer then
-		if IsValid( LocalPlayer:GetVehicle() ) then
-			if self.mass then 
-				self.mass = false
-				Network:Send("setmas", {veh = LocalPlayer:GetVehicle(), bool = self.mass})
-			end
-		end
+		self:ResetMass()
 	end
-end--]]
+end
 
 function Drift:Render()
 	local object = NetworkObject.GetByName("Drift")
@@ -138,26 +152,20 @@ function Drift:Render()
 		end
 	end
 
-	--[[
-	if self.slide then
-		if self.slide == 0 then
-			if not self.mass then
-				self.mass = true
-				Network:Send("setmas", {veh = LocalPlayer:GetVehicle(), bool = self.mass})
+	if LocalPlayer:GetValue( "DriftPhysics" ) then
+		if self.slide then
+			if self.slide == 0 then
+				if not self.mass then
+					self.mass = true
+					Network:Send( "SetMas", { veh = LocalPlayer:GetVehicle(), bool = self.mass } )
+				end
+			else
+				self:ResetMass()
 			end
 		else
-			if self.mass then
-				self.mass = false
-				Network:Send("setmas", {veh = LocalPlayer:GetVehicle(), bool = self.mass})
-			end
-		end
-	else
-		if self.mass then
-			self.mass = false
-			Network:Send("setmas", {veh = LocalPlayer:GetVehicle(), bool = self.mass})
+			self:ResetMass()
 		end
 	end
-	]]--
 
 	if self.score and not self.timer and self.score >= 100 then
 		self.slide = self.slide + (1 * self.multipler)

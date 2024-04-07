@@ -29,6 +29,7 @@ function Bank:__init()
 	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
+		self.friend_txt = "Друг"
 		self.money = "Баланс: $"
 		self.nomoney_txt = "У вас нет столько денег!"
 		self.playernotselected_txt = "Игрок не выбран!"
@@ -44,6 +45,11 @@ function Bank:__init()
 	self.timer = Timer()
 	self.message_size = TextSize.VeryLarge
 	self.submessage_size = 25
+
+	for player in Client:GetPlayers() do
+		self:AddPlayer( player )
+	end
+	--self:AddPlayer(LocalPlayer)
 end
 
 function Bank:Lang()
@@ -55,6 +61,7 @@ function Bank:Lang()
 		self.plist.filter:SetToolTip( "Search" )
 	end
 
+	self.friend_txt = "Friend"
 	self.money = "Balance: $"
 	self.nomoney_txt = "You don't have that much money!"
 	self.playernotselected_txt = "Player is not selected!"
@@ -161,11 +168,6 @@ function Bank:CreateSendMoneyWindow()
 	self.plist.filter:Subscribe( "Focus", self, self.Focus )
 	self.plist.filter:Subscribe( "Blur", self, self.Blur )
 	self.plist.filter:Subscribe( "EscPressed", self, self.EscPressed )
-
-	for player in Client:GetPlayers() do
-		self:AddPlayer( player )
-	end
-	--self:AddPlayer(LocalPlayer)
 end
 
 function Bank:WindowClosed( args )
@@ -195,6 +197,10 @@ function Bank:AddPlayer( player )
 	local playerId = tostring( player:GetId() )
 
 	local item = self.plist.playerList:AddItem( playerSteamId )
+
+	if LocalPlayer:IsFriend( player ) then
+		item:SetToolTip( self.friend_txt )
+	end
 
 	item:SetCellText( 0, playerName )
 	item:SetTextColor( playerColor )

@@ -158,8 +158,9 @@ function Settings:Lang()
 	self.posreset_txt = "Position has been reset. Restart the game."
 
 	self.option17:GetLabel():SetText( "Keep the character in vehicle" )
-	self.option18:GetLabel():SetText( "Wingsuit" )
+	self.option23:GetLabel():SetText( "Drift control configuration" )
 	self.option19:GetLabel():SetText( "Hydraulics" )
+	self.option18:GetLabel():SetText( "Wingsuit" )
 
 	self.rollbutton:GetLabel():SetText( "Barrel" )
 	self.spinbutton:GetLabel():SetText( "Spinner" )
@@ -358,8 +359,15 @@ function Settings:LoadCategories()
 	self.option17 = self:OptionCheckBox( scroll_control, "Не выбрасывать персонажа из транспорта", LocalPlayer:GetValue( "VehicleEjectBlocker" ) or false )
 	self.option17:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 16 , boolean = not LocalPlayer:GetValue( "VehicleEjectBlocker" ) } ) end )
 
+	self.option23 = self:OptionCheckBox( scroll_control, "Дрифт-конфигурация управления", LocalPlayer:GetValue( "DriftPhysics" ) or false )
+	self.option23:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 19 , boolean = not LocalPlayer:GetValue( "DriftPhysics" ) } ) end )
+
+	self.option19 = self:OptionCheckBox( scroll_control, "Гидравлика", LocalPlayer:GetValue( "HydraulicsEnabled" ) or false )
+	self.option19:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 18 , boolean = not LocalPlayer:GetValue( "HydraulicsEnabled" ) } ) end )
+
 	self.option18 = self:OptionCheckBox( scroll_control, "Вингсьют", LocalPlayer:GetValue( "WingsuitEnabled" ) or false )
 	self.option18:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 17 , boolean = not LocalPlayer:GetValue( "WingsuitEnabled" ) } ) end )
+	self.option18:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
 
 	self.buttonLH = LabeledCheckBox.Create( scroll_control )
 	if LocalPlayer:GetValue( "LongerGrapple" ) then
@@ -376,9 +384,6 @@ function Settings:LoadCategories()
 	self.buttonLH:SetDock( GwenPosition.Top )
 	self.buttonLH:GetCheckBox():SetChecked( LocalPlayer:GetValue( "LongerGrappleEnabled" ) or false )
 	self.buttonLH:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 15 , boolean = not LocalPlayer:GetValue( "LongerGrappleEnabled" ) } ) end )
-
-	self.option19 = self:OptionCheckBox( scroll_control, "Гидравлика", LocalPlayer:GetValue( "HydraulicsEnabled" ) or false )
-	self.option19:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 18 , boolean = not LocalPlayer:GetValue( "HydraulicsEnabled" ) } ) end )
 
 	self.flipbutton = LabeledCheckBox.Create( bkpanelsLabel )
 	self.spinbutton = LabeledCheckBox.Create( bkpanelsLabel )

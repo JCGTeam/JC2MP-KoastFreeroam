@@ -330,6 +330,11 @@ function PDA:KeyUp( args )
 				Events:Unsubscribe( self.MouseMoveEvent )
 				self.MouseMoveEvent = nil
 			end
+
+			if self.LocalPlayerInputEvent then
+				Events:Unsubscribe( self.LocalPlayerInputEvent )
+				self.LocalPlayerInputEvent = nil
+			end
 		end
 	end
 
@@ -353,14 +358,14 @@ function PDA:LocalPlayerInput( args )
 			local zoomTarget  = ((PDA:IsUsingGamepad() and (Render.Size / 2) or Mouse:GetPosition()) - (Render.Size / 2))
 
 			Map.Offset = Map.Offset - ((zoomTarget * zoomFactor) / zoomProduct)
-		elseif args.input == Action.GuiAnalogDown and args.state > 0.15 then
-			Map.Offset = Map.Offset - (Vector2.Down * 5 * math.pow(args.state, 2) / Map.Zoom)
-		elseif args.input == Action.GuiAnalogUp and args.state > 0.15 then
-			Map.Offset = Map.Offset - (Vector2.Up * 5 * math.pow(args.state, 2) / Map.Zoom)
-		elseif args.input == Action.GuiAnalogLeft and args.state > 0.15 then
-			Map.Offset = Map.Offset - (Vector2.Left * 5 * math.pow(args.state, 2) / Map.Zoom)
-		elseif args.input == Action.GuiAnalogRight and args.state > 0.15 then
-			Map.Offset = Map.Offset - (Vector2.Right * 5 * math.pow(args.state, 2) / Map.Zoom)
+		elseif ( args.input == Action.GuiAnalogDown or args.input == Action.GuiDown ) and args.state > 0.15 then
+			Map.Offset = Map.Offset - (Vector2.Down * 8.5 * math.pow(args.state, 2) / Map.Zoom)
+		elseif ( args.input == Action.GuiAnalogUp or args.input == Action.GuiUp ) and args.state > 0.15 then
+			Map.Offset = Map.Offset - (Vector2.Up * 8.5 * math.pow(args.state, 2) / Map.Zoom)
+		elseif ( args.input == Action.GuiAnalogLeft or args.input == Action.GuiLeft ) and args.state > 0.15 then
+			Map.Offset = Map.Offset - (Vector2.Left * 8.5 * math.pow(args.state, 2) / Map.Zoom)
+		elseif ( args.input == Action.GuiAnalogRight or args.input == Action.GuiRight ) and args.state > 0.15 then
+			Map.Offset = Map.Offset - (Vector2.Right * 8.5 * math.pow(args.state, 2) / Map.Zoom)
 		end
 	end
 end

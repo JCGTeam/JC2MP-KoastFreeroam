@@ -8,7 +8,8 @@ function Crosshair:__init()
 	self.cooltime = 0
 	self.alpha = 0
 	self.size = 3
-	self.crosscolor = Color.White
+
+	self.pointColor = crossColor
 
 	self.blacklist = {
 		actions = { 
@@ -110,7 +111,7 @@ function Crosshair:EntityBulletHit()
 		self.popalTimer = Timer()
 	end
 
-	self.crosscolor = Color.Red
+	self.pointColor = Color.Red
 end
 
 function Crosshair:CheckList( tableList, modelID )
@@ -121,7 +122,7 @@ function Crosshair:CheckList( tableList, modelID )
 end
 
 function Crosshair:GetRotation()
-	local frac = math.sin( Client:GetElapsedSeconds() *5 ) * 0.5 + 0.5
+	local frac = math.sin( Client:GetElapsedSeconds() * 5 ) * 0.5 + 0.5
 	self.alpha = math.lerp( 50, 255, frac )
 end
 
@@ -138,11 +139,7 @@ function Crosshair:Render()
 
 	if not self.popalTimer and LocalPlayer:GetAimTarget() then
 		local aimTarget = LocalPlayer:GetAimTarget()
-		if aimTarget.player or aimTarget.vehicle or (aimTarget.entity and aimTarget.entity.__type == 'ClientActor') then
-			self.crosscolor = Color.LawnGreen
-		else
-			self.crosscolor = Color.White
-		end
+		self.pointColor = ( aimTarget.player or aimTarget.vehicle or ( aimTarget.entity and aimTarget.entity.__type == "ClientActor" ) ) and Color.LawnGreen or Color.White
 	end	
 
 	local bs = LocalPlayer:GetBaseState()
@@ -191,45 +188,48 @@ function Crosshair:Render()
 
 	if self.distance > 1 and (self.distance > 1 or (self.velocity > 20)) and not LocalPlayer:InVehicle() and not self.blacklist.animations2[bs] and not self.blacklist.animations2[las] and not self.blacklist.animations4[bs] then
 		if LocalPlayer:GetValue( "GameMode" ) ~= "Охота" then
-			Render:DrawLine( Vector2( 4, 4 ), Vector2( 3, 3 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -4, -4 ), Vector2( -3, -3 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -4, 4 ), Vector2( -3, 3 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( 4, -4 ), Vector2( 3, -3 ), Color( 0, 0, 0, self.alpha ) )
+			local crossColor = Color( 255, 255, 255, self.alpha )
+			local crossColorShadow = Color( 0, 0, 0, self.alpha )
 
-			Render:DrawLine( Vector2( 14, 14 ), Vector2( 15, 15 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -14, -14 ), Vector2( -15, -15 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -14, 14 ), Vector2( -15, 15 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( 14, -14 ), Vector2( 15, -15 ), Color( 0, 0, 0, self.alpha ) )
+			Render:DrawLine( Vector2( 4, 4 ), Vector2( 3, 3 ), crossColorShadow )
+			Render:DrawLine( Vector2( -4, -4 ), Vector2( -3, -3 ), crossColorShadow )
+			Render:DrawLine( Vector2( -4, 4 ), Vector2( -3, 3 ), crossColorShadow )
+			Render:DrawLine( Vector2( 4, -4 ), Vector2( 3, -3 ), crossColorShadow )
 
-			Render:DrawLine( Vector2( 3, 4 ), Vector2( 13, 14 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -3, -4 ), Vector2( -13, -14 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -3, 4 ), Vector2( -13, 14 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( 3, -4 ), Vector2( 13, -14 ), Color( 0, 0, 0, self.alpha ) )
+			Render:DrawLine( Vector2( 14, 14 ), Vector2( 15, 15 ), crossColorShadow )
+			Render:DrawLine( Vector2( -14, -14 ), Vector2( -15, -15 ), crossColorShadow )
+			Render:DrawLine( Vector2( -14, 14 ), Vector2( -15, 15 ), crossColorShadow )
+			Render:DrawLine( Vector2( 14, -14 ), Vector2( 15, -15 ), crossColorShadow )
 
-			Render:DrawLine( Vector2( 4, 3 ), Vector2( 14, 13 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -4, -3 ), Vector2( -14, -13 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -4, 3 ), Vector2( -14, 13 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( 4, -3 ), Vector2( 14, -13 ), Color( 0, 0, 0, self.alpha ) )
+			Render:DrawLine( Vector2( 3, 4 ), Vector2( 13, 14 ), crossColorShadow )
+			Render:DrawLine( Vector2( -3, -4 ), Vector2( -13, -14 ), crossColorShadow )
+			Render:DrawLine( Vector2( -3, 4 ), Vector2( -13, 14 ), crossColorShadow )
+			Render:DrawLine( Vector2( 3, -4 ), Vector2( 13, -14 ), crossColorShadow )
 
-			Render:DrawLine( Vector2( 4, 5 ), Vector2( 14, 15 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -4, -5 ), Vector2( -14, -15 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -4, 5 ), Vector2( -14, 15 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( 4, -5 ), Vector2( 14, -15 ), Color( 0, 0, 0, self.alpha ) )
+			Render:DrawLine( Vector2( 4, 3 ), Vector2( 14, 13 ), crossColorShadow )
+			Render:DrawLine( Vector2( -4, -3 ), Vector2( -14, -13 ), crossColorShadow )
+			Render:DrawLine( Vector2( -4, 3 ), Vector2( -14, 13 ), crossColorShadow )
+			Render:DrawLine( Vector2( 4, -3 ), Vector2( 14, -13 ), crossColorShadow )
 
-			Render:DrawLine( Vector2( 5, 4 ), Vector2( 15, 14 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -5, -4 ), Vector2( -15, -14 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( -5, 4 ), Vector2( -15, 14 ), Color( 0, 0, 0, self.alpha ) )
-			Render:DrawLine( Vector2( 5, -4 ), Vector2( 15, -14 ), Color( 0, 0, 0, self.alpha ) )
+			Render:DrawLine( Vector2( 4, 5 ), Vector2( 14, 15 ), crossColorShadow )
+			Render:DrawLine( Vector2( -4, -5 ), Vector2( -14, -15 ), crossColorShadow )
+			Render:DrawLine( Vector2( -4, 5 ), Vector2( -14, 15 ), crossColorShadow )
+			Render:DrawLine( Vector2( 4, -5 ), Vector2( 14, -15 ), crossColorShadow )
 
-			Render:DrawLine( Vector2( 4, 4 ), Vector2( 14, 14 ), Color( 255, 255, 255, self.alpha ) )
-			Render:DrawLine( Vector2( -4, -4 ), Vector2( -14, -14 ), Color( 255, 255, 255, self.alpha ) )
-			Render:DrawLine( Vector2( -4, 4 ), Vector2( -14, 14 ), Color( 255, 255, 255, self.alpha ) )
-			Render:DrawLine( Vector2( 4, -4 ), Vector2( 14, -14 ), Color( 255, 255, 255, self.alpha ) )
+			Render:DrawLine( Vector2( 5, 4 ), Vector2( 15, 14 ), crossColorShadow )
+			Render:DrawLine( Vector2( -5, -4 ), Vector2( -15, -14 ), crossColorShadow )
+			Render:DrawLine( Vector2( -5, 4 ), Vector2( -15, 14 ), crossColorShadow )
+			Render:DrawLine( Vector2( 5, -4 ), Vector2( 15, -14 ), crossColorShadow )
+
+			Render:DrawLine( Vector2( 4, 4 ), Vector2( 14, 14 ), crossColor )
+			Render:DrawLine( Vector2( -4, -4 ), Vector2( -14, -14 ), crossColor )
+			Render:DrawLine( Vector2( -4, 4 ), Vector2( -14, 14 ), crossColor )
+			Render:DrawLine( Vector2( 4, -4 ), Vector2( 14, -14 ), crossColor )
 		end
 	end
 
 	if not self.blacklist.animations2[bs] then
-		Render:FillCircle( Vector2.Zero, self.size / 2, self.crosscolor )
+		Render:FillCircle( Vector2.Zero, self.size / 2, self.pointColor )
 		Render:DrawCircle( Vector2.Zero, self.size / 2, Color.Black )
 	end
 end
@@ -249,6 +249,7 @@ function Crosshair:LocalPlayerInput( args )
 				end
 			end
 		end
+
 		self.cooltime = time + 0.3
 	else
 		if LocalPlayer:GetValue( "GameMode" ) == "FREEROAM" then
