@@ -1,30 +1,5 @@
 class 'Tasks'
 
-local jobp_ru = "[Задания] "
-local jobp_en = "[Tasks] "
-
-local groundVehicles = {66, 12, 54, 23, 33, 68, 78, 8, 35, 44, 2, 7, 29, 70, 55, 15, 91, 21, 83, 32, 79, 22, 9, 4, 41, 49, 71, 42, 76, 31}
-local offroadVehicles = {11, 36, 72, 73, 26, 63, 86, 77, 48, 84, 46, 10, 52, 13, 60, 87, 74, 43, 89, 90, 61, 47, 18, 56, 40}
-local waterVehicles = {80, 38, 88, 45, 6, 19, 5, 27, 28, 25, 69, 16, 50}
-local heliVehicles = {64, 65, 14, 67, 3, 37, 57, 62}
-local jetVehicles = {39, 85, 34}
-local planeVehicles = {51, 59, 81, 30}
---vehicle "difficulty" tables
-local easyVehicles = {81, 64, 14, 67, 3, 37, 57, 62, 80, 88, 27, 54, 72, 73, 23, 33, 63, 26, 68, 78, 86, 35, 77, 2, 84, 46, 7, 10, 52, 29, 70, 55, 15, 13, 91, 60, 87, 74, 21, 43, 89, 90, 61, 18, 56, 76, 31}
-local mediumVehicles = {51, 34, 30, 65, 45, 6, 19, 28, 69, 16, 11, 36, 44, 48, 83, 32, 47, 79, 22, 9, 4, 41, 49, 71, 42}
-local hardVehicles = {59, 38, 5, 25, 66, 12, 8, 1, 40}
-local harderVehicles = {39, 75, 85, 50}
-
-local easy = 0.20
-local medium = 0.21
-local hard = 0.21
-local harder = 0.21
-local shortJobBias = 2
-
-local rewardMultiplier = 0.2
-
-local jobCooldownTime = 1
-
 function string.starts( String,Start )
 	return string.sub(String,1,string.len(Start))==Start
 end
@@ -35,6 +10,31 @@ end
 
 function Tasks:__init()
 	math.randomseed(os.time())
+
+	self.jobp_ru = "[Задания] "
+	self.jobp_en = "[Tasks] "
+
+	self.groundVehicles = {66, 12, 54, 23, 33, 68, 78, 8, 35, 44, 2, 7, 29, 70, 55, 15, 91, 21, 83, 32, 79, 22, 9, 4, 41, 49, 71, 42, 76, 31}
+	self.offroadVehicles = {11, 36, 72, 73, 26, 63, 86, 77, 48, 84, 46, 10, 52, 13, 60, 87, 74, 43, 89, 90, 61, 47, 18, 56, 40}
+	self.waterVehicles = {80, 38, 88, 45, 6, 19, 5, 27, 28, 25, 69, 16, 50}
+	self.heliVehicles = {64, 65, 14, 67, 3, 37, 57, 62}
+	self.jetVehicles = {39, 85, 34}
+	self.planeVehicles = {51, 59, 81, 30}
+	--vehicle "difficulty" tables
+	self.easyVehicles = {81, 64, 14, 67, 3, 37, 57, 62, 80, 88, 27, 54, 72, 73, 23, 33, 63, 26, 68, 78, 86, 35, 77, 2, 84, 46, 7, 10, 52, 29, 70, 55, 15, 13, 91, 60, 87, 74, 21, 43, 89, 90, 61, 18, 56, 76, 31}
+	self.mediumVehicles = {51, 34, 30, 65, 45, 6, 19, 28, 69, 16, 11, 36, 44, 48, 83, 32, 47, 79, 22, 9, 4, 41, 49, 71, 42}
+	self.hardVehicles = {59, 38, 5, 25, 66, 12, 8, 1, 40}
+	self.harderVehicles = {39, 75, 85, 50}
+
+	self.easy = 0.20
+	self.medium = 0.21
+	self.hard = 0.21
+	self.harder = 0.21
+	self.shortJobBias = 2
+
+	self.rewardMultiplier = 0.2
+
+	self.jobCooldownTime = 1
 
 	self.locations = {}
 
@@ -130,7 +130,7 @@ function Tasks:GenerateJobs()
 	for key,location in pairs(self.locations) do
 		local job = self:MakeJob(key)
 		--search for shorter jobs
-		for i = 1,shortJobBias do
+		for i = 1,self.shortJobBias do
 			job2 = self:MakeJob(key)
 			if job2.distance < job.distance and job2.distance > 100 then
 				job = job2
@@ -165,33 +165,33 @@ function Tasks:MakeJob( key )
 	local distance = startPoint:Distance(destPoint)
 	job.distance = distance
 	local multiplier = self:GetVehicleRewardMultiplier(job.vehicle)
-	job.reward = math.floor(multiplier * distance * rewardMultiplier)
+	job.reward = math.floor(multiplier * distance * self.rewardMultiplier)
 	job.description = dest.name
 	return job
 end
 
 function Tasks:GetVehicleRewardMultiplier( vehicleType )
-	for k,v in pairs(easyVehicles) do
+	for k,v in pairs(self.easyVehicles) do
 		if v == vehicleType then
-			return easy
+			return self.easy
 		end
 	end
-	for k,v in pairs(mediumVehicles) do
+	for k,v in pairs(self.mediumVehicles) do
 		if v == vehicleType then
-			return medium
+			return self.medium
 		end
 	end
-	for k,v in pairs(hardVehicles) do
+	for k,v in pairs(self.hardVehicles) do
 		if v == vehicleType then
-			return hard
+			return self.hard
 		end
 	end
-	for k,v in pairs(harderVehicles) do
+	for k,v in pairs(self.harderVehicles) do
 		if v == vehicleType then
-			return harder
+			return self.harder
 		end
 	end
-	return easy
+	return self.easy
 end
 
 function Tasks:GetRandomVehicleOfType( vehicleType )
@@ -199,21 +199,21 @@ function Tasks:GetRandomVehicleOfType( vehicleType )
 	math.random()
 	math.random()
 	if (vehicleType == "G") then
-		return groundVehicles[math.random(#groundVehicles)]
+		return self.groundVehicles[math.random(#self.groundVehicles)]
 	elseif (vehicleType == "O") then
-		return offroadVehicles[math.random(#offroadVehicles)]	
+		return self.offroadVehicles[math.random(#self.offroadVehicles)]	
 	elseif (vehicleType == "W") then
-		return waterVehicles[math.random(#waterVehicles)]
+		return self.waterVehicles[math.random(#self.waterVehicles)]
 	elseif (vehicleType == "H") then
-		return heliVehicles[math.random(#heliVehicles)]
+		return self.heliVehicles[math.random(#self.heliVehicles)]
 	elseif (vehicleType == "J") then
-		return jetVehicles[math.random(#jetVehicles)]
+		return self.jetVehicles[math.random(#self.jetVehicles)]
 	elseif (vehicleType == "P") then
-		return planeVehicles[math.random(#planeVehicles)]
+		return self.planeVehicles[math.random(#self.planeVehicles)]
 	elseif (vehicleType == "X") then
-		return offroadVehicles[math.random(#offroadVehicles)]
+		return self.offroadVehicles[math.random(#self.offroadVehicles)]
 	elseif (vehicleType == "D") then
-		return offroadVehicles[math.random(#offroadVehicles)]		
+		return self.offroadVehicles[math.random(#self.offroadVehicles)]		
 	else 
 		print( "tried to spawn invalid vehicle type. Made tractor instead" )
 		return 1
@@ -376,8 +376,8 @@ function Tasks:PlayerTakeJob( args, player )
         return false
     end
 	--cooldown timer
-	if self.playerJobTimers[player:GetId()]:GetSeconds() < jobCooldownTime then
-		player:SendChatMessage( player:GetValue( "Lang" ) == "EN" and jobp_en or jobp_ru, Color.White, player:GetValue( "Lang" ) == "EN" and "Wait a bit before starting a new task!" or "Подождите немного прежде, чем начинать новое задание!", Color.DarkGray )
+	if self.playerJobTimers[player:GetId()]:GetSeconds() < self.jobCooldownTime then
+		player:SendChatMessage( player:GetValue( "Lang" ) == "EN" and self.jobp_en or self.jobp_ru, Color.White, player:GetValue( "Lang" ) == "EN" and "Wait a bit before starting a new task!" or "Подождите немного прежде, чем начинать новое задание!", Color.DarkGray )
 		return false
 	end
 	--make sure the job is valid
@@ -449,7 +449,7 @@ function Tasks:PlayerCompleteJob( args, player )
 			player:SetMoney(player:GetMoney() + reward)
 			self.playerJobs[playerId] = nil
 			Network:Send( player, "JobFinish", reward)
-			player:SendChatMessage( player:GetValue( "Lang" ) == "EN" and jobp_en or jobp_ru, Color.White, ( player:GetValue( "Lang" ) == "EN" and "Task completed! Reward: $" or "Задание выполнено! Награда: $" ) .. reward, Color( 0, 255, 0 ) )
+			player:SendChatMessage( player:GetValue( "Lang" ) == "EN" and self.jobp_en or self.jobp_ru, Color.White, ( player:GetValue( "Lang" ) == "EN" and "Task completed! Reward: $" or "Задание выполнено! Награда: $" ) .. reward, Color( 0, 255, 0 ) )
 			self.playerJobTimers[playerId]:Restart()
 		else
 			Network:Send( player, "JobFailed", true )

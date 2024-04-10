@@ -103,25 +103,24 @@ function Manhunt:Render()
 	--if not self.inMode then return end 
 	if Game:GetState() ~= GUIState.Game then return end
 
-	self:RightText( self.yourscorestxt .. self.pts, Render:GetTextHeight( "A" ) * 3.5 + 1, Color( 0, 0, 0 ) )
-	self:RightText( self.leaderboardtxt, Render:GetTextHeight( self.yourscorestxt .. self.pts ) * 5 + 1, Color( 0, 0, 0 ) )
-	for i = 1, math.min(#self.scores, 10), 1 do
-		local color = Color( 0, 0, 0 )
-		if self.scores[i].it then color = Color(0, 0, 0) end
-		self:RightText( ""..i..". "..self.scores[i].name..": "..self.scores[i].pts, Render:GetTextHeight( self.leaderboardtxt ) * 5 + 1 + i * 16, color )
-	end
+	local color = Color.White
+	local shadowColor = Color.Black
+
+	self:RightText( self.yourscorestxt .. self.pts, Render:GetTextHeight( "A" ) * 3.5 + 1, shadowColor )
+	self:RightText( self.leaderboardtxt, Render:GetTextHeight( self.yourscorestxt .. self.pts ) * 5 + 1, shadowColor )
+
 	self:RightText( self.yourscorestxt .. self.pts, Render:GetTextHeight( "A" ) * 3.5, Color( 255, 255, 0 ) )
 	self:RightText( self.leaderboardtxt, Render:GetTextHeight( self.yourscorestxt .. self.pts ) * 5, Color( 255, 255, 0 ) )
+
 	for i = 1, math.min(#self.scores, 10), 1 do
-		local color = Color.White
-		if self.scores[i].it then color = Color( 255, 170, 0 ) end
-		self:RightText( ""..i..". "..self.scores[i].name..": "..self.scores[i].pts, Render:GetTextHeight( self.leaderboardtxt ) * 5 + i * 16, color )
+		self:RightText( ""..i..". "..self.scores[i].name..": "..self.scores[i].pts, Render:GetTextHeight( self.leaderboardtxt ) * 5 + 1 + i * 16, shadowColor )
+		self:RightText( ""..i..". "..self.scores[i].name..": "..self.scores[i].pts, Render:GetTextHeight( self.leaderboardtxt ) * 5 + i * 16, self.scores[i].it and Color( 255, 170, 0 ) or color )
 	end
 
 	if not self.oob then return end
 
 	if LocalPlayer:GetValue( "SystemFonts" ) then
-		Render:SetFont(AssetLocation.SystemFont, "Impact")
+		Render:SetFont( AssetLocation.SystemFont, "Impact" )
 	end
 
 	local text = self.nameTh
@@ -130,7 +129,7 @@ function Manhunt:Render()
 
 	local pos = Vector2( (Render.Width - text_width)/2, (Render.Height - text_height)/2 )
 
-	Render:DrawShadowedText( pos, text, Color.Red, Color( 0, 0, 0 ), TextSize.Gigantic )
+	Render:DrawShadowedText( pos, text, Color.Red, shadowColor, TextSize.Gigantic )
 end
 
 manhunt = Manhunt()

@@ -38,9 +38,11 @@ function SeaTrafficManager:ModuleLoad()
 	end)
 
 	Events:Subscribe("PostTick", self, self.PostTick)
-	
+
 	data.positions = nil
 	print(string.format("Sea traffic loaded in %i ms", timer:GetMilliseconds()))
+
+	timer = nil
 end
 
 function SeaTrafficManager:SpawnRandomNPC()

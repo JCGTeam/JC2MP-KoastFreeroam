@@ -1,11 +1,8 @@
 class 'Freeroam'
 
 function Freeroam:__init()
-	self.hotspots = {}
-
 	Events:Subscribe( "GameLoad", self, self.GameLoad )
 	Network:Subscribe( "EnableAutoPassive", self, self.EnableAutoPassive )
-	Network:Subscribe( "Hotspots", self, self.Hotspots )
 	Network:Subscribe( "KillerStats", self, self.KillerStats )
 end
 
@@ -36,10 +33,6 @@ end
 
 function Freeroam:KillerStats( args )
 	Events:Fire( "CastCenterText", { text = args.text, time = 4, color = Color.White } )
-end
-
-function Freeroam:Hotspots( args )
-	self.hotspots = args
 end
 
 function Freeroam:DrawHotspot( v, dist )

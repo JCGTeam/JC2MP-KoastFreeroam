@@ -4,6 +4,7 @@ function SniperRedLine:__init()
     Events:Subscribe( "GameRender", self, self.GameRender )
 
     self.maxdist = 250
+    self.linecolor = Color( 255, 0, 0, 50 )
 end
 
 function SniperRedLine:GameRender()
@@ -17,9 +18,9 @@ function SniperRedLine:GameRender()
                 local distance = Vector3.Distance( ahr_bonepos, p:GetAimTarget().position )
 
                 if distance <= self.maxdist then
-                    Render:DrawLine( ahr_bonepos, p:GetAimTarget().position, Color( 255, 0, 0, 50 ) )
+                    Render:DrawLine( ahr_bonepos, p:GetAimTarget().position, self.linecolor )
                 else
-                    Render:DrawLine( ahr_bonepos, rfa_bonepos + rfa_boneangle * Vector3( 250, -1.2, 0.1 ), Color( 255, 0, 0, 50  ) )
+                    Render:DrawLine( ahr_bonepos, rfa_bonepos + rfa_boneangle * Vector3( 250, -1.2, 0.1 ), self.linecolor )
                 end
             end
         end

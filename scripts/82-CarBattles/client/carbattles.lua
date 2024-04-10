@@ -201,19 +201,18 @@ function CarBattles:Render()
 
 	if Game:GetState() ~= GUIState.Game then return end
 
-	self:RightText( self.yourscorestxt .. self.pts, Render:GetTextHeight( "A" ) * 3.5 + 1, Color( 0, 0, 0 ) )
-	self:RightText( self.leaderboardtxt, Render:GetTextHeight( self.yourscorestxt .. self.pts ) * 5 + 1, Color( 0, 0, 0 ) )
-	for i = 1, math.min(#self.scores, 10), 1 do
-		local color = Color( 0, 0, 0 )
-		if self.scores[i].it then color = Color(0, 0, 0) end
-		self:RightText( ""..i..". "..self.scores[i].name..": "..self.scores[i].pts, Render:GetTextHeight( self.leaderboardtxt ) * 5 + 1 + i * 16, color )
-	end
+	local color = Color.White
+	local shadowColor = Color.Black
+
+	self:RightText( self.yourscorestxt .. self.pts, Render:GetTextHeight( "A" ) * 3.5 + 1, shadowColor )
+	self:RightText( self.leaderboardtxt, Render:GetTextHeight( self.yourscorestxt .. self.pts ) * 5 + 1, shadowColor )
+
 	self:RightText( self.yourscorestxt .. self.pts, Render:GetTextHeight( "A" ) * 3.5, Color( 255, 255, 0 ) )
 	self:RightText( self.leaderboardtxt, Render:GetTextHeight( self.yourscorestxt .. self.pts ) * 5, Color( 255, 255, 0 ) )
+
 	for i = 1, math.min(#self.scores, 10), 1 do
-		local color = Color.White
-		if self.scores[i].it then color = Color( 255, 170, 0 ) end
-		self:RightText( ""..i..". "..self.scores[i].name..": "..self.scores[i].pts, Render:GetTextHeight( self.leaderboardtxt ) * 5 + i * 16, color )
+		self:RightText( ""..i..". "..self.scores[i].name..": "..self.scores[i].pts, Render:GetTextHeight( self.leaderboardtxt ) * 5 + 1 + i * 16, shadowColor )
+		self:RightText( ""..i..". "..self.scores[i].name..": "..self.scores[i].pts, Render:GetTextHeight( self.leaderboardtxt ) * 5 + i * 16, self.scores[i].it and Color( 255, 170, 0 ) or color )
 	end
 
 	if LocalPlayer:GetValue( "SystemFonts" ) then
@@ -227,15 +226,14 @@ function CarBattles:Render()
 --	end
 
 	if self.warning then
-		local text = self.name
-		local text_width = Render:GetTextWidth(text, TextSize.VeryLarge)
-		local text_height = Render:GetTextHeight(text, TextSize.VeryLarge)
-		local pos = Vector2((Render.Width - text_width)/2, (Render.Height - text_height - 200)/2)
-		Render:DrawShadowedText( pos, text, Color.White, Color( 25, 25, 25, 150 ), TextSize.VeryLarge )
-		local text = self.nameTw
+		local text_width = Render:GetTextWidth( self.name, TextSize.VeryLarge )
+		local text_height = Render:GetTextHeight( self.name, TextSize.VeryLarge )
+		local pos = Vector2( ( Render.Width - text_width )/2, ( Render.Height - text_height - 200 ) / 2 )
+		Render:DrawShadowedText( pos, self.name, Color.White, Color( 25, 25, 25, 150 ), TextSize.VeryLarge )
+
 		pos.y = pos.y + 45
-		pos.x = (Render.Width - Render:GetTextWidth(text, TextSize.Default))/2
-		Render:DrawShadowedText( pos, text, Color.DarkGray, Color( 25, 25, 25, 150 ), TextSize.Default )
+		pos.x = ( Render.Width - Render:GetTextWidth( self.nameTw, TextSize.Default ) ) / 2
+		Render:DrawShadowedText( pos, self.nameTw, Color.DarkGray, Color( 25, 25, 25, 150 ), TextSize.Default )
 	end
 end
 

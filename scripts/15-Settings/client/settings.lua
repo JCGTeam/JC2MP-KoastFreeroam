@@ -66,6 +66,7 @@ function Settings:__init()
 		self:Lang()
 	else
 		self.window:SetTitle( "▧ Настройки" )
+		self.subcategory6:SetText( "Основные опции:" )
 		self.hidetexttip:SetText( "Нажмите F11, чтобы скрыть/показать интерфейс" )
 		self.hidetext:SetText( "Используется скрытие серверного интерфейса" )
 		self.buttonBoost:SetText( "Настройка супер-ускорения (для ТС)" )
@@ -138,6 +139,7 @@ function Settings:Lang()
 	self.meters = "m"
 	self.unavailable_txt = "[UNAVAILABLE]"
 
+	self.subcategory6:SetText( "Main options:" )
 	self.option1:GetLabel():SetText( "Display clock" )
 	self.option2:GetLabel():SetText( "12-hour format" )
 	self.option3:GetLabel():SetText( 'Display "Passive" at the top of the screen' )
@@ -152,7 +154,8 @@ function Settings:Lang()
 	self.option12:GetLabel():SetText( "Server crosshair" )
 	self.option13:GetLabel():SetText( "Longer grapple indicator" )
 	self.option14:GetLabel():SetText( "Jet HUD (for aviation)" )
-	self.option15:GetLabel():SetText( "Display task on the map" )
+	self.option15:GetLabel():SetText( "Display tasks" )
+	self.option24:GetLabel():SetText( "Display door opening tips" )
 	self.option16:GetLabel():SetText( "Display snow on the screen" )
 
 	self.posreset_txt = "Position has been reset. Restart the game."
@@ -220,6 +223,11 @@ function Settings:LoadCategories()
 	scroll_control:SetDock( GwenPosition.Fill )
 	scroll_control:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
 
+	self.subcategory6 = Label.Create( scroll_control )
+	self.subcategory6:SetDock( GwenPosition.Top )
+	self.subcategory6:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+	self.subcategory6:SizeToContents()
+
 	self.option1 = self:OptionCheckBox( scroll_control, "Отображать часы", LocalPlayer:GetValue( "ClockVisible" ) or false )
 	self.option1:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 1 , boolean = not LocalPlayer:GetValue( "ClockVisible" ) } ) end )
 
@@ -264,12 +272,16 @@ function Settings:LoadCategories()
 	self.option13 = self:OptionCheckBox( scroll_control, "Индикатор дальнего крюка", LocalPlayer:GetValue( "LongerGrappleVisible" ) or false )
 	self.option13:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 13 , boolean = not LocalPlayer:GetValue( "LongerGrappleVisible" ) } ) end )
 
+	self.option15 = self:OptionCheckBox( scroll_control, "Отображать задания", LocalPlayer:GetValue( "JobsVisible" ) or false )
+	self.option15:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 14 , boolean = not LocalPlayer:GetValue( "JobsVisible" ) } ) end )
+	self.option15:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
+
+	self.option24 = self:OptionCheckBox( scroll_control, "Отображать подсказки открытия ворот", LocalPlayer:GetValue( "OpenDoorsTipsVisible" ) or false )
+	self.option24:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 20 , boolean = not LocalPlayer:GetValue( "OpenDoorsTipsVisible" ) } ) end )
+
 	self.option14 = self:OptionCheckBox( scroll_control, "Jet HUD (для авиации)", LocalPlayer:GetValue( "JetHUD" ) or false )
 	self.option14:GetCheckBox():Subscribe( "CheckChanged", function() Events:Fire( "JHudActive" ) Network:Send( "UpdateParameters", { parameter = 12 , boolean = not LocalPlayer:GetValue( "JetHUD" ) } ) end )
 	self.option14:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
-
-	self.option15 = self:OptionCheckBox( scroll_control, "Отображать задания на карте", LocalPlayer:GetValue( "JobsVisible" ) or false )
-	self.option15:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 14 , boolean = not LocalPlayer:GetValue( "JobsVisible" ) } ) end )
 
 	self.option16 = self:OptionCheckBox( scroll_control, "Отображать снег на экране", self.actvSn )
 	self.option16:GetCheckBox():Subscribe( "CheckChanged", function() self.actvSn = self.option16:GetCheckBox():GetChecked() self:GameLoad() end )

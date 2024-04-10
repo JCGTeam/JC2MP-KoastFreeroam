@@ -10,7 +10,6 @@ function Freeroam:__init()
     self.vehicles               = {}
     self.player_spawns          = {}
     self.teleports              = {}
-    self.hotspots               = {}
     self.kills                  = {}
 
     self.one_handed = { Weapon.Handgun, Weapon.Revolver, Weapon.SMG, Weapon.SawnOffShotgun }
@@ -18,7 +17,6 @@ function Freeroam:__init()
 
     self:LoadSpawns( "spawns.txt" )
 
-    Events:Subscribe( "ClientModuleLoad", self, self.ClientModuleLoad )
     Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
     Events:Subscribe( "ModulesLoad", self, self.ModulesLoad )
     Events:Subscribe( "PlayerChat", self, self.PlayerChat )
@@ -54,12 +52,9 @@ function Freeroam:LoadSpawns( filename )
         end
     end
 
-    for k, v in pairs(self.teleports) do
-        table.insert( self.hotspots, { k, v } )
-    end
-
     print( string.format( "Loaded spawns, %.02f seconds", timer:GetSeconds() ) )
 
+    timer = nil
     file:close()
 end
 
@@ -191,10 +186,6 @@ function ChatHandlers:teleport( args )
 end
 
 ChatHandlers.tp = ChatHandlers.teleport
-
-function Freeroam:ClientModuleLoad( args )
-    Network:Send( args.player, "Hotspots", self.hotspots )
-end
 
 function Freeroam:ModuleUnload( args )
     for k,v in pairs(self.vehicles) do

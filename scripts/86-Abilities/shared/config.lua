@@ -3,7 +3,7 @@ Prices = {
     Boost_1 = 1000,
     Boost_2 = 500,
     Boost_3 = 2000,
-    BonusMoney = 10000,
+    BonusMoney = 1500,
     MoreC4_5 = 50,
     MoreC4_8 = 500,
     MoreC4_10 = 1000,
@@ -13,7 +13,7 @@ Prices = {
     LongerGrapple_200 = 1000,
     LongerGrapple_350 = 2500,
     LongerGrapple_500 = 5000,
-    JesusMode = 7500
+    JesusMode = 2500
 }
 
 Debug = {

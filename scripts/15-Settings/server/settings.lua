@@ -2,7 +2,7 @@ class 'Settings'
 
 function Settings:__init()
 	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_color (steamid VARCHAR UNIQUE, r INTEGER, g INTEGER, b INTEGER)" )
-	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_settings (steamid VARCHAR UNIQUE, clockvisible INTEGER, clockpendosformat INTEGER, bestrecordsvisible INTEGER, passivemodevisible INTEGER, jesusmodevisible INTEGER, killfeedvisible INTEGER, chattipsvisible INTEGER, chatbackgroundvisible INTEGER, playersmarkersvisible INTEGER, jobsmarkersvisible INTEGER, customcrosshair INTEGER, jethud INTEGER, longergrapplevisible INTEGER, jobsvisible INTEGER, longergrappleenabled INTEGER, vehicleejectblocker INTEGER, wingsuitenabled INTEGER, hydraulicsenabled INTEGER, driftphysics INTEGER)" )
+	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_settings (steamid VARCHAR UNIQUE, clockvisible INTEGER, clockpendosformat INTEGER, bestrecordsvisible INTEGER, passivemodevisible INTEGER, jesusmodevisible INTEGER, killfeedvisible INTEGER, chattipsvisible INTEGER, chatbackgroundvisible INTEGER, playersmarkersvisible INTEGER, jobsmarkersvisible INTEGER, customcrosshair INTEGER, jethud INTEGER, longergrapplevisible INTEGER, jobsvisible INTEGER, longergrappleenabled INTEGER, vehicleejectblocker INTEGER, wingsuitenabled INTEGER, hydraulicsenabled INTEGER, driftphysics INTEGER, opendoorstipsvisible INTEGER)" )
 	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_binds (steamid VARCHAR UNIQUE, servermenu INTEGER, actionsmenu INTEGER, quicktp INTEGER, togglegrenades INTEGER, freecam INTEGER, opendoors INTEGER, playerslist INTEGER, firstperson INTEGER, toggleserverui INTEGER, boost INTEGER, airboost INTEGER, vehcamera INTEGER, nexttrack INTEGER, tuning INTEGER)" )
 
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
@@ -58,6 +58,8 @@ function Settings:UpdateParameters( args, sender )
 		sender:SetNetworkValue( "HydraulicsEnabled", args.boolean )
 	elseif args.parameter == 19 then
 		sender:SetNetworkValue( "DriftPhysics", args.boolean )
+	elseif args.parameter == 20 then
+		sender:SetNetworkValue( "OpenDoorsTipsVisible", args.boolean )
 	end
 end
 
@@ -72,7 +74,7 @@ end
 function Settings:PlayerQuit( args )
 	local steamID = args.player:GetSteamId().id
 
-    local cmd = SQL:Command( "INSERT OR REPLACE INTO players_settings (steamid, clockvisible, clockpendosformat, bestrecordsvisible, passivemodevisible, jesusmodevisible, killfeedvisible, chattipsvisible, chatbackgroundvisible, playersmarkersvisible, jobsmarkersvisible, customcrosshair, jethud, longergrapplevisible, jobsvisible, longergrappleenabled, vehicleejectblocker, wingsuitenabled, hydraulicsenabled, driftphysics) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" )
+    local cmd = SQL:Command( "INSERT OR REPLACE INTO players_settings (steamid, clockvisible, clockpendosformat, bestrecordsvisible, passivemodevisible, jesusmodevisible, killfeedvisible, chattipsvisible, chatbackgroundvisible, playersmarkersvisible, jobsmarkersvisible, customcrosshair, jethud, longergrapplevisible, jobsvisible, longergrappleenabled, vehicleejectblocker, wingsuitenabled, hydraulicsenabled, driftphysics, opendoorstipsvisible) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" )
     cmd:Bind( 1, tostring( steamID ) )
     cmd:Bind( 2, self:BooleanToNumber( args.player:GetValue( "ClockVisible" ) ) )
 	cmd:Bind( 3, self:BooleanToNumber( args.player:GetValue( "ClockPendosFormat" ) ) )
@@ -93,11 +95,12 @@ function Settings:PlayerQuit( args )
 	cmd:Bind( 18, self:BooleanToNumber( args.player:GetValue( "WingsuitEnabled" ) ) )
 	cmd:Bind( 19, self:BooleanToNumber( args.player:GetValue( "HydraulicsEnabled" ) ) )
 	cmd:Bind( 20, self:BooleanToNumber( args.player:GetValue( "DriftPhysics" ) ) )
+	cmd:Bind( 21, self:BooleanToNumber( args.player:GetValue( "OpenDoorsTipsVisible" ) ) )
 	cmd:Execute()
 end
 
 function Settings:GetDBSettings( args )
-	local qry = SQL:Query( "SELECT clockvisible, clockpendosformat, bestrecordsvisible, passivemodevisible, jesusmodevisible, killfeedvisible, chattipsvisible, chatbackgroundvisible, playersmarkersvisible, jobsmarkersvisible, customcrosshair, jethud, longergrapplevisible, jobsvisible, longergrappleenabled, vehicleejectblocker, wingsuitenabled, hydraulicsenabled, driftphysics FROM players_settings WHERE steamid = ?")
+	local qry = SQL:Query( "SELECT clockvisible, clockpendosformat, bestrecordsvisible, passivemodevisible, jesusmodevisible, killfeedvisible, chattipsvisible, chatbackgroundvisible, playersmarkersvisible, jobsmarkersvisible, customcrosshair, jethud, longergrapplevisible, jobsvisible, longergrappleenabled, vehicleejectblocker, wingsuitenabled, hydraulicsenabled, driftphysics, opendoorstipsvisible FROM players_settings WHERE steamid = ?")
 	qry:Bind( 1, args.player:GetSteamId().id )
 	local result = qry:Execute()
 
@@ -121,6 +124,7 @@ function Settings:GetDBSettings( args )
 		args.player:SetNetworkValue( "WingsuitEnabled", self:NumberToBoolean( tonumber( result[1].wingsuitenabled ) ) )
 		args.player:SetNetworkValue( "HydraulicsEnabled", self:NumberToBoolean( tonumber( result[1].hydraulicsenabled ) ) )
 		args.player:SetNetworkValue( "DriftPhysics", self:NumberToBoolean( tonumber( result[1].driftphysics ) ) )
+		args.player:SetNetworkValue( "OpenDoorsTipsVisible", self:NumberToBoolean( tonumber( result[1].opendoorstipsvisible ) ) )
 	else
 		args.player:SetNetworkValue( "ClockVisible", true )
 		args.player:SetNetworkValue( "ClockPendosFormat", false )
@@ -141,6 +145,7 @@ function Settings:GetDBSettings( args )
 		args.player:SetNetworkValue( "WingsuitEnabled", true )
 		args.player:SetNetworkValue( "HydraulicsEnabled", true )
 		args.player:SetNetworkValue( "DriftPhysics", false )
+		args.player:SetNetworkValue( "OpenDoorsTipsVisible", true )
 	end
 end
 

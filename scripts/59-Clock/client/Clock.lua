@@ -19,7 +19,7 @@ function Clock:Render()
 
 	local height = Render:GetTextHeight("A") * 1.5
 	position.y = position.y + height
-	Render:DrawShadowedText( position, textDate, Color( 255, 165, 0, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 16 )		
+	Render:DrawShadowedText( position, textDate, Color( 255, 165, 0, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 16 )
 end
 
 clock = Clock()

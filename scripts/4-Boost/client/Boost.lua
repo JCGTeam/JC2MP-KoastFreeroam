@@ -1,7 +1,6 @@
 class 'Boost'
 
 function Boost:__init()
-	self.strength = 60
 	self.defaultLandBoost = true
 	self.defaultBoatBoost = true
 	self.defaultHeliBoost = true
@@ -9,6 +8,7 @@ function Boost:__init()
 	self.defaultTextEnabled = true
 	self.defaultPadEnabled = true
 	self.defaultBrakeEnabled = true
+	self.defaultStrength = 80
 
 	self.controllerAction = Action.VehicleFireLeft
 
@@ -19,6 +19,7 @@ function Boost:__init()
 	self.textEnabled  = self.defaultTextEnabled
 	self.padEnabled   = self.defaultPadEnabled
 	self.brake   	  = self.defaultBrakeEnabled
+	self.strength	  = self.defaultStrength
 	self.windowOpen   = false
 	self.delta        = 0
 
@@ -66,17 +67,18 @@ function Boost:Lang()
 end
 
 function Boost:UpdateSettings( settings )
-	Network:Unsubscribe(self.settingSub)
+	Network:Unsubscribe( self.settingSub )
+
 	self.settingSub = nil
 
 	if settings then
 		for setting, value in pairs(settings) do
-			self[setting] = value == 1
+			self[setting] = ( setting == "strength" ) and value or value == 1
 		end
 	end
 
 	self.window = Window.Create()
-	self.window:SetSize( Vector2( 250, 175 ) )
+	self.window:SetSize( Vector2( 250, 240 ) )
 	self.window:SetTitle( "Настройки супер-ускорения" )
 	self.window:SetVisible( false )
 	self.window:Subscribe( "WindowClosed", function() self:SetWindowOpen( false ) end )
@@ -89,6 +91,22 @@ function Boost:UpdateSettings( settings )
 	self:AddSetting( "Показывать подсказку", "textEnabled", self.textEnabled, self.defaultTextEnabled )
 	self:AddSetting( "Разрешить использование геймпада", "padEnabled", self.padEnabled, self.defaultPadEnabled )
 	self:AddSetting( "Мгновенная заморозка", "brake", self.brake, self.defaultBrakeEnabled )
+
+	local strength_text = Label.Create( self.window )
+	strength_text:SetSize( Vector2( 160, 32 ) )
+	strength_text:SetDock( GwenPosition.Top )
+	strength_text:SetText( "Сила разгона" )
+	strength_text:SetAlignment( GwenPosition.CenterV )
+
+	local strength_numeric = Numeric.Create( self.window )
+	strength_numeric:SetSize( Vector2( 160, 32 ) )
+	strength_numeric:SetDock( GwenPosition.Top )
+	strength_numeric:SetRange( 10, 100 )
+	strength_numeric:SetValue( self.strength )
+	strength_numeric:Subscribe( "Changed", function()
+		self.strength = strength_numeric:GetValue()
+		Network:Send( "ChangeSetting", { setting = "strength", value = strength_numeric:GetValue() } )
+	end )
 
 	Events:Subscribe( "BoostSettings", self, self.BoostSettings )
 	Events:Subscribe( "ResolutionChange", self, self.ResolutionChange )
@@ -202,13 +220,13 @@ function Boost:ResolutionChange()
 end
 
 function Boost:AddSetting( text, setting, value, default )
-	local checkBox = LabeledCheckBox.Create(self.window)
+	local checkBox = LabeledCheckBox.Create( self.window )
 	checkBox:SetSize( Vector2( 200, 20 ) )
 	checkBox:SetDock( GwenPosition.Top )
 	checkBox:GetLabel():SetText( text )
 	checkBox:GetCheckBox():SetChecked( value )
 	checkBox:GetCheckBox():Subscribe( "CheckChanged", function(box)
-		self:UpdateSetting(setting, box:GetChecked(), default)
+		self:UpdateSetting( setting, box:GetChecked(), default )
 	end )
 end
 
@@ -222,11 +240,11 @@ function Boost:UpdateSetting( setting, value, default )
 		value = value and 1 or 0
 	end
 
-	Network:Send( "ChangeSetting", {setting = setting, value = value} )
+	Network:Send( "ChangeSetting", { setting = setting, value = value } )
 end
 
 function Boost:Boost( vehicle )
-	vehicle:SetLinearVelocity( vehicle:GetLinearVelocity() + vehicle:GetAngle() * Vector3(0, 0, - self.strength * self.delta) )
+	vehicle:SetLinearVelocity( vehicle:GetLinearVelocity() + vehicle:GetAngle() * Vector3( 0, 0, - self.strength * self.delta ) )
 end
 
 function Boost:LandCheck( vehicle )

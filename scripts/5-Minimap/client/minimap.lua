@@ -78,15 +78,18 @@ function BetterMinimap.DrawPlayer( position, triangle, color )
 			local size = Render.Size.x / 350
 			local sSize = Render.Size.x / 300
 
+			local color = Color( color.r, color.g, color.b, Game:GetSetting(4) * 2.25 )
+			local shadowColor = Color( 0, 0, 0, Game:GetSetting(4) * 2.25 )
+
 			if triangle == 1 then
-				Render:FillTriangle( Vector2( pos.x,pos.y - sSize-3 ), Vector2( pos.x - sSize-1,pos.y + sSize-1 ), Vector2( pos.x + sSize,pos.y + sSize-1 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ) )
-				Render:FillTriangle( Vector2( pos.x,pos.y - size-2 ), Vector2( pos.x - size-1,pos.y + size-1 ), Vector2( pos.x + size,pos.y + size-1 ), Color( color.r, color.g, color.b, Game:GetSetting(4) * 2.25 ) )
+				Render:FillTriangle( Vector2( pos.x,pos.y - sSize-3 ), Vector2( pos.x - sSize-1,pos.y + sSize-1 ), Vector2( pos.x + sSize,pos.y + sSize-1 ), shadowColor )
+				Render:FillTriangle( Vector2( pos.x,pos.y - size-2 ), Vector2( pos.x - size-1,pos.y + size-1 ), Vector2( pos.x + size,pos.y + size-1 ), color)
 			elseif triangle == -1 then
-				Render:FillTriangle( Vector2( pos.x,pos.y + sSize-0 ), Vector2( pos.x - sSize-1,pos.y - sSize-1 ), Vector2( pos.x + sSize-1,pos.y - sSize-1 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ) )
-				Render:FillTriangle( Vector2( pos.x,pos.y + size-1 ), Vector2( pos.x - size-1,pos.y - size-1 ), Vector2( pos.x + size-1,pos.y - size-1 ), Color( color.r, color.g, color.b, Game:GetSetting(4) * 2.25 ) )
+				Render:FillTriangle( Vector2( pos.x,pos.y + sSize-0 ), Vector2( pos.x - sSize-1,pos.y - sSize-1 ), Vector2( pos.x + sSize-1,pos.y - sSize-1 ), shadowColor )
+				Render:FillTriangle( Vector2( pos.x,pos.y + size-1 ), Vector2( pos.x - size-1,pos.y - size-1 ), Vector2( pos.x + size-1,pos.y - size-1 ), color )
 			else
-				Render:FillCircle( pos, size, Color( color.r, color.g, color.b, Game:GetSetting(4) * 2.25 ) )
-				Render:DrawCircle( pos, size, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ) )
+				Render:FillCircle( pos, size, color )
+				Render:DrawCircle( pos, size, shadowColor )
 			end
 		end
 	end

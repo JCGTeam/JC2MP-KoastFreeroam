@@ -38,18 +38,19 @@ function Tips:Render()
 		end
 
 		if LocalPlayer:GetValue( "ChatTipsVisible" ) then
+			local color = Color( 215, 215, 215 )
 			local linepoint1 = chatPos + Vector2( 0, 3 )
 			local linepoint2 = chatPos +  Vector2( 500, 3 )
 
 			Render:DrawLine( linepoint1 + Vector2.One, linepoint2 + Vector2.One, Color( 25, 25, 25, 100 ) )
-			Render:DrawLine( linepoint1, linepoint2, Color( 215, 215, 215 ) )
+			Render:DrawLine( linepoint1, linepoint2, color )
 
 			if LocalPlayer:GetValue( "SystemFonts" ) then
 				Render:SetFont( AssetLocation.SystemFont, "Impact" )
 			end
 
 			local textpos = chatPos + Vector2( 1, 11 )
-			Render:DrawShadowedText( textpos, self.text, Color( 215, 215, 215 ), Color( 25, 25, 25, 150 ), 14 )
+			Render:DrawShadowedText( textpos, self.text, color, Color( 25, 25, 25, 150 ), 14 )
 		end
 	end
 end

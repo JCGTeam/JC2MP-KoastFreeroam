@@ -66,6 +66,7 @@ function Tuner:__init()
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.ExitVehicle )
 	Events:Subscribe( "EntityDespawn", self, self.VehicleDespawn )
 
+	Events:Subscribe( "PostTick", self, self.PostTick )
 	Events:Subscribe( "PostTick", self, self.Thrust )
 end
 
@@ -224,54 +225,6 @@ function Tuner:Render()
 				end
 				checked[vehId] = true
 			end
-
-			if self.SyncTimer:GetSeconds() >= 1 then
-				if v:GetValue("vehid") then
-					if v:GetTransmission() then
-						v:GetTransmission():SetClutchDelayTime(v:GetValue("clutch_delay"))
-
-						local gear_ratios = v:GetTransmission():GetGearRatios()
-						if v:GetValue( "gear_ratios1" ) ~= nil then gear_ratios[1] = v:GetValue( "gear_ratios1" ) end
-						if v:GetValue( "gear_ratios2" ) ~= nil then gear_ratios[2] = v:GetValue( "gear_ratios2" ) end
-						if v:GetValue( "gear_ratios3" ) ~= nil then gear_ratios[3] = v:GetValue( "gear_ratios3" ) end
-						if v:GetValue( "gear_ratios4" ) ~= nil then gear_ratios[4] = v:GetValue( "gear_ratios4" ) end
-						if v:GetValue( "gear_ratios5" ) ~= nil then gear_ratios[5] = v:GetValue( "gear_ratios5" ) end
-						if v:GetValue( "gear_ratios6" ) ~= nil then gear_ratios[6] = v:GetValue( "gear_ratios6" ) end
-						if v:GetValue( "gear_ratios7" ) ~= nil then gear_ratios[7] = v:GetValue( "gear_ratios7" ) end
-						v:GetTransmission():SetGearRatios( gear_ratios )
-
-						local wheel_ratios = v:GetTransmission():GetWheelTorqueRatios()
-						for wheel, ratio in ipairs(wheel_ratios) do
-							wheel_ratios[wheel] = v:GetValue( "wheel_ratios" .. wheel )
-						end
-						v:GetTransmission():SetWheelTorqueRatios( wheel_ratios )
-
-						v:GetTransmission():SetReverseGearRatio( v:GetValue( "reverse_ratio" ) )
-						v:GetTransmission():SetPrimaryTransmissionRatio( v:GetValue( "primary_transmission_ratio" ) )
-					end
-
-					if v:GetAerodynamics() then
-						v:GetAerodynamics():SetAirDensity( v:GetValue( "airdensity" ) )
-						v:GetAerodynamics():SetFrontalArea( v:GetValue( "frontalarea" ) )
-						v:GetAerodynamics():SetDragCoefficient( v:GetValue( "dragcoeff" ) )
-						v:GetAerodynamics():SetLiftCoefficient( v:GetValue( "liftcoeff" ) )
-						--v:GetAerodynamics():SetExtraGravity( v:GetValue( "gravity" ) )
-					end
-
-					if v:GetSuspension() then
-						local susp = v:GetSuspension()
-						for wheel = 1, v:GetWheelCount() do
-							susp:SetLength( wheel, v:GetValue( "wheel" .. wheel .. "_length" ) )
-							susp:SetStrength( wheel, v:GetValue( "wheel" .. wheel .. "_strength" ) )
-							susp:SetChassisDirection( wheel, v:GetValue( "wheel" .. wheel .. "_direction" ) )
-							susp:SetChassisPosition( wheel, v:GetValue( "wheel" .. wheel .. "_position" ) )
-							susp:SetDampingCompression( wheel, v:GetValue( "wheel" .. wheel .. "_dampcompression" ) )
-							susp:SetDampingRelaxation( wheel, v:GetValue( "wheel" .. wheel .. "_damprelaxation" ) )
-						end
-					end
-				end
-				self.SyncTimer:Restart()
-			end
 		end
 	end
 
@@ -293,6 +246,67 @@ function Tuner:Render()
     if self.active then
         Mouse:SetVisible( is_visible )
     end
+end
+
+function Tuner:PostTick()
+	if self.SyncTimer:GetSeconds() <= 1 then return end
+
+	local vehicles = {}
+
+	for v in Client:GetVehicles() do
+		table.insert(vehicles, v)
+	end
+
+	for _, v in pairs(vehicles) do
+		if IsValid(v) then
+			if v:GetValue("vehid") then
+				if v:GetTransmission() then
+					v:GetTransmission():SetClutchDelayTime(v:GetValue("clutch_delay"))
+
+					local gear_ratios = v:GetTransmission():GetGearRatios()
+					if v:GetValue( "gear_ratios1" ) ~= nil then gear_ratios[1] = v:GetValue( "gear_ratios1" ) end
+					if v:GetValue( "gear_ratios2" ) ~= nil then gear_ratios[2] = v:GetValue( "gear_ratios2" ) end
+					if v:GetValue( "gear_ratios3" ) ~= nil then gear_ratios[3] = v:GetValue( "gear_ratios3" ) end
+					if v:GetValue( "gear_ratios4" ) ~= nil then gear_ratios[4] = v:GetValue( "gear_ratios4" ) end
+					if v:GetValue( "gear_ratios5" ) ~= nil then gear_ratios[5] = v:GetValue( "gear_ratios5" ) end
+					if v:GetValue( "gear_ratios6" ) ~= nil then gear_ratios[6] = v:GetValue( "gear_ratios6" ) end
+					if v:GetValue( "gear_ratios7" ) ~= nil then gear_ratios[7] = v:GetValue( "gear_ratios7" ) end
+					v:GetTransmission():SetGearRatios( gear_ratios )
+
+					local wheel_ratios = v:GetTransmission():GetWheelTorqueRatios()
+					for wheel, ratio in ipairs(wheel_ratios) do
+						wheel_ratios[wheel] = v:GetValue( "wheel_ratios" .. wheel )
+					end
+					v:GetTransmission():SetWheelTorqueRatios( wheel_ratios )
+
+					v:GetTransmission():SetReverseGearRatio( v:GetValue( "reverse_ratio" ) )
+					v:GetTransmission():SetPrimaryTransmissionRatio( v:GetValue( "primary_transmission_ratio" ) )
+				end
+
+				if v:GetAerodynamics() then
+					v:GetAerodynamics():SetAirDensity( v:GetValue( "airdensity" ) )
+					v:GetAerodynamics():SetFrontalArea( v:GetValue( "frontalarea" ) )
+					v:GetAerodynamics():SetDragCoefficient( v:GetValue( "dragcoeff" ) )
+					v:GetAerodynamics():SetLiftCoefficient( v:GetValue( "liftcoeff" ) )
+					--v:GetAerodynamics():SetExtraGravity( v:GetValue( "gravity" ) )
+				end
+
+				if v:GetSuspension() then
+					local susp = v:GetSuspension()
+					for wheel = 1, v:GetWheelCount() do
+						susp:SetLength( wheel, v:GetValue( "wheel" .. wheel .. "_length" ) )
+						susp:SetStrength( wheel, v:GetValue( "wheel" .. wheel .. "_strength" ) )
+						susp:SetChassisDirection( wheel, v:GetValue( "wheel" .. wheel .. "_direction" ) )
+						susp:SetChassisPosition( wheel, v:GetValue( "wheel" .. wheel .. "_position" ) )
+						susp:SetDampingCompression( wheel, v:GetValue( "wheel" .. wheel .. "_dampcompression" ) )
+						susp:SetDampingRelaxation( wheel, v:GetValue( "wheel" .. wheel .. "_damprelaxation" ) )
+					end
+				end
+			end
+		end
+	end
+
+	self.SyncTimer:Restart()
 end
 
 function Tuner:InitGUI()

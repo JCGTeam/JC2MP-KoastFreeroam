@@ -128,6 +128,8 @@ Course.Load = function(name)
 	
 	print(string.format("%s loaded in %.3f seconds" , course.name , timer:GetSeconds()))
 	
+	timer = nil
+	
 	return course
 end
 
