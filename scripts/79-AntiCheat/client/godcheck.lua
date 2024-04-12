@@ -1,8 +1,8 @@
-local Active = true
-
 class 'GodCheck'
 
 function GodCheck:__init()
+	self.active = true
+
 	Events:Subscribe( "AntiCheat", self, self.AntiCheat )
 	Events:Subscribe( "LocalPlayerBulletHit", self, self.LocalPlayerBulletHit )
 
@@ -11,11 +11,11 @@ function GodCheck:__init()
 end
 
 function GodCheck:AntiCheat( args )
-	Active = args.acActive
+	self.active = args.acActive
 end
 
 function GodCheck:LocalPlayerBulletHit( args )
-	if Active then
+	if self.active then
 		self.phealth = LocalPlayer:GetHealth()
 		if args.attacker:GetEquippedWeapon() ~= Weapon( Weapon.Minigun ) then
 			if not args.attacker:GetVehicle() then

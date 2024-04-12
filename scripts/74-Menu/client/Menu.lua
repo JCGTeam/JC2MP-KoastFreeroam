@@ -4,9 +4,6 @@ function Menu:__init()
 	self.rusflag = Image.Create( AssetLocation.Resource, "RusFlag" )
 	self.engflag = Image.Create( AssetLocation.Resource, "EngFlag" )
 
-	self:GameLoad()
-
-	self.upgrade = true
 	self.hider = true
 
 	self.sbar = Color.Gold
@@ -58,11 +55,28 @@ function Menu:__init()
 
 	self.ResolutionChangeEvent = Events:Subscribe( "ResolutionChange", self, self.ResolutionChange )
 	self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-	self.GameLoadEvent = Events:Subscribe( "GameLoad", self, self.GameLoad )
 	self.LocalPlayerWorldChangeEvent = Events:Subscribe( "LocalPlayerWorldChange", self, self.LocalPlayerWorldChange )
-	self.ModuleLoadEvent = Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
 	self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	self.ModuleUnloadEvent = Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
+
+	Game:FireEvent( "ply.pause" )
+
+	if Game:GetState() ~= GUIState.Loading then
+		self:GameLoad()
+	else
+		self.GameLoadEvent = Events:Subscribe( "GameLoad", self, self.GameLoad )
+	end
+
+	Chat:SetEnabled( false )
+
+	local sound = ClientSound.Create(AssetLocation.Game, {
+				bank_id = 13,
+				sound_id = 1,
+				position = Camera:GetPosition(),
+				angle = Angle()
+	})
+
+	sound:SetParameter(0,1)
 end
 
 function Menu:Mission( args )
@@ -79,6 +93,13 @@ function Menu:Mission( args )
 end
 
 function Menu:GameLoad()
+	Mouse:SetVisible( true )
+
+	if self.GameLoadEvent then
+		Events:Unsubscribe( self.GameLoadEvent )
+		self.GameLoadEvent = nil
+	end
+
 	if LocalPlayer:GetValue( "Tag" ) == "Creator" then
 		self.status = "  [Пошлый Создатель]"
 	elseif LocalPlayer:GetValue( "Tag" ) == "GlAdmin" then
@@ -120,21 +141,6 @@ function Menu:LocalPlayerWorldChange( args )
 	self:Close()
 end
 
-function Menu:ModuleLoad()
-	Game:FireEvent( "ply.pause" )
-	Mouse:SetVisible( true )
-	Chat:SetEnabled( false )
-
-	local sound = ClientSound.Create(AssetLocation.Game, {
-				bank_id = 13,
-				sound_id = 1,
-				position = Camera:GetPosition(),
-				angle = Angle()
-	})
-
-	sound:SetParameter(0,1)
-end
-
 function Menu:LocalPlayerInput( args )
 	return false
 end
@@ -156,19 +162,9 @@ function Menu:SetActive( active )
 				self.RenderEvent = nil
 			end
 
-			if self.GameLoadEvent then
-				Events:Unsubscribe( self.GameLoadEvent )
-				self.GameLoadEvent = nil
-			end
-
 			if self.LocalPlayerWorldChangeEvent then
 				Events:Unsubscribe( self.LocalPlayerWorldChangeEvent )
 				self.LocalPlayerWorldChangeEvent = nil
-			end
-
-			if self.ModuleLoadEvent then
-				Events:Unsubscribe( self.ModuleLoadEvent )
-				self.ModuleLoadEvent = nil
 			end
 
 			if self.LocalPlayerInputEvent then
@@ -201,11 +197,37 @@ end
 
 function Menu:Render()
 	if self.active then
-		Game:FireEvent( "gui.hud.hide" )
 		Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, 200 ) )
+
+		Game:FireEvent( "gui.hud.hide" )
+		Game:FireEvent( "gui.minimap.hide" )
 
 		if self.ambsound then
 			self.ambsound:SetParameter( 0, Game:GetSetting(GameSetting.MusicVolume) / 100 )
+		end
+
+		local version_txt = "KMod Version: " .. tostring( LocalPlayer:GetValue( "KoastBuild" ) )
+
+		if LocalPlayer:GetValue( "KoastBuild" ) then
+			Render:DrawText( Vector2( (Render.Width - Render:GetTextWidth( version_txt, 15 ) - 30 ), Render.Size.y - 45 ), version_txt, Color( 255, 255, 255, 100 ), 15 )
+		end
+
+		if LocalPlayer:GetValue( "SystemFonts" ) then
+			Render:SetFont( AssetLocation.SystemFont, "Impact" )
+		end
+
+		local playername_pos = Vector2( 20, Render.Size.y - 60 )
+		local linkstitle_txt = "ССЫЛКИ / LINKS:"
+		local links_pos = Vector2( 40, 50 )
+
+		Render:DrawText( links_pos, linkstitle_txt, Color.White, 25 )
+		Render:DrawText( Vector2( links_pos.x, links_pos.y + Render:GetTextHeight( linkstitle_txt, 25 ) + 10 ), "- TELEGRAM | [empty_link]\n- DISCORD | [empty_link]\n- STEAM | [empty_link]\n- VK | [empty_link]", Color( 180, 180, 180 ), 20 )
+		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tName, 30 ) / 2, Render.Size.y / 2.5 ), self.tName, Color.White, 30 )
+
+		LocalPlayer:GetAvatar():Draw( playername_pos, Vector2( 40, 40 ), Vector2.Zero, Vector2.One )
+		Render:DrawText( playername_pos + Vector2( 50, 15 ), LocalPlayer:GetName(), Color.White, 17 )
+		if self.status then
+			Render:DrawText( playername_pos + Vector2( 50, 15 ) + Vector2( Render:GetTextWidth( LocalPlayer:GetName(), 17 ), 0 ), self.status, Color.DarkGray, 17 )
 		end
 	end
 
@@ -224,33 +246,6 @@ function Menu:Render()
 			self.rus_button:SetVisible( false )
 			self.eng_image:SetVisible( false )
 			self.eng_button:SetVisible( false )
-		end
-	end
-
-	if self.active then
-		local version_txt = "KMod Version: " .. tostring( LocalPlayer:GetValue( "KoastBuild" ) )
-
-		if self.upgrade then
-			Game:FireEvent( "gui.minimap.hide" )
-		end
-		if LocalPlayer:GetValue( "KoastBuild" ) then
-			Render:DrawText( Vector2( (Render.Width - Render:GetTextWidth( version_txt, 15 ) - 30 ), Render.Size.y - 45 ), version_txt, Color( 255, 255, 255, 100 ), 15 )
-		end
-		if LocalPlayer:GetValue( "SystemFonts" ) then
-			Render:SetFont( AssetLocation.SystemFont, "Impact" )
-		end
-
-		local playername_pos = Vector2( 20, Render.Size.y - 60 )
-		local links_pos = Vector2( 40, 50 )
-
-		Render:DrawText( links_pos, "ССЫЛКИ / LINKS:", Color.White, 25 )
-		Render:DrawText( Vector2( links_pos.x, links_pos.y + Render:GetTextHeight( "ССЫЛКИ / LINKS:", 25 ) + 10 ), "- TELEGRAM | [empty_link]\n- DISCORD | [empty_link]\n- STEAM | [empty_link]\n- VK | [empty_link]", Color( 180, 180, 180 ), 20 )
-		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tName, 30 ) / 2, Render.Size.y / 2.5 ), self.tName, Color.White, 30 )
-
-		LocalPlayer:GetAvatar():Draw( playername_pos, Vector2( 40, 40 ), Vector2.Zero, Vector2.One )
-		Render:DrawText( playername_pos + Vector2( 50, 15 ), LocalPlayer:GetName(), Color.White, 17 )
-		if self.status then
-			Render:DrawText( playername_pos + Vector2( 50, 15 ) + Vector2( Render:GetTextWidth( LocalPlayer:GetName(), 17 ), 0 ), self.status, Color.DarkGray, 17 )
 		end
 	end
 end
