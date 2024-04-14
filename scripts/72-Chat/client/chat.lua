@@ -45,9 +45,9 @@ function BetterChat:__init()
 		self.changechatpos_txt = "Настроить позицию"
 		self.restorechatpos_txt = "Сбросить позицию"
 		self.showconnects_txt = "Показывать подключения:"
-		self.sc_cb_txt1 = "Никого"
+		self.sc_cb_txt1 = "Всех"
 		self.sc_cb_txt2 = "Друзей"
-		self.sc_cb_txt3 = "Всех"
+		self.sc_cb_txt3 = "Никого"
 	end
 
 	self.chatheight = Render:GetTextHeight( "A" ) * 14.2
@@ -79,9 +79,9 @@ function BetterChat:Lang()
 	self.changechatpos_txt = "Customize position"
 	self.restorechatpos_txt = "Reset position"
 	self.showconnects_txt = "Show connections:"
-	self.sc_cb_txt1 = "Nobody"
+	self.sc_cb_txt1 = "Everyone"
 	self.sc_cb_txt2 = "Friends"
-	self.sc_cb_txt3 = "Everyone"
+	self.sc_cb_txt3 = "Nobody"
 end
 
 function BetterChat:CreateChatModeListItems()

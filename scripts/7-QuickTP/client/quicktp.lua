@@ -148,14 +148,17 @@ end
 function QuickTP:PostRender( args )
 	if Game:GetState() ~= GUIState.Game then return end
 
-	if self.timerF then
-		alpha = 0
+	local animationSpeed = 1
+	local alpha = 0
 
-		if self.timerF:GetSeconds() > 0 and self.timerF:GetSeconds() < 0.1 then
-			alpha = math.clamp( self.timerF:GetSeconds() * 10, 0, 100 )
+	if self.timerF then
+		local endAlpha = 100
+	
+		if self.timerF:GetSeconds() > 0 and self.timerF:GetSeconds() < 0.1 / animationSpeed then
+			alpha = math.clamp( self.timerF:GetSeconds() * 10 * animationSpeed, 0, endAlpha )
 			self.border = false
 			animplay = false
-		elseif self.timerF:GetSeconds() > 0.1 then
+		elseif self.timerF:GetSeconds() > 0.1 / animationSpeed then
 			self.border = true
 			animplay = true
 			self.timerF = nil
@@ -165,6 +168,7 @@ function QuickTP:PostRender( args )
 	if LocalPlayer:GetValue( "SystemFonts" ) then
 		Render:SetFont( AssetLocation.SystemFont, "Impact" )
 	end
+
 	local count    = #self.menu - 1
 	local size     = 42 - count * 1.4
 	if size < 12 then size = 12 end

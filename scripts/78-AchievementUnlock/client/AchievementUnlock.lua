@@ -4,6 +4,7 @@ function AchievementUnlock:__init()
 	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
+		self.tag = "[Достижения] "
 		self.unlocktext = " получил достижение "
 	end
 
@@ -12,11 +13,12 @@ function AchievementUnlock:__init()
 end
 
 function AchievementUnlock:Lang()
+	self.tag = "[Achievements] "
 	self.unlocktext = " has unlocked the achievement "
 end
 
 function AchievementUnlock:PlayerAchievementUnlock( args )
-	Chat:Print( args.player:GetName(), args.player:GetColor(), self.unlocktext, Color.White, args.name, Color( 255, 215, 0 ) )
+	Chat:Print( self.tag, Color.White, args.player:GetName(), args.player:GetColor(), self.unlocktext, Color.White, args.name, Color( 255, 215, 0 ) )
 	return false
 end
 

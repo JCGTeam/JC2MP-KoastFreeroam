@@ -516,11 +516,16 @@ function Map:ToggleWaypoint( position )
 end
 
 function Map:Draw()
+	local animationSpeed = 1
+	local alpha = 0
+
 	if timerF then
-		alpha = 0
-		if timerF:GetSeconds() > 0 and timerF:GetSeconds() < 0.1 then
-			alpha = math.clamp( timerF:GetSeconds() * 10, 0, 100 )
-		elseif timerF:GetSeconds() > 0.1 then
+		local endAlpha = 100
+	
+		if timerF:GetSeconds() > 0 and timerF:GetSeconds() < 0.1 / animationSpeed then
+			alpha = math.clamp( timerF:GetSeconds() * 10 * animationSpeed, 0, endAlpha )
+			animplay = false
+		elseif timerF:GetSeconds() > 0.1 / animationSpeed then
 			Map.Border = true
 			timerF = nil
 		end
