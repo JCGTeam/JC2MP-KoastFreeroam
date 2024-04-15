@@ -6,6 +6,7 @@ function Victorins:__init()
 	self.timer = Timer()
 	self.reward = nil
 	self.quizAnswer = nil
+
 	Events:Subscribe( "PostTick", self, self.PostTick )
 	Events:Subscribe( "PlayerChat", self, self.PlayerChat )
 end

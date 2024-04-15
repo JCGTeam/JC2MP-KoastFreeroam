@@ -217,7 +217,9 @@ function Tron:InputPoll( args )
 	if not self.inLobby then return end
 
 	if self.state == GamemodeState.INPROGRESS then
-		if LocalPlayer:InVehicle() and LocalPlayer:GetVehicle():GetHealth() == 0 then
+		local vehicle = LocalPlayer:GetVehicle()
+
+		if LocalPlayer:InVehicle() and vehicle:GetHealth() == 0 then
 			-- Force the player out
 			Input:SetValue(Action.UseItem, 1)
 			Input:SetValue(Action.ExitVehicle, 1)
@@ -225,7 +227,7 @@ function Tron:InputPoll( args )
 			-- Tweak controls
 			Input:SetValue(Action.Accelerate, math.max(0.65, Input:GetValue(Action.Accelerate)))
 
-			if LocalPlayer:GetVehicle():GetLinearVelocity():Length() < 10 then
+			if vehicle:GetLinearVelocity():Length() < 10 then
 				Input:SetValue(Action.Reverse, 0)
 			end
 
@@ -320,11 +322,15 @@ end
 
 function Tron:PlayerNetworkValueChange( args )
 	if args.value == true and args.key == "TronFiring" and args.player:InVehicle() and self.segments[args.player:GetVehicle():GetId()] then
-		local point = Point(args.player:GetVehicle():GetPosition() - args.player:GetVehicle():GetAngle() * Vector3.Forward * 1.5, args.player:GetVehicle():GetAngle())
-		local segment = self.segments[args.player:GetVehicle():GetId()][#self.segments[args.player:GetVehicle():GetId()]]
+		local vehicle = args.player:GetVehicle()
+		local vehicleId = vehicle:GetId()
+		local vehAngle = vehicle:GetAngle()
+
+		local point = Point(vehicle:GetPosition() - vehAngle * Vector3.Forward * 1.5, vehAngle)
+		local segment = self.segments[vehicleId][#self.segments[vehicleId]]
 
 		if segment then
-			self:AddSegment(self.segments[args.player:GetVehicle():GetId()], LineSegment(point, point, segment.height, segment.color))
+			self:AddSegment(self.segments[vehicleId], LineSegment(point, point, segment.height, segment.color))
 		end
 	end
 end
@@ -348,11 +354,13 @@ function Tron:PreTick( args )
 		end
 
 		for k, player in ipairs(players) do
-			if IsValid(player) and player:InVehicle() and IsValid(player:GetVehicle()) and player == player:GetVehicle():GetDriver() then
-				local vehicle = player:GetVehicle()
+			local vehicle = player:GetVehicle()
 
-				if not self.segments[vehicle:GetId()] then
-					self.segments[vehicle:GetId()] = {}
+			if IsValid(player) and player:InVehicle() and IsValid(vehicle) and player == vehicle:GetDriver() then
+				local vehicleId = vehicle:GetId()
+
+				if not self.segments[vehicleId] then
+					self.segments[vehicleId] = {}
 				end
 			end
 		end
@@ -361,9 +369,12 @@ function Tron:PreTick( args )
 			local vehicle = Vehicle.GetById(k)
 
 			if IsValid(vehicle) then
-				local point = Point(vehicle:GetPosition() - vehicle:GetAngle() * Vector3.Forward * 1.5, vehicle:GetAngle())
+				local vehAngle = vehicle:GetAngle()
+
+				local point = Point(vehicle:GetPosition() - vehAngle * Vector3.Forward * 1.5, vehAngle)
 				local height = 1
-				local color = Color(vehicle:GetColors().r, vehicle:GetColors().g, vehicle:GetColors().b, 100)
+				local vehColors = vehicle:GetColors()
+				local color = Color(vehColors.r, vehColors.g, vehColors.b, 100)
 
 				if (#segments == 0 or segments[#segments]:Length() > 10) and vehicle:GetDriver() and vehicle:GetDriver():GetValue("TronFiring") then
 					self:AddSegment(segments, LineSegment(segments[#segments] and segments[#segments].endPoint or point, point, height, color))
@@ -374,16 +385,20 @@ function Tron:PreTick( args )
 						segment.endPoint = point
 					end
 
-					if LocalPlayer:InVehicle() and IsValid(LocalPlayer:GetVehicle()) and LocalPlayer:GetVehicle():GetDriver() == LocalPlayer then
-						if LocalPlayer:GetVehicle() ~= vehicle or k < #segments then
-							local pVehicle = LocalPlayer:GetVehicle()
-							local startPoint = Point(pVehicle:GetPosition() - pVehicle:GetAngle() * Vector3.Forward * 1.5, pVehicle:GetAngle())
-							local endPoint = Point(pVehicle:GetPosition() + pVehicle:GetAngle() * Vector3.Forward * 1.5, pVehicle:GetAngle())
+					local vehicle = LocalPlayer:GetVehicle()
+
+					if LocalPlayer:InVehicle() and IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
+						if vehicle ~= vehicle or k < #segments then
+							local vehPos = vehicle:GetPosition()
+							local vehAngle = vehicle:GetAngle()
+
+							local startPoint = Point(vehPos - vehAngle * Vector3.Forward * 1.5, vehAngle)
+							local endPoint = Point(vehPos + vehAngle * Vector3.Forward * 1.5, vehAngle)
 
 							if segment:Intersects(LineSegment(startPoint, endPoint, height, color)) then
 								if not self.collisionFired then
 									Network:Send("Collision", {
-										vehicle = pVehicle,
+										vehicle = vehicle,
 										killer = vehicle
 									})
 

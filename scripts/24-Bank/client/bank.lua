@@ -288,9 +288,7 @@ function Bank:Render()
 			return
 		end
 
-		if LocalPlayer:GetValue( "SystemFonts" ) then
-			Render:SetFont( AssetLocation.SystemFont, "Impact" )
-		end
+		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 		local pos_2d = Vector2( (Render.Size.x / 2) - (Render:GetTextSize( self.message .. " | " .. self.submessage, self.submessage_size ).x / 2), 100 )
 		local col = Copy( self.colour )

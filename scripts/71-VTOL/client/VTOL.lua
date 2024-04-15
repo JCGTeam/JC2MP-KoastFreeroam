@@ -29,8 +29,8 @@ end
 function VTOL:LocalPlayerEnterVehicle()
 	local vehicle = LocalPlayer:GetVehicle()
 	if LocalPlayer:GetState() == PlayerState.InVehicle and IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
-		LocalVehicleModel = vehicle:GetModelId()
-		if self:CheckList(self.PlaneVehicles, LocalVehicleModel) then
+		vehicleModel = vehicle:GetModelId()
+		if self:CheckList(self.PlaneVehicles, vehicleModel) then
 			if not self.RenderEvent then
 				self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
 			end
@@ -88,9 +88,11 @@ function VTOL:Render()
 	end
 
 	local vehicle = LocalPlayer:GetVehicle()
+
 	if LocalPlayer:GetState() == PlayerState.InVehicle and IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
-		local LocalVehicleModel = vehicle:GetModelId()
-		if self:CheckList(self.PlaneVehicles, LocalVehicleModel) then
+		local vehicleModel = vehicle:GetModelId()
+
+		if self:CheckList(self.PlaneVehicles, vehicleModel) then
 			local size = Render:GetTextSize( self.namept, 14 )
 			local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - 30 )
 			if LocalPlayer:GetValue( "Boost" ) then
@@ -120,9 +122,11 @@ end
 function VTOL:Thrust( args )
 	if Game:GetState() ~= GUIState.Game then return end
 	local vehicle = LocalPlayer:GetVehicle()
+
 	if LocalPlayer:GetState() == PlayerState.InVehicle and IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
-		LocalVehicleModel = vehicle:GetModelId()
-		if self:CheckList(self.PlaneVehicles, LocalVehicleModel) then
+		local vehicleModel = vehicle:GetModelId()
+
+		if self:CheckList(self.PlaneVehicles, vehicleModel) then
 			local VehicleVelocity = vehicle:GetLinearVelocity()
 			if IsValid(vehicle) then
 				if Key:IsDown(self.ReverseKey) and self.ReverseThrustActive and not LocalPlayer:GetValue( "Freeze" ) then

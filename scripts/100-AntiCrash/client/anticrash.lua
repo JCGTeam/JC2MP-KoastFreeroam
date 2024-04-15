@@ -14,7 +14,8 @@ function AntiCrash:__init()
         [51] = true, [59] = true, [81] = true, [85] = true
 	}
 
-    local id = LocalPlayer:GetVehicle() and LocalPlayer:GetVehicle():GetModelId()
+    local vehicle = LocalPlayer:GetVehicle()
+    local id = vehicle and vehicle:GetModelId()
 
     if LocalPlayer:InVehicle() and not self.allowed_vehicles[id] then
         self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll )
@@ -28,7 +29,8 @@ function AntiCrash:InputPoll()
     local coordString = LocalPlayer:GetPosition()
 
     if coordString.z < -self.map_limit or coordString.z > self.map_limit then
-        local id = LocalPlayer:GetVehicle() and LocalPlayer:GetVehicle():GetModelId()
+        local vehicle = LocalPlayer:GetVehicle()
+        local id = vehicle and vehicle:GetModelId()
 
         if LocalPlayer:InVehicle() and not self.allowed_vehicles[id] then
             Input:SetValue( Action.UseItem, 1 )
@@ -37,7 +39,8 @@ function AntiCrash:InputPoll()
 end
 
 function AntiCrash:LocalPlayerEnterVehicle()
-    local id = LocalPlayer:GetVehicle() and LocalPlayer:GetVehicle():GetModelId()
+    local vehicle = LocalPlayer:GetVehicle()
+    local id = vehicle and vehicle:GetModelId()
 
     if self.allowed_vehicles[id] then return end
 
@@ -47,7 +50,8 @@ function AntiCrash:LocalPlayerEnterVehicle()
 end
 
 function AntiCrash:LocalPlayerExitVehicle()
-    local id = LocalPlayer:GetVehicle() and LocalPlayer:GetVehicle():GetModelId()
+    local vehicle = LocalPlayer:GetVehicle()
+    local id = vehicle and vehicle:GetModelId()
 
     if self.allowed_vehicles[id] then return end
 

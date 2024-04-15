@@ -47,6 +47,7 @@ function Speedometer:__init()
 	self.bHealth = Color( 100, 100, 100 )
 	self.zHealth = Color( 255, 150, 150 )
 	self.fHealth = Color( 255, 140, 50 )
+	self.text_shadow = Color( 0, 0, 0, 100 )
 
 	if LocalPlayer:InVehicle() then
 		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
@@ -301,7 +302,7 @@ function Speedometer:Render()
 	end
 
 	bar_len = bar_len * vehicle:GetHealth()
-	Render:FillArea( bar_pos, final_pos, Color( 0, 0, 0, 100 ) )
+	Render:FillArea( bar_pos, final_pos, self.text_shadow )
 	Render:FillArea( bar_pos, Vector2(bar_len, 5), col)
 end
 
@@ -386,7 +387,7 @@ function Speedometer:GameRender()
 	end
 
 	Render:FillArea( bar_pos + Vector3( 1, 1, 4 ), Vector3( bar_len, 16, 0 ), col )
-	Render:FillArea( bar_pos + Vector3( 1, 1, 3 ), Vector3( text_size.x, 20, 0 ), Color( 0, 0, 0, 100 ) )
+	Render:FillArea( bar_pos + Vector3( 1, 1, 3 ), Vector3( text_size.x, 20, 0 ), self.text_shadow )
 	Render:FillArea( bar_pos, Vector3( bar_len, 16, 0 ), col )
 end
 

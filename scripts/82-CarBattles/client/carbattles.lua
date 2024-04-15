@@ -152,8 +152,10 @@ end
 function CarBattles:LocalPlayerInput( args )
 	if args.input == Action.StuntJump or args.input == Action.ParachuteOpenClose or args.input == Action.UseItem or args.input == Action.ExitVehicle then return false end
 
-	if LocalPlayer:GetVehicle() then
-		if LocalPlayer:GetVehicle():GetHealth() >= 0.3 then
+	local vehicle = LocalPlayer:GetVehicle()
+
+	if vehicle then
+		if vehicle:GetHealth() >= 0.3 then
 			if args.input == Action.FireLeft or args.input == Action.VehicleFireRight or args.input == Action.VehicleFireLeft or args.input == Action.FireVehicleWeapon then return true end
 		else
 			if args.input == Action.FireLeft or args.input == Action.VehicleFireRight or args.input == Action.VehicleFireLeft or args.input == Action.FireVehicleWeapon then return false end
@@ -175,6 +177,8 @@ function CarBattles:RightText( msg, y, color )
 end
 
 function CarBattles:Render()
+	local vehicle = LocalPlayer:GetVehicle()
+
 	Network:Send( "Health" )
 
 	if self.check then
@@ -183,8 +187,8 @@ function CarBattles:Render()
 			Game:FireEvent( "ply.pause" )
 		else
 			if self.antifly then
-				if LocalPlayer:GetVehicle() then
-					LocalPlayer:GetVehicle():SetLinearVelocity( Vector3.Zero )
+				if vehicle then
+					vehicle:SetLinearVelocity( Vector3.Zero )
 				end
 				self.antifly = nil
 			end
@@ -193,8 +197,8 @@ function CarBattles:Render()
 		end
 	end
 
-	if LocalPlayer:GetVehicle() then
-		if LocalPlayer:GetVehicle():GetHealth() <= 0.1 then
+	if vehicle then
+		if vehicle:GetHealth() <= 0.1 then
 			Network:Send( "NoVehicle" )
 		end
 	end

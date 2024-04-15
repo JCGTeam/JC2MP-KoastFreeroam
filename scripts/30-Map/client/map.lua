@@ -575,18 +575,21 @@ function Map:Draw()
 		end
 	end
 
+	local text_clr = Color.White
+	local text_shadow = Color.Black
+
 	if rendermap then
 		local text_size = 14
 		for _, player in pairs( Map.Players ) do
 			if player.id ~= LocalPlayer:GetId() and player.worldId == LocalPlayer:GetWorld():GetId() then
 				local position = Map:WorldToScreen( player.pos )
 				local str = player.name
-				Render:DrawCircle( position, Render.Size.y * 0.0055, Color.Black )
+				Render:DrawCircle( position, Render.Size.y * 0.0055, text_shadow )
 				Render:FillCircle( position, Render.Size.y * 0.005, player.col )
 
 				if labels ~= 0 then
 					Render:FillArea( position + Render.Size * 0.003, Vector2( Render:GetTextWidth( str, text_size ), Render:GetTextHeight( str, text_size ) ), Color( 0, 0, 0, 150 ) )
-					Render:DrawShadowedText( position + Render.Size * 0.003, str, player.col, Color.Black, text_size )
+					Render:DrawShadowedText( position + Render.Size * 0.003, str, player.col, text_shadow, text_size )
 				end
 			end
 		end
@@ -622,14 +625,14 @@ function Map:Draw()
 			local width = Vector2.Right * ( Render.Width / 2.5 )
 			local offsetWidth = Vector2.Right * ( Location.Icon.Size.x * scale )
 
-			Render:DrawLine( center - width, center - offsetWidth, Color.White )
-			Render:DrawLine( center + width, center + offsetWidth, Color.White )
+			Render:DrawLine( center - width, center - offsetWidth, text_clr )
+			Render:DrawLine( center + width, center + offsetWidth, text_clr )
 
 			local height = Vector2.Down * ( Render.Height / 2.5 )
 			local offsetHeight = Vector2.Down * ( Location.Icon.Size.y * scale )
 
-			Render:DrawLine( center - height, center - offsetHeight, Color.White )
-			Render:DrawLine( center + height, center + offsetHeight, Color.White )
+			Render:DrawLine( center - height, center - offsetHeight, text_clr )
+			Render:DrawLine( center + height, center + offsetHeight, text_clr )
 		end
 
 		Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
@@ -640,12 +643,12 @@ function Map:Draw()
 		local txty = "Y: " .. string.format( "%.0f", tonumber( position.z ) )
 		local tips_pos = Vector2( 41, 46 )
 
-		Render:DrawShadowedText( tips_pos - Vector2.One, txtx .. "\n" .. txty, Color.White, Color.Black, 15 )
+		Render:DrawShadowedText( tips_pos - Vector2.One, txtx .. "\n" .. txty, text_clr, text_shadow, 15 )
 
 		local height = Render:GetTextHeight("A") * 2.5
 		tips_pos.y = tips_pos.y + height
 
-		Render:DrawShadowedText( tips_pos - Vector2.One, MTSetWp .. "\n" .. MTPToggle .. "\n" .. MTExtract, Color.White, Color.Black, 15 )
+		Render:DrawShadowedText( tips_pos - Vector2.One, MTSetWp .. "\n" .. MTPToggle .. "\n" .. MTExtract, text_clr, text_shadow, 15 )
 	end
 
 	if extraction_timer then

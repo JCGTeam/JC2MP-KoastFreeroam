@@ -1,8 +1,6 @@
 settings = {}
 local S = settings
 
-S.command = "/jethud"
-
 S.name = "Jet HUD"
 
 S.colorHUD = Color( 10 , 255 , 4 ) -- Green

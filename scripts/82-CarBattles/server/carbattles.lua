@@ -59,8 +59,10 @@ end
 function CarBattlesPlayer:GiveVehicle()
 	local position = table.randomvalue( VehSpawns )
 	self.spVehicle = SpVehicles[math.random(#SpVehicles)]
-	if self.player:GetVehicle() then
-		self.player:GetVehicle():Remove()
+
+	local vehicle = self.player:GetVehicle()
+	if vehicle then
+		vehicle:Remove()
 	end
 
 	self.player:SetPosition( position )
@@ -155,8 +157,10 @@ function CarBattles:PlayerEnterCheckpoint( args )
 		return true
 	end
 	local position = table.randomvalue( HealSpawns )
-	if args.player:GetVehicle() and Vehicles[ args.player:GetId() ] then
-		Vehicles[ args.player:GetId() ]:SetHealth( Vehicles[ args.player:GetId() ]:GetHealth() + 0.2 )
+	local pId = args.player:GetId()
+
+	if args.player:GetVehicle() and Vehicles[ pId ] then
+		Vehicles[ pId ]:SetHealth( Vehicles[ pId ]:GetHealth() + 0.2 )
 		Network:Send( args.player, "HealSound" )
 		self.checkpoint:SetPosition( position )
 		self.checkpoint:Respawn()
@@ -175,25 +179,32 @@ function CarBattles:NoVehicle( args, sender )
 end
 
 function CarBattles:Respawn( args, sender )
-	if sender:GetVehicle() then
-		local getangle = sender:GetVehicle():GetAngle()
+	local vehicle = sender:GetVehicle()
+
+	if vehicle then
+		local getangle = vehicle:GetAngle()
 		local ang = Angle( getangle.yaw, 0, 0 )
-		sender:GetVehicle():SetAngle( ang )
+		vehicle:SetAngle( ang )
 	end
 end
 
 function CarBattles:Health( args, sender )
-	if sender:GetVehicle() then
-		sender:SetHealth( sender:GetVehicle():GetHealth() )
+	local vehicle = sender:GetVehicle()
+
+	if vehicle then
+		sender:SetHealth( vehicle:GetHealth() )
 	end
 end
 
 function CarBattles:PlayerQuit( args )
-	self.players[args.player:GetId()] = nil
+	local pId = args.player:GetId()
+
+	self.players[pId] = nil
 	self:UpdateScores()
-	if IsValid( Vehicles[ args.player:GetId() ] ) then
-		Vehicles[ args.player:GetId() ]:Remove()
-		Vehicles[ args.player:GetId() ] = nil
+
+	if IsValid( Vehicles[ pId ] ) then
+		Vehicles[ pId ]:Remove()
+		Vehicles[ pId ] = nil
 	end
 end
 
@@ -296,13 +307,15 @@ function CarBattles:PlayerSpawn( args )
 	if ( not self:IsInCarBattles(args.player) ) then
 		return true
 	end
-	if IsValid( Vehicles[ args.player:GetId() ] ) then
-		Vehicles[ args.player:GetId() ]:Remove()
-		Vehicles[ args.player:GetId() ] = nil
+	local pId = args.player:GetId()
+
+	if IsValid( Vehicles[ pId ] ) then
+		Vehicles[ pId ]:Remove()
+		Vehicles[ pId ] = nil
 	end
 	local position = table.randomvalue( VehSpawns )
 
-	self.players[args.player:GetId()]:GiveVehicle()
+	self.players[pId]:GiveVehicle()
 	return false
 end
 
@@ -312,11 +325,14 @@ function CarBattles:PlayerDeath( args )
 	end
 	if args.killer and args.killer:GetSteamId() ~= args.player:GetSteamId() then
 		args.killer:SetMoney( args.killer:GetMoney() + 30 )
-		if args.player:GetVehicle() and args.player:GetVehicle():GetModelId() == 56 then
-				self.players[args.killer:GetId()].pts = self.players[args.killer:GetId()].pts + 3
-			else
-				self.players[args.killer:GetId()].pts = self.players[args.killer:GetId()].pts + 1
-			end
+
+		local vehicle = args.player:GetVehicle()
+
+		if vehicle and vehicle:GetModelId() == 56 then
+			self.players[args.killer:GetId()].pts = self.players[args.killer:GetId()].pts + 3
+		else
+			self.players[args.killer:GetId()].pts = self.players[args.killer:GetId()].pts + 1
+		end
 		Network:Send( args.killer, "CarBattlesUpdatePoints", self.players[args.killer:GetId()].pts )
 		self:UpdateScores()
 	end

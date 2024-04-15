@@ -18,8 +18,10 @@ function BoomToSky:Render()
         self.RenderEvent = nil
         self.flyTimer = nil
     else
-        if LocalPlayer:GetVehicle() then
-            LocalPlayer:GetVehicle():SetLinearVelocity( Vector3( LocalPlayer:GetLinearVelocity().x, self.boomvelocity, LocalPlayer:GetLinearVelocity().z ) / 2 or Vector3() )
+		local vehicle = LocalPlayer:GetVehicle()
+
+        if vehicle then
+            vehicle:SetLinearVelocity( Vector3( LocalPlayer:GetLinearVelocity().x, self.boomvelocity, LocalPlayer:GetLinearVelocity().z ) / 2 or Vector3() )
         else
             LocalPlayer:SetLinearVelocity( Vector3( LocalPlayer:GetLinearVelocity().x, self.boomvelocity, LocalPlayer:GetLinearVelocity().z ) or Vector3() )
         end
@@ -30,10 +32,10 @@ function BoomToSky:StartBoomToSky( args )
 	if LocalPlayer:GetValue( "PVPMode" ) then
 		Events:Fire( "CastCenterText", { text = self.pvpblock, time = 6, color = Color.Red } )
 	else
-		if LocalPlayer:GetBaseState() ~= 212 and LocalPlayer:GetBaseState() ~= 110 then
-			if not self.flyTimer then
-				local bs = LocalPlayer:GetBaseState()
+		local bs = LocalPlayer:GetBaseState()
 
+		if bs ~= 212 and bs ~= 110 then
+			if not self.flyTimer then
 				if bs == AnimationState.SSkydive or bs == AnimationState.SSkydiveDash then
 					Events:Fire( "AbortWingsuit" )
 				end

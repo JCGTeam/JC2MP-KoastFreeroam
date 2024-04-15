@@ -13,6 +13,9 @@ function Load:__init()
 	self.BackgroundImage = self.BackgroundImages[math.random(#self.BackgroundImages)]
 	self.LoadingCircle_Outer = Image.Create( AssetLocation.Game, "fe_initial_load_icon_dif.dds" )
 
+	self.text_clr = Color.White
+	self.text_shadow = Color( 0, 0, 0 )
+
 	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
@@ -74,7 +77,6 @@ function Load:PostRender()
 		local Pos = Vector2( 40, Render.Size.y / 1.075 )
 		local PosTw = Vector2( Render.Width - 60, 60 )
 
-		self.BackgroundImage:SetPosition( Vector2.Zero )
 		self.BackgroundImage:SetSize( Vector2( Render.Width, Render.Height ) )
 		self.BackgroundImage:Draw()
 
@@ -83,7 +85,7 @@ function Load:PostRender()
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			Render:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
-		Render:DrawShadowedText( Pos, self.name, Color.White, Color( 0, 0, 0 ), TxtSizePos )
+		Render:DrawShadowedText( Pos, self.name, self.text_clr, self.text_shadow, TxtSizePos )
 
 		if self.FadeInTimer then
 			TransformOuter:Translate( PosTw )

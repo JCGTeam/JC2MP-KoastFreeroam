@@ -162,6 +162,7 @@ function Settings:Lang()
 
 	self.option17:GetLabel():SetText( "Keep the character in vehicle" )
 	self.option23:GetLabel():SetText( "Drift control configuration" )
+	self.option25:GetLabel():SetText( "Vehicle jump" )
 	self.option19:GetLabel():SetText( "Hydraulics" )
 	self.option18:GetLabel():SetText( "Wingsuit" )
 
@@ -373,6 +374,9 @@ function Settings:LoadCategories()
 
 	self.option23 = self:OptionCheckBox( scroll_control, "Дрифт-конфигурация управления", LocalPlayer:GetValue( "DriftPhysics" ) or false )
 	self.option23:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 19 , boolean = not LocalPlayer:GetValue( "DriftPhysics" ) } ) end )
+
+	self.option25 = self:OptionCheckBox( scroll_control, "Прыжок на транспорте", LocalPlayer:GetValue( "VehicleJump" ) or false )
+	self.option25:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 21 , boolean = not LocalPlayer:GetValue( "VehicleJump" ) } ) end )
 
 	self.option19 = self:OptionCheckBox( scroll_control, "Гидравлика", LocalPlayer:GetValue( "HydraulicsEnabled" ) or false )
 	self.option19:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 18 , boolean = not LocalPlayer:GetValue( "HydraulicsEnabled" ) } ) end )
@@ -714,19 +718,16 @@ function Settings:GameRender()
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
 	if self.skyFo then
-		self.SkyImage4:SetPosition( Vector2.Zero )
 		self.SkyImage4:SetSize( Vector2( Render.Width, Render.Height ) )
 		self.SkyImage4:Draw()
 	end
 
 	if self.sky then
-		self.SkyImage1:SetPosition( Vector2.Zero )
 		self.SkyImage1:SetSize( Vector2( Render.Width, Render.Height ) )
 		self.SkyImage1:Draw()
 	end
 
 	if self.skyFi then
-		self.SkyImage5:SetPosition( Vector2.Zero )
 		self.SkyImage5:SetSize( Vector2( Render.Width, Render.Height ) )
 		self.SkyImage5:Draw()
 	end
@@ -742,19 +743,16 @@ function Settings:GameRender()
 	end
 
 	if self.skyTw then
-		self.SkyImage2:SetPosition( Vector2.Zero )
 		self.SkyImage2:SetSize( Vector2( Render.Width, Render.Height ) )
 		self.SkyImage2:Draw()
 	end
 
 	if self.skySi then
-		self.SkyImage6:SetPosition( Vector2.Zero )
 		self.SkyImage6:SetSize( Vector2( Render.Width, Render.Height ) )
 		self.SkyImage6:Draw()
 	end
 
 	if self.skySe then
-		self.SkyImage7:SetPosition( Vector2.Zero )
 		self.SkyImage7:SetSize( Vector2( Render.Width, Render.Height ) )
 		self.SkyImage7:Draw()
 
@@ -772,7 +770,6 @@ function Settings:GameRender()
 	end
 
 	if self.skyTh then
-		self.SkyImage3:SetPosition( Vector2.Zero )
 		self.SkyImage3:SetSize( Vector2( Render.Width, Render.Height ) )
 		self.SkyImage3:Draw()
 	end
@@ -948,9 +945,12 @@ end
 
 function Settings:KeyHide( args )
 	if Game:GetState() ~= GUIState.Game then return end
+
 	if args.key == VirtualKey.F11 then
-		self.hidetext:SetVisible( not LocalPlayer:GetValue( "HiddenHUD" ) )
-		LocalPlayer:SetValue( "HiddenHUD", not LocalPlayer:GetValue( "HiddenHUD" ) )
+		local hiddenHUD = LocalPlayer:GetValue( "HiddenHUD" )
+
+		self.hidetext:SetVisible( not hiddenHUD )
+		LocalPlayer:SetValue( "HiddenHUD", not hiddenHUD )
 
 		self:GameLoad()
 	end

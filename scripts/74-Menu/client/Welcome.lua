@@ -1,6 +1,9 @@
 class 'WelcomeScreen'
 
 function WelcomeScreen:__init()
+	self.copyright_txt = "© JCGTeam 2024"
+	self.text_clr = Color.White
+
 	Events:Subscribe( "Lang", self, self.Lang )
 end
 
@@ -69,21 +72,21 @@ end
 function WelcomeScreen:Render()
 	Game:FireEvent( "ply.pause" )
 	Game:FireEvent( "gui.hud.hide" )
+
 	Mouse:SetVisible( true )
 	Chat:SetEnabled( false )
+
 	Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, 200 ) )
 
 	self.rico:SetPosition( Vector2( (Render.Width - 350), (Render.Height - 520) ) )
 	self.rico:SetSize( Vector2( 350, 700 ) )
 	self.rico:Draw()
 
-	if LocalPlayer:GetValue( "SystemFonts" ) then
-		Render:SetFont( AssetLocation.SystemFont, "Impact" )
-	end
+	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
-	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.title, Render.Size.x / 40 ) / 2, Render.Size.x / 7 ), self.title, Color.White, Render.Size.x / 40 )
-	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.text, Render.Size.x / 70 ) / 2, Render.Size.x / 5 ), self.text, Color.White, Render.Size.x / 70 )
-	Render:DrawText( Vector2( 20, (Render.Height - 40) ), "© JCGTeam 2024", Color.White, 15 )
+	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.title, Render.Size.x / 40 ) / 2, Render.Size.x / 7 ), self.title, self.text_clr, Render.Size.x / 40 )
+	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.text, Render.Size.x / 70 ) / 2, Render.Size.x / 5 ), self.text, self.text_clr, Render.Size.x / 70 )
+	Render:DrawText( Vector2( 20, (Render.Height - 40) ), self.copyright_txt, self.text_clr, 15 )
 end
 
 function WelcomeScreen:Menu()

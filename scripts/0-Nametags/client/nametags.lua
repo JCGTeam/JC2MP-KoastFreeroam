@@ -294,15 +294,17 @@ function Nametags:DrawPlayer( player_data )
 	local colour    = p:GetColor()
 	if not p:GetValue( "TagHide" ) then
 		if self.player_count <= 20 then
-			if self:AimingAt( pos ) < 0.1 or (LocalPlayer:InVehicle() and p:GetVehicle() == LocalPlayer:GetVehicle()) or self.player_count <= 10 then
-				if p:GetState() == PlayerState.InVehicle and p:GetVehicle() then
+			local pVehicle = p:GetVehicle()
+
+			if self:AimingAt( pos ) < 0.1 or (LocalPlayer:InVehicle() and pVehicle == LocalPlayer:GetVehicle()) or self.player_count <= 10 then
+				if p:GetState() == PlayerState.InVehicle and pVehicle then
 					self.full_health = Color( 255, 200, 100 )
-					self:DrawFullTag( pos, p, dist, colour, not ( p:GetValue( "Passive" ) or p:GetValue( "FreecamEnabled" ) ) and p:GetVehicle():GetHealth() )
+					self:DrawFullTag( pos, p, dist, colour, not ( p:GetValue( "Passive" ) or p:GetValue( "FreecamEnabled" ) ) and pVehicle:GetHealth() )
 				else
 					self.full_health = Color( 20, 220, 20 )
 					self:DrawFullTag( pos, p, dist, colour, not ( p:GetValue( "Passive" ) or p:GetValue( "FreecamEnabled" ) ) and p:GetHealth() )
 				end
-			elseif not (IsValid(self.highlighted_vehicle) and p:InVehicle() and self.highlighted_vehicle == p:GetVehicle()) then
+			elseif not (IsValid(self.highlighted_vehicle) and p:InVehicle() and self.highlighted_vehicle == pVehicle) then
 				self:DrawCircleTag( pos, dist, colour )
 			end
 		else
@@ -363,13 +365,14 @@ function Nametags:Render()
 		local text = "/hidetag"
 		local width = Render:GetTextWidth( text )
 		local text_pos = Vector2( Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) / 15, 2 )
+		local sett_alpha = Game:GetSetting(4) * 2.25
 
-		Render:FillArea( Vector2( Render.Width/4 - width/1.8, 0 ), Vector2( Render:GetTextWidth( text, 18 ) + 5, Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+		Render:FillArea( Vector2( Render.Width/4 - width/1.8, 0 ), Vector2( Render:GetTextWidth( text, 18 ) + 5, Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
 
-		Render:FillTriangle( Vector2( (Render.Width / 4 - width/1.8 - 10), 0 ), Vector2( (Render.Width / 4 - width/1.8), 0 ), Vector2( (Render.Width / 4 - width/1.8), Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
-		Render:FillTriangle( Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 15), 0 ), Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 5), 0 ), Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 5 ), Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+		Render:FillTriangle( Vector2( (Render.Width / 4 - width/1.8 - 10), 0 ), Vector2( (Render.Width / 4 - width/1.8), 0 ), Vector2( (Render.Width / 4 - width/1.8), Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
+		Render:FillTriangle( Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 15), 0 ), Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 5), 0 ), Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 5 ), Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
 
-		Render:DrawShadowedText( text_pos, text, Color( 173, 216, 230, Game:GetSetting(4) * 2.25 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), 18 )
+		Render:DrawShadowedText( text_pos, text, Color( 173, 216, 230, sett_alpha ), Color( 0, 0, 0, sett_alpha ), 18 )
 	end
 
 	-- Create some prerequisite variables

@@ -38,19 +38,25 @@ end
 
 function ActionsMenu:VehicleBoom( args, sender )
 	if sender:GetWorld() ~= DefaultWorld then return end
-	if not sender:GetVehicle() then return end
 
-	if sender:GetVehicle():GetDriver() == sender then
-		sender:GetVehicle():SetHealth( 0 )
+	local vehicle = sender:GetVehicle()
+
+	if not vehicle then return end
+
+	if vehicle:GetDriver() == sender then
+		vehicle:SetHealth( 0 )
 	end
 end
 
 function ActionsMenu:VehicleRepair( args, sender )
 	if sender:GetWorld() ~= DefaultWorld then return end
-	if not sender:GetVehicle() then return end
 
-	if sender:GetVehicle():GetDriver() == sender then
-		sender:GetVehicle():SetHealth( 1 )
+	local vehicle = sender:GetVehicle()
+
+	if not vehicle then return end
+
+	if vehicle:GetDriver() == sender then
+		vehicle:SetHealth( 1 )
 	end
 end
 

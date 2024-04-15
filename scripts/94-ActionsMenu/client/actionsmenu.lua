@@ -202,14 +202,16 @@ end
 function ActionsMenu:Seat()
 	if LocalPlayer:GetVehicle() then self:WindowClosed() return end
 
-	if LocalPlayer:GetBaseState() == 6 then
+	local bs = LocalPlayer:GetBaseState()
+
+	if bs == 6 then
 		if not self.SeatInputEvent then
 			self.SeatInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.SeatInput )
 			self.CalcViewEvent = Events:Subscribe( "CalcView", self, self.CalcView )
 		end
 		LocalPlayer:SetBaseState( AnimationState.SIdlePassengerVehicle )
 		self:WindowClosed()
-	elseif LocalPlayer:GetBaseState() == AnimationState.SIdlePassengerVehicle then
+	elseif bs == AnimationState.SIdlePassengerVehicle then
 		LocalPlayer:SetBaseState( AnimationState.SUprightIdle )
 		if self.SeatInputEvent then
 			Events:Unsubscribe( self.SeatInputEvent )
@@ -232,10 +234,12 @@ function ActionsMenu:SeatInput( args )
 end
 
 function ActionsMenu:Sleep()
-	if LocalPlayer:GetBaseState() == AnimationState.SUprightIdle then
+	local bs = LocalPlayer:GetBaseState()
+
+	if bs == AnimationState.SUprightIdle then
 		LocalPlayer:SetBaseState( AnimationState.SSwimDie )
 	else
-		if LocalPlayer:GetBaseState() == AnimationState.SDead then
+		if bs == AnimationState.SDead then
 			LocalPlayer:SetBaseState( AnimationState.SUprightIdle )
 		end
 	end
@@ -243,7 +247,9 @@ function ActionsMenu:Sleep()
 end
 
 function ActionsMenu:VehicleBoom()
-	if LocalPlayer:GetVehicle() and LocalPlayer:GetVehicle():GetDriver() == LocalPlayer then
+	local vehicle = LocalPlayer:GetVehicle()
+
+	if vehicle and vehicle:GetDriver() == LocalPlayer then
 		Network:Send( "VehicleBoom" )
 	else
 		Events:Fire( "CastCenterText", { text = self.novehicle, time = 3, color = Color.Red } )
@@ -342,10 +348,12 @@ function ActionsMenu:WindowClosed()
 end
 
 function ActionsMenu:Lezat()
-	if LocalPlayer:GetBaseState() == AnimationState.SUprightIdle then
+	local bs = LocalPlayer:GetBaseState()
+
+	if bs == AnimationState.SUprightIdle then
 		LocalPlayer:SetBaseState( AnimationState.SSwimDie )
 	else
-		if LocalPlayer:GetBaseState() == AnimationState.SDead then
+		if bs == AnimationState.SDead then
 			LocalPlayer:SetBaseState( AnimationState.SUprightIdle )
 		end
 	end

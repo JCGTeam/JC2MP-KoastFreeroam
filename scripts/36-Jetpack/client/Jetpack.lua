@@ -49,10 +49,12 @@ function Jetpack:onRender()
 			local playerId = player:GetId() + 1
 			if player:GetValue("JP") then
 				if self.jetpacksBottom[playerId] then
-					local angle = player:GetBoneAngle("ragdoll_Spine1")
-					self.jetpacksBottom[playerId]:SetPosition( player:GetBonePosition("ragdoll_Spine1") + angle * Vector3( 0.001, 0.4, 0.2 ) )
-					self.jetpacksBottom[playerId]:SetAngle(angle * Angle(0, 0, math.pi))
-					self.jetpacksTop[playerId]:SetPosition( player:GetBonePosition("ragdoll_Spine1") + angle * Vector3( 0, -0.4, 0.2 ) )
+					local pos = player:GetBonePosition( "ragdoll_Spine1" )
+					local angle = player:GetBoneAngle( "ragdoll_Spine1" )
+
+					self.jetpacksBottom[playerId]:SetPosition( pos + angle * Vector3( 0.001, 0.4, 0.2 ) )
+					self.jetpacksBottom[playerId]:SetAngle( angle * Angle(0, 0, math.pi) )
+					self.jetpacksTop[playerId]:SetPosition( pos + angle * Vector3( 0, -0.4, 0.2 ) )
 					self.jetpacksTop[playerId]:SetAngle( angle )
 					local velocity = player:GetLinearVelocity()
 
@@ -60,7 +62,7 @@ function Jetpack:onRender()
 						ClientEffect.Play(AssetLocation.Game,
 						{
 							effect_id = (velocity.y > 1) and 41 or 42,
-							position = player:GetBonePosition("ragdoll_Spine1") + angle * Vector3( 0, -0.5, 0.2 ) + velocity * 0.11,
+							position = pos + angle * Vector3( 0, -0.5, 0.2 ) + velocity * 0.11,
 							angle = angle * Angle( 0, 1.57, 0 ),
 							timeout = 0.001
 						})
@@ -98,7 +100,7 @@ function Jetpack:onRender()
 	if not LocalPlayer:GetValue("JP") then return end
 	if LocalPlayer:GetVehicle() then return end
 	if self.impulse == Vector3.Zero then return end
-	LocalPlayer:SetBaseState(AnimationState.SUprightIdle)
+	LocalPlayer:SetBaseState( AnimationState.SUprightIdle )
 	LocalPlayer:SetAngle( Angle.Slerp( LocalPlayer:GetAngle(), Angle( Camera:GetAngle().yaw, 0, 0), 0.1 ) )
 	self.impulse = self.impulse + Vector3( 0, math.sin(self.timer:GetSeconds()) * 0.02, 0 )
 end

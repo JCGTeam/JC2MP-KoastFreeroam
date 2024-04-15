@@ -261,12 +261,15 @@ function GameModesMenu:TetrisToggle()
 end
 
 function GameModesMenu:PongToggle()
-	self.inpong = not self.inpong
-	if self.inpong then
+	local inPong = LocalPlayer:GetValue( "InPong" )
+	LocalPlayer:SetValue( "InPong", not inPong )
+
+	if not inPong then
 		Network:Send( "GoPong" )
 	else
 		Network:Send( "LeavePong" )
 	end
+
 	self:GameModesMenuClosed()
 end
 

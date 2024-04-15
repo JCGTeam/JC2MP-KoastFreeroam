@@ -31,18 +31,19 @@ function SuperGrapple:Render()
 				self.distance = 0
 			end
 		end
-		if self.distance > 1 and (self.distance > 80 or (self.velocity > 20 and LocalPlayer:GetBaseState() ~= AnimationState.SSkydive)) then
-			if LocalPlayer:GetValue( "LongerGrappleVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) then
-				local state = LocalPlayer:GetBaseState()
-				if state ~= 45 and state ~= 43 and state ~= 41 and state ~= 208 and state ~= 38 and state ~= 47 and state ~= 42 and
-				state ~= 191 and state ~= 56 and state ~= 143 and state ~= 142 then
-					Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
-					local str 		= 		"> " .. string.format( self.disttext, tostring(self.distance) ) .. " <"
-					local size 		= 		Render.Size.x / 100
-					local pos 		= 		Vector2( Render.Size.x / 2 - Render:GetTextWidth(str, size) / 2, 30 )
-					local color 	= 		Color( 0, 0, 0, Game:GetSetting(4) * 2.25 )
 
-					Render:DrawShadowedText( pos, str, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), color, size )
+		local bs = LocalPlayer:GetBaseState()
+		if self.distance > 1 and (self.distance > 80 or (self.velocity > 20 and bs ~= AnimationState.SSkydive)) then
+			if LocalPlayer:GetValue( "LongerGrappleVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) then
+				if bs ~= 45 and bs ~= 43 and bs ~= 41 and bs ~= 208 and bs ~= 38 and bs ~= 47 and bs ~= 42 and bs ~= 191 and bs ~= 56 and bs ~= 143 and bs ~= 142 then
+					Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
+					local str = "> " .. string.format( self.disttext, tostring(self.distance) ) .. " <"
+					local size = Render.Size.x / 100
+					local pos = Vector2( Render.Size.x / 2 - Render:GetTextWidth(str, size) / 2, 30 )
+					local sett_alpha = Game:GetSetting(4) * 2.25
+					local color = Color( 0, 0, 0, sett_alpha )
+
+					Render:DrawShadowedText( pos, str, Color( 255, 255, 255, sett_alpha ), color, size )
 				end
 			end
 		end

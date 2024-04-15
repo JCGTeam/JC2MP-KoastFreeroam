@@ -46,6 +46,10 @@ function SkydivingStats:__init()
 
 	self:CreateSettings()
 
+	self.text_clr = Color.White
+	self.text_clr2 = Color.DarkGray
+	self.text_shadow = Color( 0, 0, 0, 100 )
+
 	if not LocalPlayer:InVehicle() then
 		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
 	end
@@ -153,9 +157,9 @@ function SkydivingStats:GetUnitString()
 end
 
 function SkydivingStats:DrawText( text, textTw )
-	Render:DrawText( Vector3( 2, 2, 2 ), text .. textTw, Color( 0, 0, 0, 100 ), self.text_size )
-	Render:DrawText( Vector3.Zero, text, Color.White, self.text_size )
-	Render:DrawText( Vector3.Zero + Vector3( Render:GetTextWidth( text, self.text_size ), 0, 0 ), textTw, Color.DarkGray, self.text_size )
+	Render:DrawText( Vector3( 2, 2, 2 ), text .. textTw, self.text_shadow, self.text_size )
+	Render:DrawText( Vector3.Zero, text, self.text_clr, self.text_size )
+	Render:DrawText( Vector3.Zero + Vector3( Render:GetTextWidth( text, self.text_size ), 0, 0 ), textTw, self.text_clr2, self.text_size )
 end
 
 function SkydivingStats:DrawSpeedometer( t )
@@ -253,7 +257,7 @@ function SkydivingStats:Render()
 	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetValue( "SpectatorMode" ) then return end
 
-	if LocalPlayer:GetBaseState() ~= AnimationState.SSkydive and LocalPlayer:GetBaseState() ~=  AnimationState.SSkydiveDash then return end
+	if LocalPlayer:GetBaseState() ~= AnimationState.SSkydive and LocalPlayer:GetBaseState() ~= AnimationState.SSkydiveDash then return end
 
 	local position = LocalPlayer:GetBonePosition( "ragdoll_Head" )
 
@@ -269,12 +273,12 @@ end
 
 function SkydivingStats:PostTick()
 	if not self.enabled or LocalPlayer:GetValue( "HiddenHUD" ) then return end
-	if LocalPlayer:GetBaseState() == last_state then return end
+	if LocalPlayer:GetBaseState() == last_bs then return end
 
 	if not LocalPlayer:GetValue( "IsPigeonMod" ) then
 		self.flight_timer:Restart()
 	end
-	last_state = LocalPlayer:GetBaseState()
+	last_bs = LocalPlayer:GetBaseState()
 end
 
 function SkydivingStats:Active()

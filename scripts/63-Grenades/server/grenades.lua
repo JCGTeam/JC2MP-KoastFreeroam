@@ -20,8 +20,10 @@ function Grenades:GrenadeExplode( args, sender )
 			sender:Damage(falloff)
 
 			if sender:InVehicle() then
-				sender:GetVehicle():SetHealth(sender:GetVehicle():GetHealth() - falloff)
-				sender:GetVehicle():SetLinearVelocity(sender:GetVehicle():GetLinearVelocity() + ((sender:GetVehicle():GetPosition() - args.position):Normalized() * args.type.radius * 2 * falloff))
+				local vehicle = sender:GetVehicle()
+
+				vehicle:SetHealth(vehicle:GetHealth() - falloff)
+				vehicle:SetLinearVelocity(vehicle:GetLinearVelocity() + ((vehicle:GetPosition() - args.position):Normalized() * args.type.radius * 2 * falloff))
 			end
 		end
 	end

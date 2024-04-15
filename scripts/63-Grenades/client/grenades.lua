@@ -65,7 +65,7 @@ function Grenades:InputPoll()
 
         local bs = LocalPlayer:GetBaseState()
 
-        if LocalPlayer:GetBaseState() ~= AnimationState.SParachute then
+        if bs ~= AnimationState.SParachute then
             Input:SetValue( Action.TurnLeft, 0 )
             Input:SetValue( Action.TurnRight, 0 )
             Input:SetValue( Action.LookLeft, 0 )
@@ -74,7 +74,8 @@ function Grenades:InputPoll()
             Input:SetValue( Action.LookDown, 0 )
 
             if not self.blacklist.animations2[bs] and not self.blacklist.animations[bs] then
-                LocalPlayer:SetAngle( Angle( Camera:GetAngle().yaw, LocalPlayer:GetAngle().pitch, LocalPlayer:GetAngle().roll ) )
+                local angle = LocalPlayer:GetAngle()
+                LocalPlayer:SetAngle( Angle( Camera:GetAngle().yaw, angle.pitch, angle.roll ) )
             end
         end
 
@@ -103,7 +104,7 @@ function Grenades:FireGrenade( args )
         end
     end
 
-    if LocalPlayer:GetValue("SuperNuclearBomb") then
+    if LocalPlayer:GetValue( "SuperNuclearBomb" ) then
         if args.type == "Atom" then
             if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
@@ -118,9 +119,10 @@ end
 
 function Grenades:PostTick( args )
     if not self.thrown then
+        local cameraAngle = Camera:GetAngle()
         local position = LocalPlayer:GetBonePosition( "ragdoll_LeftForeArm" ) + LocalPlayer:GetBoneAngle( "ragdoll_LeftForeArm" ) * Grenades.GrenadeOffset
 
-        self.thrownVelocity = (Camera:GetAngle() * Vector3.Forward * 25) * ((Camera:GetAngle().pitch + (math.pi / 2)) / (math.pi / 2))
+        self.thrownVelocity = (cameraAngle * Vector3.Forward * 25) * ((cameraAngle.pitch + (math.pi / 2)) / (math.pi / 2))
         self.thrownPosition = position
 
         if self.thrownTimer and self.thrownTimer:GetSeconds() > (self.thrownUnder and Grenades.UnderThrowTime or Grenades.OverThrowTime) then

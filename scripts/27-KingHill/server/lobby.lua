@@ -288,10 +288,12 @@ function Lobby:PlayerWorldChange( args )
 			inventory = player:GetInventory()
 		}
 	elseif self.world == args.old_world then
-		player:SetPosition(self.playerOrigins[player:GetId()].position)
-		player:SetAngle(self.playerOrigins[player:GetId()].angle)
+		local pId = player:GetId()
 
-		for slot, weapon in pairs(self.playerOrigins[player:GetId()].inventory) do
+		player:SetPosition(self.playerOrigins[pId].position)
+		player:SetAngle(self.playerOrigins[pId].angle)
+
+		for slot, weapon in pairs(self.playerOrigins[pId].inventory) do
 			player:GiveWeapon(slot, weapon)
 		end
 

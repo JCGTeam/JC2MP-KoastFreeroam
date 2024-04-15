@@ -20,6 +20,10 @@ function FreeCam:__init()
 	self.prefix = "[Свободная камера] "
 	self.controltip = "[WASD] - Перемещение\n[Shift] - Ускорить движение\n[Ctrl] - Замедлить движение\n[<>] - Изменить угол камеры\n[?] - Сбросить угол камеры\n[{}] - Сменить рамку\n[Z] - Скрыть/показать подсказки"
 
+	self.controltip_clr = Color.White
+	self.controltip_shadow = Color.Black
+	self.controltip_size = 15
+
 	self.active = false
 	self.translation = Vector3( 0, 0, 0 )
 	self.position = Vector3( 0, 500, 0 )
@@ -64,8 +68,10 @@ function FreeCam:Render()
 		self.Rama1Image:Draw()
 	elseif self.RamaType == 2 then
 		local blacklinesize = Render.Size.x / 20
-		Render:FillArea( Vector2.Zero, Vector2( Render.Size.x, blacklinesize ), Color.Black )
-		Render:FillArea( Vector2( 0, Render.Size.y - blacklinesize ), Vector2( Render.Size.x, blacklinesize ), Color.Black )
+		local linescolor = Color.Black
+
+		Render:FillArea( Vector2.Zero, Vector2( Render.Size.x, blacklinesize ), linescolor )
+		Render:FillArea( Vector2( 0, Render.Size.y - blacklinesize ), Vector2( Render.Size.x, blacklinesize ), linescolor )
 	elseif self.RamaType == 3 then
 		self.Rama2Image:SetSize( Render.Size )
 		self.Rama2Image:Draw()
@@ -82,7 +88,7 @@ function FreeCam:Render()
 
 	if self.tip then
 		Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
-		Render:DrawShadowedText( Vector2( 50, 50 ), self.controltip, Color.White, Color.Black, 15 )
+		Render:DrawShadowedText( Vector2( 50, 50 ), self.controltip, self.controltip_clr, self.controltip_shadow, self.controltip_size )
 	end
 end
 

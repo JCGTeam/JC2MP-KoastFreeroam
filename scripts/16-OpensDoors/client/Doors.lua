@@ -88,13 +88,12 @@ function Doors:KeyUp( args )
 
 	if args.key == string.byte( "L" ) then
 		local time = Client:GetElapsedSeconds()
-		if time < self.cooltime then
-			return
-		else
+
+		if time > self.cooltime then
 			Network:Send( "GetPlayers" )
+
+			self.cooltime = time + self.cooldown
 		end
-		self.cooltime = time + self.cooldown
-		return false
 	end
 end
 

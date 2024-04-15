@@ -345,6 +345,7 @@ function Tasks:PreTick( args )
 		--cancel jobs in queue
 		for player in Server:GetPlayers() do
 			pId = player:GetId()
+
 			if self.jobsToCancel[pId] == true then
 				if IsValid( self.playerJobTimers[pId] ) then
 					self.playerJobTimers[pId]:Restart()
@@ -387,7 +388,7 @@ function Tasks:PlayerTakeJob( args, player )
 	end
 
 	local jobDist = self.locations[thatJob.start].position:Distance(player:GetPosition())
-	if jobDist < 20 then
+	if jobDist < 5 then
 		--restart timer
 		self.playerJobTimers[player:GetId()]:Restart()
 		--spawn vehicle
@@ -434,12 +435,12 @@ function Tasks:PlayerCompleteJob( args, player )
 		return
 	end
 	local vVel = pVehicle:GetLinearVelocity():Length()
-	stopped = false
+	local stopped = false
 	if vVel < 1 then
 		stopped = true
 	end
 
-	playerId = player:GetId()
+	local playerId = player:GetId()
 
 	--if player isn't in a company
 	if destDist < 20 and stopped then
@@ -473,10 +474,13 @@ end
 function Tasks:ModuleUnload()
 	for p in Server:GetPlayers() do
 		if not self.playerJobs[p:GetId()] then return end
-		if not p:GetVehicle() then return end
 
-		if IsValid( self.playerJobs[p:GetId()].vehiclePointer ) and p:GetVehicle() == self.playerJobs[p:GetId()].vehiclePointer then
-			p:GetVehicle():Remove()
+		local pVehicle = p:GetVehicle()
+
+		if not pVehicle then return end
+
+		if IsValid( self.playerJobs[p:GetId()].vehiclePointer ) and pVehicle == self.playerJobs[p:GetId()].vehiclePointer then
+			pVehicle:Remove()
 		end
 	end
 end

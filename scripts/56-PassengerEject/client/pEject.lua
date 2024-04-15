@@ -15,6 +15,7 @@ function Eject:LocalPlayerInput( args )
 
 	if args.input == Action.StuntJump or args.input == Action.ParachuteOpenClose then
 		local vehicle = LocalPlayer:GetVehicle()
+
 		if vehicle and LocalPlayer:InVehicle() then
 			if vehicle:GetDriver() and IsValid( vehicle:GetDriver() ) and vehicle:GetDriver().__type ~= 'LocalPlayer' and not invalidVehicles[vehicle:GetModelId()] then
 				local args = {}

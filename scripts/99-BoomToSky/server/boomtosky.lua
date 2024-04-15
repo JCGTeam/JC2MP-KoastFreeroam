@@ -27,13 +27,15 @@ function BoomToSky:BoomToSky( args )
 		return
 	end
 
+	local vehicle = args.player:GetVehicle()
+
 	if args.type == 1 then
 		if args.player:GetWorld() ~= DefaultWorld then
 			deniedMessage( args.player, warning )
 			return
 		end
 
-		if not args.player:GetVehicle() or args.player:GetVehicle() and args.player:GetVehicle():GetDriver() == args.player then
+		if not vehicle or vehicle and vehicle:GetDriver() == args.player then
 			Network:Send( args.player, "StartBoomToSky", { boomvelocity = 100 } )
 			if args.sender then
 				confirmationMessage( args.player, args.sender:GetName() .. " запустил тебя в небо." )
@@ -52,7 +54,7 @@ function BoomToSky:BoomToSky( args )
 			return
 		end
 
-		if not args.player:GetVehicle() or args.player:GetVehicle() and args.player:GetVehicle():GetDriver() == args.player then
+		if not vehicle or vehicle and vehicle:GetDriver() == args.player then
 			Network:Send( args.player, "StartBoomToSky", { boomvelocity = -100 } )
 			if args.sender then
 				confirmationMessage( args.player, args.sender:GetName() .. " отправил тебя вниз." )

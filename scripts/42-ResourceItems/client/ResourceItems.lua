@@ -4,6 +4,8 @@ function ResourceItems:__init()
 	self.timer = Timer()
 	self.numcrates = 0
 
+	self.outline_clr = Color.White
+
 	self.crates = {}
 
 	Events:Subscribe( "PostTick", self, self.PostTick )
@@ -27,10 +29,11 @@ function ResourceItems:PostTick()
 				local ent = StaticObject.GetById( self.crates[i].id )
 				if ent and IsValid( ent ) then
 					local radius = ent:GetPosition():Distance( playerPosition )
+
 					if radius <= 100 then
 						if not ent:GetOutlineEnabled() then
 							ent:SetOutlineEnabled( true )
-							ent:SetOutlineColor( Color.White )
+							ent:SetOutlineColor( self.outline_clr )
 						end
 					else
 						if ent:GetOutlineEnabled() then

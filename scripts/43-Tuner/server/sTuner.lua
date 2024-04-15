@@ -27,16 +27,20 @@ function sTuner:PlayerJoin( args )
 end
 
 function sTuner:UpdateNeonColor( args, sender )
-	if sender:GetVehicle() then
-		sender:GetVehicle():SetNetworkValue( "NeonColor", args.neoncolor )
+	local vehicle = sender:GetVehicle()
+
+	if vehicle then
+		vehicle:SetNetworkValue( "NeonColor", args.neoncolor )
 	end
 end
 
 function sTuner:ToggleSyncNeon( args, sender )
-    if sender:GetVehicle():GetValue( "Neon" ) then
-		sender:GetVehicle():SetNetworkValue( "Neon", nil )
+	local vehicle = sender:GetVehicle()
+
+    if vehicle:GetValue( "Neon" ) then
+		vehicle:SetNetworkValue( "Neon", nil )
 	else
-		sender:GetVehicle():SetNetworkValue( "Neon", true )
+		vehicle:SetNetworkValue( "Neon", true )
 	end
 end
 

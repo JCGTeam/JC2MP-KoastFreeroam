@@ -33,8 +33,10 @@ end
 function FreeCamManager:TeleportPlayer(args, client)
 	if not Config.teleport or args.pos == nil then return end
 	if client:InVehicle() then
-		client:GetVehicle():SetPosition(args.pos)
-		client:GetVehicle():SetPosition(args.angle)
+		local vehicle = client:GetVehicle()
+
+		vehicle:SetPosition(args.pos)
+		vehicle:SetAngle(args.angle)
 	else
 		client:SetPosition(args.pos)
 		client:SetAngle(args.angle)

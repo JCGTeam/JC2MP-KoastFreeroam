@@ -39,15 +39,18 @@ end
 
 function ChatBubbles:onBubblesRender()
     if Game:GetState() ~= GUIState.Game then return end
+
 	local myPos = Camera:GetPosition()
 	local angle = Angle ( Camera:GetAngle().yaw, 0, math.pi ) * Angle ( math.pi, 0, 0 )
+
 	for playerID, bubbles in pairs ( self.bubbles ) do
 		local player = Player.GetById( playerID )
 		if IsValid ( player ) then
 			if ( type ( bubbles ) == "table" ) then
 				local position = player:GetPosition()
-				local headPos = player:GetBonePosition ( "ragdoll_head" )
-				local distance = position:Distance2D ( myPos )
+				local headPos = player:GetBonePosition( "ragdoll_head" )
+				local distance = position:Distance2D( myPos )
+
 				if ( distance <= self.distance ) then
 					local height = self.height
 					for index = #bubbles, 1, -1 do
@@ -60,9 +63,9 @@ function ChatBubbles:onBubblesRender()
 								local text_size = Render:GetTextSize ( data.msg, self.fontSize, self.textScale )
 								local width = Render:GetTextWidth ( data.msg, self.fontSize, self.textScale )
 								local position = Render:WorldToScreen ( headPos )
-								Render:FillArea ( position - Vector2 ( width / 2, 0 ), Vector2 ( text_size.x + 1, text_size.y ), self.backgroundColor )
-								Render:DrawText ( position - Vector2 ( width / 2, 0 ), data.msg, self.textColor, self.fontSize, self.textScale )
-								height = ( height + 0.07 )
+
+								Render:FillArea( position - Vector2( width / 2, 0 ), Vector2( text_size.x + 1, text_size.y ), self.backgroundColor )
+								Render:DrawText( position - Vector2( width / 2, 0 ), data.msg, self.textColor, self.fontSize, self.textScale )
 							end
 						end
 					end

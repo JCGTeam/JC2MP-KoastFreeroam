@@ -7,9 +7,11 @@ function HijackBlocker:__init()
 	self.invalidVehicles = {
 		[1] = true,
 		[3] = true,
+		[5] = true,
 		[9] = true,
 		[11] = true,
 		[14] = true,
+		[16] = true,
 		[19] = true,
 		[21] = true,
 		[22] = true,
@@ -45,34 +47,34 @@ function HijackBlocker:__init()
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 end
 
-function CheckVehicle( target )
+function HijackBlocker:CheckVehicle( target )
 	return target == nil or not IsValid( target ) or not IsValid( target:GetDriver() )
 end
 
 function HijackBlocker:LocalPlayerInput( args )
 	if table.find( self.actions, args.input ) == nil then return true end
 
-	local base_state = LocalPlayer:GetBaseState()
+	local bs = LocalPlayer:GetBaseState()
 
-	if table.find( self.always_drop_states, base_state ) ~= nil then return false end
+	if table.find( self.always_drop_states, bs ) ~= nil then return false end
 
 	local state = LocalPlayer:GetState()
 
 	local vehicle = LocalPlayer:GetVehicle()
 	local target = LocalPlayer:GetAimTarget().vehicle
 
-	if CheckVehicle( vehicle ) and CheckVehicle( target ) then return true end
+	if self:CheckVehicle( vehicle ) and self:CheckVehicle( target ) then return true end
 
 	if LocalPlayer:GetState() == PlayerState.StuntPos or
-		(base_state >= 84 and base_state <= 110) or
-		(base_state >= 318 and base_state <= 327) or
-		(base_state == 88 or base_state == 327) or
-		(base_state == 270 or base_state == 273) or
-		(base_state == 207 or base_state == 208) or
-		(base_state == 272 or base_state == 222) or 
-		(base_state == 273 or base_state == 221) then
+		(bs >= 84 and bs <= 110) or
+		(bs >= 318 and bs <= 327) or
+		(bs == 88 or bs == 327) or
+		(bs == 270 or bs == 273) or
+		(bs == 207 or bs == 208) or
+		(bs == 272 or bs == 222) or 
+		(bs == 273 or bs == 221) then
 
-		if vehicle and (not self.invalidVehicles[vehicle:GetModelId()] and #vehicle:GetOccupants() == 1) then
+		if vehicle and ( not self.invalidVehicles[vehicle:GetModelId()] and #vehicle:GetOccupants() == 1 ) then
 			local time = Client:GetElapsedSeconds()
 			if time > self.cooltime then
 				local args = {}
@@ -80,8 +82,6 @@ function HijackBlocker:LocalPlayerInput( args )
 				Network:Send( "EnterPassenger", args )
 			end
 			self.cooltime = time + self.cooldown
-		else
-			return false
 		end
 	end
 end

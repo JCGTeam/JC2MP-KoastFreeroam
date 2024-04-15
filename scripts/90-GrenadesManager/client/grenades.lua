@@ -79,39 +79,43 @@ function Grenades:LocalPlayerInput( args )
 
 		if driver and IsValid( driver ) and driver.__type == 'LocalPlayer' then
 			local vehicle = LocalPlayer:GetVehicle()
-			if vehicle:GetModelId() == 7 or vehicle:GetModelId() == 77 or vehicle:GetModelId() == 56 or vehicle:GetModelId() == 18 then
-				if vehicle:GetTemplate() == "Armed" or vehicle:GetTemplate() == "FullyUpgraded" or vehicle:GetTemplate() == "" or vehicle:GetTemplate() == "Cannon" then return end
+			local vehicleModel = vehicle:GetModelId()
+			local vehicleTemplate = vehicle:GetTemplate()
+
+			if vehicleModel == 7 or vehicleModel == 77 or vehicleModel == 56 or vehicleModel == 18 then
+				if vehicleTemplate == "Armed" or vehicleTemplate == "FullyUpgraded" or vehicleTemplate == "" or vehicleTemplate == "Cannon" then return end
 			else
-				if vehicle:GetTemplate() == "Armed" or vehicle:GetTemplate() == "FullyUpgraded" or vehicle:GetTemplate() == "Dome" then return end
+				if vehicleTemplate == "Armed" or vehicleTemplate == "FullyUpgraded" or vehicleTemplate == "Dome" then return end
 			end
-			local LocalVehicleModel	= vehicle:GetModelId()
-			if self:CheckList( self.vehicle_blacklist, LocalVehicleModel ) then return end
+			if self:CheckList( self.vehicle_blacklist, vehicleModel ) then return end
 		end
 
 		--local bs = LocalPlayer:GetBaseState()
 		--if self.leftarm_blacklist[bs] then return end
 
-		if LocalPlayer:GetValue( "Explosive" ) == 1 and self.grenade then
+		local explosive = LocalPlayer:GetValue( "Explosive" )
+
+		if explosive == 1 and self.grenade then
 			Events:Fire( "FireGrenade", { type = "Frag" } )
 			self.grenade = nil
 			self.TossTimer = Timer()
-		elseif LocalPlayer:GetValue( "Explosive" ) == 2 then
+		elseif explosive == 2 then
 			Events:Fire( "FireC4" )
-		elseif LocalPlayer:GetValue( "Explosive" ) == 4 and self.grenade then
+		elseif explosive == 4 and self.grenade then
 			self.grenade = nil
 			Events:Fire( "FireGrenade", { type = "Smoke" } )
 			self.TossTimer = Timer()
-		elseif LocalPlayer:GetValue( "Explosive" ) == 5 and self.grenade then
+		elseif explosive == 5 and self.grenade then
 			self.grenade = nil
 			Events:Fire( "FireGrenade", { type = "MichaelBay" } )
 			self.TossTimer = Timer()
-		elseif LocalPlayer:GetValue( "Explosive" ) == 6 and self.grenade then
+		elseif explosive == 6 and self.grenade then
 			self.grenade = nil
 			Events:Fire( "FireGrenade", { type = "Atom" } )
 			self.TossTimer = Timer()
 		end
 
-		if LocalPlayer:GetValue( "Explosive" ) ~= 0 and LocalPlayer:GetValue( "Explosive" ) then
+		if explosive ~= 0 and explosive then
 			if self.FadeOutTimer then
 				self.FadeOutTimer:Restart()
 			else
@@ -143,21 +147,23 @@ function Grenades:ToggleGrenades()
 		self.TossTimer:Restart()
 	end
 
-	if not LocalPlayer:GetValue( "Explosive" ) then
+	local explosive = LocalPlayer:GetValue( "Explosive" )
+
+	if not explosive then
 		LocalPlayer:SetValue( "Explosive", 1 )
 		if self.FadeOutTimer then
 			self.FadeOutTimer:Restart()
 		else
 			self.FadeOutTimer = Timer()
 		end
-	elseif LocalPlayer:GetValue( "Explosive" ) == 0 then
+	elseif explosive == 0 then
 		LocalPlayer:SetValue( "Explosive", 1 )
 		if self.FadeOutTimer then
 			self.FadeOutTimer:Restart()
 		else
 			self.FadeOutTimer = Timer()
 		end
-	elseif LocalPlayer:GetValue( "Explosive" ) == 1 then
+	elseif explosive == 1 then
 		LocalPlayer:SetValue( "Explosive", 2 )
 
 		if LocalPlayer:GetValue( "MoreC4" ) then
@@ -169,7 +175,7 @@ function Grenades:ToggleGrenades()
 		else
 			self.FadeOutTimer = Timer()
 		end
-	elseif LocalPlayer:GetValue( "Explosive" ) == 2 then
+	elseif explosive == 2 then
 		LocalPlayer:SetValue( "Explosive", 3 )
 
 		if self.FadeOutTimer then
@@ -177,21 +183,21 @@ function Grenades:ToggleGrenades()
 		else
 			self.FadeOutTimer = Timer()
 		end
-	elseif LocalPlayer:GetValue( "Explosive" ) == 3 then
+	elseif explosive == 3 then
 		LocalPlayer:SetValue( "Explosive", 4 )
 		if self.FadeOutTimer then
 			self.FadeOutTimer:Restart()
 		else
 			self.FadeOutTimer = Timer()
 		end
-	elseif LocalPlayer:GetValue( "Explosive" ) == 4 then
+	elseif explosive == 4 then
 		LocalPlayer:SetValue( "Explosive", 5 )
 		if self.FadeOutTimer then
 			self.FadeOutTimer:Restart()
 		else
 			self.FadeOutTimer = Timer()
 		end
-	elseif LocalPlayer:GetValue( "Explosive" ) == 5 then
+	elseif explosive == 5 then
 		if LocalPlayer:GetValue( "SuperNuclearBomb" ) then
 			LocalPlayer:SetValue( "Explosive", 6 )
 		else
@@ -211,7 +217,9 @@ end
 function Grenades:Render()
 	if Game:GetState() ~= GUIState.Game then return end
 
-	if LocalPlayer:GetValue( "Explosive" ) ~= 0 and LocalPlayer:GetValue( "Explosive" ) ~= nil and self.FadeOutTimer then
+	local explosive = LocalPlayer:GetValue( "Explosive" )
+
+	if explosive ~= 0 and explosive ~= nil and self.FadeOutTimer then
 		local text_timer = ""
 		local text_max = ""
 
@@ -221,7 +229,7 @@ function Grenades:Render()
 		local imga = self.grenadeIMG
 		local text = "Осколочная граната"
 
-		if LocalPlayer:GetValue( "Explosive" ) == 1 then
+		if explosive == 1 then
 			imga = self.grenadeIMG
 			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Fragmentation Grenade" or "Осколочная граната"
 			text_timer = "R"
@@ -235,20 +243,20 @@ function Grenades:Render()
 					self.grenade = true
 				end
 			end
-		elseif LocalPlayer:GetValue( "Explosive" ) == 2 then
+		elseif explosive == 2 then
 			imga = self.c4
 			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Triggered Explosive" or "Бомбы-липучки"
 			text_max = self.C4Max
 			text_timer = LocalPlayer:GetValue( "C4Count" ) and tostring( LocalPlayer:GetValue( "C4Count" ) ) or "0"
 
 			self.c4actv = true
-		elseif LocalPlayer:GetValue( "Explosive" ) == 3 then
+		elseif explosive == 3 then
 			imga = self.clay
 			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Claymore Mine" or "Мины Клеймор"
 			text_timer = "∞"
 
 			self.c4actv = false
-		elseif LocalPlayer:GetValue( "Explosive" ) == 4 then
+		elseif explosive == 4 then
 			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Firework Grenade" or "Фейерверковая граната"
 			text_timer = "R"
 
@@ -261,7 +269,7 @@ function Grenades:Render()
 					self.grenade = true
 				end
 			end
-		elseif LocalPlayer:GetValue( "Explosive" ) == 5 then
+		elseif explosive == 5 then
 			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Nuclear Grenade" or "Ядерная граната"
 			text_timer = "R"
 
@@ -274,7 +282,7 @@ function Grenades:Render()
 					self.grenade = true
 				end
 			end
-		elseif LocalPlayer:GetValue( "Explosive" ) == 6 then
+		elseif explosive == 6 then
 			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "SUPER Nuclear Grenade" or "СУПЕР Ядерная граната"
 			text_timer = "R"
 
@@ -312,20 +320,27 @@ function Grenades:Render()
 		local pos_2d_text = Vector2( Render.Size.x - ( Render:GetTextWidth( text, self.textb:GetSize().y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) ) ) - Render.Size.x / 40, ( Render.Height - Render.Height * 0.186 ) - self.textb:GetSize().y / 2 )
 
 		if Game:GetSetting(4) >= 1 then
+			local sett_alpha = Game:GetSetting(4) * 2.25
+			local sett_alpha2 = Game:GetSetting(4) * 2
+
 			imga:SetPosition( pos_2d )
-			imga:SetAlpha( 201 - Game:GetSetting(4) * 2 )
+			imga:SetAlpha( 201 - sett_alpha2 )
 			self.background:SetPosition( pos_2d_a )
-			self.background:SetAlpha( 201 - Game:GetSetting(4) * 2 )
+			self.background:SetAlpha( 201 - sett_alpha2 )
 			self.textb:SetPosition( pos_2d_t )
-			self.textb:SetAlpha( 201 - Game:GetSetting(4) * 2 )
+			self.textb:SetAlpha( 201 - sett_alpha2 )
 
 			self.textb:Draw()
 			self.background:Draw()
 			imga:Draw()
 
-			Render:DrawShadowedText( pos_2d_text, text, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), self.textb:GetSize().y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) )
-			Render:DrawShadowedText( pos_2d_timer, text_timer, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), imga:GetSize().y / 0.13 / Render:GetTextWidth( "00" ) )
-			Render:DrawShadowedText( pos_2d_c4max, text_max, Color( 169, 169, 169, Game:GetSetting(4) * 2.25 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), imga:GetSize().y / 0.18 / Render:GetTextWidth( "00" ) )
+			local color = Color( 255, 255, 255, sett_alpha )
+			local color2 = Color( 169, 169, 169, sett_alpha )
+			local shadow = Color( 0, 0, 0, sett_alpha )
+
+			Render:DrawShadowedText( pos_2d_text, text, color, shadow, self.textb:GetSize().y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) )
+			Render:DrawShadowedText( pos_2d_timer, text_timer, color, shadow, imga:GetSize().y / 0.13 / Render:GetTextWidth( "00" ) )
+			Render:DrawShadowedText( pos_2d_c4max, text_max, color2, shadow, imga:GetSize().y / 0.18 / Render:GetTextWidth( "00" ) )
 		end
 	end
 end

@@ -24,7 +24,8 @@ function BloozeMod:CalcView()
         Camera:SetFOV( self.default_fov + 0.2 )
     end
 
-    if LocalPlayer:GetBaseState() ~= 208 then
+    local bs = LocalPlayer:GetBaseState()
+    if bs ~= 208 then
         if self.naklon == 1 then
             Camera:SetAngle( Camera:GetAngle() * Angle( self.value, self.value, self.value ) )
         else
@@ -41,10 +42,12 @@ function BloozeMod:CalcView()
         else
             self.timer:Restart()
             self.naklon = self.naklon + 1
-            if LocalPlayer:GetBaseState() == 6 or LocalPlayer:GetBaseState() == 7 or LocalPlayer:GetBaseState() == 9 and not LocalPlayer:GetVehicle() then
-                local animations = { LocalPlayer:GetBaseState(), AnimationState.SSkydive, LocalPlayer:GetBaseState() }
+
+            if bs == 6 or bs == 7 or bs == 9 and not LocalPlayer:GetVehicle() then
+                local animations = { bs, AnimationState.SSkydive, bs }
                 LocalPlayer:SetBaseState( animations[math.random(#animations)] )
-                if LocalPlayer:GetBaseState() == AnimationState.SSkydive then
+
+                if bs == AnimationState.SSkydive then
                     Game:FireEvent( "ply.reacthitfly" )
                 end
             end

@@ -4,11 +4,10 @@ function Menu:__init()
 	self.rusflag = Image.Create( AssetLocation.Resource, "RusFlag" )
 	self.engflag = Image.Create( AssetLocation.Resource, "EngFlag" )
 
+	self.active = true
 	self.hider = true
 
-	self.sbar = Color.Gold
-
-	self.active = true
+	self.text_clr = Color.White
 
 	self.tofreeroamtext = "Добро пожаловать в свободный режим!"
 	self.tName = "ВЫБЕРИТЕ ЯЗЫК / LANGUAGE SELECT"
@@ -100,19 +99,21 @@ function Menu:GameLoad()
 		self.GameLoadEvent = nil
 	end
 
-	if LocalPlayer:GetValue( "Tag" ) == "Creator" then
+	local tag = LocalPlayer:GetValue( "Tag" )
+
+	if tag == "Creator" then
 		self.status = "  [Пошлый Создатель]"
-	elseif LocalPlayer:GetValue( "Tag" ) == "GlAdmin" then
+	elseif tag == "GlAdmin" then
 		self.status = "  [Гл. Админ]"
-	elseif LocalPlayer:GetValue( "Tag" ) == "Admin" then
+	elseif tag == "Admin" then
 		self.status = "  [Админ]"
-	elseif LocalPlayer:GetValue( "Tag" ) == "AdminD" then
+	elseif tag == "AdminD" then
 		self.status = "  [Админ $]"
-	elseif LocalPlayer:GetValue( "Tag" ) == "ModerD" then
+	elseif tag == "ModerD" then
 		self.status = "  [Модератор $]"
-	elseif LocalPlayer:GetValue( "Tag" ) == "VIP" then
+	elseif tag == "VIP" then
 		self.status = "  [VIP]"
-	elseif LocalPlayer:GetValue( "Tag" ) == "YouTuber" then
+	elseif tag == "YouTuber" then
 		self.status = "  [YouTube Деятель]"
 	elseif LocalPlayer:GetValue( "NT_TagName" ) then
 		self.status = "  [" .. LocalPlayer:GetValue( "NT_TagName" ) .. "]"
@@ -220,12 +221,12 @@ function Menu:Render()
 		local linkstitle_txt = "ССЫЛКИ / LINKS:"
 		local links_pos = Vector2( 40, 50 )
 
-		Render:DrawText( links_pos, linkstitle_txt, Color.White, 25 )
+		Render:DrawText( links_pos, linkstitle_txt, self.text_clr, 25 )
 		Render:DrawText( Vector2( links_pos.x, links_pos.y + Render:GetTextHeight( linkstitle_txt, 25 ) + 10 ), "- TELEGRAM | [empty_link]\n- DISCORD | [empty_link]\n- STEAM | [empty_link]\n- VK | [empty_link]", Color( 180, 180, 180 ), 20 )
-		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tName, 30 ) / 2, Render.Size.y / 2.5 ), self.tName, Color.White, 30 )
+		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tName, 30 ) / 2, Render.Size.y / 2.5 ), self.tName, self.text_clr, 30 )
 
 		LocalPlayer:GetAvatar():Draw( playername_pos, Vector2( 40, 40 ), Vector2.Zero, Vector2.One )
-		Render:DrawText( playername_pos + Vector2( 50, 15 ), LocalPlayer:GetName(), Color.White, 17 )
+		Render:DrawText( playername_pos + Vector2( 50, 15 ), LocalPlayer:GetName(), self.text_clr, 17 )
 		if self.status then
 			Render:DrawText( playername_pos + Vector2( 50, 15 ) + Vector2( Render:GetTextWidth( LocalPlayer:GetName(), 17 ), 0 ), self.status, Color.DarkGray, 17 )
 		end
@@ -261,7 +262,7 @@ function Menu:Freeroam()
 		Game:FireEvent( "ply.invulnerable" )
 	end
 	Network:Send( "SetFreeroam" )
-	Events:Fire( "CastCenterText", { text = self.tofreeroamtext, time = 2, color = Color( 255, 255, 255 ) } )
+	Events:Fire( "CastCenterText", { text = self.tofreeroamtext, time = 2, color = self.text_clr } )
 end
 
 function Menu:CleanUp()

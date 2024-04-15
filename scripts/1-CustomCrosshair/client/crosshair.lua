@@ -171,17 +171,19 @@ function Crosshair:Render()
 
 	if LocalPlayer:GetVehicle() and LocalPlayer:InVehicle() then
 		local vehicle = LocalPlayer:GetVehicle()
-		local LocalVehicleModel	= vehicle:GetModelId()
+		local vehicleModel = vehicle:GetModelId()
+		local seat = LocalPlayer:GetSeat()
 
-		if LocalPlayer:GetSeat() ~= 6 and LocalPlayer:GetSeat() ~= 7 and not self:CheckList( blacklist, LocalVehicleModel ) then
-			if vehicle:GetModelId() == 88 then
-				if vehicle:GetTemplate() == "Default" then return end
-			elseif vehicle:GetModelId() == 36 or vehicle:GetModelId() == 77 or vehicle:GetModelId() == 56 or vehicle:GetModelId() == 18 then
-				if vehicle:GetTemplate() == "Gimp" then return end
-			elseif vehicle:GetModelId() == 7 or vehicle:GetModelId() == 77 or vehicle:GetModelId() == 56 or vehicle:GetModelId() == 18 then
-				if vehicle:GetTemplate() ~= "Armed" and vehicle:GetTemplate() ~= "FullyUpgraded" and vehicle:GetTemplate() ~= "" and vehicle:GetTemplate() ~= "Cannon" then return end
+		if seat ~= 6 and seat ~= 7 and not self:CheckList( blacklist, vehicleModel ) then
+			local vehicleTemplate = vehicle:GetTemplate()
+			if vehicleModel == 88 then
+				if vehicleTemplate == "Default" then return end
+			elseif vehicleModel == 36 or vehicleModel == 77 or vehicleModel == 56 or vehicleModel == 18 then
+				if vehicleTemplate == "Gimp" then return end
+			elseif vehicleModel == 7 or vehicleModel == 77 or vehicleModel == 56 or vehicleModel == 18 then
+				if vehicleTemplate ~= "Armed" and vehicleTemplate ~= "FullyUpgraded" and vehicleTemplate ~= "" and vehicleTemplate ~= "Cannon" then return end
 			else
-				if vehicle:GetTemplate() ~= "Armed" and vehicle:GetTemplate() ~= "FullyUpgraded" and vehicle:GetTemplate() ~= "Dome" and vehicle:GetTemplate() ~= "Cutscene" and vehicle:GetTemplate() ~= "Mission" then return end
+				if vehicleTemplate ~= "Armed" and vehicleTemplate ~= "FullyUpgraded" and vvehicleTemplate ~= "Dome" and vehicleTemplate ~= "Cutscene" and vehicleTemplate ~= "Mission" then return end
 			end
 		end
 	end

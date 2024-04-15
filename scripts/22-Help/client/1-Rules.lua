@@ -14,16 +14,16 @@ function HCommands:EngHelp()
 		text =
 				"> Players, please, pay attention to NOT-TO-DO list:\n" ..
 				"    1. Aggression aside of parents and friends:\n" ..
-				"           - BAN for 1 days(If the violation of this rule was detected again, the ban will be for 7 days).\n \n" ..
+				"           - BAN for 1 days (If the violation of this rule was detected again, the ban will be for 7 days).\n \n" ..
 				"    2. Aggression aside of players and admin:\n" ..
 				"           - Punishment matter from admin. (in other ways, the ban will be for 7 days).\n \n" ..
 				"    3. Using the admin nicknames:\n" ..
 				"           - BAN for 30 minutes. (If the violation of this rule will be detected again, the ban will be for 3 days).\n \n" ..
-				"    4. Trying to be like an admin(if you are not):\n" ..
+				"    4. Trying to be like an admin (if you are not):\n" ..
 				"           - Can be promoted as a cock, or something like... (If the violation will be detected again, the ban will be for 1 days).\n \n" ..
 				"    5. WRITING EVERY GODDAMN MESSAGE WITH THAT CAPS LOCK BUTTON!:\n" ..
 				"           - KICK (IF THE VIOLATION OF THIS RULE WILL BE DETECTED AGAIN, THE BAN WILL BE FOR 1 DAY).\n \n" ..
-				"    6. Spam every minute or unplesant adds in chat:\n" ..
+				"    6. Spam every minute or unplesant ads in chat:\n" ..
 				"           - Kick (If the violation of this rule will be detected again, the ban will be for 1 day).\n \n" ..
 				"    7. Deliberate attempts to break the server or the game to people:\n" ..
 				"           - BAN for 2 dayse (If the violation of this rule will be detected again, the ban will be for 7 days).\n \n" ..

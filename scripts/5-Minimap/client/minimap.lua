@@ -41,7 +41,7 @@ function BetterMinimap:Render()
 
 	for player in Client:GetStreamedPlayers() do
 		local position = player:GetPosition()
-		local tringle = 0 -- 0 = none, 1 = up, -1 = down
+
 		if not position:IsNaN() then
 			updatedPlayers[player:GetId()] = true
 			local posp = position.y + 30
@@ -78,8 +78,9 @@ function BetterMinimap.DrawPlayer( position, triangle, color )
 			local size = Render.Size.x / 350
 			local sSize = Render.Size.x / 300
 
-			local color = Color( color.r, color.g, color.b, Game:GetSetting(4) * 2.25 )
-			local shadowColor = Color( 0, 0, 0, Game:GetSetting(4) * 2.25 )
+			local sett_alpha = Game:GetSetting(4) * 2.25
+			local color = Color( color.r, color.g, color.b, sett_alpha )
+			local shadowColor = Color( 0, 0, 0, sett_alpha )
 
 			if triangle == 1 then
 				Render:FillTriangle( Vector2( pos.x,pos.y - sSize-3 ), Vector2( pos.x - sSize-1,pos.y + sSize-1 ), Vector2( pos.x + sSize,pos.y + sSize-1 ), shadowColor )

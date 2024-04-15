@@ -999,7 +999,7 @@ function ClanSystem:addPlayerToList( player )
 	item:SetVisible( true )
 	item:SetDataObject( "id", player )
 	item:SetTextColor( playerColor )
-	self.playerToRow [ player:GetId() ] = item
+	self.playerToRow[ player:GetId() ] = item
 end
 
 function ClanSystem:PlayerJoin( args )
@@ -1007,8 +1007,10 @@ function ClanSystem:PlayerJoin( args )
 end
 
 function ClanSystem:PlayerQuit( args )
-	if ( self.playerToRow [ args.player:GetId() ] ) then
-		self.clanList.playersList:RemoveItem( self.playerToRow [ args.player:GetId() ] )
+	local pId = args.player:GetId()
+
+	if ( self.playerToRow[ pId ] ) then
+		self.clanList.playersList:RemoveItem( self.playerToRow [ pId ] )
 	end
 end
 
@@ -1070,8 +1072,10 @@ end
 
 function ClanSystem:GetPlayerClan( player )
 	if ( type ( player ) == "userdata" ) then
-		if ( self.playerClans [ player:GetId() ] ) then
-			return self.playerClans [ player:GetId() ]
+		local pId = player:GetId()
+
+		if ( self.playerClans[ pId ] ) then
+			return self.playerClans [ pId ]
 		else
 			return false
 		end

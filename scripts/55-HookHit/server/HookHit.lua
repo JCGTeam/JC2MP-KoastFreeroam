@@ -6,7 +6,8 @@ end
 
 function HookHit:HitPlayers( args, sender )
 	for p in Server:GetPlayers() do
-		jDist = sender:GetPosition():Distance( p:GetPosition() )
+		local jDist = sender:GetPosition():Distance( p:GetPosition() )
+
 		if jDist < 2 then
 			if p ~= sender then
 				if not p:GetValue( "Passive" ) then

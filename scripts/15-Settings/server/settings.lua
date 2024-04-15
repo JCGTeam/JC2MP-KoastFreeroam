@@ -2,8 +2,12 @@ class 'Settings'
 
 function Settings:__init()
 	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_color (steamid VARCHAR UNIQUE, r INTEGER, g INTEGER, b INTEGER)" )
-	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_settings (steamid VARCHAR UNIQUE, clockvisible INTEGER, clockpendosformat INTEGER, bestrecordsvisible INTEGER, passivemodevisible INTEGER, jesusmodevisible INTEGER, killfeedvisible INTEGER, chattipsvisible INTEGER, chatbackgroundvisible INTEGER, playersmarkersvisible INTEGER, jobsmarkersvisible INTEGER, customcrosshair INTEGER, jethud INTEGER, longergrapplevisible INTEGER, jobsvisible INTEGER, longergrappleenabled INTEGER, vehicleejectblocker INTEGER, wingsuitenabled INTEGER, hydraulicsenabled INTEGER, driftphysics INTEGER, opendoorstipsvisible INTEGER)" )
-	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_binds (steamid VARCHAR UNIQUE, servermenu INTEGER, actionsmenu INTEGER, quicktp INTEGER, togglegrenades INTEGER, freecam INTEGER, opendoors INTEGER, playerslist INTEGER, firstperson INTEGER, toggleserverui INTEGER, boost INTEGER, airboost INTEGER, vehcamera INTEGER, nexttrack INTEGER, tuning INTEGER)" )
+	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_settings (steamid VARCHAR UNIQUE, clockvisible INTEGER, clockpendosformat INTEGER, bestrecordsvisible INTEGER, passivemodevisible INTEGER, jesusmodevisible INTEGER, killfeedvisible INTEGER, chattipsvisible INTEGER, chatbackgroundvisible INTEGER, playersmarkersvisible INTEGER, jobsmarkersvisible INTEGER, customcrosshair INTEGER, jethud INTEGER, longergrapplevisible INTEGER, jobsvisible INTEGER, longergrappleenabled INTEGER, vehicleejectblocker INTEGER, wingsuitenabled INTEGER, hydraulicsenabled INTEGER, driftphysics INTEGER, opendoorstipsvisible INTEGER, vehiclejump INTEGER)" )
+	--SQL:Execute( "CREATE TABLE IF NOT EXISTS players_binds (steamid VARCHAR UNIQUE, servermenu INTEGER, actionsmenu INTEGER, quicktp INTEGER, togglegrenades INTEGER, freecam INTEGER, opendoors INTEGER, playerslist INTEGER, firstperson INTEGER, toggleserverui INTEGER, boost INTEGER, airboost INTEGER, vehcamera INTEGER, nexttrack INTEGER, tuning INTEGER)" )
+
+	--for p in Server:GetPlayers() do
+	--	self:GetDBSettings( p )
+	--end
 
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
@@ -60,11 +64,13 @@ function Settings:UpdateParameters( args, sender )
 		sender:SetNetworkValue( "DriftPhysics", args.boolean )
 	elseif args.parameter == 20 then
 		sender:SetNetworkValue( "OpenDoorsTipsVisible", args.boolean )
+	elseif args.parameter == 21 then
+		sender:SetNetworkValue( "VehicleJump", args.boolean )
 	end
 end
 
 function Settings:BooleanToNumber( value )
-	return value == true and 1 or value == false and 0
+	return value == true and 1 or ( value == false or value == nil ) and 0
 end
 
 function Settings:NumberToBoolean( value )
@@ -74,7 +80,7 @@ end
 function Settings:PlayerQuit( args )
 	local steamID = args.player:GetSteamId().id
 
-    local cmd = SQL:Command( "INSERT OR REPLACE INTO players_settings (steamid, clockvisible, clockpendosformat, bestrecordsvisible, passivemodevisible, jesusmodevisible, killfeedvisible, chattipsvisible, chatbackgroundvisible, playersmarkersvisible, jobsmarkersvisible, customcrosshair, jethud, longergrapplevisible, jobsvisible, longergrappleenabled, vehicleejectblocker, wingsuitenabled, hydraulicsenabled, driftphysics, opendoorstipsvisible) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" )
+    local cmd = SQL:Command( "INSERT OR REPLACE INTO players_settings (steamid, clockvisible, clockpendosformat, bestrecordsvisible, passivemodevisible, jesusmodevisible, killfeedvisible, chattipsvisible, chatbackgroundvisible, playersmarkersvisible, jobsmarkersvisible, customcrosshair, jethud, longergrapplevisible, jobsvisible, longergrappleenabled, vehicleejectblocker, wingsuitenabled, hydraulicsenabled, driftphysics, opendoorstipsvisible, vehiclejump) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" )
     cmd:Bind( 1, tostring( steamID ) )
     cmd:Bind( 2, self:BooleanToNumber( args.player:GetValue( "ClockVisible" ) ) )
 	cmd:Bind( 3, self:BooleanToNumber( args.player:GetValue( "ClockPendosFormat" ) ) )
@@ -96,56 +102,59 @@ function Settings:PlayerQuit( args )
 	cmd:Bind( 19, self:BooleanToNumber( args.player:GetValue( "HydraulicsEnabled" ) ) )
 	cmd:Bind( 20, self:BooleanToNumber( args.player:GetValue( "DriftPhysics" ) ) )
 	cmd:Bind( 21, self:BooleanToNumber( args.player:GetValue( "OpenDoorsTipsVisible" ) ) )
+	cmd:Bind( 22, self:BooleanToNumber( args.player:GetValue( "VehicleJump" ) ) )
 	cmd:Execute()
 end
 
-function Settings:GetDBSettings( args )
-	local qry = SQL:Query( "SELECT clockvisible, clockpendosformat, bestrecordsvisible, passivemodevisible, jesusmodevisible, killfeedvisible, chattipsvisible, chatbackgroundvisible, playersmarkersvisible, jobsmarkersvisible, customcrosshair, jethud, longergrapplevisible, jobsvisible, longergrappleenabled, vehicleejectblocker, wingsuitenabled, hydraulicsenabled, driftphysics, opendoorstipsvisible FROM players_settings WHERE steamid = ?")
-	qry:Bind( 1, args.player:GetSteamId().id )
+function Settings:GetDBSettings( player )
+	local qry = SQL:Query( "SELECT clockvisible, clockpendosformat, bestrecordsvisible, passivemodevisible, jesusmodevisible, killfeedvisible, chattipsvisible, chatbackgroundvisible, playersmarkersvisible, jobsmarkersvisible, customcrosshair, jethud, longergrapplevisible, jobsvisible, longergrappleenabled, vehicleejectblocker, wingsuitenabled, hydraulicsenabled, driftphysics, opendoorstipsvisible, vehiclejump FROM players_settings WHERE steamid = ?")
+	qry:Bind( 1, player:GetSteamId().id )
 	local result = qry:Execute()
 
 	if #result > 0 then
-		args.player:SetNetworkValue( "ClockVisible", self:NumberToBoolean( tonumber( result[1].clockvisible ) ) )
-		args.player:SetNetworkValue( "ClockPendosFormat", self:NumberToBoolean( tonumber( result[1].clockpendosformat ) ) )
-		args.player:SetNetworkValue( "BestRecordVisible", self:NumberToBoolean( tonumber( result[1].bestrecordsvisible ) ) )
-		args.player:SetNetworkValue( "PassiveModeVisible", self:NumberToBoolean( tonumber( result[1].passivemodevisible ) ) )
-		args.player:SetNetworkValue( "JesusModeVisible", self:NumberToBoolean( tonumber( result[1].jesusmodevisible ) ) )
-		args.player:SetNetworkValue( "KillFeedVisible", self:NumberToBoolean( tonumber( result[1].killfeedvisible ) ) )
-		args.player:SetNetworkValue( "ChatTipsVisible", self:NumberToBoolean( tonumber( result[1].chattipsvisible ) ) )
-		args.player:SetNetworkValue( "ChatBackgroundVisible", self:NumberToBoolean( tonumber( result[1].chatbackgroundvisible ) ) )
-		args.player:SetNetworkValue( "PlayersMarkersVisible", self:NumberToBoolean( tonumber( result[1].playersmarkersvisible ) ) )
-		args.player:SetNetworkValue( "JobsMarkersVisible", self:NumberToBoolean( tonumber( result[1].jobsmarkersvisible ) ) )
-		args.player:SetNetworkValue( "CustomCrosshair", self:NumberToBoolean( tonumber( result[1].customcrosshair ) ) )
-		args.player:SetNetworkValue( "JetHUD", self:NumberToBoolean( tonumber( result[1].jethud ) ) )
-		args.player:SetNetworkValue( "LongerGrappleVisible", self:NumberToBoolean( tonumber( result[1].longergrapplevisible ) ) )
-		args.player:SetNetworkValue( "JobsVisible", self:NumberToBoolean( tonumber( result[1].jobsvisible ) ) )
-		args.player:SetNetworkValue( "LongerGrappleEnabled", self:NumberToBoolean( tonumber( result[1].longergrappleenabled ) ) )
-		args.player:SetNetworkValue( "VehicleEjectBlocker", self:NumberToBoolean( tonumber( result[1].vehicleejectblocker ) ) )
-		args.player:SetNetworkValue( "WingsuitEnabled", self:NumberToBoolean( tonumber( result[1].wingsuitenabled ) ) )
-		args.player:SetNetworkValue( "HydraulicsEnabled", self:NumberToBoolean( tonumber( result[1].hydraulicsenabled ) ) )
-		args.player:SetNetworkValue( "DriftPhysics", self:NumberToBoolean( tonumber( result[1].driftphysics ) ) )
-		args.player:SetNetworkValue( "OpenDoorsTipsVisible", self:NumberToBoolean( tonumber( result[1].opendoorstipsvisible ) ) )
+		player:SetNetworkValue( "ClockVisible", self:NumberToBoolean( tonumber( result[1].clockvisible ) ) )
+		player:SetNetworkValue( "ClockPendosFormat", self:NumberToBoolean( tonumber( result[1].clockpendosformat ) ) )
+		player:SetNetworkValue( "BestRecordVisible", self:NumberToBoolean( tonumber( result[1].bestrecordsvisible ) ) )
+		player:SetNetworkValue( "PassiveModeVisible", self:NumberToBoolean( tonumber( result[1].passivemodevisible ) ) )
+		player:SetNetworkValue( "JesusModeVisible", self:NumberToBoolean( tonumber( result[1].jesusmodevisible ) ) )
+		player:SetNetworkValue( "KillFeedVisible", self:NumberToBoolean( tonumber( result[1].killfeedvisible ) ) )
+		player:SetNetworkValue( "ChatTipsVisible", self:NumberToBoolean( tonumber( result[1].chattipsvisible ) ) )
+		player:SetNetworkValue( "ChatBackgroundVisible", self:NumberToBoolean( tonumber( result[1].chatbackgroundvisible ) ) )
+		player:SetNetworkValue( "PlayersMarkersVisible", self:NumberToBoolean( tonumber( result[1].playersmarkersvisible ) ) )
+		player:SetNetworkValue( "JobsMarkersVisible", self:NumberToBoolean( tonumber( result[1].jobsmarkersvisible ) ) )
+		player:SetNetworkValue( "CustomCrosshair", self:NumberToBoolean( tonumber( result[1].customcrosshair ) ) )
+		player:SetNetworkValue( "JetHUD", self:NumberToBoolean( tonumber( result[1].jethud ) ) )
+		player:SetNetworkValue( "LongerGrappleVisible", self:NumberToBoolean( tonumber( result[1].longergrapplevisible ) ) )
+		player:SetNetworkValue( "JobsVisible", self:NumberToBoolean( tonumber( result[1].jobsvisible ) ) )
+		player:SetNetworkValue( "LongerGrappleEnabled", self:NumberToBoolean( tonumber( result[1].longergrappleenabled ) ) )
+		player:SetNetworkValue( "VehicleEjectBlocker", self:NumberToBoolean( tonumber( result[1].vehicleejectblocker ) ) )
+		player:SetNetworkValue( "WingsuitEnabled", self:NumberToBoolean( tonumber( result[1].wingsuitenabled ) ) )
+		player:SetNetworkValue( "HydraulicsEnabled", self:NumberToBoolean( tonumber( result[1].hydraulicsenabled ) ) )
+		player:SetNetworkValue( "DriftPhysics", self:NumberToBoolean( tonumber( result[1].driftphysics ) ) )
+		player:SetNetworkValue( "OpenDoorsTipsVisible", self:NumberToBoolean( tonumber( result[1].opendoorstipsvisible ) ) )
+		player:SetNetworkValue( "VehicleJump", self:NumberToBoolean( tonumber( result[1].vehiclejump ) ) )
 	else
-		args.player:SetNetworkValue( "ClockVisible", true )
-		args.player:SetNetworkValue( "ClockPendosFormat", false )
-		args.player:SetNetworkValue( "BestRecordVisible", true )
-		args.player:SetNetworkValue( "PassiveModeVisible", true )
-		args.player:SetNetworkValue( "JesusModeVisible", true )
-		args.player:SetNetworkValue( "KillFeedVisible", true )
-		args.player:SetNetworkValue( "ChatTipsVisible", true )
-		args.player:SetNetworkValue( "ChatBackgroundVisible", false )
-		args.player:SetNetworkValue( "PlayersMarkersVisible", true )
-		args.player:SetNetworkValue( "JobsMarkersVisible", true )
-		args.player:SetNetworkValue( "CustomCrosshair", true )
-		args.player:SetNetworkValue( "JetHUD", false )
-		args.player:SetNetworkValue( "LongerGrappleVisible", true )
-		args.player:SetNetworkValue( "JobsVisible", true )
-		args.player:SetNetworkValue( "LongerGrappleEnabled", true )
-		args.player:SetNetworkValue( "VehicleEjectBlocker", false )
-		args.player:SetNetworkValue( "WingsuitEnabled", true )
-		args.player:SetNetworkValue( "HydraulicsEnabled", true )
-		args.player:SetNetworkValue( "DriftPhysics", false )
-		args.player:SetNetworkValue( "OpenDoorsTipsVisible", true )
+		player:SetNetworkValue( "ClockVisible", true )
+		player:SetNetworkValue( "ClockPendosFormat", false )
+		player:SetNetworkValue( "BestRecordVisible", true )
+		player:SetNetworkValue( "PassiveModeVisible", true )
+		player:SetNetworkValue( "JesusModeVisible", true )
+		player:SetNetworkValue( "KillFeedVisible", true )
+		player:SetNetworkValue( "ChatTipsVisible", true )
+		player:SetNetworkValue( "ChatBackgroundVisible", false )
+		player:SetNetworkValue( "PlayersMarkersVisible", true )
+		player:SetNetworkValue( "JobsMarkersVisible", true )
+		player:SetNetworkValue( "CustomCrosshair", true )
+		player:SetNetworkValue( "JetHUD", false )
+		player:SetNetworkValue( "LongerGrappleVisible", true )
+		player:SetNetworkValue( "JobsVisible", true )
+		player:SetNetworkValue( "LongerGrappleEnabled", true )
+		player:SetNetworkValue( "VehicleEjectBlocker", false )
+		player:SetNetworkValue( "WingsuitEnabled", true )
+		player:SetNetworkValue( "HydraulicsEnabled", true )
+		player:SetNetworkValue( "DriftPhysics", false )
+		player:SetNetworkValue( "OpenDoorsTipsVisible", true )
+		player:SetNetworkValue( "VehicleJump", true )
 	end
 end
 
@@ -170,7 +179,7 @@ function Settings:PlayerJoin( args )
 	if #result > 0 then
 		args.player:SetColor( Color( tonumber(result[1].r), tonumber(result[1].g), tonumber(result[1].b) ) )
 	end
-	self:GetDBSettings( args )
+	self:GetDBSettings( args.player )
 end
 
 function Settings:SPOff( args, sender )

@@ -10,16 +10,20 @@ function Clock:Render()
 
 	local format = LocalPlayer:GetValue( "ClockPendosFormat" ) and "%I:%M:%S %p" or "%X"
 
+	local time_txt = os.date( format )
+	local date_txt = os.date( "%d/%m/%Y" )
+
+	local sett_alpha = Game:GetSetting(4) * 2.25
+	local shadow_clr = Color( 25, 25, 25, sett_alpha )
 	local position = Vector2( 20, Render.Height * 0.31 )
-	local textTime = os.date( format )
-	local textDate = os.date( "%d/%m/%Y" )
 
 	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
-	Render:DrawShadowedText( position, textTime, Color( 255, 255, 255, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 24 )
+	Render:DrawShadowedText( position, time_txt, Color( 255, 255, 255, sett_alpha ), shadow_clr, 24 )
 
 	local height = Render:GetTextHeight("A") * 1.5
 	position.y = position.y + height
-	Render:DrawShadowedText( position, textDate, Color( 255, 165, 0, Game:GetSetting(4) * 2.25 ), Color( 25, 25, 25, Game:GetSetting(4) * 2.25 ), 16 )
+
+	Render:DrawShadowedText( position, date_txt, Color( 255, 165, 0, sett_alpha ), shadow_clr, 16 )
 end
 
 clock = Clock()

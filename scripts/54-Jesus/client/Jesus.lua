@@ -115,18 +115,21 @@ function Jesus:Position( player )
 end
 
 function Jesus:Remove( player )
-	if self.Surfaces[player:GetId()] and IsValid(self.Surfaces[player:GetId()]) then
-		self.Surfaces[player:GetId()]:Remove()
-		self.Surfaces[player:GetId()] = nil
+	local pId = player:GetId()
+
+	if self.Surfaces[pId] and IsValid(self.Surfaces[pId]) then
+		self.Surfaces[pId]:Remove()
+		self.Surfaces[pId] = nil
 	end
 	return true
 end
 
 function Jesus:Anchor( player )
-	local PlayerVehicle	= player:GetVehicle()
-	if PlayerVehicle and IsValid(PlayerVehicle) and player:InVehicle() then
-		if Vector3.Distance(PlayerVehicle:GetPosition(), player:GetPosition()) < self.MaxDistance / 2 then
-			return PlayerVehicle
+	local vehicle = player:GetVehicle()
+
+	if vehicle and IsValid(vehicle) and player:InVehicle() then
+		if Vector3.Distance(vehicle:GetPosition(), player:GetPosition()) < self.MaxDistance / 2 then
+			return vehicle
 		end
 	end
 	return player
@@ -158,19 +161,20 @@ function Jesus:Render()
     local text_width = Render:GetTextWidth( self.nameSizer, text_size )
 	local text_height = Render:GetTextHeight( self.nameSizer, text_size )
     local text_pos = Vector2( Render.Width / 1.3 - text_width / 1.8 + text_width / 5.5, 2 )
+	local sett_alpha = Game:GetSetting(4) * 2.25
 
-	Render:FillArea( Vector2( Render.Width / 1.3 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+	Render:FillArea( Vector2( Render.Width / 1.3 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
 
-	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
-	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), text_height + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
 
 	local waterwalk_enabled = LocalPlayer:GetValue( "WaterWalk" )
 
 	if waterwalk_enabled then
-		Render:DrawText( text_pos + Vector2.One, self.name, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), text_size )
+		Render:DrawText( text_pos + Vector2.One, self.name, Color( 0, 0, 0, sett_alpha ), text_size )
 	end
 
-	Render:DrawText( text_pos, self.name, waterwalk_enabled and Color( 173, 216, 230, Game:GetSetting(4) * 2.25 ) or Color( 255, 255, 255, Game:GetSetting(4) * 2.25 / 4 ), text_size )
+	Render:DrawText( text_pos, self.name, waterwalk_enabled and Color( 173, 216, 230, sett_alpha ) or Color( 255, 255, 255, sett_alpha / 4 ), text_size )
 end
 
 function Jesus:CheckList( tableList, modelID )

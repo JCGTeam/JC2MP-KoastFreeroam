@@ -84,7 +84,7 @@ function Admin:__init()
 	self.shoutMessage = ""
 	self.sx, self.sy = Game:GetSetting( 30 ), Game:GetSetting( 31 )
 
-	for _, model in ipairs ( { 1, 2, 4, 7, 8, 9, 10, 11, 12, 13, 15, 18, 21, 22, 23, 26, 29, 31, 32, 33, 35, 36, 40, 41, 42, 43, 44, 46, 47, 48, 49, 52, 54, 55, 56, 60, 61, 63, 66, 70, 71, 72, 73, 74, 76, 77, 78, 79, 83, 84, 86, 87, 89, 90, 91, 5, 6, 16, 19, 25, 27, 28, 38, 45, 50, 69, 80, 88, 3, 14, 30, 34, 37, 39, 51, 57, 59, 62, 64, 65, 67, 81, 85 } ) do
+	for _, model in ipairs ( { 1, 2, 4, 7, 8, 9, 10, 11, 12, 13, 15, 18, 21, 22, 23, 26, 29, 31, 32, 33, 35, 36, 40, 41, 42, 43, 44, 46, 47, 48, 49, 52, 54, 55, 56, 60, 61, 63, 66, 70, 71, 72, 73, 74, 76, 77, 78, 79, 83, 84, 86, 87, 89, 90, 91, 5, 6, 16, 19, 25, 27, 28, 38, 45, 50, 69, 80, 88, 3, 14, 30, 34, 37, 39, 51, 57, 59, 62, 64, 65, 67, 81, 85, 75, 58, 82, 20, 53, 24 } ) do
 		local name = Vehicle.GetNameByModelId ( model )
 		table.insert (
 			self.vehicleList,
@@ -983,9 +983,11 @@ function Admin:spectateCamera()
 		end
 
 		if not self.updTimer then
-			if self.victim:GetVehicle() and self.victim:GetSeat() ~= VehicleSeat.RooftopStunt then
-				self.spVictimPos = self.victim:GetVehicle():GetPosition()
-				self.spVictimAng = self.victim:GetVehicle():GetAngle()
+			local vehicle = self.victim:GetVehicle()
+
+			if vehicle and self.victim:GetSeat() ~= VehicleSeat.RooftopStunt then
+				self.spVictimPos = vehicle:GetPosition()
+				self.spVictimAng = vehicle:GetAngle()
 			else
 				self.spVictimPos = self.victim:GetPosition()
 				self.spVictimAng = self.victim:GetAngle()

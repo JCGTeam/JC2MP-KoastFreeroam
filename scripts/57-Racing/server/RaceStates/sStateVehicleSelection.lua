@@ -56,9 +56,11 @@ end
 -- Race callbacks
 
 function StateVehicleSelection:RacerLeave(racer)
-	local vehicleSelector = self.playerIdToVehicleSelector[racer.player:GetId()]
+	local pId = racer.player:GetId()
+
+	local vehicleSelector = self.playerIdToVehicleSelector[pId]
 	vehicleSelector:Destroy()
-	self.playerIdToVehicleSelector[racer.player:GetId()] = nil
+	self.playerIdToVehicleSelector[pId] = nil
 end
 
 -- Events

@@ -143,19 +143,20 @@ function Passive:Render()
     local text_width = Render:GetTextWidth( self.name, text_size )
 	local text_height = Render:GetTextHeight( self.name, text_size )
     local text_pos = Vector2( Render.Width / 1.52 - text_width / 1.8 + text_width / 25, 2 )
+	local sett_alpha = Game:GetSetting(4) * 2.25
 
-	Render:FillArea( Vector2( Render.Width / 1.52 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+	Render:FillArea( Vector2( Render.Width / 1.52 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
 
-	Render:FillTriangle( Vector2( ( Render.Width / 1.52 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 ), text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
-	Render:FillTriangle( Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), Color( 0, 0, 0, Game:GetSetting(4) * 2.25 / 2.4 ) )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.52 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 ), text_height + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
 
 	local passive_enabled = LocalPlayer:GetValue( "Passive" ) or LocalPlayer:GetValue( "FreecamEnabled" )
 
 	if passive_enabled then
-		Render:DrawText( text_pos + Vector2.One, self.name, Color( 0, 0, 0, Game:GetSetting(4) * 2.25 ), text_size )
+		Render:DrawText( text_pos + Vector2.One, self.name, Color( 0, 0, 0, sett_alpha ), text_size )
 	end
 
-	Render:DrawText( text_pos, self.name, passive_enabled and Color( 0, 250, 154, Game:GetSetting(4) * 2.25 ) or Color( 255, 255, 255, Game:GetSetting(4) * 2.25 / 4 ), text_size )
+	Render:DrawText( text_pos, self.name, passive_enabled and Color( 0, 250, 154, sett_alpha ) or Color( 255, 255, 255, sett_alpha / 4 ), text_size )
 end
 
 passive = Passive()

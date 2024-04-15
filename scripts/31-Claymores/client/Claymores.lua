@@ -2,6 +2,7 @@ class "Claymores"
 
 function Claymores:__init()
 	self:initVars()
+
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	Events:Subscribe( "PostTick", self, self.onPostTick )
 	Events:Subscribe( "WorldNetworkObjectCreate", self, self.onWorldNetworkObjectCreate )
@@ -40,8 +41,8 @@ function Claymores:LocalPlayerInput( args )
 	if LocalPlayer:GetValue( "Passive" ) then return end
 	if LocalPlayer:GetValue( "ServerMap" ) then return end
 
-	if not LocalPlayer:GetValue("Passive") then
-		if args.input == Action.ThrowGrenade and LocalPlayer:GetValue("Explosive") == 3 then
+	if not LocalPlayer:GetValue( "Passive" ) then
+		if args.input == Action.ThrowGrenade and LocalPlayer:GetValue( "Explosive" ) == 3 then
 			if self.placing then return end
 			if self.timer:GetMilliseconds() < self.cooldown then return end
 			if LocalPlayer:GetBaseState() ~= AnimationState.SUprightIdle then return end

@@ -212,9 +212,10 @@ function Killfeed:Render( args )
 			local pos = center_hint + Vector2( -text_width, height_offset )
 			local alpha = self:CalculateAlpha( v.time )
 
-			local shadow_colour = Color( 20, 20, 20, alpha * 0.5 )
+			local color = Color( 255, 255, 255, alpha )
+			local shadow = Color( 20, 20, 20, alpha * 0.5 )
 
-			Render:DrawShadowedText( pos, v.message, Color( 255, 255, 255, alpha ), shadow_colour )
+			Render:DrawShadowedText( pos, v.message, color, shadow )
 
 			local player_colour = v.player_colour
 			player_colour.a = alpha

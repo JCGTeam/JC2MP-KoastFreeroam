@@ -175,13 +175,15 @@ function Shop:SetPlayerAppearancesFromDB( args )
 end
 
 function Shop:PlayerQuit( args )
-    if IsValid( self.vehicles[ args.player:GetId() ] ) then
-        self.vehicles[ args.player:GetId() ]:Remove()
-        self.vehicles[ args.player:GetId() ] = nil
+	local pId = args.player:GetId()
+
+    if IsValid( self.vehicles[ pId ] ) then
+        self.vehicles[ pId ]:Remove()
+        self.vehicles[ pId ] = nil
     end
-	if IsValid( self.vehicles2[ args.player:GetId() ] ) then
-        self.vehicles2[ args.player:GetId() ]:Remove()
-        self.vehicles2[ args.player:GetId() ] = nil
+	if IsValid( self.vehicles2[ pId ] ) then
+        self.vehicles2[ pId ]:Remove()
+        self.vehicles2[ pId ] = nil
     end
 end
 
@@ -273,35 +275,39 @@ function Shop:BuyVehicle( player, item, tone1, tone2 )
     return true, ""	--	Return true must be right after the execution else the confirmation message gives an error.
 end
 
-function Shop:ExecuteVehicle( player, item, tone1, tone2 )		
+function Shop:ExecuteVehicle( player, item, tone1, tone2 )
+	local pId = player:GetId()
+
     if player:InVehicle() == true then
-			if IsValid( self.vehicles[ player:GetId() ] ) and player:GetVehicle() == self.vehicles[ player:GetId() ] then
-				player:GetVehicle():Remove()
-				self.vehicles[ player:GetId() ] = nil
-			elseif IsValid( self.vehicles2[ player:GetId() ] ) and player:GetVehicle() == self.vehicles2[ player:GetId() ] then
-				player:GetVehicle():Remove()
-				self.vehicles2[ player:GetId() ] = self.vehicles[ player:GetId() ]
-			elseif IsValid( self.vehicles2[ player:GetId() ] ) then
-				player:GetVehicle():Remove()
-				self.vehicles2[ player:GetId() ]:Remove()
-				self.vehicles2[ player:GetId() ] = self.vehicles[ player:GetId() ]
-				self.vehicles[ player:GetId() ] = nil
-			else
-				player:GetVehicle():Remove()
-				self.vehicles2[ player:GetId() ] = self.vehicles[ player:GetId() ]
-				self.vehicles[ player:GetId() ] = nil
-			end
-    elseif IsValid( self.vehicles2[ player:GetId() ] ) then
-            self.vehicles2[ player:GetId() ]:Remove()
-            self.vehicles2[ player:GetId() ] = self.vehicles[ player:GetId() ]
-    elseif IsValid( self.vehicles[ player:GetId() ]) then
-            self.vehicles2[ player:GetId() ] = self.vehicles[ player:GetId() ]
-			self.vehicles[ player:GetId() ] = nil
+		local vehicle = player:GetVehicle()
+	
+		if IsValid( self.vehicles[ pId ] ) and vehicle == self.vehicles[ pId ] then
+			vehicle:Remove()
+			self.vehicles[ pId ] = nil
+		elseif IsValid( self.vehicles2[ pId ] ) and vehicle == self.vehicles2[ pId ] then
+			vehicle:Remove()
+			self.vehicles2[ pId ] = self.vehicles[ pId ]
+		elseif IsValid( self.vehicles2[ pId ] ) then
+			vehicle:Remove()
+			self.vehicles2[ pId ]:Remove()
+			self.vehicles2[ pId ] = self.vehicles[ pId ]
+			self.vehicles[ pId ] = nil
+		else
+			vehicle:Remove()
+			self.vehicles2[ pId ] = self.vehicles[ pId ]
+			self.vehicles[ pId ] = nil
+		end
+    elseif IsValid( self.vehicles2[ pId ] ) then
+		self.vehicles2[ pId ]:Remove()
+		self.vehicles2[ pId ] = self.vehicles[ pId ]
+    elseif IsValid( self.vehicles[ pId ]) then
+		self.vehicles2[ pId ] = self.vehicles[ pId ]
+		self.vehicles[ pId ] = nil
     end	
 
-    if IsValid( self.vehicles[ player:GetId() ] ) then
-        self.vehicles[ player:GetId() ]:Remove()
-        self.vehicles[ player:GetId() ] = nil
+    if IsValid( self.vehicles[ pId ] ) then
+        self.vehicles[ pId ]:Remove()
+        self.vehicles[ pId ] = nil
     end
 	
     local args = {}

@@ -258,6 +258,7 @@ function Tasks:PostTick()
 	for k, v in ipairs( self.locations ) do
 		local jDist = v.position:Distance2D( cameraPos )
 		local jobToRender = self.jobsTable[k]
+
 		if jDist < 1028 and jobToRender.direction then
 			if not self.RenderEvent then
 				self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
@@ -299,10 +300,11 @@ function Tasks:PostTick()
 end
 
 function Tasks:InJobPostTick()
-	if self.jobCompleteTimer and self.jobCompleteTimer:GetSeconds() > 1 and self.job and LocalPlayer:GetVehicle() then
+	local vehicle = LocalPlayer:GetVehicle()
+
+	if self.jobCompleteTimer and self.jobCompleteTimer:GetSeconds() > 1 and self.job and vehicle then
 		self.jobCompleteTimer:Restart()
-		local pVehicle = LocalPlayer:GetVehicle()
-		local jDist = self.locations[self.job.destination].position:Distance( pVehicle:GetPosition() )
+		local jDist = self.locations[self.job.destination].position:Distance( vehicle:GetPosition() )
 
 		if jDist < 20 then
 			Network:Send( "CompleteJob", nil )
@@ -449,7 +451,8 @@ function Tasks:Render()
 
 	if self.jobsTable then
 		local cameraPos = Camera:GetPosition()
-		local markersIsVisible = LocalPlayer:GetValue("JobsMarkersVisible") and self.markers
+		local markersIsVisible = LocalPlayer:GetValue( "JobsMarkersVisible" ) and self.markers
+		local markersSize = Vector2( Render.Size.x / 185, Render.Size.x / 185 )
 		local markersAlpha = Game:GetSetting(4) / 100
 
 		local taskminimapblimp = self.taskminimapblimp
@@ -464,7 +467,7 @@ function Tasks:Render()
 				local mapPos = Render:WorldToMinimap( Vector3( v.position.x, v.position.y, v.position.z ) )
 
 				if markersIsVisible then
-					self.taskminimapblimp:SetSize( Vector2( Render.Size.x / 185, Render.Size.x / 185 ) )
+					self.taskminimapblimp:SetSize( markersSize )
 					self.taskminimapblimp:SetPosition( mapPos - self.taskminimapblimp:GetSize() / 2 )
 					self.taskminimapblimp:SetAlpha( markersAlpha )
 					self.taskminimapblimp:Draw()
@@ -476,9 +479,7 @@ function Tasks:Render()
 	if self.job then
 		self.markers = false
 
-		if LocalPlayer:GetValue( "SystemFonts" ) then
-			Render:SetFont( AssetLocation.SystemFont, "Impact" )
-		end
+		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 		local textPos = Vector2( Render.Width / 2, Render.Height * 0.07 )
 		local text = self.target .. self.delivto .. self.job.description
@@ -494,7 +495,7 @@ function Tasks:Render()
 			local t2 = Transform3():Translate( destPos ):Rotate( upAngle )
 
 			Render:SetTransform( t2 )
-			Render:DrawCircle( Vector3( 0, 0, 0 ), 10, Color( 64, 255, 64, 64 ) )
+			Render:DrawCircle( Vector3.Zero, 10, Color( 64, 255, 64, 64 ) )
 		end
 
 		if LocalPlayer:GetVehicle() then
@@ -526,9 +527,7 @@ function Tasks:GameRender()
 	if self.jobsTable then
 		local cameraPos = Camera:GetPosition()
 
-		if LocalPlayer:GetValue( "SystemFonts" ) then
-			Render:SetFont( AssetLocation.SystemFont, "Impact" )
-		end
+		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 		for k, v in ipairs( self.locations ) do
 			local jDist = v.position:Distance( cameraPos )

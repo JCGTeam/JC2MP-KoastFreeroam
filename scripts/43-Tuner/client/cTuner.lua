@@ -15,9 +15,9 @@ function Tuner:__init()
 
 	local vehicle = LocalPlayer:GetVehicle()
 	if IsValid(vehicle) then
-		local LocalVehicleModel = vehicle:GetModelId()
+		local vehicleModel = vehicle:GetModelId()
 
-		if self:CheckList(self.planevehicles, LocalVehicleModel) then
+		if self:CheckList(self.planevehicles, vehicleModel) then
 			self.CarFlyActive = true
 		else
 			self.CarFlyActive = false
@@ -260,10 +260,12 @@ function Tuner:PostTick()
 	for _, v in pairs(vehicles) do
 		if IsValid(v) then
 			if v:GetValue("vehid") then
-				if v:GetTransmission() then
-					v:GetTransmission():SetClutchDelayTime(v:GetValue("clutch_delay"))
+				local vehicleTransmission = v:GetTransmission()
 
-					local gear_ratios = v:GetTransmission():GetGearRatios()
+				if vehicleTransmission then
+					vehicleTransmission:SetClutchDelayTime(v:GetValue("clutch_delay"))
+
+					local gear_ratios = vehicleTransmission:GetGearRatios()
 					if v:GetValue( "gear_ratios1" ) ~= nil then gear_ratios[1] = v:GetValue( "gear_ratios1" ) end
 					if v:GetValue( "gear_ratios2" ) ~= nil then gear_ratios[2] = v:GetValue( "gear_ratios2" ) end
 					if v:GetValue( "gear_ratios3" ) ~= nil then gear_ratios[3] = v:GetValue( "gear_ratios3" ) end
@@ -271,35 +273,38 @@ function Tuner:PostTick()
 					if v:GetValue( "gear_ratios5" ) ~= nil then gear_ratios[5] = v:GetValue( "gear_ratios5" ) end
 					if v:GetValue( "gear_ratios6" ) ~= nil then gear_ratios[6] = v:GetValue( "gear_ratios6" ) end
 					if v:GetValue( "gear_ratios7" ) ~= nil then gear_ratios[7] = v:GetValue( "gear_ratios7" ) end
-					v:GetTransmission():SetGearRatios( gear_ratios )
+					vehicleTransmission:SetGearRatios( gear_ratios )
 
-					local wheel_ratios = v:GetTransmission():GetWheelTorqueRatios()
+					local wheel_ratios = vehicleTransmission:GetWheelTorqueRatios()
 					for wheel, ratio in ipairs(wheel_ratios) do
 						wheel_ratios[wheel] = v:GetValue( "wheel_ratios" .. wheel )
 					end
-					v:GetTransmission():SetWheelTorqueRatios( wheel_ratios )
+					vehicleTransmission:SetWheelTorqueRatios( wheel_ratios )
 
-					v:GetTransmission():SetReverseGearRatio( v:GetValue( "reverse_ratio" ) )
-					v:GetTransmission():SetPrimaryTransmissionRatio( v:GetValue( "primary_transmission_ratio" ) )
+					vehicleTransmission:SetReverseGearRatio( v:GetValue( "reverse_ratio" ) )
+					vehicleTransmission:SetPrimaryTransmissionRatio( v:GetValue( "primary_transmission_ratio" ) )
 				end
 
-				if v:GetAerodynamics() then
-					v:GetAerodynamics():SetAirDensity( v:GetValue( "airdensity" ) )
-					v:GetAerodynamics():SetFrontalArea( v:GetValue( "frontalarea" ) )
-					v:GetAerodynamics():SetDragCoefficient( v:GetValue( "dragcoeff" ) )
-					v:GetAerodynamics():SetLiftCoefficient( v:GetValue( "liftcoeff" ) )
-					--v:GetAerodynamics():SetExtraGravity( v:GetValue( "gravity" ) )
+				local vehicleAerodynamics = v:GetAerodynamics()
+
+				if vehicleAerodynamics then
+					vehicleAerodynamics:SetAirDensity( v:GetValue( "airdensity" ) )
+					vehicleAerodynamics:SetFrontalArea( v:GetValue( "frontalarea" ) )
+					vehicleAerodynamics:SetDragCoefficient( v:GetValue( "dragcoeff" ) )
+					vehicleAerodynamics:SetLiftCoefficient( v:GetValue( "liftcoeff" ) )
+					--vehicleAerodynamics:SetExtraGravity( v:GetValue( "gravity" ) )
 				end
 
-				if v:GetSuspension() then
-					local susp = v:GetSuspension()
+				local vehicleSuspension = v:GetSuspension()
+
+				if vehicleSuspension then
 					for wheel = 1, v:GetWheelCount() do
-						susp:SetLength( wheel, v:GetValue( "wheel" .. wheel .. "_length" ) )
-						susp:SetStrength( wheel, v:GetValue( "wheel" .. wheel .. "_strength" ) )
-						susp:SetChassisDirection( wheel, v:GetValue( "wheel" .. wheel .. "_direction" ) )
-						susp:SetChassisPosition( wheel, v:GetValue( "wheel" .. wheel .. "_position" ) )
-						susp:SetDampingCompression( wheel, v:GetValue( "wheel" .. wheel .. "_dampcompression" ) )
-						susp:SetDampingRelaxation( wheel, v:GetValue( "wheel" .. wheel .. "_damprelaxation" ) )
+						vehicleSuspension:SetLength( wheel, v:GetValue( "wheel" .. wheel .. "_length" ) )
+						vehicleSuspension:SetStrength( wheel, v:GetValue( "wheel" .. wheel .. "_strength" ) )
+						vehicleSuspension:SetChassisDirection( wheel, v:GetValue( "wheel" .. wheel .. "_direction" ) )
+						vehicleSuspension:SetChassisPosition( wheel, v:GetValue( "wheel" .. wheel .. "_position" ) )
+						vehicleSuspension:SetDampingCompression( wheel, v:GetValue( "wheel" .. wheel .. "_dampcompression" ) )
+						vehicleSuspension:SetDampingRelaxation( wheel, v:GetValue( "wheel" .. wheel .. "_damprelaxation" ) )
 					end
 				end
 			end
@@ -332,6 +337,7 @@ function Tuner:InitGUI()
 	self.gui.susp.window = BaseWindow.Create( self.gui.window )
 
 	local vehicle = LocalPlayer:GetVehicle()
+
 	if IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer and vehicle:GetClass() == VehicleClass.Land then
 		self.gui.veh.window:Subscribe( "Render", self, self.VehicleUpdate )
 	else
@@ -578,8 +584,9 @@ function Tuner:InitAerodynamicsGUI()
 	local vehicle = LocalPlayer:GetVehicle()
 
 	if IsValid(vehicle) then
-		local LocalVehicleModel = vehicle:GetModelId()
-		if self:CheckList(self.planevehicles, LocalVehicleModel) then
+		local vehicleModel = vehicle:GetModelId()
+
+		if self:CheckList(self.planevehicles, vehicleModel) then
 			self.CarFlyActive = true
 		else
 			self.CarFlyActive = false

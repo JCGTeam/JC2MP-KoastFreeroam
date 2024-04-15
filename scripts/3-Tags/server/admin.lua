@@ -957,9 +957,9 @@ function Admin:PlayerChat( args )
 			return false
 		end
 
-		playerVehicle = sender:GetVehicle()
+		local vehicle = sender:GetVehicle()
 
-		if not playerVehicle then
+		if not vehicle then
 			deniedMessage( sender, inVehicle )
 			return false
 		end
@@ -969,9 +969,16 @@ function Admin:PlayerChat( args )
 			return false
 		end
 
-		if playerVehicle:GetDriver() and args.player:GetState() == PlayerState.InVehicle then
-			playerVehicle:SetMass( tonumber(cmd_args[2]) )
-			confirmationMessage( sender, "Масса транспорта установлена ​​на " .. tonumber(cmd_args[2]) )
+		if vehicle:GetDriver() and sender:GetState() == PlayerState.InVehicle then
+			local limit1 = 1000000000000000000000000000000000000
+			local limit2 = -1000000000000000000000000000000000000
+			local value = tonumber( cmd_args[2] )
+
+			if value >= 0 then value = math.min( value, limit1 ) else value = math.max( value, limit2 ) end
+
+			vehicle:SetMass( value )
+
+			confirmationMessage( sender, "Масса транспорта установлена ​​на " .. value )
 		else
 			deniedMessage( sender, inVehicle )
 		end
@@ -988,7 +995,9 @@ function Admin:PlayerChat( args )
 			return
 		end
 
-		if not sender:GetVehicle() or sender:GetVehicle() and sender:GetVehicle():GetDriver() == sender then
+		local vehicle = sender:GetVehicle()
+
+		if not vehicle or vehicle and svehicle:GetDriver() == sender then
 			Network:Send( sender, "BoomToSky", { boomvelocity = Vector3( 0, -100, 0 ) } )
 		else
 			deniedMessage( sender, inVehicle )

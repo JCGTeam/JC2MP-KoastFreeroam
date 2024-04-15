@@ -226,7 +226,7 @@ function DailyTasks:Open()
             end
         end
 
-        if LocalPlayer:GetValue( "Prize" ) ~= 0 then
+        if LocalPlayer:GetValue( "Prize" ) and LocalPlayer:GetValue( "Prize" ) ~= 0 then
             if LocalPlayer:GetValue( "HuntKills" ) >= self.huntkillsneeded and LocalPlayer:GetValue( "TronWins" ) >= self.tronwinsneeded and LocalPlayer:GetValue( "TetrisRecord" ) >= self.tetrisrecordneeded and LocalPlayer:GetValue( "DriftRecord" ) >= self.driftrecordneeded and LocalPlayer:GetValue( "FlyingRecord" ) >= self.flyingrecordneeded and LocalPlayer:GetValue( "FireworksTossed" ) >= self.fireworksneeded and LocalPlayer:GetValue( "Bloozing" ) >= 1 then
                 self.prize_btn:SetEnabled( true )
             else

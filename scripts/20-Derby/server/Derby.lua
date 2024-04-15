@@ -141,10 +141,13 @@ end
 
 function Derby:enterVehicle(args)
 	if (self.state ~= "Lobby" and self:HasPlayer(args.player)) then
-		if IsValid( self.eventPlayers[args.player:GetId()].derbyVehicle:GetId() ) and (self.eventPlayers[args.player:GetId()].derbyVehicle:GetId() ~= args.vehicle:GetId()) then
+		local playerId = self.eventPlayers[args.player:GetId()]
+		local vehicleId = playerId.derbyVehicle:GetId()
+
+		if IsValid( vehicleId ) and (vehicleId ~= args.vehicle:GetId()) then
 			self:MessagePlayer(args.player, "Этот транспорт не принадлежит вам")
-			self.eventPlayers[args.player:GetId()].hijackCount = self.eventPlayers[args.player:GetId()].hijackCount + 1
-			if (self.eventPlayers[args.player:GetId()].hijackCount >= 3) then
+			playerId.hijackCount = playerId.hijackCount + 1
+			if (playerId.hijackCount >= 3) then
 				self:RemovePlayer(args.player, "Вы были удалены из-за многочисленных угонских правонарушения!")
 			end
 			args.player:SetPosition(args.player:GetPosition())
@@ -154,7 +157,7 @@ function Derby:enterVehicle(args)
 				end
 			end
 		else
-			self.eventPlayers[args.player:GetId()].vtimer = nil
+			playerId.vtimer = nil
 			Network:Send(args.player, "enterVehicle")
 		end
 	end
@@ -226,8 +229,9 @@ function Derby:CheckBoundaries()
 		if ((distanceSqr > radius or p:GetPosition().y > self.spawns.MaximumY) and p:InVehicle() and p:GetWorld() == self.world) then
 			if (p.timer ~= nil) then
 				if p.timer:GetSeconds() > 2 then
-					local vhealth = p:GetVehicle():GetHealth()
-					p:GetVehicle():SetHealth(vhealth - 0.025)
+					local vehicle = p:GetVehicle()
+					local vhealth = vehicle:GetHealth()
+					vehicle:SetHealth(vhealth - 0.025)
 					p.timer = nil
 				end
 			else
@@ -362,11 +366,13 @@ function Derby:JoinPlayer( player )
 		self:MessagePlayer( player, "Перед тем, как присоединиться, вы должны выйти из других игровых режимов." )
 	else
 		if (self.state == "Lobby") then
+			local pId = player:GetId()
 			local p = Player(player)
-			self.eventPlayers[player:GetId()] = p
-			self.players[player:GetId()] = player
 
-			self.derbyManager.playerIds[player:GetId()] = true
+			self.eventPlayers[pId] = p
+			self.players[pId] = player
+
+			self.derbyManager.playerIds[pId] = true
 			self.numPlayers = self.numPlayers + 1
 			self:MessagePlayer(player, "Вы вошли в следующий турнир по дерби! Оно начнется в ближайшее время.") 
 
@@ -392,14 +398,16 @@ function Derby:RemovePlayer( player, message )
 	if message ~= nil then
 		self:MessagePlayer(player, message)    
 	end
-	local p = self.eventPlayers[player:GetId()]
+	local pId = player:GetId()
+	local p = self.eventPlayers[pId]
+
 	if p == nil then return end
-	if (IsValid(self.eventPlayers[player:GetId()].derbyVehicle)) then
-		self.eventPlayers[player:GetId()].derbyVehicle:Remove()
+	if (IsValid(self.eventPlayers[pId].derbyVehicle)) then
+		self.eventPlayers[pId].derbyVehicle:Remove()
 	end
-	self.players[player:GetId()] = nil
-	self.eventPlayers[player:GetId()] = nil
-	self.derbyManager.playerIds[player:GetId()] = nil
+	self.players[pId] = nil
+	self.eventPlayers[pId] = nil
+	self.derbyManager.playerIds[pId] = nil
 	self.numPlayers = self.numPlayers - 1
 	if (self.state ~= "Lobby") then
 		p:Leave()

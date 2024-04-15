@@ -1,6 +1,9 @@
 class 'WhatsNew'
 
 function WhatsNew:__init()
+	self.copyright_txt = "© JCGTeam 2024"
+	self.text_clr = Color.White
+
 	self.actions = {
 		[3] = true,
 		[4] = true,
@@ -82,21 +85,20 @@ end
 
 function WhatsNew:Render()
 	Game:FireEvent( "gui.hud.hide" )
+
 	Mouse:SetVisible( true )
 	Chat:SetEnabled( false )
 
 	Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, 200 ) )
 
-	if LocalPlayer:GetValue( "SystemFonts" ) then
-		Render:SetFont( AssetLocation.SystemFont, "Impact" )
-	end
+	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
-	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.titletext, Render.Size.x / 40 ) / 2, Render.Size.x / 7 ), self.titletext, Color.White, Render.Size.x / 40 )
-	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.text, Render.Size.x / 70 ) / 2, Render.Size.x / 5 ), self.text, Color.White, Render.Size.x / 70 )
+	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.titletext, Render.Size.x / 40 ) / 2, Render.Size.x / 7 ), self.titletext, self.text_clr, Render.Size.x / 40 )
+	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.text, Render.Size.x / 70 ) / 2, Render.Size.x / 5 ), self.text, self.text_clr, Render.Size.x / 70 )
 
 	if self.usepause then
 		Game:FireEvent( "ply.pause" )
-		Render:DrawText( Vector2( 20, (Render.Height - 40) ), "© JCGTeam 2024", Color.White, 15 )
+		Render:DrawText( Vector2( 20, (Render.Height - 40) ), self.copyright_txt, self.text_clr, 15 )
 	end
 end
 
