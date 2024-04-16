@@ -1,9 +1,6 @@
 class 'WelcomeScreen'
 
 function WelcomeScreen:__init()
-	self.copyright_txt = "© JCGTeam 2024"
-	self.text_clr = Color.White
-
 	Events:Subscribe( "Lang", self, self.Lang )
 end
 
@@ -21,6 +18,9 @@ function WelcomeScreen:Open()
 	"> Наш Discord сервер - [empty_link]\n" ..
 	"> Наш Telegram канал - [empty_link]\n\n" ..
 	"Желаем вам приятной игры, наслаждайтесь :)"
+
+	self.copyright_txt = "© JCGTeam 2024"
+	self.text_clr = Color.White
 
 	if not self.RenderEvent then
 		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )

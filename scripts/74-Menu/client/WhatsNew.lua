@@ -1,9 +1,6 @@
 class 'WhatsNew'
 
 function WhatsNew:__init()
-	self.copyright_txt = "© JCGTeam 2024"
-	self.text_clr = Color.White
-
 	self.actions = {
 		[3] = true,
 		[4] = true,
@@ -40,6 +37,9 @@ function WhatsNew:Open( args )
 	self.titletext = args.titletext
 	self.text = args.text
 	self.usepause = args.usepause
+
+	self.copyright_txt = "© JCGTeam 2024"
+	self.text_clr = Color.White
 
 	if self.usepause then
 		local sound = ClientSound.Create(AssetLocation.Game, {
