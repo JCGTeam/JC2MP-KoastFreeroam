@@ -400,10 +400,11 @@ function Shop:BuyAppearance( player, item )
 end
 
 function Shop:ExecuteAppearance( player, item )
+	local steamId = player:GetSteamId().id
 	local itemModel = item:GetModelId()
 	local itemType = item:GetType()
 	local qry = SQL:Query( "SELECT head, covering, hair, face, neck, back, torso, righthand, lefthand, legs, rightfoot, leftfoot FROM buymenu_players_appearances where steamid = (?)" )
-	qry:Bind( 1, player:GetSteamId().id )
+	qry:Bind( 1, steamId )
 	local result = qry:Execute()
 
 	if #result > 0 then
@@ -411,147 +412,147 @@ function Shop:ExecuteAppearance( player, item )
 			player:SetNetworkValue( "AppearanceHat", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET head = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "Covering" then
 			player:SetNetworkValue( "AppearanceCovering", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET covering = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "Hair" then
 			player:SetNetworkValue( "AppearanceHair", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET hair = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "Face" then
 			player:SetNetworkValue( "AppearanceFace", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET face = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "Neck" then
 			player:SetNetworkValue( "AppearanceNeck", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET neck = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "Back" then
 			player:SetNetworkValue( "AppearanceBack", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET back = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "Torso" then
 			player:SetNetworkValue( "AppearanceTorso", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET torso = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "RightHand" then
 			player:SetNetworkValue( "AppearanceRightHand", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET righthand = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "LeftHand" then
 			player:SetNetworkValue( "AppearanceLeftHand", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET lefthand = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "Legs" then
 			player:SetNetworkValue( "AppearanceLegs", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET legs = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "RightFoot" then
 			player:SetNetworkValue( "AppearanceRightFoot", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET rightfoot = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "LeftFoot" then
 			player:SetNetworkValue( "AppearanceLeftFoot", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "UPDATE buymenu_players_appearances SET leftfoot = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		end
 	else
 		if itemType == "Head" then
 			player:SetNetworkValue( "AppearanceHat", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE into buymenu_players_appearances (steamid, head) values (?, ?)" )
-			cmd:Bind( 1, player:GetSteamId().id )
+			cmd:Bind( 1, steamId )
 			cmd:Bind( 2, itemModel )
 			cmd:Execute()
 		elseif itemType == "Hair" then
 			player:SetNetworkValue( "AppearanceHair", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE into buymenu_players_appearances (steamid, hair) values (?, ?)" )
-			cmd:Bind( 1, player:GetSteamId().id )
+			cmd:Bind( 1, steamId )
 			cmd:Bind( 2, itemModel )
 			cmd:Execute()
 		elseif itemType == "Covering" then
 			player:SetNetworkValue( "AppearanceCovering", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE into buymenu_players_appearances (steamid, covering) values (?, ?)" )
-			cmd:Bind( 1, player:GetSteamId().id )
+			cmd:Bind( 1, steamId )
 			cmd:Bind( 2, itemModel )
 			cmd:Execute()
 		elseif itemType == "Face" then
 			player:SetNetworkValue( "AppearanceFace", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE into buymenu_players_appearances (steamid, face) values (?, ?)" )
-			cmd:Bind( 1, player:GetSteamId().id )
+			cmd:Bind( 1, steamId )
 			cmd:Bind( 2, itemModel )
 			cmd:Execute()
 		elseif itemType == "Neck" then
 			player:SetNetworkValue( "AppearanceNeck", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE into buymenu_players_appearances (steamid, neck) values (?, ?)" )
-			cmd:Bind( 1, player:GetSteamId().id )
+			cmd:Bind( 1, steamId )
 			cmd:Bind( 2, itemModel )
 			cmd:Execute()
 		elseif itemType == "Back" then
 			player:SetNetworkValue( "AppearanceBack", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE into buymenu_players_appearances (steamid, back) values (?, ?)" )
-			cmd:Bind( 1, player:GetSteamId().id )
+			cmd:Bind( 1, steamId )
 			cmd:Bind( 2, itemModel )
 			cmd:Execute()
 		elseif itemType == "Torso" then
 			player:SetNetworkValue( "AppearanceTorso", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE buymenu_players_appearances SET torso = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "RightHand" then
 			player:SetNetworkValue( "AppearanceRightHand", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE buymenu_players_appearances SET righthand = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "LeftHand" then
 			player:SetNetworkValue( "AppearanceLeftHand", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE buymenu_players_appearances SET lefthand = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "Legs" then
 			player:SetNetworkValue( "AppearanceLegs", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE buymenu_players_appearances SET legs = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "RightFoot" then
 			player:SetNetworkValue( "AppearanceRightFoot", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE buymenu_players_appearances SET rightfoot = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		elseif itemType == "LeftFoot" then
 			player:SetNetworkValue( "AppearanceLeftFoot", itemModel) -- Store the Appeance Item as a player value
 			local cmd = SQL:Command( "INSERT or REPLACE buymenu_players_appearances SET leftfoot = (?) WHERE steamid = (?)" )
 			cmd:Bind( 1, itemModel )
-			cmd:Bind( 2, player:GetSteamId().id )
+			cmd:Bind( 2, steamId )
 			cmd:Execute()
 		end
 	end
