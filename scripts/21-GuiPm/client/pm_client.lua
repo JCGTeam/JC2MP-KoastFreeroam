@@ -192,7 +192,7 @@ end
 
 function PM:CloseWindow()
 	Mouse:SetVisible( false )
-	ClientEffect.Create(AssetLocation.Game, {
+	local effect = ClientEffect.Create(AssetLocation.Game, {
 		effect_id = 383,
 
 		position = Camera:GetPosition(),
@@ -203,7 +203,7 @@ end
 function PM:OpenGuiPm()
 	if Game:GetState() ~= GUIState.Game then return end
 
-	ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play(AssetLocation.Game, {
 		effect_id = 382,
 
 		position = Camera:GetPosition(),

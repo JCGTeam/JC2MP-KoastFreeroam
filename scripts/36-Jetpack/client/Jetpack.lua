@@ -59,7 +59,7 @@ function Jetpack:onRender()
 					local velocity = player:GetLinearVelocity()
 
 					if not LocalPlayer:GetVehicle() then
-						ClientEffect.Play(AssetLocation.Game,
+						local effect = ClientEffect.Play(AssetLocation.Game,
 						{
 							effect_id = (velocity.y > 1) and 41 or 42,
 							position = pos + angle * Vector3( 0, -0.5, 0.2 ) + velocity * 0.11,

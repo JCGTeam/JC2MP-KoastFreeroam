@@ -727,7 +727,7 @@ function ClanSystem:SetActive( state )
 end
 
 function ClanSystem:OpenClansMenu()
-	ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play(AssetLocation.Game, {
 		effect_id = 382,
 
 		position = Camera:GetPosition(),
@@ -770,7 +770,7 @@ end
 
 function ClanSystem:WindowClosed()
 	self:SetActive ( false )
-	ClientEffect.Create(AssetLocation.Game, {
+	local effect = ClientEffect.Create(AssetLocation.Game, {
 		effect_id = 383,
 
 		position = Camera:GetPosition(),

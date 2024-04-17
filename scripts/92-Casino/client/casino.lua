@@ -100,9 +100,7 @@ function Casino:OpenCasinoMenu()
 			self.coinflip.messages:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
 
-        if not self.LocalPlayerInputEvent then
-            self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-        end
+        if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
     end
 end
 
@@ -255,16 +253,13 @@ function Casino:WindowClosed()
     self.window:SetVisible( false )
     Mouse:SetVisible( false )
 
-    if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
+    if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 end
 
 function Casino:CasinoMenuClosed()
 	self:WindowClosed()
 
-	ClientEffect.Create(AssetLocation.Game, {
+	local effect = ClientEffect.Create(AssetLocation.Game, {
 		effect_id = 383,
 
 		position = Camera:GetPosition(),

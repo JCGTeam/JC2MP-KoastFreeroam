@@ -60,15 +60,10 @@ end
 
 function FirstPerson:Active()
 	if self.enabled then
-		if self.EventCaclView then
-			Events:Unsubscribe( self.EventCaclView )
-			self.EventCaclView = nil
-		end
+		if self.EventCaclView then Events:Unsubscribe( self.EventCaclView ) self.EventCaclView = nil end
 		self.enabled = false
 	else
-		if not self.EventCaclView then
-			self.EventCaclView = Events:Subscribe( "CalcView", self, self.CalcView )
-		end
+		if not self.EventCaclView then self.EventCaclView = Events:Subscribe( "CalcView", self, self.CalcView ) end
 		self.enabled = true
 		Events:Fire( "ZoomReset" )
 	end

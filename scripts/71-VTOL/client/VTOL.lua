@@ -31,13 +31,8 @@ function VTOL:LocalPlayerEnterVehicle()
 	if LocalPlayer:GetState() == PlayerState.InVehicle and IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
 		vehicleModel = vehicle:GetModelId()
 		if self:CheckList(self.PlaneVehicles, vehicleModel) then
-			if not self.RenderEvent then
-				self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-			end
-
-			if not self.PreTickEvent then
-				self.PreTickEvent = Events:Subscribe( "PreTick", self, self.Thrust )
-			end
+			if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+			if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe( "PreTick", self, self.Thrust ) end
 
 			if not self.hinttimer then
 				self.hinttimer = Timer()
@@ -51,20 +46,9 @@ function VTOL:LocalPlayerEnterVehicle()
 end
 
 function VTOL:LocalPlayerExitVehicle()
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
-
-	if self.PreTickEvent then
-		Events:Unsubscribe( self.PreTickEvent )
-		self.PreTickEvent = nil
-	end
-
-	if self.KeyUpEvent then
-		Events:Unsubscribe( self.KeyUpEvent )
-		self.KeyUpEvent = nil
-	end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.PreTickEvent then Events:Unsubscribe( self.PreTickEvent ) self.PreTickEvent = nil end
+	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
 end
 
 function VTOL:Render()

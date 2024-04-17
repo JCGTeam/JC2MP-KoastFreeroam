@@ -284,8 +284,8 @@ function Settings:LoadCategories()
 	self.option14:GetCheckBox():Subscribe( "CheckChanged", function() Events:Fire( "JHudActive" ) Network:Send( "UpdateParameters", { parameter = 12 , boolean = not LocalPlayer:GetValue( "JetHUD" ) } ) end )
 	self.option14:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
 
-	self.option16 = self:OptionCheckBox( scroll_control, "Отображать снег на экране", self.actvSn )
-	self.option16:GetCheckBox():Subscribe( "CheckChanged", function() self.actvSn = self.option16:GetCheckBox():GetChecked() self:GameLoad() end )
+	self.option16 = self:OptionCheckBox( scroll_control, "Отображать снег на экране", LocalPlayer:GetValue( "SnowVisible" ) or false )
+	self.option16:GetCheckBox():Subscribe( "CheckChanged", function() LocalPlayer:SetValue( "SnowVisible", self.option16:GetCheckBox():GetChecked()  ) end )
 
 	local bkpanelsLabel = Label.Create( widgets )
 	bkpanelsLabel:SetVisible( true )
@@ -776,7 +776,7 @@ function Settings:GameRender()
 end
 
 function Settings:GameLoad()
-	Events:Fire( "GetOption", { actCH = self.actvCH, actSn = self.actvSn } )
+	Events:Fire( "GetOption", { actCH = self.actvCH } )
 end
 
 function Settings:Open()
@@ -824,44 +824,26 @@ function Settings:Open()
 	end
 
 	if self.active then
-		if not self.LocalPlayerInputEvent then
-			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-		end
-
-        if not self.RenderEvent then
-            self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-        end
-
-		ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 382,
-
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+        if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	else
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
-
-        if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-        end
-
-		ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 383,
-
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
+
+	local effect = ClientEffect.Play(AssetLocation.Game, {
+		effect_id = self.active and 382 or 383,
+
+		position = Camera:GetPosition(),
+		angle = Angle()
+	})
 end
 
 function Settings:LocalPlayerInput( args )
 	if args.input == Action.GuiPause then
 		self:CloseSettingsMenu()
 	end
+
 	if self.actions[args.input] then
 		return false
 	end
@@ -874,17 +856,12 @@ end
 
 function Settings:CloseSettingsMenu( args )
 	if Game:GetState() ~= GUIState.Game then return end
+
 	if self.window:GetVisible() == true then
 		self:SetWindowVisible( false )
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
 
-        if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-        end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+        if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
 end
 
@@ -908,19 +885,17 @@ end
 
 function Settings:ToggleAim()
 	self.aim = not self.aim
+
 	if self.aim then
-		if self.NoAimRenderEvent then
-			Events:Unsubscribe( self.NoAimRenderEvent )
-			self.NoAimRenderEvent = nil
-		end
+		if self.NoAimRenderEvent then Events:Unsubscribe( self.NoAimRenderEvent ) self.NoAimRenderEvent = nil end
+
 		Game:FireEvent( "gui.aim.show" )
 		self.actvCH = self.before
 		self.before = nil
 		self:GameLoad()
 	else
-		if not self.NoAimRenderEvent then
-			self.NoAimRenderEvent = Events:Subscribe( "Render", self, self.NoAim )
-		end
+		if not self.NoAimRenderEvent then self.NoAimRenderEvent = Events:Subscribe( "Render", self, self.NoAim ) end
+
 		if self.actvCH then
 			self.actvCH = false
 			self.before = true

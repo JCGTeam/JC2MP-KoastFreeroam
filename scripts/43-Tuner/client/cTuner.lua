@@ -1164,14 +1164,14 @@ function Tuner:KeyUp( args )
 		if self.active then
 			self.gui.tabs:SetCurrentTab( self.gui.veh.button )
 
-			ClientEffect.Create(AssetLocation.Game, {
+			local effect = ClientEffect.Create(AssetLocation.Game, {
 				effect_id = 382,
 
 				position = Camera:GetPosition(),
 				angle = Angle()
 			})
 		else
-			ClientEffect.Create(AssetLocation.Game, {
+			local effect = ClientEffect.Create(AssetLocation.Game, {
 				effect_id = 383,
 
 				position = Camera:GetPosition(),
@@ -1199,7 +1199,7 @@ end
 
 function Tuner:WindowClosed()
 	self:SetWindowVisible( false )
-	ClientEffect.Create(AssetLocation.Game, {
+	local effect = ClientEffect.Create(AssetLocation.Game, {
 		effect_id = 383,
 
 		position = Camera:GetPosition(),
@@ -1267,9 +1267,7 @@ function Tuner:EnterVehicle( args )
 		self.gui.window:SetTitle( "▧ Тюнинг" )
 	end
 
-	if not self.LocalPlayerInputEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 
 	if args.is_driver then
 		self:InitVehicle(args.vehicle)
@@ -1280,10 +1278,7 @@ function Tuner:EnterVehicle( args )
 end
 
 function Tuner:ExitVehicle( args )
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 
 	if self.veh and args.vehicle == self.veh then
 		self:Disable()

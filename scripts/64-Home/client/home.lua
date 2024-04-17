@@ -40,7 +40,7 @@ function Home:SetHome()
 end
 
 function Home:WarpDoPoof( position )
-    ClientEffect.Play( AssetLocation.Game, {effect_id = 250, position = position, angle = Angle()} )
+    local effect = ClientEffect.Play( AssetLocation.Game, {effect_id = 250, position = position, angle = Angle()} )
 end
 
 home = Home()

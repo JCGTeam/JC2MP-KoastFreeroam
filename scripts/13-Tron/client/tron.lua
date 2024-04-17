@@ -97,21 +97,10 @@ function Tron:EnterLobby( args )
 	}
 	self.collisionFired = false
 
-	if not self.GameRenderEvent then
-		self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.GameRender )
-	end
-
-	if not self.CaclViewEvent then
-		self.CaclViewEvent = Events:Subscribe( "CalcView", self, self.CalcView )
-	end
-
-	if not self.InputPollEvent then
-		self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll )
-	end
-
-	if not self.LocalPlayerInputEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
+	if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.GameRender ) end
+	if not self.CaclViewEvent then self.CaclViewEvent = Events:Subscribe( "CalcView", self, self.CalcView ) end
+	if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll ) end
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 end
 
 function Tron:StateChange( args )
@@ -135,25 +124,10 @@ function Tron:ExitLobby( args )
 	Game:FireEvent("ply.vulnerable")
 	self.inLobby = false
 
-	if self.GameRenderEvent then
-		Events:Unsubscribe( self.GameRenderEvent )
-		self.GameRenderEvent = nil
-	end
-
-	if self.CaclViewEvent then
-		Events:Unsubscribe( self.CaclViewEvent )
-		self.CaclViewEvent = nil
-	end
-
-	if self.InputPollEvent then
-		Events:Unsubscribe( self.InputPollEvent )
-		self.InputPollEvent = nil
-	end
-
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
+	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
+	if self.CaclViewEvent then Events:Unsubscribe( self.CaclViewEvent ) self.CaclViewEvent = nil end
+	if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 
 	LocalPlayer:SetValue( "ServerMap", nil )
 	LocalPlayer:SetValue( "SpectatorMode", nil )

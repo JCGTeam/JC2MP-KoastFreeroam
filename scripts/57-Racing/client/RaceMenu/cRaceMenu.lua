@@ -98,27 +98,22 @@ function RaceMenu:SetEnabled( enabled )
 	self.window:SetVisible( self.isEnabled )
 
 	if self.isEnabled then
-		ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 382,
-
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
 		self:ActivateCurrentTab()
 		self.window:BringToFront()
 
 		Events:Fire( "RaceMenuOpened" )
 	else
-		ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 383,
-
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
 		self:DeactivateCurrentTab()
 
 		Events:Fire( "RaceMenuClosed" )
 	end
+
+	local effect = ClientEffect.Play(AssetLocation.Game, {
+		effect_id = self.isEnabled and 382 or 383,
+
+		position = Camera:GetPosition(),
+		angle = Angle()
+	})
 
 	Mouse:SetVisible( self.isEnabled )
 end

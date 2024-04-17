@@ -129,9 +129,7 @@ function VehicleRadio:LocalPlayerEnterVehicle()
 	Game:ShowPopup( self.radioname .. self.offname, false )
 	self.check = 0
 
-	if not self.PreTickEvent then
-		self.PreTickEvent = Events:Subscribe( "PreTick", self, self.PreTick )
-	end
+	if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe( "PreTick", self, self.PreTick ) end
 
 	if not self.KeyUpEvent then
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
@@ -145,20 +143,9 @@ function VehicleRadio:LocalPlayerExitVehicle()
 		self.radio = nil
 	end
 
-	if self.PreTickEvent then
-		Events:Unsubscribe( self.PreTickEvent )
-		self.PreTickEvent = nil
-	end
-
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
-
-	if self.KeyUpEvent then
-		Events:Unsubscribe( self.KeyUpEvent )
-		self.KeyUpEvent = nil
-	end
+	if self.PreTickEvent then Events:Unsubscribe( self.PreTickEvent ) self.PreTickEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
 end
 
 function VehicleRadio:ModuleUnload()

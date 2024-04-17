@@ -630,15 +630,9 @@ end
 function Abilities:CloseAbitiliesMenu()
 	if self.window:GetVisible() == true then
         self:SetWindowVisible( false )
-        if self.RenderEvent then
-            Events:Unsubscribe( self.RenderEvent )
-            self.RenderEvent = nil
-        end
 
-        if self.LocalPlayerInputEvent then
-            Events:Unsubscribe( self.LocalPlayerInputEvent )
-            self.LocalPlayerInputEvent = nil
-        end
+        if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+        if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 	end
 end
 
@@ -646,7 +640,7 @@ function Abilities:Open()
     self:SetWindowVisible( not self.active )
 
     if self.active then
-		ClientEffect.Play(AssetLocation.Game, {
+		local effect = ClientEffect.Play(AssetLocation.Game, {
 			effect_id = 382,
 
 			position = Camera:GetPosition(),
@@ -661,13 +655,8 @@ function Abilities:Open()
             self.tip_title:SetFont( AssetLocation.SystemFont, "Impact" )
         end
 
-        if not self.RenderEvent then
-            self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-        end
-
-        if not self.LocalPlayerInputEvent then
-            self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-        end
+        if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+        if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 
         if LocalPlayer:GetValue( "Lang" ) then
             self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Balance: $" .. formatNumber( LocalPlayer:GetMoney() ) or "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
@@ -886,7 +875,7 @@ end
 
 function Abilities:WindowClosed()
 	if self.window:GetVisible() == true then
-        ClientEffect.Create(AssetLocation.Game, {
+        local effect = ClientEffect.Create(AssetLocation.Game, {
             effect_id = 383,
     
             position = Camera:GetPosition(),
@@ -894,15 +883,9 @@ function Abilities:WindowClosed()
         })
 
         self:SetWindowVisible( false )
-        if self.RenderEvent then
-            Events:Unsubscribe( self.RenderEvent )
-            self.RenderEvent = nil
-        end
 
-        if self.LocalPlayerInputEvent then
-            Events:Unsubscribe( self.LocalPlayerInputEvent )
-            self.LocalPlayerInputEvent = nil
-        end
+        if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+        if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 	end
 end
 

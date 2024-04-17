@@ -64,23 +64,13 @@ function Speedometer:__init()
 end
 
 function Speedometer:LocalPlayerEnterVehicle()
-	if not self.RenderEvent then
-		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-	end
-	if not self.GameRenderEvent then
-		self.GameRenderEvent = Events:Subscribe( "Render", self, self.GameRender )
-	end
+	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+	if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "Render", self, self.GameRender ) end
 end
 
 function Speedometer:LocalPlayerExitVehicle()
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
-	if self.GameRenderEvent then
-		Events:Unsubscribe( self.GameRenderEvent )
-		self.GameRenderEvent = nil
-	end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
 end
 
 function Speedometer:Lang()

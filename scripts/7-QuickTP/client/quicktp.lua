@@ -2,6 +2,7 @@ class 'QuickTP'
 
 function QuickTP:__init()
 	self.fontColor       = Color( 255, 255, 255 )
+	self.fontShadow      = Color( 25, 25, 25, 150 )
 	self.fontUpper       = true
 	self.showGroupCount  = true
 
@@ -20,32 +21,22 @@ function QuickTP:__init()
 end
 
 function QuickTP:WarpDoPoof( position )
-    ClientEffect.Play( AssetLocation.Game, {effect_id = 250, position = position, angle = Angle()} )
+    local effect = ClientEffect.Play( AssetLocation.Game, {effect_id = 250, position = position, angle = Angle()} )
 end
 
 function QuickTP:ReceiveTPList( args )
 	self.collection = args
 
-	if not self.subKey then
-		self.subKey = Events:Subscribe( "KeyDown", self, self.KeyDown )
-	end
+	if not self.subKey then self.subKey = Events:Subscribe( "KeyDown", self, self.KeyDown ) end
 
-	if self.subRecTP then
-		Network:Unsubscribe( self.subRecTP )
-		self.subRecTP = nil
-	end
+	if self.subRecTP then Network:Unsubscribe( self.subRecTP ) self.subRecTP = nil end
 end
 
 function QuickTP:KeyDown( args )
 	if args.key == 74 and Game:GetState() == GUIState.Game then
-		if self.subKey then
-			Events:Unsubscribe( self.subKey )
-			self.subKey = nil
-		end
+		if self.subKey then Events:Unsubscribe( self.subKey ) self.subKey = nil end
 
-		if not self.subKey then
-			self.subKey = Events:Subscribe( "KeyUp", self, self.KeyUp )
-		end
+		if not self.subKey then self.subKey = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
 
 		self:OpenMenu()
 	end
@@ -53,18 +44,13 @@ end
 
 function QuickTP:KeyUp( args )
 	if args.key == 74 then
-		if self.subKey then
-			Events:Unsubscribe( self.subKey )
-			self.subKey = nil
-		end
+		if self.subKey then Events:Unsubscribe( self.subKey ) self.subKey = nil end
 
 		if self.timerF then
 			self.timerF = nil
 		end
 
-		if not self.subKey then
-			self.subKey = Events:Subscribe( "KeyDown", self, self.KeyDown )
-		end
+		if not self.subKey then self.subKey = Events:Subscribe( "KeyDown", self, self.KeyDown ) end
 
 		if self.menuOpen then
 			self:CloseMenu()
@@ -119,15 +105,9 @@ function QuickTP:OpenMenu()
 end
 
 function QuickTP:CloseMenu( args )
-	if self.subRender then
-		Events:Unsubscribe( self.subRender )
-		self.subRender = nil
-	end
+	if self.subRender then Events:Unsubscribe( self.subRender ) self.subRender = nil end
 
-	if self.subMouse then
-		Events:Unsubscribe( self.subMouse )
-		self.subMouse = nil
-	end
+	if self.subMouse then Events:Unsubscribe( self.subMouse ) self.subMouse = nil end
 
 	Mouse:SetVisible( false )
 	Input:SetEnabled( true )
@@ -169,22 +149,20 @@ function QuickTP:PostRender( args )
 		Render:SetFont( AssetLocation.SystemFont, "Impact" )
 	end
 
-	local count    = #self.menu - 1
-	local size     = 42 - count * 1.4
+	local count = #self.menu - 1
+	local size = 42 - count * 1.4
 	if size < 12 then size = 12 end
 
-	local radius   = ( Render.Height / 2 ) - 42
-	local angle    = math.pi / count
-	local center   = Vector2( Render.Width / 2, Render.Height / 2 )
-	local drawRad  = 2200
+	local radius = ( Render.Height / 2 ) - 42
+	local angle = math.pi / count
+	local center = Vector2( Render.Width / 2, Render.Height / 2 )
+	local drawRad = 2200
 
-	local current  = count % 2 == 1 and math.pi / 2 or 0
-	local textSize = nil
-	local coord    = Vector2()
+	local current = count % 2 == 1 and math.pi / 2 or 0
 
-	local mouseP   = Mouse:GetPosition()
-	local mouseA   = math.atan2(mouseP.y - center.y, mouseP.x - center.x)
-	self.selection = math.floor(((mouseA + angle - current) / (math.pi * 2)) * count)
+	local mouseP = Mouse:GetPosition()
+	local mouseA = math.atan2( mouseP.y - center.y, mouseP.x - center.x )
+	self.selection = math.floor( ( ( mouseA + angle - current ) / ( math.pi * 2 ) ) * count )
 
 	if self.selection < 0 then self.selection = self.selection + count end
 
@@ -196,39 +174,38 @@ function QuickTP:PostRender( args )
 		self.sound:SetPosition( Camera:GetPosition() )
 	end
 
-	Render:FillArea( Vector2( 0, 0 ), Render.Size, Color( 10, 10, 10, 200 * alpha ) )
+	Render:FillArea( Vector2( 0, 0 ), Render.Size, Color( self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b, self.backgroundColor.a * alpha ) )
 
 	if animplay then
 		if count < 3 then
 			Render:FillArea( Vector2( ( self.selection == 0 and count == 2 ) and center.x or 0, 0 ), Vector2( count == 1 and Render.Width or center.x, Render.Height ), self.highlightColor )
 		else
-			Render:FillTriangle( center, Vector2( math.cos(self.selection * (angle*2) - angle + current) * drawRad, math.sin(self.selection * (angle*2) - angle + current) * drawRad) + center, Vector2( math.cos(self.selection * (angle*2) + angle + current) * drawRad, math.sin(self.selection * (angle*2) + angle + current) * drawRad) + center, self.highlightColor )
+			Render:FillTriangle( center, Vector2( math.cos( self.selection * ( angle * 2 ) - angle + current ) * drawRad, math.sin( self.selection * ( angle * 2 ) - angle + current ) * drawRad ) + center, Vector2( math.cos( self.selection * ( angle * 2 ) + angle + current ) * drawRad, math.sin( self.selection * ( angle * 2 ) + angle + current ) * drawRad ) + center, self.highlightColor )
 		end
 	else
 		if count < 3 then
-			Render:FillArea( Vector2( ( self.selection == 0 and count == 2 ) and center.x or 0, 0 ), Vector2( count == 1 and Render.Width or center.x, Render.Height ), Color( 173, 216, 230, 130 * alpha ) )
+			Render:FillArea( Vector2( ( self.selection == 0 and count == 2 ) and center.x or 0, 0 ), Vector2( count == 1 and Render.Width or center.x, Render.Height ), Color( self.menuColor.r, self.menuColor.g, self.menuColor.b, self.menuColor.a * alpha ) )
 		else
-			Render:FillTriangle( center, Vector2( math.cos(self.selection * (angle*2) - angle + current) * drawRad, math.sin(self.selection * (angle*2) - angle + current) * drawRad) + center, Vector2( math.cos(self.selection * (angle*2) + angle + current) * drawRad, math.sin(self.selection * (angle*2) + angle + current) * drawRad) + center, Color( 173, 216, 230, 130 * alpha ) )
+			Render:FillTriangle( center, Vector2( math.cos( self.selection * ( angle * 2 ) - angle + current ) * drawRad, math.sin( self.selection * ( angle * 2 ) - angle + current ) * drawRad ) + center, Vector2( math.cos( self.selection * ( angle * 2 ) + angle + current ) * drawRad, math.sin( self.selection * ( angle * 2 ) + angle + current ) * drawRad) + center, Color( self.highlightColor.r, self.highlightColor.g, self.highlightColor.b, self.highlightColor.a * alpha ) )
 		end
 	end
 
 	for i=2, #self.menu, 1 do
 		local t = self.menu[i]
-		if type(t) == "table" then t = t[1] .. (self.showGroupCount and " [" .. tostring(#t - 1) .. "]" or "") end
-		if self.fontUpper then t = string.upper(t) end
+		if type(t) == "table" then t = t[1] .. ( self.showGroupCount and " (" .. tostring( #t - 1 ) .. ")" or "" ) end
+		if self.fontUpper then t = string.upper( t ) end
 
-		textSize = Render:GetTextSize(t, size) 
-		coord.x  = math.cos(current) * radius + center.x - textSize.x / 2
-		coord.y  = math.sin(current) * radius + center.y - textSize.y / 2
+		local textSize = Render:GetTextSize( t, size ) 
+		local coord = Vector2( math.cos( current ) * radius + center.x - textSize.x / 2, math.sin( current ) * radius + center.y - textSize.y / 2 )
 		current  = current + angle
 
 		if animplay then
-			Render:DrawShadowedText( coord, t, self.fontColor, Color( 25, 25, 25, 150 ), size )
+			Render:DrawShadowedText( coord, t, self.fontColor, Color( self.fontShadow.r, self.fontShadow.g, self.fontShadow.b, self.fontShadow.a ), size )
 
-			Render:DrawLine( Vector2( math.cos(current) * self.innerRadius, math.sin(current) * self.innerRadius) + center, Vector2( math.cos(current) * drawRad, math.sin(current) * drawRad) + center, self.menuColor )
+			Render:DrawLine( Vector2( math.cos( current ) * self.innerRadius, math.sin( current ) * self.innerRadius ) + center, Vector2( math.cos( current ) * drawRad, math.sin( current ) * drawRad ) + center, self.menuColor )
 		else
-			Render:DrawShadowedText( coord, t, Color( 255, 255, 255, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), size )
-			Render:DrawLine( Vector2( math.cos(current) * self.innerRadius, math.sin(current) * self.innerRadius) + center, Vector2( math.cos(current) * drawRad, math.sin(current) * drawRad) + center, Color( 173, 216, 230, 170 * alpha ) )
+			Render:DrawShadowedText( coord, t, Color( self.fontColor.r, self.fontColor.g, self.fontColor.b, self.fontColor.a * alpha ), Color( self.fontShadow.r, self.fontShadow.g, self.fontShadow.b, self.fontShadow.a * alpha ), size )
+			Render:DrawLine( Vector2( math.cos( current ) * self.innerRadius, math.sin( current ) * self.innerRadius ) + center, Vector2( math.cos( current ) * drawRad, math.sin( current ) * drawRad ) + center, Color( self.menuColor.r, self.menuColor.g, self.menuColor.b, self.menuColor.a * alpha ) )
 		end
 
 		current = current + angle
@@ -238,8 +215,8 @@ function QuickTP:PostRender( args )
 		Render:FillCircle( center, self.innerRadius, self.backgroundColor )
 		Render:DrawCircle( center, self.innerRadius, self.menuColor )
 	else
-		Render:FillCircle( center, self.innerRadius, Color( 10, 10, 10, 200 * alpha ) )
-		Render:DrawCircle( center, self.innerRadius, Color( 173, 216, 230, 170 * alpha ) )
+		Render:FillCircle( center, self.innerRadius, Color( self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b, self.backgroundColor.a * alpha ) )
+		Render:DrawCircle( center, self.innerRadius, Color( self.menuColor.r, self.menuColor.g, self.menuColor.b, self.menuColor.a * alpha ) )
 	end
 end
 

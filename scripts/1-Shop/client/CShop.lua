@@ -929,7 +929,7 @@ end
 function Shop:OpenShop()
 	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
-	ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play(AssetLocation.Game, {
 		effect_id = 382,
 
 		position = Camera:GetPosition(),
@@ -941,9 +941,7 @@ function Shop:OpenShop()
 			self.Home_button:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
 
-		if not self.LocalPlayerInputEvent then
-			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-		end
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 
 		local gettag = LocalPlayer:GetValue( "Tag" )
 
@@ -953,10 +951,7 @@ function Shop:OpenShop()
 			self.toggleH:SetEnabled( false )
 		end
 	else
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 	end
 end
 
@@ -964,19 +959,14 @@ function Shop:CloseShop()
 	if Game:GetState() ~= GUIState.Game and LocalPlayer:GetWorld() ~= DefaultWorld then return end
 	if self.window:GetVisible() == true then
 		self:SetActive( false )
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 	end
 end
 
 function Shop:LocalPlayerInput( args )
 	if args.input == Action.GuiPause then
 		self:SetActive( false )
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil
 		end
 	end
 	if self.actions[args.input] then
@@ -1023,11 +1013,10 @@ end
 function Shop:Close( args )
 	if self.active then
 		self:SetActive( false )
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
-		ClientEffect.Create(AssetLocation.Game, {
+
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+
+		local effect = ClientEffect.Create(AssetLocation.Game, {
 			effect_id = 383,
 
 			position = Camera:GetPosition(),

@@ -583,7 +583,8 @@ function Tetris:KeyDown( args )
 		Network:Send( "TopScores", self.totalScore )
 		self.settingsVisible = true
 		Mouse:SetVisible( self.settingsVisible )
-		ClientEffect.Play(AssetLocation.Game, {
+
+		local effect = ClientEffect.Play(AssetLocation.Game, {
 			effect_id = 382,
 
 			position = Camera:GetPosition(),
@@ -595,7 +596,8 @@ end
 function Tetris:Close()
 	self.settingsVisible = false
 	Mouse:SetVisible( self.settingsVisible )
-	ClientEffect.Play(AssetLocation.Game, {
+
+	local effect = ClientEffect.Play(AssetLocation.Game, {
 		effect_id = 383,
 
 		position = Camera:GetPosition(),

@@ -21,6 +21,7 @@ function WelcomeScreen:Open()
 
 	self.copyright_txt = "© JCGTeam 2024"
 	self.text_clr = Color.White
+	self.background_clr = Color( 10, 10, 10, 200 )
 
 	if not self.RenderEvent then
 		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
@@ -76,9 +77,9 @@ function WelcomeScreen:Render()
 	Mouse:SetVisible( true )
 	Chat:SetEnabled( false )
 
-	Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, 200 ) )
+	Render:FillArea( Vector2.Zero, Render.Size, self.background_clr )
 
-	self.rico:SetPosition( Vector2( (Render.Width - 350), (Render.Height - 520) ) )
+	self.rico:SetPosition( Vector2( Render.Width - 350, Render.Height - 520 ) )
 	self.rico:SetSize( Vector2( 350, 700 ) )
 	self.rico:Draw()
 
@@ -86,40 +87,20 @@ function WelcomeScreen:Render()
 
 	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.title, Render.Size.x / 40 ) / 2, Render.Size.x / 7 ), self.title, self.text_clr, Render.Size.x / 40 )
 	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.text, Render.Size.x / 70 ) / 2, Render.Size.x / 5 ), self.text, self.text_clr, Render.Size.x / 70 )
-	Render:DrawText( Vector2( 20, (Render.Height - 40) ), self.copyright_txt, self.text_clr, 15 )
+	Render:DrawText( Vector2( 20, Render.Height - 40 ), self.copyright_txt, self.text_clr, 15 )
 end
 
 function WelcomeScreen:Menu()
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.Menu_background then self.Menu_button:Remove() self.Menu_button = nil self.Menu_background:Remove() self.Menu_background = nil end
+	if self.Help_button then self.Help_button:Remove() self.Help_button = nil end
+	if self.Help_background then self.Help_background:Remove() self.Help_background = nil end
+	if self.rico then self.rico = nil end
 
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
-
-	if self.Menu_background then
-		self.Menu_button:Remove()
-		self.Menu_button = nil
-		self.Menu_background:Remove()
-		self.Menu_background = nil
-	end
-
-	if self.Help_button then
-		self.Help_button:Remove()
-		self.Help_button = nil
-	end
-
-	if self.Help_background then
-		self.Help_background:Remove()
-		self.Help_background = nil
-	end
-
-	if self.rico then
-		self.rico = nil
-	end
+	self.copyright_txt = nil
+	self.text_clr = nil
+	self.background_clr = nil
 
 	Menu:Freeroam()
 

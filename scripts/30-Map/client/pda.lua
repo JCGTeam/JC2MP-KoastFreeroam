@@ -56,9 +56,7 @@ function PDA:__init()
 
 	labels = 0
 
-	if not self.KeyUpEvent then
-		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
-	end
+	if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
 
 	Events:Subscribe( "Lang", self, self.Lang )
 
@@ -85,29 +83,12 @@ function PDA:Toggle()
 
 	if self.active then
 		LocalPlayer:SetValue( "ServerMap", 1 )
-		if not self.EventPostRender then
-			self.EventPostRender = Events:Subscribe( "PostRender", self, self.PostRender )
-		end
-
-		if not self.PlayerUpdateNetwork then
-			self.PlayerUpdateNetwork = Network:Subscribe( "PlayerUpdate", self, self.PlayerUpdate )
-		end
-
-		if not self.LocalPlayerInputEvent then
-			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-		end
-
-		if not self.MouseDownEvent then
-			self.MouseDownEvent = Events:Subscribe( "MouseDown", self, self.MouseDown )
-		end
-
-		if not self.MouseMoveEvent then
-			self.MouseMoveEvent = Events:Subscribe( "MouseMove", self, self.MouseMove )
-		end
-
-		if not self.MouseUpEvent then
-			self.MouseUpEvent = Events:Subscribe( "MouseUp", self, self.MouseUp )
-		end
+		if not self.EventPostRender then self.EventPostRender = Events:Subscribe( "PostRender", self, self.PostRender ) end
+		if not self.PlayerUpdateNetwork then self.PlayerUpdateNetwork = Network:Subscribe( "PlayerUpdate", self, self.PlayerUpdate ) end
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if not self.MouseDownEvent then self.MouseDownEvent = Events:Subscribe( "MouseDown", self, self.MouseDown ) end
+		if not self.MouseMoveEvent then self.MouseMoveEvent = Events:Subscribe( "MouseMove", self, self.MouseMove ) end
+		if not self.MouseUpEvent then self.MouseUpEvent = Events:Subscribe( "MouseUp", self, self.MouseUp ) end
 
 		Events:Fire( "ToggleCamZoom", { zoomcam = false } )
 		Network:Send( "MapShown" )
@@ -117,36 +98,14 @@ function PDA:Toggle()
 		FadeInTimer = Timer()
 	else
 		LocalPlayer:SetValue( "ServerMap", nil )
-		if self.EventPostRender then
-			Events:Unsubscribe( self.EventPostRender )
-			self.EventPostRender = nil
-		end
-
-		if self.PlayerUpdateNetwork then
-			Network:Unsubscribe( self.PlayerUpdateNetwork )
-			self.PlayerUpdateNetwork = nil
-		end
+		if self.EventPostRender then Events:Unsubscribe( self.EventPostRender ) self.EventPostRender = nil end
+		if self.PlayerUpdateNetwork then Network:Unsubscribe( self.PlayerUpdateNetwork ) self.PlayerUpdateNetwork = nil end
 
 		if not self.world_fadein_timer then
-			if self.LocalPlayerInputEvent then
-				Events:Unsubscribe( self.LocalPlayerInputEvent )
-				self.LocalPlayerInputEvent = nil
-			end
-
-			if self.MouseDownEvent then
-				Events:Unsubscribe( self.MouseDownEvent )
-				self.MouseDownEvent = nil
-			end
-
-			if self.MouseMoveEvent then
-				Events:Unsubscribe( self.MouseMoveEvent )
-				self.MouseMoveEvent = nil
-			end
-
-			if self.MouseUpEvent then
-				Events:Unsubscribe( self.MouseUpEvent )
-				self.MouseUpEvent = nil
-			end
+			if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+			if self.MouseDownEvent then Events:Unsubscribe( self.MouseDownEvent ) self.MouseDownEvent = nil end
+			if self.MouseMoveEvent then Events:Unsubscribe( self.MouseMoveEvent ) self.MouseMoveEvent = nil end
+			if self.MouseUpEvent then Events:Unsubscribe( self.MouseUpEvent ) self.MouseUpEvent = nil end
 		end
 
 		Events:Fire( "ToggleCamZoom", { zoomcam = true } )
@@ -177,20 +136,9 @@ function PDA:ExtractionSequence()
 			Map.Border = false
 			Map.Ramka = false
 			rendermap = false
-			if self.MouseDownEvent then
-				Events:Unsubscribe( self.MouseDownEvent )
-				self.MouseDownEvent = nil
-			end
-
-			if self.MouseUpEvent then
-				Events:Unsubscribe( self.MouseUpEvent )
-				self.MouseUpEvent = nil
-			end
-
-			if self.MouseMoveEvent then
-				Events:Unsubscribe( self.MouseMoveEvent )
-				self.MouseMoveEvent = nil
-			end
+			if self.MouseDownEvent then Events:Unsubscribe( self.MouseDownEvent ) self.MouseDownEvent = nil end
+			if self.MouseUpEvent then Events:Unsubscribe( self.MouseUpEvent ) self.MouseUpEvent = nil end
+			if self.MouseMoveEvent then Events:Unsubscribe( self.MouseMoveEvent ) self.MouseMoveEvent = nil end
 		end
 	elseif self.loading then
 		if LocalPlayer:GetLinearVelocity() ~= Vector3.Zero then
@@ -241,9 +189,7 @@ function PDA:ExtractionSequence()
 			extraction_render = nil
 			previous_position = nil
 			next_position = nil
-			if not self.KeyUpEvent then
-				self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
-			end
+			if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
 		end
 	end
 end
@@ -321,20 +267,10 @@ function PDA:KeyUp( args )
 			Map.Zoom = 0.98
 			Map.Offset = Vector2.Zero
 			Mouse:SetVisible( false )
-			if self.KeyUpEvent then
-				Events:Unsubscribe( self.KeyUpEvent )
-				self.KeyUpEvent = nil
-			end
 
-			if self.MouseMoveEvent then
-				Events:Unsubscribe( self.MouseMoveEvent )
-				self.MouseMoveEvent = nil
-			end
-
-			if self.LocalPlayerInputEvent then
-				Events:Unsubscribe( self.LocalPlayerInputEvent )
-				self.LocalPlayerInputEvent = nil
-			end
+			if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
+			if self.MouseMoveEvent then Events:Unsubscribe( self.MouseMoveEvent ) self.MouseMoveEvent = nil end
+			if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 		end
 	end
 
@@ -407,7 +343,7 @@ function PDA:PostRender()
 end
 
 function PDA:WarpDoPoof( position )
-    ClientEffect.Play( AssetLocation.Game, {effect_id = 250, position = position, angle = Angle()} )
+    local effect = ClientEffect.Play( AssetLocation.Game, {effect_id = 250, position = position, angle = Angle()} )
 end
 
 function PDA:ColorA( color, alpha )

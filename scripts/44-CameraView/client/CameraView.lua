@@ -272,43 +272,17 @@ function CameraView:EnterVehicle( args )
 		altview = self.reverse
 	} )
 
-	if not self.CalcViewEvent then
-		self.CalcViewEvent = Events:Subscribe( "CalcView", self, self.CalcView )
-	end
-
-	if not self.KeyUpEvent then
-		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
-	end
-
-	if not self.MouseScrollEvent then
-		self.MouseScrollEvent = Events:Subscribe( "MouseScroll", self, self.MouseScroll )
-	end
-
-	if not self.LocalPlayerInputEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
+	if not self.CalcViewEvent then self.CalcViewEvent = Events:Subscribe( "CalcView", self, self.CalcView ) end
+	if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
+	if not self.MouseScrollEvent then self.MouseScrollEvent = Events:Subscribe( "MouseScroll", self, self.MouseScroll ) end
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 end
 
 function CameraView:LocalPlayerExitVehicle( args )
-	if self.CalcViewEvent then
-		Events:Unsubscribe( self.CalcViewEvent )
-		self.CalcViewEvent = nil
-	end
-
-	if self.KeyUpEvent then
-		Events:Unsubscribe( self.KeyUpEvent )
-		self.KeyUpEvent = nil
-	end
-
-	if self.MouseScrollEvent then
-		Events:Unsubscribe( self.MouseScrollEvent )
-		self.MouseScrollEvent = nil
-	end
-
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
+	if self.CalcViewEvent then Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil end
+	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
+	if self.MouseScrollEvent then Events:Unsubscribe( self.MouseScrollEvent ) self.MouseScrollEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 end
 
 function CameraView:LocalPlayerInput( args )

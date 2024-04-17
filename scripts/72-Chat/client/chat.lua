@@ -108,9 +108,7 @@ end
 function BetterChat:ApplyChatPos( args )
 	self.customchatpos = Vector2( args.sqlchatposX, args.sqlchatposY )
 	Chat:SetPosition( self.customchatpos )
-	if not self.ResolutionChangeEvent then
-		self.ResolutionChangeEvent = Events:Subscribe( "ResolutionChange", self, self.ResolutionChange )
-	end
+	if not self.ResolutionChangeEvent then self.ResolutionChangeEvent = Events:Subscribe( "ResolutionChange", self, self.ResolutionChange ) end
 end
 
 function BetterChat:LocalPlayerInput( args )
@@ -175,8 +173,7 @@ function BetterChat:CloseWindow()
 		self.joinmessages_cb:Remove()
 		self.joinmessages_cb = nil
 
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
+		Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil
 	end
 end
 
@@ -227,15 +224,11 @@ function BetterChat:MouseUp( args )
 		Network:Send( "SaveChatPos", { chatpos = self.customchatpos } )
 		self.window:SetVisible( true )
 
-		if not self.ResolutionChangeEvent then
-			self.ResolutionChangeEvent = Events:Subscribe( "ResolutionChange", self, self.ResolutionChange )
-		end
+		if not self.ResolutionChangeEvent then self.ResolutionChangeEvent = Events:Subscribe( "ResolutionChange", self, self.ResolutionChange ) end
 
 		if self.MouseUpEvent then
-			Events:Unsubscribe( self.MouseUpEvent )
-			self.MouseUpEvent = nil
-			Events:Unsubscribe( self.MouseMoveEvent )
-			self.MouseMoveEvent = nil
+			Events:Unsubscribe( self.MouseUpEvent ) self.MouseUpEvent = nil
+			Events:Unsubscribe( self.MouseMoveEvent ) self.MouseMoveEvent = nil
 		end
 	end
 end
@@ -248,10 +241,7 @@ function BetterChat:ChatPosReset()
 	Chat:ResetPosition()
 	Network:Send( "ResetChatPos" )
 
-	if self.ResolutionChangeEvent then
-		Events:Unsubscribe( self.ResolutionChangeEvent )
-		self.ResolutionChangeEvent = nil
-	end
+	if self.ResolutionChangeEvent then Events:Unsubscribe( self.ResolutionChangeEvent ) self.ResolutionChangeEvent = nil end
 end
 
 function BetterChat:Render()

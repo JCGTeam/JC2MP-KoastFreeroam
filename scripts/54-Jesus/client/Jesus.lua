@@ -162,11 +162,12 @@ function Jesus:Render()
 	local text_height = Render:GetTextHeight( self.nameSizer, text_size )
     local text_pos = Vector2( Render.Width / 1.3 - text_width / 1.8 + text_width / 5.5, 2 )
 	local sett_alpha = Game:GetSetting(4) * 2.25
+	local background_clr = Color( 0, 0, 0, sett_alpha / 2.4 )
 
-	Render:FillArea( Vector2( Render.Width / 1.3 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
+	Render:FillArea( Vector2( Render.Width / 1.3 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), background_clr )
 
-	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), text_height + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
-	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), text_height + 2 ), background_clr )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), background_clr )
 
 	local waterwalk_enabled = LocalPlayer:GetValue( "WaterWalk" )
 

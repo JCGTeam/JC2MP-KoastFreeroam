@@ -15,13 +15,13 @@ function Hook:GameRenderOpaque()
 		if player:GetBaseState() == 207 or player:GetLeftArmState() == 400 then
 			if not effect_played then
 				effect_played = true
-				ClientEffect.Play(AssetLocation.Game, {
+				local effect = ClientEffect.Play(AssetLocation.Game, {
 					effect_id = 11,
 					position = player:GetBonePosition( "ragdoll_AttachHandLeft" ),
 					angle = player:GetBoneAngle( "ragdoll_AttachHandLeft" )
 				})
 				if hookAimTarget and hookAimTarget.player or hookAimTarget.entity and hookAimTarget.entity.__type == 'ClientActor' then
-					ClientEffect.Play(AssetLocation.Game, {
+					local effect = ClientEffect.Play(AssetLocation.Game, {
 						effect_id = 421,
 						position = hookAimTarget.entity:GetBonePosition( "ragdoll_Spine" ),
 						angle = Angle()
@@ -30,7 +30,7 @@ function Hook:GameRenderOpaque()
 						hookAimTarget.entity:SetBaseState( AnimationState.SHitreactStumbleHead )
 					end]]--
 				elseif hookAimTarget and hookAimTarget.position then
-					ClientEffect.Play(AssetLocation.Game, {
+					local effect = ClientEffect.Play(AssetLocation.Game, {
 						effect_id = 212,
 						position = hookAimTarget.position,
 						angle = Angle()

@@ -50,8 +50,7 @@ function CarBattles:PostTick()
 	if self.timer:GetSeconds() >= 15 then
 		Network:Send( "EnableCollision" )
 		if self.PostTickEvent then
-			Events:Unsubscribe( self.PostTickEvent )
-			self.PostTickEvent = nil
+			Events:Unsubscribe( self.PostTickEvent ) self.PostTickEvent = nil
 			LocalPlayer:SetOutlineEnabled( false )
 		end
 		self.timer = nil

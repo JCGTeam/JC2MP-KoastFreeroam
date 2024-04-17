@@ -220,7 +220,7 @@ function Reports:OpenReportMenu( args )
     if self.window:GetVisible() then
         self:WindowClosed()
     else
-		ClientEffect.Play(AssetLocation.Game, {
+		local effect = ClientEffect.Play(AssetLocation.Game, {
 			effect_id = 382,
 
 			position = Camera:GetPosition(),
@@ -278,21 +278,14 @@ function Reports:WindowClosed()
 
     Mouse:SetVisible( false )
 
-    if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
-
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+    if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function Reports:ReportMenuClosed()
 	self:WindowClosed()
 
-	ClientEffect.Create(AssetLocation.Game, {
+	local effect = ClientEffect.Create(AssetLocation.Game, {
 		effect_id = 383,
 
 		position = Camera:GetPosition(),

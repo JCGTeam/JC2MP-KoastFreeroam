@@ -57,42 +57,21 @@ function News:SetActive( state )
 	Mouse:SetVisible( self.HelpActive )
 
 	if self.HelpActive then
-		if not self.LocalPlayerInputEvent then
-			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalHelpInput )
-		end
-
-		--[[if not self.RenderEvent then
-			self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-		end--]]
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalHelpInput ) end
+		--if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	else
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
-
-		if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-		end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
 end
 
 function News:OpenNewsMenu()
-	if self.HelpActive then
-		ClientEffect.Create(AssetLocation.Game, {
-			effect_id = 383,
-	
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
-	else
-		ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 382,
+	local effect = ClientEffect.Create(AssetLocation.Game, {
+		effect_id = self.HelpActive and 383 or 382,
 
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
-	end
+		position = Camera:GetPosition(),
+		angle = Angle()
+	})
 
 	self:SetActive( not self:GetActive() )
 end
@@ -126,7 +105,7 @@ end
 
 function News:WindowClosed( args )
 	self:SetActive( false )
-	ClientEffect.Create(AssetLocation.Game, {
+	local effect = ClientEffect.Create(AssetLocation.Game, {
 		effect_id = 383,
 
 		position = Camera:GetPosition(),

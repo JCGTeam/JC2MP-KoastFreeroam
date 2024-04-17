@@ -1,24 +1,6 @@
 class 'WhatsNew'
 
 function WhatsNew:__init()
-	self.actions = {
-		[3] = true,
-		[4] = true,
-		[5] = true,
-		[6] = true,
-		[11] = true,
-		[12] = true,
-		[13] = true,
-		[14] = true,
-		[17] = true,
-		[18] = true,
-		[105] = true,
-		[137] = true,
-		[138] = true,
-		[139] = true,
-		[16] = true
-	}
-
 	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
@@ -40,6 +22,7 @@ function WhatsNew:Open( args )
 
 	self.copyright_txt = "© JCGTeam 2024"
 	self.text_clr = Color.White
+	self.background_clr = Color( 10, 10, 10, 200 )
 
 	if self.usepause then
 		local sound = ClientSound.Create(AssetLocation.Game, {
@@ -55,6 +38,24 @@ function WhatsNew:Open( args )
 	if not self.RenderEvent then
 		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
 	end
+
+	self.actions = {
+		[3] = true,
+		[4] = true,
+		[5] = true,
+		[6] = true,
+		[11] = true,
+		[12] = true,
+		[13] = true,
+		[14] = true,
+		[17] = true,
+		[18] = true,
+		[105] = true,
+		[137] = true,
+		[138] = true,
+		[139] = true,
+		[16] = true
+	}
 
 	if not self.LocalPlayerInputEvent then
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
@@ -89,7 +90,7 @@ function WhatsNew:Render()
 	Mouse:SetVisible( true )
 	Chat:SetEnabled( false )
 
-	Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, 200 ) )
+	Render:FillArea( Vector2.Zero, Render.Size, self.background_clr )
 
 	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
@@ -98,7 +99,7 @@ function WhatsNew:Render()
 
 	if self.usepause then
 		Game:FireEvent( "ply.pause" )
-		Render:DrawText( Vector2( 20, (Render.Height - 40) ), self.copyright_txt, self.text_clr, 15 )
+		Render:DrawText( Vector2( 20, Render.Height - 40 ), self.copyright_txt, self.text_clr, 15 )
 	end
 end
 
@@ -119,25 +120,10 @@ end
 function WhatsNew:Close()
 	Network:Send( "IsChecked" )
 
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
-
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
-
-	if self.Menu_button then
-		self.Menu_button:Remove()
-		self.Menu_button = nil
-	end
-
-	if self.Menu_background then
-		self.Menu_background:Remove()
-		self.Menu_background = nil
-	end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.Menu_button then self.Menu_button:Remove() self.Menu_button = nil end
+	if self.Menu_background then self.Menu_background:Remove() self.Menu_background = nil end
 
 	if self.usepause then
 		Game:FireEvent( "ply.unpause" )
@@ -146,6 +132,12 @@ function WhatsNew:Close()
 			Game:FireEvent( "ply.invulnerable" )
 		end
 	end
+
+	self.actions = nil
+
+	self.copyright_txt = nil
+	self.text_clr = nil
+	self.background_clr = nil
 
 	Game:FireEvent( "gui.hud.show" )
 	Mouse:SetVisible( false )

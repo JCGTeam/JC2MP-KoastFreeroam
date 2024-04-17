@@ -56,7 +56,7 @@ end
 
 function Nametags:UpdateLimits()
 	self.player_bias	= self.player_limit / 10
-	self.player_max	= self.player_limit * 1.5
+	self.player_max		= self.player_limit * 1.5
 	self.vehicle_bias	= self.vehicle_limit / 10
 	self.vehicle_max	= self.vehicle_limit * 1.5
 end
@@ -355,24 +355,25 @@ function Nametags:WindowClosed( args )
 end
 
 function Nametags:Render()
-	if LocalPlayer:GetValue( "SystemFonts" ) then
-		Render:SetFont( AssetLocation.SystemFont, "Impact" )
-	end
+	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 	-- If we're not supposed to draw now, then take us out
 	if not self.enabled or Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue( "HiddenHUD" ) then return end
 
 	if LocalPlayer:GetValue( "TagHide" ) then
 		local text = "/hidetag"
-		local width = Render:GetTextWidth( text )
-		local text_pos = Vector2( Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) / 15, 2 )
+		local text_size = 18
+		local text_width = Render:GetTextWidth( text, text_size )
+		local text_height = Render:GetTextHeight( text, text_size )
+		local text_pos = Vector2( Render.Width / 4 - text_width / 1.8 + text_width / 15, 2 )
 		local sett_alpha = Game:GetSetting(4) * 2.25
+		local background_clr = Color( 0, 0, 0, sett_alpha / 2.4 )
 
-		Render:FillArea( Vector2( Render.Width/4 - width/1.8, 0 ), Vector2( Render:GetTextWidth( text, 18 ) + 5, Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
+		Render:FillArea( Vector2( Render.Width / 4 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), background_clr )
 
-		Render:FillTriangle( Vector2( (Render.Width / 4 - width/1.8 - 10), 0 ), Vector2( (Render.Width / 4 - width/1.8), 0 ), Vector2( (Render.Width / 4 - width/1.8), Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
-		Render:FillTriangle( Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 15), 0 ), Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 5), 0 ), Vector2( (Render.Width / 4 - width/1.8 + Render:GetTextWidth( text, 18 ) + 5 ), Render:GetTextHeight( text, 18 ) + 2 ), Color( 0, 0, 0, sett_alpha / 2.4 ) )
+		Render:FillTriangle( Vector2( ( Render.Width / 4 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 4 - text_width / 1.8 ), 0 ), Vector2( (Render.Width / 4 - text_width / 1.8 ), text_height + 2 ), background_clr )
+		Render:FillTriangle( Vector2( ( Render.Width / 4 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 4 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 4 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), background_clr )
 
-		Render:DrawShadowedText( text_pos, text, Color( 173, 216, 230, sett_alpha ), Color( 0, 0, 0, sett_alpha ), 18 )
+		Render:DrawShadowedText( text_pos, text, Color( 173, 216, 230, sett_alpha ), Color( 0, 0, 0, sett_alpha ), text_size )
 	end
 
 	-- Create some prerequisite variables

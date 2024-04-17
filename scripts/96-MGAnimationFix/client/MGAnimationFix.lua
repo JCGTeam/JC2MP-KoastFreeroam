@@ -42,33 +42,15 @@ function MGAnimationFix:__init()
 end
 
 function MGAnimationFix:LocalPlayerEnterVehicle()
-    if self.checkTimer then
-        self.checkTimer = nil
-    end
-
-	if self.PostTickEvent then
-		Events:Unsubscribe( self.PostTickEvent )
-		self.PostTickEvent = nil
-	end
-
-    if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
+    if self.checkTimer then self.checkTimer = nil end
+	if self.PostTickEvent then Events:Unsubscribe( self.PostTickEvent ) self.PostTickEvent = nil end
+    if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 end
 
 function MGAnimationFix:LocalPlayerExitVehicle()
-    if not self.checkTimer then
-        self.checkTimer = Timer()
-    end
-
-	if not self.PostTickEvent then
-		self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick )
-	end
-
-    if not self.LocalPlayerInputEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
+    if not self.checkTimer then self.checkTimer = Timer() end
+    if not self.PostTickEvent then self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick ) end
+    if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 end
 
 function MGAnimationFix:CheckMinigun()

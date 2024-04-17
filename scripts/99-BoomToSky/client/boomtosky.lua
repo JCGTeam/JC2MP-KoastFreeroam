@@ -14,8 +14,7 @@ end
 
 function BoomToSky:Render()
     if self.flyTimer:GetSeconds() >= 1 then
-        Events:Unsubscribe( self.RenderEvent )
-        self.RenderEvent = nil
+        Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil
         self.flyTimer = nil
     else
 		local vehicle = LocalPlayer:GetVehicle()
@@ -49,7 +48,7 @@ function BoomToSky:StartBoomToSky( args )
 
 				Network:Send( "EffectPlay" )
 
-				ClientEffect.Play(AssetLocation.Game, {
+				local effect = ClientEffect.Play(AssetLocation.Game, {
 					effect_id = 20,
 					position = LocalPlayer:GetPosition(),
 					angle = Angle()
@@ -62,7 +61,7 @@ function BoomToSky:StartBoomToSky( args )
 end
 
 function BoomToSky:BoomToSkyEffect( args )
-	ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play(AssetLocation.Game, {
 		effect_id = 20,
 		position = args.targerp:GetPosition(),
 		angle = Angle()

@@ -133,14 +133,14 @@ function Grenade:Detonate()
 		["type"] = self.type
 	})
 
-	ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play(AssetLocation.Game, {
 		["position"] = self.object:GetPosition(),
 		["angle"] = Angle(),
 		["effect_id"] = self.effect_id
 	})
 
 	if self.frag then
-		ClientSound.Play(AssetLocation.Game, {
+		local sound = ClientSound.Play(AssetLocation.Game, {
 			position = self.object:GetPosition(),
 			bank_id = 11,
 			sound_id = 13,
@@ -149,7 +149,7 @@ function Grenade:Detonate()
 			variable_id_focus = 2
 		})
 		if self.object:GetPosition().y < 200 then
-			ClientEffect.Play(AssetLocation.Game, {
+			local effect = ClientEffect.Play(AssetLocation.Game, {
 				effect_id = 112,
 				position = Vector3(self.object:GetPosition().x, 200, self.object:GetPosition().z),
 				angle = Angle()

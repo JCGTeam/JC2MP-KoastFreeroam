@@ -39,7 +39,6 @@ function SeaTrafficNPC:Load()
 		self.actor:Remove()
 		Events:Unsubscribe(self.loader)
 		self.loader = nil
-	
 	end
 end
 

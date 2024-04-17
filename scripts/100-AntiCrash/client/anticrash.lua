@@ -44,9 +44,7 @@ function AntiCrash:LocalPlayerEnterVehicle()
 
     if self.allowed_vehicles[id] then return end
 
-	if not self.InputPollEvent then
-		self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll )
-	end
+	if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll ) end
 end
 
 function AntiCrash:LocalPlayerExitVehicle()
@@ -55,10 +53,7 @@ function AntiCrash:LocalPlayerExitVehicle()
 
     if self.allowed_vehicles[id] then return end
 
-	if self.InputPollEvent then
-		Events:Unsubscribe( self.InputPollEvent )
-		self.InputPollEvent = nil
-	end
+	if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
 end
 
 anticrash = AntiCrash()

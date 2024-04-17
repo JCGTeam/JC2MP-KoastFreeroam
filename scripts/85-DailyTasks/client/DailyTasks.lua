@@ -161,15 +161,9 @@ function DailyTasks:CloseDedMorozMenu()
 	if self.window:GetVisible() == true then
         self:SetWindowVisible( false )
         self.list:Clear()
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
 
-        if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-        end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+        if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
 end
 
@@ -264,39 +258,21 @@ function DailyTasks:Open()
         item:SetTextColor( self.fireworkstossedC )
         item:SetToolTip( self.fireworkstip_txt )
 
-		if not self.LocalPlayerInputEvent then
-			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-		end
-
-        if not self.RenderEvent then
-            self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-        end
-
-		ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 382,
-
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+        if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
     else
         self.list:Clear()
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
 
-        if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-        end
-
-		ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 383,
-
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+        if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
+
+    local effect = ClientEffect.Play(AssetLocation.Game, {
+        effect_id = self.active and 382 or 383,
+
+        position = Camera:GetPosition(),
+        angle = Angle()
+    })
 end
 
 function DailyTasks:GetPrize( args )

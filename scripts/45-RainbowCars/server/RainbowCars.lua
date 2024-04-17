@@ -41,8 +41,7 @@ function RainbowCars:PlayerChat( args )
                 if self.PreTickEvent then
                     self.rTimer = nil
 
-                    self.PreTickEvent = Events:Unsubscribe( self.PreTickEvent )
-                    self.PreTickEvent = nil
+                    self.PreTickEvent = Events:Unsubscribe( self.PreTickEvent ) self.PreTickEvent = nil
                 end
             end
         end

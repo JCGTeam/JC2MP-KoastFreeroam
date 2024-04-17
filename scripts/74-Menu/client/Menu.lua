@@ -8,25 +8,30 @@ function Menu:__init()
 	self.hider = true
 
 	self.text_clr = Color.White
+	self.background_clr = Color( 10, 10, 10, 200 )
 
 	self.tofreeroamtext = "Добро пожаловать в свободный режим!"
 	self.tName = "ВЫБЕРИТЕ ЯЗЫК / LANGUAGE SELECT"
 
+	local sizeX = Render.Size.x / 5.5
+	local tPV1, tPV2 = Vector2( 0, Render.Size.x / 9 ), Vector2.Zero
+	local textSize = Render.Size.x / 0.75 / Render:GetTextWidth( "BTextResoliton" )
+
 	self.rus_image = ImagePanel.Create()
 	self.rus_image:SetImage( self.rusflag )
-	self.rus_image:SetPosition( Vector2( Render.Size.x / 3.5, Render.Size.y - Render.Size.x / 3.5 ) )
-	self.rus_image:SetSize( Vector2( Render.Size.x / 5.5, Render.Size.x / 9 ) )
+	self.rus_image:SetSize( Vector2( sizeX, Render.Size.x / 9 ) )
+	self.rus_image:SetPosition( Vector2( Render.Size.x / 2 - self.rus_image:GetSize().x / 2 * 2.15, Render.Size.y - Render.Size.x / 3.5 ) )
 	self.rus_image:SetVisible( false )
 
 	self.rus_button = MenuItem.Create()
 	if LocalPlayer:GetValue( "SystemFonts" ) then
 		self.rus_button:SetFont( AssetLocation.SystemFont, "Impact" )
 	end
-	self.rus_button:SetSize( Vector2( Render.Size.x / 5.5, Render.Size.x / 7 ) )
+	self.rus_button:SetSize( Vector2( sizeX, Render.Size.x / 7 ) )
 	self.rus_button:SetPosition( self.rus_image:GetPosition() )
 	self.rus_button:SetText( "Русский [RU]" )
-	self.rus_button:SetTextPadding( Vector2( 0, Render.Size.x / 9 ), Vector2.Zero )
-	self.rus_button:SetTextSize( Render.Size.x / 0.75 / Render:GetTextWidth( "BTextResoliton" ) )
+	self.rus_button:SetTextPadding( tPV1, tPV2 )
+	self.rus_button:SetTextSize( textSize )
 	if LocalPlayer:GetMoney() <= 0.5 then
 		self.rus_button:Subscribe( "Press", self, self.Welcome )
 	else
@@ -35,19 +40,19 @@ function Menu:__init()
 
 	self.eng_image = ImagePanel.Create()
 	self.eng_image:SetImage( self.engflag )
+	self.eng_image:SetSize( Vector2( sizeX, Render.Size.x / 9 ) )
 	self.eng_image:SetPosition( Vector2( self.rus_button:GetPosition().x + Render.Size.x / 4.8, self.rus_button:GetPosition().y ) )
-	self.eng_image:SetSize( Vector2( Render.Size.x / 5.5, Render.Size.x / 9 ) )
 	self.eng_image:SetVisible( false )
 
 	self.eng_button = MenuItem.Create()
 	if LocalPlayer:GetValue( "SystemFonts" ) then
 		self.eng_button:SetFont( AssetLocation.SystemFont, "Impact" )
 	end
-	self.eng_button:SetSize( Vector2( Render.Size.x / 5.5, Render.Size.x / 7 ) )
+	self.eng_button:SetSize( Vector2( sizeX, Render.Size.x / 7 ) )
 	self.eng_button:SetPosition( self.eng_image:GetPosition() )
 	self.eng_button:SetText( "English [EN]" )
-	self.eng_button:SetTextPadding( Vector2( 0, Render.Size.x / 9 ), Vector2.Zero )
-	self.eng_button:SetTextSize( Render.Size.x / 0.75 / Render:GetTextWidth( "BTextResoliton" ) )
+	self.eng_button:SetTextPadding( tPV1, tPV2 )
+	self.eng_button:SetTextSize( textSize )
 	self.eng_button:Subscribe( "Press", self, self.Eng )
 
 	Console:Subscribe( "misload", self, self.Mission )
@@ -80,6 +85,7 @@ end
 
 function Menu:Mission( args )
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+
 	if tonumber(args.text) == 1 then
 		print( "Start msy.km01.completed" )
 		print( "Please wait..." )
@@ -92,12 +98,10 @@ function Menu:Mission( args )
 end
 
 function Menu:GameLoad()
+	Mouse:SetPosition( Vector2( Render.Width / 2, Render.Height / 2 ) )
 	Mouse:SetVisible( true )
 
-	if self.GameLoadEvent then
-		Events:Unsubscribe( self.GameLoadEvent )
-		self.GameLoadEvent = nil
-	end
+	if self.GameLoadEvent then Events:Unsubscribe( self.GameLoadEvent ) self.GameLoadEvent = nil end
 
 	local tag = LocalPlayer:GetValue( "Tag" )
 
@@ -121,25 +125,29 @@ function Menu:GameLoad()
 end
 
 function Menu:ResolutionChange( args )
-	self.rus_image:SetPosition( Vector2( args.size.x / 3.5, (args.size.y - args.size.x / 3.5 ) ) )
-	self.rus_image:SetSize( Vector2( args.size.x / 5.5, args.size.x / 9 ) )
+	local sizeX = args.size.x / 5.5
+	local tPV1, tPV2 = Vector2( 0, args.size.x / 9 ), Vector2.Zero
+	local textSize = args.size.x / 0.75 / Render:GetTextWidth( "BTextResoliton" )
 
-	self.rus_button:SetSize( Vector2( args.size.x / 5.5, args.size.x / 7 ) )
+	self.rus_image:SetSize( Vector2( sizeX, args.size.x / 9 ) )
+	self.rus_image:SetPosition( Vector2( args.size.x / 2 - self.rus_image:GetSize().x / 2 * 2.15, ( args.size.y - args.size.x / 3.5 ) ) )
+
+	self.rus_button:SetSize( Vector2( sizeX, args.size.x / 7 ) )
 	self.rus_button:SetPosition( self.rus_image:GetPosition() )
-	self.rus_button:SetTextPadding( Vector2( 0, args.size.x / 9 ), Vector2.Zero )
-	self.rus_button:SetTextSize( args.size.x / 0.75 / Render:GetTextWidth( "BTextResoliton" ) )
+	self.rus_button:SetTextPadding( tPV1, tPV2 )
+	self.rus_button:SetTextSize( textSize )
 
+	self.eng_image:SetSize( Vector2( sizeX, args.size.x / 9 ) )
 	self.eng_image:SetPosition( Vector2( self.rus_button:GetPosition().x + args.size.x / 4.8, self.rus_button:GetPosition().y ) )
-	self.eng_image:SetSize( Vector2( args.size.x / 5.5, args.size.x / 9 ) )
 
-	self.eng_button:SetSize( Vector2( args.size.x / 5.5, args.size.x / 7 ) )
+	self.eng_button:SetSize( Vector2( sizeX, args.size.x / 7 ) )
 	self.eng_button:SetPosition( self.eng_image:GetPosition() )
-	self.eng_button:SetTextPadding( Vector2( 0, args.size.x / 9 ), Vector2.Zero )
-	self.eng_button:SetTextSize( args.size.x / 0.75 / Render:GetTextWidth( "BTextResoliton" ) )
+	self.eng_button:SetTextPadding( tPV1, tPV2 )
+	self.eng_button:SetTextSize( textSize )
 end
 
 function Menu:LocalPlayerWorldChange( args )
-	self:Close()
+	self:SetActive( false )
 end
 
 function Menu:LocalPlayerInput( args )
@@ -153,31 +161,6 @@ end
 function Menu:SetActive( active )
 	if self.active ~= active then
 		if not active then
-			if self.ResolutionChangeEvent then
-				Events:Unsubscribe( self.ResolutionChangeEvent )
-				self.ResolutionChangeEvent = nil
-			end
-
-			if self.RenderEvent then
-				Events:Unsubscribe( self.RenderEvent )
-				self.RenderEvent = nil
-			end
-
-			if self.LocalPlayerWorldChangeEvent then
-				Events:Unsubscribe( self.LocalPlayerWorldChangeEvent )
-				self.LocalPlayerWorldChangeEvent = nil
-			end
-
-			if self.LocalPlayerInputEvent then
-				Events:Unsubscribe( self.LocalPlayerInputEvent )
-				self.LocalPlayerInputEvent = nil
-			end
-
-			if self.ModuleUnloadEvent then
-				Events:Unsubscribe( self.ModuleUnloadEvent )
-				self.ModuleUnloadEvent = nil
-			end
-
 			self:CleanUp()
 			Game:FireEvent( "gui.hud.show" )
 			Chat:SetEnabled( true )
@@ -191,6 +174,7 @@ function Menu:SetActive( active )
 			sound:SetParameter(0,0.75)
 			sound:SetParameter(1,0)
 		end
+
 		self.active = active
 		Mouse:SetVisible( self.active )
     end
@@ -198,7 +182,7 @@ end
 
 function Menu:Render()
 	if self.active then
-		Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, 200 ) )
+		Render:FillArea( Vector2.Zero, Render.Size, self.background_clr )
 
 		Game:FireEvent( "gui.hud.hide" )
 		Game:FireEvent( "gui.minimap.hide" )
@@ -220,10 +204,13 @@ function Menu:Render()
 		local playername_pos = Vector2( 20, Render.Size.y - 60 )
 		local linkstitle_txt = "ССЫЛКИ / LINKS:"
 		local links_pos = Vector2( 40, 50 )
+		local links_size = 25
 
-		Render:DrawText( links_pos, linkstitle_txt, self.text_clr, 25 )
-		Render:DrawText( Vector2( links_pos.x, links_pos.y + Render:GetTextHeight( linkstitle_txt, 25 ) + 10 ), "- TELEGRAM | [empty_link]\n- DISCORD | [empty_link]\n- STEAM | [empty_link]\n- VK | [empty_link]", Color( 180, 180, 180 ), 20 )
-		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tName, 30 ) / 2, Render.Size.y / 2.5 ), self.tName, self.text_clr, 30 )
+		Render:DrawText( links_pos, linkstitle_txt, self.text_clr, links_size )
+		Render:DrawText( Vector2( links_pos.x, links_pos.y + Render:GetTextHeight( linkstitle_txt, links_size ) + 10 ), "- TELEGRAM | [empty_link]\n- DISCORD | [empty_link]\n- STEAM | [empty_link]\n- VK | [empty_link]", Color( 180, 180, 180 ), links_size - 5 )
+
+		local tSize = 30
+		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tName, tSize ) / 2, Render.Size.y / 2.5 ), self.tName, self.text_clr, tSize )
 
 		LocalPlayer:GetAvatar():Draw( playername_pos, Vector2( 40, 40 ), Vector2.Zero, Vector2.One )
 		Render:DrawText( playername_pos + Vector2( 50, 15 ), LocalPlayer:GetName(), self.text_clr, 17 )
@@ -233,30 +220,23 @@ function Menu:Render()
 	end
 
 	if self.hider then
-		if Game:GetState() ~= GUIState.Loading then
-			self.rus_image:SetVisible( true )
-			self.rus_button:SetVisible( true )
-			self.eng_image:SetVisible( true )
-			self.eng_button:SetVisible( true )
-			if LocalPlayer:GetValue( "SystemFonts" ) then
-				self.rus_button:SetFont( AssetLocation.SystemFont, "Impact" )
-				self.eng_button:SetFont( AssetLocation.SystemFont, "Impact" )
-			end
-		else
-			self.rus_image:SetVisible( false )
-			self.rus_button:SetVisible( false )
-			self.eng_image:SetVisible( false )
-			self.eng_button:SetVisible( false )
+		local visiblity = Game:GetState() ~= GUIState.Loading
+
+		self.rus_image:SetVisible( visiblity )
+		self.rus_button:SetVisible( visiblity )
+		self.eng_image:SetVisible( visiblity )
+		self.eng_button:SetVisible( visiblity )
+
+		if visiblity and LocalPlayer:GetValue( "SystemFonts" ) then
+			self.rus_button:SetFont( AssetLocation.SystemFont, "Impact" )
+			self.eng_button:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
 	end
 end
 
-function Menu:Close()
-	self:SetActive( false )
-end
-
 function Menu:Freeroam()
-	self:Close()
+	self:SetActive( false )
+
 	Game:FireEvent( "ply.unpause" )
 	if LocalPlayer:GetValue( "Passive" ) then
 		Game:FireEvent( "ply.invulnerable" )
@@ -266,10 +246,22 @@ function Menu:Freeroam()
 end
 
 function Menu:CleanUp()
-	if self.ambsound then
-		self.ambsound:Remove()
-		self.ambsound = nil
-	end
+	if self.ResolutionChangeEvent then Events:Unsubscribe( self.ResolutionChangeEvent ) self.ResolutionChangeEvent = nil end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.LocalPlayerWorldChangeEvent then Events:Unsubscribe( self.LocalPlayerWorldChangeEvent ) self.LocalPlayerWorldChangeEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.ModuleUnloadEvent then Events:Unsubscribe( self.ModuleUnloadEvent ) self.ModuleUnloadEvent = nil end
+	if self.ambsound then self.ambsound:Remove() self.ambsound = nil end
+	if self.rus_image then self.rus_image:Remove() self.rus_image = nil end
+	if self.rus_button then self.rus_button:Remove() self.rus_button = nil end
+	if self.eng_image then self.eng_image:Remove() self.eng_image = nil end
+	if self.eng_button then self.eng_button:Remove() self.eng_button = nil end
+
+	self.text_clr = nil
+	self.background_clr = nil
+
+	self.tofreeroamtext = nil
+	self.tName = nil
 end
 
 function Menu:ModuleUnload()
@@ -283,26 +275,6 @@ function Menu:Welcome()
 	self.hider = false
 	self:SetActive( false )
 
-	if self.rus_image then
-		self.rus_image:Remove()
-		self.rus_image = nil
-	end
-
-	if self.rus_button then
-		self.rus_button:Remove()
-		self.rus_button = nil
-	end
-
-	if self.eng_image then
-		self.eng_image:Remove()
-		self.eng_image = nil
-	end
-
-	if self.eng_button then
-		self.eng_button:Remove()
-		self.eng_button = nil
-	end
-
 	local sound = ClientSound.Create(AssetLocation.Game, {
 				bank_id = 18,
 				sound_id = 0,
@@ -314,30 +286,10 @@ function Menu:Welcome()
 end
 
 function Menu:Selected()
-	Network:Send( "JoinMessage" )
 	self.hider = false
 
-	if self.rus_image then
-		self.rus_image:Remove()
-		self.rus_image = nil
-	end
-
-	if self.rus_button then
-		self.rus_button:Remove()
-		self.rus_button = nil
-	end
-
-	if self.eng_image then
-		self.eng_image:Remove()
-		self.eng_image = nil
-	end
-
-	if self.eng_button then
-		self.eng_button:Remove()
-		self.eng_button = nil
-	end
-
 	self:Freeroam()
+
 	local sound = ClientSound.Create(AssetLocation.Game, {
 				bank_id = 18,
 				sound_id = 1,
@@ -356,6 +308,7 @@ function Menu:Rus()
 	if type == 0 then
 		Events:Fire( "OpenWhatsNew", { titletext = "Внимание!", text = "Данный сервер основан на открытом исходном коде и не является официальным.", usepause = true } )
 	end
+
 	self:Selected()
 end
 
@@ -372,6 +325,7 @@ function Menu:Eng()
 	if type == 0 then
 		Events:Fire( "OpenWhatsNew", { titletext = "Warning!", text = "This server is based on open source code and is not official.", usepause = true } )
 	end
+
 	self:Selected()
 end
 

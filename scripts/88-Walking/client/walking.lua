@@ -10,16 +10,11 @@ function Walking:__init()
 end
 
 function Walking:LocalPlayerEnterVehicle()
-	if self.InputPollEvent then
-		Events:Unsubscribe( self.InputPollEvent )
-		self.InputPollEvent = nil
-	end
+	if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
 end
 
 function Walking:LocalPlayerExitVehicle()
-	if not self.InputPollEvent then
-		self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll )
-	end
+	if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll ) end
 end
 
 function Walking:InputPoll()

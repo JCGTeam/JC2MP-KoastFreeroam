@@ -29,24 +29,26 @@ function Snow:__init()
 
 	self:PopulateGrid()
 
-	Events:Subscribe( "GetOption", self, self.GetOption )
+	Events:Subscribe( "SharedObjectValueChange", self, self.SharedObjectValueChange )
+
+	if LocalPlayer:GetValue( "SnowVisible" ) then
+        self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
+	end
 end
 
-function Snow:GetOption( args )
-	if args.actSn then
-		if not self.RenderEvent then
-			self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-		end
-	else
-		if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
+function Snow:SharedObjectValueChange( args )
+	if args.key == "SnowVisible" and args.object.__type == "LocalPlayer" then
+		if args.value then
+			if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+		else
+			if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 		end
 	end
 end
 
 function Snow:Render()
 	if Game:GetState() == GUIState.PDA then return end
+
 	self.dt = Client:GetElapsedSeconds() - self.curTime
 	self.curTime = Client:GetElapsedSeconds()
 

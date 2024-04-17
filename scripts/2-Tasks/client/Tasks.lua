@@ -150,32 +150,13 @@ function Tasks:JobStart( args )
 		self.sound:SetParameter(0,1)
 		self.locationsVisible = false
 
-		if not self.InJobPostTickEvent then
-			self.jobCompleteTimer = Timer()
-			self.InJobPostTickEvent = Events:Subscribe( "PostTick", self, self.InJobPostTick )
-		end
+		if not self.InJobPostTickEvent then self.jobCompleteTimer = Timer() self.InJobPostTickEvent = Events:Subscribe( "PostTick", self, self.InJobPostTick ) end
 	end
 
-	if self.PostTickEvent then
-		Events:Unsubscribe( self.PostTickEvent )
-		self.PostTickEvent = nil
-		self.jobCheckTimer = nil
-	end
-
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
-
-	if self.KeyUpEvent then
-		Events:Unsubscribe( self.KeyUpEvent )
-		self.KeyUpEvent = nil
-	end
-
-	if self.GameRenderOpaqueEvent then
-		Events:Unsubscribe( self.GameRenderOpaqueEvent )
-		self.GameRenderOpaqueEvent = nil
-	end
+	if self.PostTickEvent then Events:Unsubscribe( self.PostTickEvent ) self.PostTickEvent = nil self.jobCheckTimer = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
+	if self.GameRenderOpaqueEvent then Events:Unsubscribe( self.GameRenderOpaqueEvent ) self.GameRenderOpaqueEvent = nil end
 end
 
 function Tasks:JobFinish()
@@ -218,32 +199,12 @@ function Tasks:JobCancel()
 
 	self.job = nil
 
-	if self.locationsAutoHide then
-		self.locationsVisible = true
-	end
-	
-	if self.InJobPostTickEvent then
-		Events:Unsubscribe( self.InJobPostTickEvent )
-		self.InJobPostTickEvent = nil
-		self.jobCompleteTimer = nil
-	end
-	
-	if not self.PostTickEvent then
-		self.jobCheckTimer = Timer()
-		self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick )
-	end
-	
-	if not self.LocalPlayerInputEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
-	
-	if not self.KeyUpEvent then
-		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
-	end
-	
-	if not self.GameRenderOpaqueEvent then
-		self.GameRenderOpaqueEvent = Events:Subscribe( "GameRender", self, self.GameRenderOpaque )
-	end
+	if self.locationsAutoHide then self.locationsVisible = true end
+	if self.InJobPostTickEvent then Events:Unsubscribe( self.InJobPostTickEvent ) self.InJobPostTickEvent = nil self.jobCompleteTimer = nil end
+	if not self.PostTickEvent then self.jobCheckTimer = Timer() self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick ) end
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+	if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
+	if not self.GameRenderOpaqueEvent then self.GameRenderOpaqueEvent = Events:Subscribe( "GameRender", self, self.GameRenderOpaque ) end
 end
 
 function Tasks:PostTick()
@@ -260,18 +221,9 @@ function Tasks:PostTick()
 		local jobToRender = self.jobsTable[k]
 
 		if jDist < 1028 and jobToRender.direction then
-			if not self.RenderEvent then
-				self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-			end
-
-			if not self.GameRenderEvent then
-				self.jobUpdateTimer = Timer()
-				self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.GameRender )
-			end
-
-			if not self.GameRenderOpaqueEvent then
-				self.GameRenderOpaqueEvent = Events:Subscribe( "GameRender", self, self.GameRenderOpaque )
-			end
+			if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+			if not self.GameRenderEvent then self.jobUpdateTimer = Timer() self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.GameRender ) end
+			if not self.GameRenderOpaqueEvent then self.GameRenderOpaqueEvent = Events:Subscribe( "GameRender", self, self.GameRenderOpaque ) end
 
 			self.jobsfounded = true
 			return false
@@ -279,22 +231,9 @@ function Tasks:PostTick()
 	end
 
 	if not self.jobsfounded then return end
-
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
-
-	if self.GameRenderEvent then
-		Events:Unsubscribe( self.GameRenderEvent )
-		self.GameRenderEvent = nil
-		self.jobUpdateTimer = nil
-	end
-
-	if self.GameRenderOpaqueEvent then
-		Events:Unsubscribe( self.GameRenderOpaqueEvent )
-		self.GameRenderOpaqueEvent = nil
-	end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil self.jobUpdateTimer = nil end
+	if self.GameRenderOpaqueEvent then Events:Unsubscribe( self.GameRenderOpaqueEvent ) self.GameRenderOpaqueEvent = nil end
 
 	self.jobsfounded = nil
 end

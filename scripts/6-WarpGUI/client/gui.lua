@@ -225,39 +225,28 @@ function WarpGui:PlayerNameContains( name, filter )
 end
 
 function WarpGui:WarpToPlayerClick( player )
-	ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play(AssetLocation.Game, {
 		effect_id = 383,
 
 		position = Camera:GetPosition(),
 		angle = Angle()
 	})
+
 	local time = Client:GetElapsedSeconds()
 	if time < self.cooltime then
 		self:SetWindowVisible( false )
 
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 
-		if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-		end
 		Events:Fire( "CastCenterText", { text = self.w .. math.ceil(self.cooltime - time) .. self.ws, time = 6, color = Color.Red } )
 		return
 	end
+
 	Network:Send( "WarpRequestToServer", {requester = LocalPlayer, target = player} )
 
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
-
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 
 	self:SetWindowVisible( false )
 
@@ -280,15 +269,8 @@ function WarpGui:AcceptWarpClick( player )
 		Network:Send( "WarpTo", {requester = player, target = LocalPlayer} )
 		self:SetWindowVisible( false )
 
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
-
-		if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-		end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
 end
 
@@ -334,10 +316,8 @@ function WarpGui:PostTick()
 	if self.RefreshTimer:GetSeconds() <= 30 then return end
 	self:refreshList()
 	self.RefreshTimer = nil
-	if self.PostTickEvent then
-		Events:Unsubscribe( self.PostTickEvent )
-		self.PostTickEvent = nil
-	end
+
+	if self.PostTickEvent then Events:Unsubscribe( self.PostTickEvent ) self.PostTickEvent = nil end
 end
 
 --  White/black -list click
@@ -384,7 +364,7 @@ function WarpGui:WarpReturnWhitelists( whitelists )
 end
 
 function WarpGui:WarpDoPoof( position )
-    ClientEffect.Play( AssetLocation.Game, {effect_id = 250, position = position, angle = Angle()} )
+    local effect = ClientEffect.Play( AssetLocation.Game, {effect_id = 250, position = position, angle = Angle()} )
 end
 
 --  Window management
@@ -392,15 +372,8 @@ function WarpGui:LocalPlayerInput( args )
 	if args.input == Action.GuiPause then
 		self:SetWindowVisible( false )
 
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
-
-		if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-		end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
 
 	if self.actions[args.input] then
@@ -420,15 +393,8 @@ function WarpGui:EscPressed()
 	self:Blur()
 	self:SetWindowVisible( false )
 
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
-
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function WarpGui:OpenWarpGUI()
@@ -438,38 +404,20 @@ function WarpGui:OpenWarpGUI()
 	self:SetWindowVisible( not self.windowShown )
 
 	if self.windowShown then
-		if not self.LocalPlayerInputEvent then
-			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-		end
-
-		if not self.RenderEvent then
-			self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-		end
-
-		ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 382,
-	
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	else
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 
-		if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-		end
-
-		ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 383,
-	
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
+
+	local effect = ClientEffect.Play(AssetLocation.Game, {
+		effect_id = self.windowShown and 382 or 383,
+
+		position = Camera:GetPosition(),
+		angle = Angle()
+	})
 end
 
 function WarpGui:CloseWarpGUI()
@@ -479,15 +427,8 @@ function WarpGui:CloseWarpGUI()
 	if self.window:GetVisible() == true then
 		self:SetWindowVisible( false )
 
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
-
-		if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-		end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
 end
 

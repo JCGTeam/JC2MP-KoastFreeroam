@@ -21,13 +21,13 @@ function Claymores:initVars()
 end
 
 function Claymores:EffectClay( args )
-	ClientEffect.Play(AssetLocation.Game,
+	local effect = ClientEffect.Play(AssetLocation.Game,
 	{
 		effect_id = 33,
 		position = args.position,
 		angle = args.angle
 	})
-	ClientEffect.Play(AssetLocation.Game,
+	local effect = ClientEffect.Play(AssetLocation.Game,
 	{
 		effect_id = 19,
 		position = args.position,

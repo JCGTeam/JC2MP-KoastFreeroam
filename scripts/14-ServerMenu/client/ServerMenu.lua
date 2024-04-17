@@ -278,37 +278,24 @@ end
 function ServerMenu:Open()
 	self:SetWindowVisible( not self.active )
 	if self.active then
-		if not self.RenderEvent then
-			self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-		end
-		ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 382,
-
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	else
-		if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-		end
-		ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 383,
-
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
+
+	local effect = ClientEffect.Play(AssetLocation.Game, {
+		effect_id = self.active and 382 or 383,
+
+		position = Camera:GetPosition(),
+		angle = Angle()
+	})
 end
 
 function ServerMenu:LocalPlayerInput( args )
 	if self.window:GetVisible() == true then
 		if args.input == Action.GuiPause then
 			self:SetWindowVisible( false )
-			if self.RenderEvent then
-				Events:Unsubscribe( self.RenderEvent )
-				self.RenderEvent = nil
-			end
+			if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 		end
 		if args.input ~= Action.EquipBlackMarketBeacon then
 			if self.actions[args.input] then
@@ -360,11 +347,10 @@ end
 
 function ServerMenu:WindowClosed( args )
 	self:SetWindowVisible( false )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
-	ClientEffect.Create(AssetLocation.Game, {
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+
+	local effect = ClientEffect.Create(AssetLocation.Game, {
 		effect_id = 383,
 
 		position = Camera:GetPosition(),
@@ -484,121 +470,88 @@ end
 function ServerMenu:CastNewsMenu()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "OpenNewsMenu" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 end
 
 function ServerMenu:CastHelpMenu()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "OpenHelpMenu" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastShop()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "OpenShop" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastWarpGUI()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "OpenWarpGUI" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastClansMenu()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "OpenClansMenu" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastGuiPm()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "OpenGuiPm" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastSettingsMenu()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "OpenSettingsMenu" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastDedMorozMenu()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "OpenDedMorozMenu" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastMainMenu()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "OpenGameModesMenu" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 end
 
 function ServerMenu:CastAbilitiesMenu()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "OpenAbitiliesMenu" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 end
 
 function ServerMenu:CastPassive()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "PassiveOn" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastJesusMode()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "JesusToggle" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastHideMe()
@@ -606,10 +559,7 @@ function ServerMenu:CastHideMe()
 	Network:Send( "ToggleHideMe" )
 	Events:Fire( "CastCenterText", { text = self.hidemetxt .. ( LocalPlayer:GetValue( "HideMe" ) and self.disabletxt or self.enabletxt ), time = 2, color = Color.White } )
 
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastPigeonMod()
@@ -624,19 +574,14 @@ function ServerMenu:CastPigeonMod()
 		Events:Fire( "AbortWingsuit" )
 	end
 
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastReportMenu()
 	self:SetWindowVisible( not self.active )
 	Events:Fire( "OpenReportMenu" )
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 

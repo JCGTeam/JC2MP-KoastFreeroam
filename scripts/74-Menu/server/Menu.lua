@@ -35,12 +35,15 @@ function Menu:SetEng( args, sender )
 	local pcountry = sender:GetValue( "Country" )
 
 	if sender:GetValue( "Country" ) and self.languageslist[pcountry] then
+		local text_clr = Color.White
+		local text2_clr = Color.Yellow
+
 		Chat:Send( sender, "Welcome to Koast Freeroam! Have a good game :3", Color( 200, 120, 255 ) )
 		Chat:Send( sender, "==============", Color( 255, 255, 255 ) )
-		Chat:Send( sender, "> Server Menu: ", Color.White, "B", Color.Yellow )
-		Chat:Send( sender, "> Actions Menu: ", Color.White, "V", Color.Yellow )
-		Chat:Send( sender, "> Server Map: ", Color.White, "F2", Color.Yellow, " / ", Color.White, "M", Color.Yellow )
-		Chat:Send( sender, "> Players List: ", Color.White, "F5", Color.Yellow )
+		Chat:Send( sender, "> Server Menu: ", text_clr, "B", text2_clr )
+		Chat:Send( sender, "> Actions Menu: ", text_clr, "V", text2_clr )
+		Chat:Send( sender, "> Server Map: ", text_clr, "F2", text2_clr, " / ", text_clr, "M",text2_clr )
+		Chat:Send( sender, "> Players List: ", text_clr, "F5", text2_clr )
 		Chat:Send( sender, "==============", Color( 255, 255, 255 ) )
 	end
 end

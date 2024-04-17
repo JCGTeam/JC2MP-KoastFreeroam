@@ -17,23 +17,11 @@ end
 
 function HitReg:LocalPlayerWorldChange( args )
     if args.new_world == DefaultWorld then
-        if not self.LocalPlayerInputEvent then
-            self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-        end
-
-        if not self.MouseUpEvent then
-            self.MouseUpEvent = Events:Subscribe( "MouseUp", self, self.MouseUp )
-        end
+        if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+        if not self.MouseUpEvent then self.MouseUpEvent = Events:Subscribe( "MouseUp", self, self.MouseUp ) end
     else
-        if self.LocalPlayerInputEvent then
-            Events:Unsubscribe( self.LocalPlayerInputEvent )
-            self.LocalPlayerInputEvent = nil
-        end
-    
-        if self.MouseUpEvent then
-            Events:Unsubscribe( self.MouseUpEvent )
-            self.MouseUpEvent = nil
-        end
+        if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+        if self.MouseUpEvent then Events:Unsubscribe( self.MouseUpEvent ) self.MouseUpEvent = nil end
     end
 end
 

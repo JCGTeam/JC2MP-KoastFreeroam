@@ -18,10 +18,7 @@ function PromoCodes:GetMoney()
     print( "Промокод успешно активирован." )
     Network:Send( "GetMoney" )
 
-    if self.PromoCodeEvent then
-        Console:Unsubscribe( self.PromoCodeEvent )
-        self.PromoCodeEvent = nil
-    end
+    if self.PromoCodeEvent then Console:Unsubscribe( self.PromoCodeEvent ) self.PromoCodeEvent = nil end
 end
 
 promocodes = PromoCodes()

@@ -11,13 +11,13 @@ function CenterText:CastCenterText( args )
 	self.timeF = args.time
     self.color = args.color
     self.size = 30
-    if not self.RenderEvent then
-        self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-    end
+
+    if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 end
 
-function CenterText:Render( args )
+function CenterText:Render()
 	if Game:GetState() ~= GUIState.Game then return end	
+
 	if self.timerF and self.textF then
 		local alpha = 4
 
@@ -28,8 +28,8 @@ function CenterText:Render( args )
             self.textF = nil
             self.timeF = nil
             self.color= nil
-            Events:Unsubscribe( self.RenderEvent )
-            self.RenderEvent = nil
+
+            Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil
             return
         end
 

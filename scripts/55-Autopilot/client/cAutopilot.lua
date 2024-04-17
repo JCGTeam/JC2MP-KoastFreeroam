@@ -420,21 +420,13 @@ function Autopilot:PanelOpen( args )
 			self.gui.window:SetVisible( not self.gui.window:GetVisible() )
 			self:SettingsOff()
 			Mouse:SetVisible( self.gui.window:GetVisible() )
-			if self.gui.window:GetVisible() then
-				ClientEffect.Play(AssetLocation.Game, {
-					effect_id = 382,
 
-					position = Camera:GetPosition(),
-					angle = Angle()
-				})
-			else
-				ClientEffect.Play(AssetLocation.Game, {
-					effect_id = 383,
+			local effect = ClientEffect.Play(AssetLocation.Game, {
+				effect_id = self.gui.window:GetVisible() and 382 or 383,
 
-					position = Camera:GetPosition(),
-					angle = Angle()
-				})
-			end
+				position = Camera:GetPosition(),
+				angle = Angle()
+			})
 		end
 	end
 end
@@ -443,21 +435,13 @@ function Autopilot:Close( args )
 		self.gui.window:SetVisible( not self.gui.window:GetVisible() )
 		self:SettingsOff()
 		Mouse:SetVisible( self.gui.window:GetVisible() )
-		if self.gui.window:GetVisible() then
-			ClientEffect.Play(AssetLocation.Game, {
-				effect_id = 382,
 
-				position = Camera:GetPosition(),
-				angle = Angle()
-			})
-		else
-			ClientEffect.Play(AssetLocation.Game, {
-				effect_id = 383,
+		local effect = ClientEffect.Play(AssetLocation.Game, {
+			effect_id = self.gui.window:GetVisible() and 382 or 383,
 
-				position = Camera:GetPosition(),
-					angle = Angle()
-			})
-		end
+			position = Camera:GetPosition(),
+			angle = Angle()
+		})
 end
 
 function Autopilot:InputBlock( args ) -- Subscribed to LocalPlayerInput
@@ -613,40 +597,21 @@ function Autopilot:EnterPlane( args )
 			self:AutopilotOff()
 			self.vehicle = args.vehicle
 			self.model = model
-			if not self.LocalPlayerInputEvent then
-				self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.InputBlock )
-			end
-			if not self.KeyUpEvent then
-				self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.PanelOpen )
-			end
-			if not self.GameRenderEvent then
-				self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.DrawApproach )
-			end
-			if not self.RenderEvent then
-				self.RenderEvent = Events:Subscribe( "Render", self, self.DrawTarget )
-			end
+
+			if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.InputBlock ) end
+			if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.PanelOpen ) end
+			if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.DrawApproach ) end
+			if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.DrawTarget ) end
 		end
 	end
 end
 
 function Autopilot:ExitPlane( args )
 	if self.vehicle then self:Disable() end
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
-	if self.KeyUpEvent then
-		Events:Unsubscribe( self.KeyUpEvent )
-		self.KeyUpEvent = nil
-	end
-	if self.GameRenderEvent then
-		Events:Unsubscribe( self.GameRenderEvent )
-		self.GameRenderEvent = nil
-	end
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
+	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function Autopilot:PlaneDespawn( args )

@@ -77,13 +77,8 @@ function Bank:SetActive( state )
 	Mouse:SetVisible( self.MenuActive )
 
 	if self.MenuActive then
-		if not self.LocalPlayerInputEvent then
-			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-		end
-
-		if not self.WindowRenderEvent then
-			self.WindowRenderEvent = Events:Subscribe( "Render", self, self.WindowRender )
-		end
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if not self.WindowRenderEvent then self.WindowRenderEvent = Events:Subscribe( "Render", self, self.WindowRender ) end
 
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			if self.plist.balance then
@@ -91,15 +86,8 @@ function Bank:SetActive( state )
 			end
 		end
 	else
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
-
-		if self.WindowRenderEvent then
-			Events:Unsubscribe( self.WindowRenderEvent )
-			self.WindowRenderEvent = nil
-		end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.WindowRenderEvent then Events:Unsubscribe( self.WindowRenderEvent ) self.WindowRenderEvent = nil end
 	end
 end
 
@@ -311,9 +299,7 @@ function Bank:MoneyChange( args )
 
 	if Game:GetState() ~= GUIState.Game then return end
 
-	if not self.RenderEvent then
-		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-	end
+	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 
 	-- Very unlikely you'll be able to get any money in the first 2 seconds!
     local diff = args.new_money - args.old_money

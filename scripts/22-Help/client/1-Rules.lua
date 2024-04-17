@@ -27,7 +27,7 @@ function HCommands:EngHelp()
 				"           - Kick (If the violation of this rule will be detected again, the ban will be for 1 day).\n \n" ..
 				"    7. Deliberate attempts to break the server or the game to people:\n" ..
 				"           - BAN for 2 dayse (If the violation of this rule will be detected again, the ban will be for 7 days).\n \n" ..
-				"    8. Intentional killing while in peaceful mode or killing peaceful players:\n" ..
+				"    8. Intentional killing while in passive mode or killing passive players:\n" ..
 				"           - KICK (IF THE VIOLATION OF THIS RULE WILL BE DETECTED AGAIN, THE BAN WILL BE FOR 3 DAY).\n \n" ..
 				"    9. Have a clan name that offends the player/server administration:\n" ..
 				"           - Deleting a clan (Money for creating a clan is not refundable).\n \n" ..

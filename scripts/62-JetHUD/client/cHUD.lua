@@ -43,8 +43,7 @@ function HUD:Active()
 	if not self.EventRender then
 		self.EventRender = Events:Subscribe( "Render" , self , self.Render )
 	else
-		Events:Unsubscribe( self.EventRender )
-		self.EventRender = nil
+		Events:Unsubscribe( self.EventRender ) self.EventRender = nil
 	end
 end
 

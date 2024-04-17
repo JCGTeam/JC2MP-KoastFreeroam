@@ -99,7 +99,7 @@ function ActionsMenu:KeyUp( args )
 
             Events:Fire( "CloseSendMoney" )
 
-            ClientEffect.Play(AssetLocation.Game, {
+            local effect = ClientEffect.Play(AssetLocation.Game, {
                 effect_id = 382,
     
                 position = Camera:GetPosition(),
@@ -214,10 +214,8 @@ function ActionsMenu:Seat()
 	elseif bs == AnimationState.SIdlePassengerVehicle then
 		LocalPlayer:SetBaseState( AnimationState.SUprightIdle )
 		if self.SeatInputEvent then
-			Events:Unsubscribe( self.SeatInputEvent )
-			self.SeatInputEvent = nil
-			Events:Unsubscribe( self.CalcViewEvent )
-			self.CalcViewEvent = nil
+			Events:Unsubscribe( self.SeatInputEvent ) self.SeatInputEvent = nil
+			Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil
 		end
 		self:WindowClosed()
 	end
@@ -226,10 +224,8 @@ end
 function ActionsMenu:SeatInput( args )
 	if args.input == 39 or args.input == 40 or args.input == 41 or args.input == 42 then
 		LocalPlayer:SetBaseState( AnimationState.SUprightIdle )
-		Events:Unsubscribe( self.SeatInputEvent )
-		self.SeatInputEvent = nil
-		Events:Unsubscribe( self.CalcViewEvent )
-		self.CalcViewEvent = nil
+		Events:Unsubscribe( self.SeatInputEvent ) self.SeatInputEvent = nil
+		Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil
 	end
 end
 
@@ -333,13 +329,13 @@ end
 function ActionsMenu:WindowClosed()
     self.window:SetVisible( false )
 	Mouse:SetVisible( false )
+
     if self.LocalPlayerInputEvent then
-        Events:Unsubscribe( self.LocalPlayerInputEvent )
-        self.LocalPlayerInputEvent = nil
-        Events:Unsubscribe( self.RenderEvent )
-        self.RenderEvent = nil
+        Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil
+        Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil
     end
-    ClientEffect.Play(AssetLocation.Game, {
+
+    local effect = ClientEffect.Play(AssetLocation.Game, {
         effect_id = 383,
 
         position = Camera:GetPosition(),
@@ -363,10 +359,8 @@ end
 function ActionsMenu:SeatInput( args )
 	if args.input == 39 or args.input == 40 or args.input == 41 or args.input == 42 then
 		LocalPlayer:SetBaseState( AnimationState.SUprightIdle )
-		Events:Unsubscribe( self.SeatInputEvent )
-		self.SeatInputEvent = nil
-		Events:Unsubscribe( self.CalcViewEvent )
-		self.CalcViewEvent = nil
+		Events:Unsubscribe( self.SeatInputEvent ) self.SeatInputEvent = nil
+		Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil
 	end
 end
 

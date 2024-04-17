@@ -20,10 +20,8 @@ function Admin:PostRender()
 		if self.timer:GetSeconds() > 10 then
 			self.timer = nil
 			self.message = ""
-			if self.PostRenderEvent then
-				Events:Unsubscribe( self.PostRenderEvent )
-				self.PostRenderEvent = nil
-			end
+
+			if self.PostRenderEvent then Events:Unsubscribe( self.PostRenderEvent ) self.PostRenderEvent = nil end
 		end
 	end
 end
@@ -31,9 +29,8 @@ end
 function Admin:ClientFunction( args )
 	self.timer = Timer()
 	self.message = args.text
-	if not self.PostRenderEvent then
-		self.PostRenderEvent = Events:Subscribe( "PostRender", self, self.PostRender )
-	end
+
+	if not self.PostRenderEvent then self.PostRenderEvent = Events:Subscribe( "PostRender", self, self.PostRender ) end
 end
 
 admin = Admin()

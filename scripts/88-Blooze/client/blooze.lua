@@ -112,14 +112,8 @@ function BloozeMod:BloozingStop()
         self.value = nil
         self.naklon = nil
 
-        if self.InputPollEvent then
-            Events:Unsubscribe( self.InputPollEvent )
-            self.InputPollEvent = nil
-        end
-        if self.CalcViewEvent then
-            Events:Unsubscribe( self.CalcViewEvent )
-            self.CalcViewEvent = nil
-        end
+        if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
+        if self.CalcViewEvent then Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil end
     end
 end
 

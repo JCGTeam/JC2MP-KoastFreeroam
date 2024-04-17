@@ -39,9 +39,7 @@ function Manhunt:GoHunt()
 end
 
 function Manhunt:Enter()
-	if not self.EventRender then
-		self.EventRender = Events:Subscribe( "Render", self, self.Render )
-	end
+	if not self.EventRender then self.EventRender = Events:Subscribe( "Render", self, self.Render ) end
 	self.inMode = true
 	self.superman = false
 	Game:FireEvent("ply.grappling.disable")
@@ -50,10 +48,7 @@ function Manhunt:Enter()
 end
 
 function Manhunt:Exit()
-	if self.EventRender then
-		Events:Unsubscribe( self.EventRender )
-		self.EventRender = nil
-	end
+	if self.EventRender then Events:Unsubscribe( self.EventRender ) self.EventRender = nil end
 	Waypoint:Remove()
 	self.inMode = false
 	self.superman = true

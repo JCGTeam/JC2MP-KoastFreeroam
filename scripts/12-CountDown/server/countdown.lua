@@ -78,9 +78,7 @@ function Countdown:PreTick( args )
 	if milliseconds - self.timeOfLastCount >= 1000 then
 		if self.secondsToGo < 0 then
 			self.activeCountdowns = false
-			if self.tickSubscription ~= nil then
-				Events:Unsubscribe(self.tickSubscription)
-			end
+			if self.tickSubscription ~= nil then Events:Unsubscribe( self.tickSubscription ) end
 			return
 		end
 

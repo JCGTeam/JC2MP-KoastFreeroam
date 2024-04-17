@@ -64,16 +64,11 @@ function SkydivingStats:__init()
 end
 
 function SkydivingStats:LocalPlayerEnterVehicle()
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function SkydivingStats:LocalPlayerExitVehicle()
-	if not self.RenderEvent then
-		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-	end
+	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 end
 
 function SkydivingStats:Lang()

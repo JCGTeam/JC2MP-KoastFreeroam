@@ -190,44 +190,28 @@ function Pigeon:LocalPlayerInput( args )
 			self.timers.activate = nil
 
 			if self.whitelist.animations[bs] then
-				if not self.RCtimer then
-					self.RCtimer = Timer()
-				end
+				if not self.RCtimer then self.RCtimer = Timer() end
 				self.timers.camera_start = Timer()
 				self.speed = self.default_speed
-				-- self.camera = 1
+
 				LocalPlayer:SetBaseState( AnimationState.SSkydive )
 				LocalPlayer:SetValue( "IsPigeonMod", true )
-				if not self.subs.wings then
-					self.subs.wings = Events:Subscribe( "GameRenderOpaque", self, self.DrawWings )
-				end
-				if not self.subs.velocity then
-					self.subs.velocity = Events:Subscribe( "Render", self, self.SetVelocity )
-				end
-				if not self.subs.camera then
-					self.subs.camera = Events:Subscribe( "CalcView", self, self.Camera )
-				end
-				if not self.subs.glide then
-					self.subs.glide = Events:Subscribe( "InputPoll", self, self.Glide )
-				end
-				if not self.subs.input then
-					self.subs.input = Events:Subscribe( "LocalPlayerInput", self, self.Input )
-				end
+
+				if not self.subs.wings then self.subs.wings = Events:Subscribe( "GameRenderOpaque", self, self.DrawWings ) end
+				if not self.subs.velocity then self.subs.velocity = Events:Subscribe( "Render", self, self.SetVelocity ) end
+				if not self.subs.camera then self.subs.camera = Events:Subscribe( "CalcView", self, self.Camera ) end
+				if not self.subs.glide then self.subs.glide = Events:Subscribe( "InputPoll", self, self.Glide ) end
+				if not self.subs.input then self.subs.input = Events:Subscribe( "LocalPlayerInput", self, self.Input ) end
 			elseif LocalPlayer:GetValue( "PigeonMod" ) then
 				if self.whitelist.animations[bs] then
 					local timer = Timer()
 					self.timers.camera_start = Timer()
 					self.speed = self.default_speed
-					-- self.camera = 1
-					if not self.subs.camera then
-						self.subs.camera = Events:Subscribe( "CalcView", self, self.Camera )
-					end
-					if not self.subs.input then
-						self.subs.input = Events:Subscribe( "LocalPlayerInput", self, self.Input )
-					end
-					if not self.subs.wings then
-						self.subs.wings = Events:Subscribe( "GameRenderOpaque", self, self.DrawWings )
-					end
+
+					if not self.subs.camera then self.subs.camera = Events:Subscribe( "CalcView", self, self.Camera ) end
+					if not self.subs.input then self.subs.input = Events:Subscribe( "LocalPlayerInput", self, self.Input ) end
+					if not self.subs.wings then self.subs.wings = Events:Subscribe( "GameRenderOpaque", self, self.DrawWings ) end
+
 					self.subs.delay = Events:Subscribe( "PreTick", function()
 						local dt = timer:GetMilliseconds()
 						LocalPlayer:SetBaseState(AnimationState.SSkydive)
@@ -533,31 +517,17 @@ function Pigeon:Abort()
 		Network:Send( "0003", self.score )
 		Game:ShowPopup( self.tRecord .. self.score, true )
 	end
-	if self.RCtimer then
-		self.RCtimer = nil
-	end
+
+	if self.RCtimer then self.RCtimer = nil end
+
 	self.score = 0
 	LocalPlayer:SetValue( "IsPigeonMod", nil )
-	if self.subs.wings then
-		Events:Unsubscribe( self.subs.wings )
-		self.subs.wings = nil
-	end
-	if self.subs.velocity then
-		Events:Unsubscribe ( self.subs.velocity )
-		self.subs.velocity = nil
-	end
-	if self.subs.glide then
-		Events:Unsubscribe( self.subs.glide )
-		self.subs.glide = nil
-	end
-	if self.subs.input then
-		Events:Unsubscribe( self.subs.input )
-		self.subs.input = nil
-	end
-	if self.subs.camera then
-		Events:Unsubscribe( self.subs.camera )
-		self.subs.camera = nil
-	end
+
+	if self.subs.wings then Events:Unsubscribe( self.subs.wings ) self.subs.wings = nil end
+	if self.subs.velocity then Events:Unsubscribe ( self.subs.velocity ) self.subs.velocity = nil end
+	if self.subs.glide then Events:Unsubscribe( self.subs.glide ) self.subs.glide = nil end
+	if self.subs.input then Events:Unsubscribe( self.subs.input ) self.subs.input = nil end
+	if self.subs.camera then Events:Unsubscribe( self.subs.camera ) self.subs.camera = nil end
 end
 
 function Pigeon:Camera()

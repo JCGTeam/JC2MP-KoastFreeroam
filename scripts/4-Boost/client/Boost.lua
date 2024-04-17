@@ -178,12 +178,16 @@ function Boost:Render( args )
 
 	if self.brake and not LocalPlayer:GetValue( "Freeze" )then
 		if Key:IsDown(70) then -- F
-			LocalPlayer:SetValue( "VehBrake", true )
+			if not LocalPlayer:GetValue( "VehBrake" ) then
+				LocalPlayer:SetValue( "VehBrake", true )
+			end
 			vehicle:SetLinearVelocity( Vector3.Zero )
 			self.vpos = self.vpos or vehicle:GetPosition()
 			vehicle:SetPosition( self.vpos )
 		else
-			LocalPlayer:SetValue( "VehBrake", nil )
+			if LocalPlayer:GetValue( "VehBrake" ) then
+				LocalPlayer:SetValue( "VehBrake", nil )
+			end
 			self.vpos = nil
 		end
 	end
@@ -278,13 +282,8 @@ function Boost:PlaneCheck( vehicle )
 end
 
 function Boost:LocalPlayerEnterVehicle( args )
-	if not self.RenderEvent then
-		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-	end
-
-	if not self.LocalPlayerInputEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
+	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 
 	if not self.hinttimer then
 		self.hinttimer = Timer()
@@ -296,15 +295,8 @@ end
 function Boost:LocalPlayerExitVehicle()
 	LocalPlayer:SetValue( "VehBrake", nil )
 
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
-
-	if self.LocalPlayerInputEvent then
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		self.LocalPlayerInputEvent = nil
-	end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 end
 
 boost = Boost()

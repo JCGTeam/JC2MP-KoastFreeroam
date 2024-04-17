@@ -157,17 +157,9 @@ function FreeCam:CalcView()
 end
 
 function FreeCam:Activate()
-	if not self.RenderEvent then
-		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-	end
-
-	if not self.CalcViewEvent then
-		self.CalcViewEvent = Events:Subscribe( "CalcView", self, self.CalcView )
-	end
-
-	if not self.PostTickEvent then
-		self.PostTickEvent = Events:Subscribe( "PostTick", self, self.UpdateCamera )
-	end
+	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+	if not self.CalcViewEvent then self.CalcViewEvent = Events:Subscribe( "CalcView", self, self.CalcView ) end
+	if not self.PostTickEvent then self.PostTickEvent = Events:Subscribe( "PostTick", self, self.UpdateCamera ) end
 
 	self.active = true
 	self.RamaType = 0
@@ -182,20 +174,9 @@ function FreeCam:Activate()
 end
 
 function FreeCam:Deactivate()
-	if self.RenderEvent then
-		Events:Unsubscribe( self.RenderEvent )
-		self.RenderEvent = nil
-	end
-
-	if self.CalcViewEvent then
-		Events:Unsubscribe( self.CalcViewEvent )
-		self.CalcViewEvent = nil
-	end
-
-	if self.PostTickEvent then
-		Events:Unsubscribe( self.PostTickEvent )
-		self.PostTickEvent = nil
-	end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.CalcViewEvent then Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil end
+	if self.PostTickEvent then Events:Unsubscribe( self.PostTickEvent ) self.PostTickEvent = nil end
 
 	self.active = false
 

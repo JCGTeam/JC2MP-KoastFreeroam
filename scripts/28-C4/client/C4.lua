@@ -89,9 +89,7 @@ function C4Controller:FireC4( args )
 			self.planted = false
 			self.plantedTimer:Restart()
 			self.cd = 1
-			if not self.MouseUpEvent then
-				self.MouseUpEvent = Events:Subscribe( "MouseUp", self, self.MouseUp )
-			end
+			if not self.MouseUpEvent then self.MouseUpEvent = Events:Subscribe( "MouseUp", self, self.MouseUp ) end
 		end
 
 		if self.cd then
@@ -101,10 +99,7 @@ function C4Controller:FireC4( args )
 					self.detonated = false
 					self.detonationTimer:Restart()
 					self.cd = nil
-					if self.MouseUpEvent then
-						Events:Unsubscribe( self.MouseUpEvent )
-						self.MouseUpEvent = nil
-					end
+					if self.MouseUpEvent then Events:Unsubscribe( self.MouseUpEvent ) self.MouseUpEvent = nil end
 					return false
 				end
 			end

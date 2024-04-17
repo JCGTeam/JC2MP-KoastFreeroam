@@ -451,16 +451,13 @@ function Admin:setActive( state )
 		self.panel.main.update:SetEnabled( true )
 		Mouse:SetVisible ( false )
 		self.active = false
-		ClientEffect.Play(AssetLocation.Game, {
+		local effect = ClientEffect.Play(AssetLocation.Game, {
 			effect_id = 383,
 
 			position = Camera:GetPosition(),
 			angle = Angle()
 		})
-		if self.updateDataEvent then
-			Events:Unsubscribe( self.updateDataEvent )	
-			self.updateDataEvent = nil
-		end
+		if self.updateDataEvent then Events:Unsubscribe( self.updateDataEvent )	 self.updateDataEvent = nil end
 	end
 end
 
@@ -531,15 +528,13 @@ function Admin:showPanel( data )
 	Mouse:SetVisible( true )
 	self.active = true
 	self:loadPlayersToList()
-	if not self.updateDataEvent then
-		self.updateDataEvent = Events:Subscribe ( "PostTick", self, self.updateData )
-	end
+	if not self.updateDataEvent then self.updateDataEvent = Events:Subscribe ( "PostTick", self, self.updateData ) end
 	Network:Send( "admin.getServerInfo" )
 	self.panel.main.chatMessages:SetText( "" )
 	Network:Send( "admin.getChat" )
 	self:displayBans( data.bans )
 	self:displayModules( data.modules )
-	ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play(AssetLocation.Game, {
 		effect_id = 382,
 
 		position = Camera:GetPosition(),
@@ -930,16 +925,12 @@ function Admin:spectate()
 			end
 
 			if self.spectateCalcViewEvent then
-				Events:Unsubscribe( self.spectateCalcViewEvent )
-				self.spectateCalcViewEvent = nil
+				Events:Unsubscribe( self.spectateCalcViewEvent ) self.spectateCalcViewEvent = nil
 			else
 				Chat:Print( ChatTag, Color.White, "Вы не можете наблюдать за собой!", err )
 			end
 		
-			if self.spectateRenderEvent then
-				Events:Unsubscribe( self.spectateRenderEvent )
-				self.spectateRenderEvent = nil
-			end
+			if self.spectateRenderEvent then Events:Unsubscribe( self.spectateRenderEvent ) self.spectateRenderEvent = nil end
 
 			LocalPlayer:SetValue( "SpectatorMode", nil )
 		end
@@ -956,9 +947,7 @@ function Admin:setSpectatorVictim( args )
 		self.updTimer = nil
 	end
 
-	if not self.updTimer then
-		self.updTimer = Timer()
-	end
+	if not self.updTimer then self.updTimer = Timer() end
 
 	if not self.spectateCalcViewEvent then
 		self.spectateCalcViewEvent = Events:Subscribe( "CalcView", self, self.spectateCamera )
@@ -966,11 +955,8 @@ function Admin:setSpectatorVictim( args )
 
 		LocalPlayer:SetValue( "SpectatorMode", 1 )
 	else
-		Events:Unsubscribe( self.spectateCalcViewEvent )
-		self.spectateCalcViewEvent = nil
-
-		Events:Unsubscribe( self.spectateRenderEvent )
-		self.spectateRenderEvent = nil
+		Events:Unsubscribe( self.spectateCalcViewEvent ) self.spectateCalcViewEvent = nil
+		Events:Unsubscribe( self.spectateRenderEvent ) self.spectateRenderEvent = nil
 
 		LocalPlayer:SetValue( "SpectatorMode", nil )
 	end
@@ -1201,9 +1187,7 @@ function Admin:shout( args )
 
 	self.shoutName = args.name
 	self.shoutMessage = args.msg
-	if not self.shoutEvent then
-		self.shoutEvent = Events:Subscribe( "Render", self, self.renderShout )
-	end
+	if not self.shoutEvent then self.shoutEvent = Events:Subscribe( "Render", self, self.renderShout ) end
 	self.shoutTimer = setTimer( self.removeShout, 5, 1 )
 end
 
@@ -1214,10 +1198,7 @@ end
 
 function Admin:removeShout()
 	local self = admin
-	if self.shoutEvent then
-		Events:Unsubscribe ( self.shoutEvent )
-		self.shoutEvent = nil
-	end
+	if self.shoutEvent then Events:Unsubscribe( self.shoutEvent ) self.shoutEvent = nil end
 	self.shoutName = ""
 	self.shoutMessage = ""
 	self.shoutTimer = nil

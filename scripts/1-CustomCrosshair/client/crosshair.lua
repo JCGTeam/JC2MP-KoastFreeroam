@@ -3,7 +3,9 @@ class 'Crosshair'
 local blacklist = { 64, 24, 53, 20, 75, 30, 47, 83, 32, 90, 61, 89, 43, 74, 21, 11 }
 
 function Crosshair:__init()
-	LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
+	if not LocalPlayer:GetValue( "CustomCrosshairVisible" ) then
+		LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
+	end
 
 	self.cooltime = 0
 	self.alpha = 0
@@ -245,7 +247,9 @@ function Crosshair:LocalPlayerInput( args )
 		else
 			if LocalPlayer:GetEquippedWeapon() == Weapon( Weapon.Sniper ) then
 				if LocalPlayer:GetUpperBodyState() == 347 then
-					LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
+					if not LocalPlayer:GetValue( "CustomCrosshairVisible" ) then
+						LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
+					end
 				else
 					LocalPlayer:SetValue( "CustomCrosshairVisible", tonumber( not LocalPlayer:GetValue( "CustomCrosshairVisible" ) ) )
 				end
@@ -256,7 +260,9 @@ function Crosshair:LocalPlayerInput( args )
 	else
 		if LocalPlayer:GetValue( "GameMode" ) == "FREEROAM" then
 			if LocalPlayer:GetEquippedWeapon() ~= Weapon( Weapon.Sniper ) then
-				LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
+				if not LocalPlayer:GetValue( "CustomCrosshairVisible" ) then
+					LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
+				end
 			end
 		end
 	end
