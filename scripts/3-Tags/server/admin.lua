@@ -997,7 +997,7 @@ function Admin:PlayerChat( args )
 
 		local vehicle = sender:GetVehicle()
 
-		if not vehicle or vehicle and svehicle:GetDriver() == sender then
+		if not vehicle or vehicle and vehicle:GetDriver() == sender then
 			Network:Send( sender, "BoomToSky", { boomvelocity = Vector3( 0, -100, 0 ) } )
 		else
 			deniedMessage( sender, inVehicle )
