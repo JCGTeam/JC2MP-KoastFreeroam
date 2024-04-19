@@ -494,24 +494,34 @@ function Map:ToggleWaypoint( position )
 
 	if waypoint then
 		Waypoint:Remove()
-		self.soundRemove = ClientSound.Create(AssetLocation.Game, {
-					bank_id = 20,
-					sound_id = 13,
-					position = Camera:GetPosition(),
-					angle = Angle()
-		})
+		if self.soundRemove then
+			self.soundRemove:Play()
+			self.soundRemove:SetParameter(0,1)
+		else
+			self.soundRemove = ClientSound.Create(AssetLocation.Game, {
+						bank_id = 20,
+						sound_id = 13,
+						position = Camera:GetPosition(),
+						angle = Angle()
+			})
 
-		self.soundRemove:SetParameter(0,1)
+			self.soundRemove:SetParameter(0,1)
+		end
 	else
 		Waypoint:SetPosition( position )
-		self.soundSet = ClientSound.Create(AssetLocation.Game, {
-					bank_id = 20,
-					sound_id = 12,
-					position = Camera:GetPosition(),
-					angle = Angle()
-		})
+		if self.soundSet then
+			self.soundSet:Play()
+			self.soundSet:SetParameter(0,1)
+		else
+			self.soundSet = ClientSound.Create(AssetLocation.Game, {
+				bank_id = 20,
+				sound_id = 12,
+				position = Camera:GetPosition(),
+				angle = Angle()
+			})
 
-		self.soundSet:SetParameter(0,1)
+			self.soundSet:SetParameter(0,1)
+		end
 	end
 end
 
