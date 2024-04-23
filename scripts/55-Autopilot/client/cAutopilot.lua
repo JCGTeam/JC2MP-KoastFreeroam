@@ -431,17 +431,17 @@ function Autopilot:PanelOpen( args )
 	end
 end
 
-function Autopilot:Close( args )
-		self.gui.window:SetVisible( not self.gui.window:GetVisible() )
-		self:SettingsOff()
-		Mouse:SetVisible( self.gui.window:GetVisible() )
+function Autopilot:Close()
+	self.gui.window:SetVisible( not self.gui.window:GetVisible() )
+	self:SettingsOff()
+	Mouse:SetVisible( self.gui.window:GetVisible() )
 
-		local effect = ClientEffect.Play(AssetLocation.Game, {
-			effect_id = self.gui.window:GetVisible() and 382 or 383,
+	local effect = ClientEffect.Play(AssetLocation.Game, {
+		effect_id = self.gui.window:GetVisible() and 382 or 383,
 
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
+		position = Camera:GetPosition(),
+		angle = Angle()
+	})
 end
 
 function Autopilot:InputBlock( args ) -- Subscribed to LocalPlayerInput
@@ -606,7 +606,7 @@ function Autopilot:EnterPlane( args )
 	end
 end
 
-function Autopilot:ExitPlane( args )
+function Autopilot:ExitPlane()
 	if self.vehicle then self:Disable() end
 	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end

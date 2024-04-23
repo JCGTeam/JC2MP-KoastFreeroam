@@ -12,7 +12,7 @@ function LoadNews:Lang()
 	Network:Send( "GetENGNews" )
 end
 
-function LoadNews:ModuleLoad( args )
+function LoadNews:ModuleLoad()
 	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else

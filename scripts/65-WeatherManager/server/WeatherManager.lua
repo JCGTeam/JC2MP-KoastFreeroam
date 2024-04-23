@@ -9,7 +9,7 @@ function WeatherManager:__init()
 	self.weather = Weathers[math.random(#Weathers)]
 end
 
-function WeatherManager:PostTick( args )
+function WeatherManager:PostTick()
 	if self.timer:GetHours() <= 1 then return end
 	if Weathers[math.random(#Weathers)] == self.weather then
 		self.weather = 0

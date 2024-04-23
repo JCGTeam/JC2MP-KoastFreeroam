@@ -197,7 +197,7 @@ function Killfeed:CalculateAlpha( time )
 	end
 end
 
-function Killfeed:Render( args )
+function Killfeed:Render()
 	if Game:GetState() ~= GUIState.Game then return end
 	if not LocalPlayer:GetValue( "KillFeedVisible" ) or LocalPlayer:GetValue( "HiddenHUD" ) then return end
 

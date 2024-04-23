@@ -74,14 +74,16 @@ function C4Controller:InputPoll()
 	end
 end
 
-function C4Controller:FireC4( args )
+function C4Controller:FireC4()
 	if self.planted then
-		local raycast = Physics:Raycast( Camera:GetPosition(), Camera:GetAngle() * Vector3.Forward, 0, 500, false )
+		local cameraPos = Camera:GetPosition()
+		local cameraAngle = Camera:GetAngle()
+		local raycast = Physics:Raycast( cameraPos.y < 200.5 and LocalPlayer:GetBonePosition( "ragdoll_Head" ) or cameraPos, cameraAngle * Vector3.Forward, 0, 500, false )
 		local distance = raycast.distance
 		local entity = raycast.entity
-		local anglePitch = Camera:GetAngle().pitch
+		local anglePitch = cameraAngle.pitch
 
-		if distance < C4Controller.MaxPlantDistance then
+		if distance < ( cameraPos.y < 200.5 and C4Controller.MaxPlantDistance / 2 or C4Controller.MaxPlantDistance ) and distance > 1 then
 			if LocalPlayer:InVehicle() then return end
 			self.crouched = anglePitch < -math.pi / 4
 			self.tossed = not self.crouched and anglePitch > math.pi / 8

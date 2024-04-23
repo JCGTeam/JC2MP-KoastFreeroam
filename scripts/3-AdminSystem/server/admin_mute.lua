@@ -25,7 +25,7 @@ function Mute:PlayerChat( args )
 	end
 end
 
-function Mute:PlayerJoin( args )
+function Mute:PlayerJoin()
 	local query = SQL:Query( "SELECT * FROM mutes" )
 	local result = query:Execute()
 	if ( #result > 0 ) then
@@ -43,7 +43,7 @@ function Mute:PlayerJoin( args )
 	end
 end
 
-function Mute:PlayerQuit( args )
+function Mute:PlayerQuit()
 	for steamID, timer in pairs( self.unmuteTimers ) do
 		local timeLeft = isTimer( timer )
 		if ( type( timeLeft ) == "number" ) then

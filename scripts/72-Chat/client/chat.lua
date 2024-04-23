@@ -207,7 +207,7 @@ function BetterChat:ChatPosChanger()
 	end
 end
 
-function BetterChat:MouseMove( args )
+function BetterChat:MouseMove()
 	Chat:SetPosition( Mouse:GetPosition() )
 end
 
@@ -233,7 +233,7 @@ function BetterChat:MouseUp( args )
 	end
 end
 
-function BetterChat:ResolutionChange( args )
+function BetterChat:ResolutionChange()
 	Chat:SetPosition( self.customchatpos )
 end
 

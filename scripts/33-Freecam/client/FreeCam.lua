@@ -262,7 +262,7 @@ function FreeCam:PlayerInput( args )
 	end
 end
 
-function FreeCam:ResetPressed( args )
+function FreeCam:ResetPressed()
 	if not self.active then return end
 	if Input:GetValue(Action.SequenceButton1) == 0 then
 		self.gamepadPressed[1] = false

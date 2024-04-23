@@ -848,7 +848,7 @@ function Shop:NumberToBoolean( value )
 	return value == 1 and true or value == 0 and false
 end
 
-function Shop:CalcView( args )
+function Shop:CalcView()
 	Camera:SetPosition( Camera:GetPosition() - Vector3( 0, 1, 0 ) )
 end
 
@@ -974,7 +974,7 @@ function Shop:LocalPlayerInput( args )
 	end
 end
 
-function Shop:Buy( args )
+function Shop:Buy()
 	local category_name = self.tab_control:GetCurrentTab():GetText()
 	local category = self.categories[category_name]
 
@@ -1010,7 +1010,7 @@ function Shop:Buy( args )
 	end
 end
 
-function Shop:Close( args )
+function Shop:Close()
 	if self.active then
 		self:SetActive( false )
 

@@ -101,7 +101,7 @@ function Pigeon:Lang()
 	self.tRecord = "Personal flying record: "
 end
 
-function Pigeon:Render( args )
+function Pigeon:Render()
 	local alpha = 255
 
 	if self.hinttimer and self.hinttimer:GetSeconds() > 4 then
@@ -173,7 +173,7 @@ function Pigeon:Render( args )
 	end
 end
 
-function Pigeon:LocalPlayerInput( args )
+function Pigeon:LocalPlayerInput()
 	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 

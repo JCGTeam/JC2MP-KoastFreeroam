@@ -82,6 +82,8 @@ function HijackBlocker:LocalPlayerInput( args )
 				Network:Send( "EnterPassenger", args )
 			end
 			self.cooltime = time + self.cooldown
+		else
+			return false
 		end
 	end
 end

@@ -112,7 +112,7 @@ function C4:IsDetonated()
 	return self.WNO:GetValue("detonated")
 end
 
-function C4:PostTick( args )
+function C4:PostTick()
 	if Server then
 		if self:GetParent() and self:GetParent():GetCellId() ~= self:GetCellId() then
 			self.WNO:SetPosition(self:GetPosition())

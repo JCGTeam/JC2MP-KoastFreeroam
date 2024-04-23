@@ -41,7 +41,6 @@ function Tuner:__init()
 	self.neons = {}
 
 	self.neonEnabled = false
-	self.maxValue = 1000000000000000000
 
 	local vehicle = LocalPlayer:GetVehicle()
 	if IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
@@ -180,7 +179,7 @@ function Tuner:Lang()
 end
 
 function Tuner:CheckList( tableList, modelID )
-	for k,v in pairs(tableList) do
+	for k,v in ipairs(tableList) do
 		if v == modelID then return true end
 	end
 	return false
@@ -209,7 +208,7 @@ function Tuner:Render()
 
 		if IsValid(v) then
 			local vehId = v:GetId() + 1
-			if v:GetValue( "Neon" ) and v:GetValue( "Owner" ) and not checked[vehId] then
+			if v:GetValue( "Neon" ) and not checked[vehId] then
 				if self.neons[vehId] then
 					self.neons[vehId]:SetPosition( v:GetPosition() + Vector3( 0, 1, 0 ) )
 				else
@@ -415,7 +414,6 @@ function Tuner:InitGUI()
 	neoncolor:SetDock( GwenPosition.Fill )
 	local neontoggle = Button.Create( self.gui.neon.window )
 	neontoggle:SetText( "Включить/отключить неон" )
-	neontoggle:SetToolTip( "Только для транспорта из чёрного рынка" )
 	neontoggle:SetTextSize( 15 )
 	neontoggle:SetHeight( 30 )
 	neontoggle:SetDock( GwenPosition.Bottom )
@@ -527,6 +525,14 @@ function Tuner:InitTransmissionGUI()
 	for i = 7,12 do 
 		self.gui.trans.setters[i] = TextBoxNumeric.Create(self.gui.trans.window)
 		self.gui.trans.setters[i]:Subscribe("ReturnPressed", function(args)
+			local maxValue = 100000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			end
+
 			local gear_ratios = self.trans:GetGearRatios()
 			gear_ratios[i - 6] = args:GetValue()
 			self.trans:SetGearRatios(gear_ratios)
@@ -544,6 +550,14 @@ function Tuner:InitTransmissionGUI()
 
 	self.gui.trans.setters[14] = TextBoxNumeric.Create(self.gui.trans.window)
 	self.gui.trans.setters[14]:Subscribe("ReturnPressed", function(args)
+		local maxValue = 100000000
+
+		if args:GetValue() >= maxValue then
+			args:SetText( tostring( maxValue ) )
+		elseif args:GetValue() <= -maxValue then
+			args:SetText( tostring( -maxValue ) )
+		end
+
 		self.trans:SetPrimaryTransmissionRatio(args:GetValue())
 		args:SetText( "" )
 		self:SyncTune()
@@ -552,6 +566,14 @@ function Tuner:InitTransmissionGUI()
 	for i = 15,22 do 
 		self.gui.trans.setters[i] = TextBoxNumeric.Create(self.gui.trans.window)
 		self.gui.trans.setters[i]:Subscribe("ReturnPressed", function(args)
+			local maxValue = 10000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			end
+
 			local wheel_ratios = self.trans:GetWheelTorqueRatios()
 			wheel_ratios[i - 14] = args:GetValue()
 			self.trans:SetWheelTorqueRatios(wheel_ratios)
@@ -613,24 +635,56 @@ function Tuner:InitAerodynamicsGUI()
 		self.gui.aero.labels[7]:SetText( "Доп. гравитация Z" )
 
 		self.gui.aero.setters[1]:Subscribe( "ReturnPressed", function( args )
+			local maxValue = 100000000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			end
+
 			self.aero:SetAirDensity(args:GetValue())
 			args:SetText("")
 			self:SyncTune()		
 		end )
 
 		self.gui.aero.setters[2]:Subscribe( "ReturnPressed", function( args ) 
+			local maxValue = 1000000000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			end
+
 			self.aero:SetFrontalArea(args:GetValue())
 			args:SetText("")
 			self:SyncTune()		
 		end )
 
 		self.gui.aero.setters[3]:Subscribe( "ReturnPressed", function( args ) 
+			local maxValue = 100000000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			end
+
 			self.aero:SetDragCoefficient(args:GetValue())
 			args:SetText("")
 			self:SyncTune()		
 		end )
 
 		self.gui.aero.setters[4]:Subscribe( "ReturnPressed", function( args ) 
+			local maxValue = 100000000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			end
+
 			self.aero:SetLiftCoefficient(args:GetValue())
 			args:SetText("")
 			self:SyncTune()		
@@ -651,6 +705,14 @@ function Tuner:InitAerodynamicsGUI()
 		end )
 
 		self.gui.aero.setters[7]:Subscribe ("ReturnPressed", function( args ) 
+			local maxValue = 1000000000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			end
+
 			local gravity = self.aero:GetExtraGravity()
 			self.aero:SetExtraGravity(Vector3(gravity.x, gravity.y, args:GetValue()))
 			args:SetText("")
@@ -745,10 +807,12 @@ function Tuner:InitSuspensionGUI()
 
 	for wheel,v in ipairs(self.gui.susp) do
 		v.setters[1]:Subscribe("ReturnPressed", function( args )
-			if args:GetValue() >= self.maxValue then
-				args:SetText( tostring( self.maxValue ) )
-			elseif args:GetValue() <= -self.maxValue then
-				args:SetText( tostring( -self.maxValue ) )
+			local maxValue = 1000000000000000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
 			end
 
 			if wheel > self.veh:GetWheelCount() then
@@ -764,6 +828,14 @@ function Tuner:InitSuspensionGUI()
 		end)
 
 		v.setters[2]:Subscribe("ReturnPressed", function( args )
+			local maxValue = 10000000000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			end
+
 			if wheel > self.veh:GetWheelCount() then
 				local count = self.veh:GetWheelCount()
 				for wh = 1, count do
@@ -777,10 +849,12 @@ function Tuner:InitSuspensionGUI()
 		end)
 
 		v.setters[3]:Subscribe("ReturnPressed", function( args )
-			if args:GetValue() >= self.maxValue then
-				args:SetText( tostring( self.maxValue ) )
-			elseif args:GetValue() <= -self.maxValue then
-				args:SetText( tostring( -self.maxValue ) )
+			local maxValue = 1000000000000000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
 			end
 
 			if wheel > self.veh:GetWheelCount() then
@@ -802,10 +876,15 @@ function Tuner:InitSuspensionGUI()
 		end)
 
 		v.setters[4]:Subscribe("ReturnPressed", function( args )
-			if args:GetValue() >= self.maxValue then
-				args:SetText( tostring( self.maxValue ) )
-			elseif args:GetValue() <= -self.maxValue then
-				args:SetText( tostring( -self.maxValue ) )
+			local maxValue = 1000000000000000000
+			local zeroValue = 0.000000001
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			elseif args:GetValue() >= 0 and args:GetValue() <= zeroValue then
+				args:SetText( tostring( zeroValue ) )
 			end
 
 			if wheel > self.veh:GetWheelCount() then
@@ -823,10 +902,12 @@ function Tuner:InitSuspensionGUI()
 		end)
 
 		v.setters[5]:Subscribe("ReturnPressed", function( args )
-			if args:GetValue() >= self.maxValue then
-				args:SetText( tostring( self.maxValue ) )
-			elseif args:GetValue() <= -self.maxValue then
-				args:SetText( tostring( -self.maxValue ) )
+			local maxValue = 1000000000000000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
 			end
 
 			if wheel > self.veh:GetWheelCount() then
@@ -844,6 +925,14 @@ function Tuner:InitSuspensionGUI()
 		end)
 
 		v.setters[6]:Subscribe("ReturnPressed", function( args )
+			local maxValue = 100000000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			end
+
 			if wheel > self.veh:GetWheelCount() then
 				local count = self.veh:GetWheelCount()
 				for wh = 1, count do
@@ -863,6 +952,14 @@ function Tuner:InitSuspensionGUI()
 		end)
 
 		v.setters[7]:Subscribe("ReturnPressed", function( args )
+			local maxValue = 10000
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			end
+
 			if wheel > self.veh:GetWheelCount() then
 				local count = self.veh:GetWheelCount()
 				for wh = 1, count do
@@ -878,6 +975,14 @@ function Tuner:InitSuspensionGUI()
 		end)
 
 		v.setters[8]:Subscribe("ReturnPressed", function( args )
+			local maxValue = 100
+
+			if args:GetValue() >= maxValue then
+				args:SetText( tostring( maxValue ) )
+			elseif args:GetValue() <= -maxValue then
+				args:SetText( tostring( -maxValue ) )
+			end
+
 			if wheel > self.veh:GetWheelCount() then
 				local count = self.veh:GetWheelCount()
 				for wh = 1, count do
@@ -1237,7 +1342,7 @@ function Tuner:CheckThrust()
 	end
 end
 
-function Tuner:Thrust( args )
+function Tuner:Thrust()
 	if LocalPlayer:GetWorld() ~= DefaultWorld or Game:GetState() ~= GUIState.Game then return end
 
 	local vehicle = LocalPlayer:GetVehicle()

@@ -92,17 +92,12 @@ function Crosshair:GetOption( args )
 	else
 		if self.RenderEvent then
 			Game:FireEvent( "gui.aim.show" )
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-			Events:Unsubscribe( self.EntityBulletHitEvent )
-			self.EntityBulletHitEvent = nil
+			Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil
+			Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil
+			Events:Unsubscribe( self.EntityBulletHitEvent ) self.EntityBulletHitEvent = nil
 		end
 
-		if self.popalTimer then
-			self.popalTimer = nil
-		end
+		if self.popalTimer then self.popalTimer = nil end
 	end
 end
 
@@ -117,7 +112,7 @@ function Crosshair:EntityBulletHit()
 end
 
 function Crosshair:CheckList( tableList, modelID )
-	for k,v in pairs(tableList) do
+	for k,v in ipairs(tableList) do
 		if v == modelID then return true end
 	end
 	return false
@@ -139,8 +134,8 @@ function Crosshair:Render()
 	if not LocalPlayer:GetValue( "CustomCrosshairVisible" ) then return end
 	if LocalPlayer:GetValue( "SpectatorMode" ) then return end
 
-	if not self.popalTimer and LocalPlayer:GetAimTarget() then
-		local aimTarget = LocalPlayer:GetAimTarget()
+	local aimTarget = LocalPlayer:GetAimTarget()
+	if not self.popalTimer and aimTarget then
 		self.pointColor = ( aimTarget.player or aimTarget.vehicle or ( aimTarget.entity and aimTarget.entity.__type == "ClientActor" ) ) and Color.LawnGreen or Color.White
 	end	
 
@@ -158,11 +153,9 @@ function Crosshair:Render()
 	Transform:Translate( pos_2d )
 	Render:SetTransform( Transform )
 
-	local velocity = -LocalPlayer:GetAngle() * LocalPlayer:GetLinearVelocity()
-	self.velocity = -velocity.z
 	local ray = Physics:Raycast( Camera:GetPosition(), Camera:GetAngle() * Vector3.Forward, 0, 1000 )
 
-	if ray.distance < 83 and ray.distance > 1 then
+	if ray.position.y > 198 and ray.distance < 83 and ray.distance > 1 then
 		self:GetRotation()
 		self.distance = ray.distance
 		self.position = ray.position
@@ -190,7 +183,7 @@ function Crosshair:Render()
 		end
 	end
 
-	if self.distance > 1 and (self.distance > 1 or (self.velocity > 20)) and not LocalPlayer:InVehicle() and not self.blacklist.animations2[bs] and not self.blacklist.animations2[las] and not self.blacklist.animations4[bs] then
+	if self.distance > 1 and not LocalPlayer:InVehicle() and not self.blacklist.animations2[bs] and not self.blacklist.animations2[las] and not self.blacklist.animations4[bs] then
 		if LocalPlayer:GetValue( "GameMode" ) ~= "Охота" then
 			local crossColor = Color( 255, 255, 255, self.alpha )
 			local crossColorShadow = Color( 0, 0, 0, self.alpha )

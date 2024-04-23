@@ -275,7 +275,7 @@ function DailyTasks:Open()
     })
 end
 
-function DailyTasks:GetPrize( args )
+function DailyTasks:GetPrize()
     self.prize_btn:SetEnabled( false )
     Network:Send( "GetPrize" )
 end

@@ -48,7 +48,7 @@ end
 
 function Doors:GetPlayers( args, sender )
 	for p in Server:GetPlayers() do
-		jDist = sender:GetPosition():Distance( p:GetPosition() )
+		local jDist = sender:GetPosition():Distance( p:GetPosition() )
 
 		if jDist < 50 then
 			Network:Send( p, "OpenDoors" )

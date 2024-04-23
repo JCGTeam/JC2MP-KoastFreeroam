@@ -2,6 +2,7 @@ class "sTuner"
 
 function sTuner:__init()
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
+	Events:Subscribe( "EntityDespawn", self, self.EntityDespawn )
 
 	for p in Server:GetPlayers() do
 		if p:GetValue( "NeonColor" ) then
@@ -23,6 +24,103 @@ function sTuner:PlayerJoin( args )
 		if args.player:GetColor():GetVehicle() then
 			args.player:GetColor():GetVehicle():SetNetworkValue( "NeonColor", args.player:GetColor() )
 		end
+	end
+end
+
+function sTuner:EntityDespawn( args )
+	local entity = args.entity
+
+	if entity.__type == "Vehicle" then
+		if entity:GetValue( "Neon" ) and entity:GetValue( "NeonColor" ) then
+			entity:SetNetworkValue( "Neon", nil )
+			entity:SetNetworkValue( "NeonColor", nil )
+		end
+
+		--[[entity:SetNetworkValue( "vehid", nil )
+		entity:SetNetworkValue( "modelid", nil )
+
+		entity:SetNetworkValue( "clutch_delay", nil )
+		entity:SetNetworkValue( "reverse_ratio", nil )
+		entity:SetNetworkValue( "primary_transmission_ratio", nil )
+
+		entity:SetNetworkValue( "airdensity", nil )
+		entity:SetNetworkValue( "frontalarea", nil )
+		entity:SetNetworkValue( "dragcoeff", nil )
+		entity:SetNetworkValue( "liftcoeff", nil )
+		entity:SetNetworkValue( "gravity", nil )
+
+		entity:SetNetworkValue( "gear_ratios1", nil )
+		entity:SetNetworkValue( "gear_ratios2", nil )
+		entity:SetNetworkValue( "gear_ratios3", nil )
+		entity:SetNetworkValue( "gear_ratios4", nil )
+		entity:SetNetworkValue( "gear_ratios5", nil )
+		entity:SetNetworkValue( "gear_ratios6", nil )
+		entity:SetNetworkValue( "gear_ratios7", nil )
+
+		entity:SetNetworkValue( "wheel1_length", nil )
+		entity:SetNetworkValue( "wheel1_strength", nil )
+		entity:SetNetworkValue( "wheel1_direction", nil )
+		entity:SetNetworkValue( "wheel1_position", nil )
+		entity:SetNetworkValue( "wheel1_dampcompression", nil )
+		entity:SetNetworkValue( "wheel1_damprelaxation", nil )
+
+		entity:SetNetworkValue( "wheel2_length", nil )
+		entity:SetNetworkValue( "wheel2_strength", nil )
+		entity:SetNetworkValue( "wheel2_direction", nil )
+		entity:SetNetworkValue( "wheel2_position", nil )
+		entity:SetNetworkValue( "wheel2_dampcompression", nil )
+		entity:SetNetworkValue( "wheel2_damprelaxation", nil )
+
+		entity:SetNetworkValue( "wheel3_length", nil )
+		entity:SetNetworkValue( "wheel3_strength", nil )
+		entity:SetNetworkValue( "wheel3_direction", nil )
+		entity:SetNetworkValue( "wheel3_position", nil )
+		entity:SetNetworkValue( "wheel3_dampcompression", nil )
+		entity:SetNetworkValue( "wheel3_damprelaxation", nil )
+
+		entity:SetNetworkValue( "wheel4_length", nil )
+		entity:SetNetworkValue( "wheel4_strength", nil )
+		entity:SetNetworkValue( "wheel4_direction", nil )
+		entity:SetNetworkValue( "wheel4_position", nil )
+		entity:SetNetworkValue( "wheel4_dampcompression", nil )
+		entity:SetNetworkValue( "wheel4_damprelaxation", nil )
+
+		entity:SetNetworkValue( "wheel5_length", nil )
+		entity:SetNetworkValue( "wheel5_strength", nil )
+		entity:SetNetworkValue( "wheel5_direction", nil )
+		entity:SetNetworkValue( "wheel5_position", nil )
+		entity:SetNetworkValue( "wheel5_dampcompression", nil )
+		entity:SetNetworkValue( "wheel5_damprelaxation", nil )
+
+		entity:SetNetworkValue( "wheel6_length", nil )
+		entity:SetNetworkValue( "wheel6_strength", nil )
+		entity:SetNetworkValue( "wheel6_direction", nil )
+		entity:SetNetworkValue( "wheel6_position", nil )
+		entity:SetNetworkValue( "wheel6_dampcompression", nil )
+		entity:SetNetworkValue( "wheel6_damprelaxation", nil )
+
+		entity:SetNetworkValue( "wheel7_length", nil )
+		entity:SetNetworkValue( "wheel7_strength", nil )
+		entity:SetNetworkValue( "wheel7_direction", nil )
+		entity:SetNetworkValue( "wheel7_position", nil )
+		entity:SetNetworkValue( "wheel7_dampcompression", nil )
+		entity:SetNetworkValue( "wheel7_damprelaxation", nil )
+
+		entity:SetNetworkValue( "wheel8_length", nil )
+		entity:SetNetworkValue( "wheel8_strength", nil )
+		entity:SetNetworkValue( "wheel8_direction", nil )
+		entity:SetNetworkValue( "wheel8_position", nil )
+		entity:SetNetworkValue( "wheel8_dampcompression", nil )
+		entity:SetNetworkValue( "wheel8_damprelaxation", nil )
+
+		entity:SetNetworkValue( "wheel_ratios1", nil )
+		entity:SetNetworkValue( "wheel_ratios2", nil )
+		entity:SetNetworkValue( "wheel_ratios3", nil )
+		entity:SetNetworkValue( "wheel_ratios4", nil )
+		entity:SetNetworkValue( "wheel_ratios5", nil )
+		entity:SetNetworkValue( "wheel_ratios6", nil )
+		entity:SetNetworkValue( "wheel_ratios7", nil )
+		entity:SetNetworkValue( "wheel_ratios8", nil )]]--
 	end
 end
 

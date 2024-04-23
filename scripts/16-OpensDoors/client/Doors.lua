@@ -76,6 +76,7 @@ function Doors:GameRender()
 
 	for _, v in ipairs( self.places ) do
 		local dist = v[2]:Distance( cameraPos )
+
 		if dist < ( inVehicle and self.tipDistance * 3 or self.tipDistance ) then
 			self:DrawHotspot( v, dist )
 		end

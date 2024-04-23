@@ -394,7 +394,7 @@ function Speedometer:LocalPlayerInput( args )
 	end
 end
 
-function Speedometer:WindowClosed( args )
+function Speedometer:WindowClosed()
 	self:SetWindowOpen( false )
 end
 

@@ -13,7 +13,7 @@ function Settings:__init()
 	self.timer = Timer()
 end
 
-function Settings:PostTick( args )
+function Settings:PostTick()
 	if self.timer:GetHours() >= 1 then
 		Network:Broadcast( "Bonus" )
 		self.timer:Restart()

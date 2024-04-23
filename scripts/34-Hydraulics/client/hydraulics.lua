@@ -22,7 +22,7 @@ function Hydraulics:ModuleLoad()
 	Events:Subscribe( "PreTick", self, self.PreTick )
 end
 
-function Hydraulics:InputPoll( args )
+function Hydraulics:InputPoll()
 	if LocalPlayer:GetValue( "HydraulicsEnabled" ) then
 		if not LocalPlayer:InVehicle() then return end
 

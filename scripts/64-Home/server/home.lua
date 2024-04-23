@@ -91,7 +91,8 @@ function Home:SpawnInHome( args )
 		args.player:Teleport( Vector3( tonumber( pos_x ), tonumber( pos_y ), tonumber( pos_z ) ), Angle( tonumber( angle_x ), tonumber( angle_y ), tonumber( angle_z ) ) )
 
 		for p in Server:GetPlayers() do
-			jDist = args.player:GetPosition():Distance( p:GetPosition() )
+			local jDist = args.player:GetPosition():Distance( p:GetPosition() )
+
 			if jDist < 50 then
 				Network:Send( p, "WarpDoPoof", Vector3( tonumber( pos_x ), tonumber( pos_y ), tonumber( pos_z ) ) )
 			end

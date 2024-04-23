@@ -47,6 +47,8 @@ function Help:__init()
 	Events:Subscribe( "HelpAddItem", self, self.AddItem )
 	Events:Subscribe( "HelpRemoveItem", self, self.RemoveItem )
 
+	Network:Subscribe( "OpenHelpMenu", self, self.OpenHelpMenu )
+
 	Console:Subscribe( "help", self, self.GetConsoleHelp )
 end
 
@@ -120,7 +122,7 @@ function Help:Render()
 	Mouse:SetVisible( is_visible )
 end
 
-function Help:WindowClosed( args )
+function Help:WindowClosed()
 	self:SetActive( false )
 	local effect = ClientEffect.Create(AssetLocation.Game, {
 		effect_id = 383,

@@ -2,6 +2,7 @@ class 'Help'
 
 function Help:__init()
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
+    Events:Subscribe( "PlayerChat", self, self.PlayerChat )
 	Network:Subscribe( "Save", self, self.Save )
 
     SQL:Execute( "CREATE TABLE IF NOT EXISTS players_helpmenureaded (steamid VARCHAR UNIQUE, readed INTEGER)" )
@@ -14,6 +15,15 @@ function Help:PlayerJoin( args )
 
 	if #result > 0 then
         args.player:SetNetworkValue( "HelpMenuReaded", tonumber(result[1].readed) )
+    end
+end
+
+function Help:PlayerChat( args )
+	local cmd_args = args.text:split( " " )
+
+	if (cmd_args[1] == "/help") or (cmd_args[1] == "/rules") then
+		Network:Send( args.player, "OpenHelpMenu" )
+        return false
     end
 end
 

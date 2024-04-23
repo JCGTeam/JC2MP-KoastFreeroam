@@ -40,7 +40,7 @@ function Grenades:__init()
 end
 
 function Grenades:CheckList( tableList, modelID )
-	for k,v in pairs(tableList) do
+	for k,v in ipairs(tableList) do
 		if v == modelID then return true end
 	end
 	return false

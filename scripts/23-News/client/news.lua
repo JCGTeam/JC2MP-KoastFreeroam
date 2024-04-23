@@ -103,7 +103,7 @@ function News:LocalHelpInput( args )
 	end
 end
 
-function News:WindowClosed( args )
+function News:WindowClosed()
 	self:SetActive( false )
 	local effect = ClientEffect.Create(AssetLocation.Game, {
 		effect_id = 383,
@@ -115,7 +115,7 @@ end
 
 function News:AddItem( args )
 	if label ~= nil then
-		self:RemoveItem( args )
+		self:RemoveItem()
 	end
 	local page = self.window
 
@@ -138,7 +138,7 @@ function News:AddItem( args )
 	end )
 end
 
-function News:RemoveItem( args )
+function News:RemoveItem()
 	if label == nil then return end
 	label:Remove()
 	label = nil

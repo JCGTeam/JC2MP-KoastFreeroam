@@ -16,7 +16,6 @@ function FirstPerson:__init()
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
 	Events:Subscribe( "KeyUp", self, self.KeyUp )
-	Network:Subscribe( "FpActive", self, self.Active )
 end
 
 function FirstPerson:Lang()

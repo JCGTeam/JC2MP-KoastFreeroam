@@ -64,7 +64,7 @@ function Pong:MouseMove( args )
 	end
 end
 
-function Pong:Render( args )
+function Pong:Render()
 	if active then
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			Render:SetFont( AssetLocation.SystemFont, "Impact" )
@@ -110,7 +110,7 @@ function Pong:StartUp( args )
 	end
 end
 
-function Pong:HandleBallData( args )
+function Pong:HandleBallData()
 	if (ball_pos.x) >= (pong_table_width - ping_width - 20) and (ball_pos.y + ball_height) >= ping_pos_opp and ball_pos.y <= (ping_pos_opp + ping_height) then
 		ball_speed.x = -ball_speed.x
 
@@ -170,7 +170,7 @@ function Pong:HandleBallData( args )
 	end
 end
 
-function Pong:HandleCPU( args )
+function Pong:HandleCPU()
 	if ball_pos.y > ping_pos_opp + (ping_height / 2) and (ping_pos_opp + ping_height) < pong_table_height then 
 		ping_pos_opp = ping_pos_opp + cpu_difficulty
 	elseif ball_pos.y < ping_pos_opp + (ping_height / 2) and ping_pos_opp > 0 then

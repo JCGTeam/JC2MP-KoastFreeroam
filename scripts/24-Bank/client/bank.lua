@@ -158,7 +158,7 @@ function Bank:CreateSendMoneyWindow()
 	self.plist.filter:Subscribe( "EscPressed", self, self.EscPressed )
 end
 
-function Bank:WindowClosed( args )
+function Bank:WindowClosed()
 	self:SetActive( false )
 end
 

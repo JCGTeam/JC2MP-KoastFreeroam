@@ -201,6 +201,6 @@ function RaceMenu:PostTick()
 	end
 end
 
-function RaceMenu:EventActivate( args )
+function RaceMenu:EventActivate()
 	self:SetEnabled( not self.isEnabled )
 end

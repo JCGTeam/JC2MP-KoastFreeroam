@@ -849,12 +849,12 @@ function Settings:LocalPlayerInput( args )
 	end
 end
 
-function Settings:OpenSettingsMenu( args )
+function Settings:OpenSettingsMenu()
 	if Game:GetState() ~= GUIState.Game then return end
 	self:Open()
 end
 
-function Settings:CloseSettingsMenu( args )
+function Settings:CloseSettingsMenu()
 	if Game:GetState() ~= GUIState.Game then return end
 
 	if self.window:GetVisible() == true then

@@ -339,7 +339,7 @@ function string.Split( str )
 	return tab
 end
 
-function Tasks:PreTick( args )
+function Tasks:PreTick()
 	if self.jobCancelTimer:GetSeconds() > 2 then
 		self.jobCancelTimer:Restart()
 		--cancel jobs in queue

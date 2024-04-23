@@ -48,13 +48,12 @@ function Passive:LocalPlayerWorldChange()
 end
 
 function Passive:LocalPlayerInput( args )
-
 	if self.actions[args.input] and (LocalPlayer:GetValue( "Passive" ) or LocalPlayer:InVehicle() and LocalPlayer:GetVehicle():GetInvulnerable()) then
 		return false
 	end
 end
 
-function Passive:InputPoll( args )
+function Passive:InputPoll()
 	if not LocalPlayer:GetValue( "Passive" ) then return end
 
 	Input:SetValue( Action.VehicleFireLeft, 0 )
@@ -67,7 +66,7 @@ function Passive:Text( message )
 	Events:Fire( "CastCenterText", { text = message, time = 3, color = Color( 0, 222, 0, 250 ) } )
 end
 
-function Passive:PassiveOn( args )
+function Passive:PassiveOn()
 	if LocalPlayer:GetWorld() ~= DefaultWorld then
 		Events:Fire( "CastCenterText", { text = self.notusable, time = 3, color = Color.Red } )
 		return

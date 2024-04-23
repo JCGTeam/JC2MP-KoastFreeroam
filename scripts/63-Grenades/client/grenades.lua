@@ -117,7 +117,7 @@ function Grenades:FireGrenade( args )
     end
 end
 
-function Grenades:PostTick( args )
+function Grenades:PostTick()
     if not self.thrown then
         local cameraAngle = Camera:GetAngle()
         local position = LocalPlayer:GetBonePosition( "ragdoll_LeftForeArm" ) + LocalPlayer:GetBoneAngle( "ragdoll_LeftForeArm" ) * Grenades.GrenadeOffset

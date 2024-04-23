@@ -104,7 +104,7 @@ function QuickTP:OpenMenu()
 	self.menuOpen = true
 end
 
-function QuickTP:CloseMenu( args )
+function QuickTP:CloseMenu()
 	if self.subRender then Events:Unsubscribe( self.subRender ) self.subRender = nil end
 
 	if self.subMouse then Events:Unsubscribe( self.subMouse ) self.subMouse = nil end
@@ -114,18 +114,13 @@ function QuickTP:CloseMenu( args )
 
 	self.border = false
 
-	if self.timerF then
-		self.timerF = nil
-	end
-
-	if self.sound then
-		self.sound = nil
-	end
+	if self.timerF then self.timerF = nil end
+	if self.sound then self.sound = nil end
 
 	self.menuOpen = false
 end
 
-function QuickTP:PostRender( args )
+function QuickTP:PostRender()
 	if Game:GetState() ~= GUIState.Game then return end
 
 	local animationSpeed = 1

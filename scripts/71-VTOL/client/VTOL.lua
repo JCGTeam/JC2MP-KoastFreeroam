@@ -103,7 +103,7 @@ function VTOL:CheckThrust()
 	end
 end
 
-function VTOL:Thrust( args )
+function VTOL:Thrust()
 	if Game:GetState() ~= GUIState.Game then return end
 	local vehicle = LocalPlayer:GetVehicle()
 
@@ -129,7 +129,7 @@ function VTOL:Thrust( args )
 end
 
 function VTOL:CheckList( tableList, modelID )
-	for k,v in pairs(tableList) do
+	for k,v in ipairs(tableList) do
 		if v == modelID then return true end
 	end
 	return false

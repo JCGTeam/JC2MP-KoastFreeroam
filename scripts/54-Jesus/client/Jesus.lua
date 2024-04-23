@@ -179,13 +179,13 @@ function Jesus:Render()
 end
 
 function Jesus:CheckList( tableList, modelID )
-	for k,v in pairs( tableList ) do
+	for k,v in ipairs( tableList ) do
 		if v == modelID then return true end
 	end
 	return false
 end
 
-function Jesus:JesusToggle( args )
+function Jesus:JesusToggle()
 	if LocalPlayer:GetWorld() ~= DefaultWorld then
 		Events:Fire( "CastCenterText", { text = self.notusable, time = 3, color = Color.Red } )
 		return

@@ -146,11 +146,11 @@ function Menu:ResolutionChange( args )
 	self.eng_button:SetTextSize( textSize )
 end
 
-function Menu:LocalPlayerWorldChange( args )
+function Menu:LocalPlayerWorldChange()
 	self:SetActive( false )
 end
 
-function Menu:LocalPlayerInput( args )
+function Menu:LocalPlayerInput()
 	return false
 end
 

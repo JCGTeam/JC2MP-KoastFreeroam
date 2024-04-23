@@ -101,9 +101,10 @@ end
 
 function Passive:CheckPassive( args, sender )
 	for p in Server:GetPlayers() do
-		jDist = sender:GetPosition():Distance( p:GetPosition() )
+		local jDist = sender:GetPosition():Distance( p:GetPosition() )
+
 		if sender:GetVehicle() then
-		if jDist < 5 then
+			if jDist < 5 then
 				p:DisableCollision( CollisionGroup.Vehicle, CollisionGroup.Player )
 			else
 				p:EnableCollision( CollisionGroup.Vehicle, CollisionGroup.Player )
@@ -116,6 +117,7 @@ function Passive:ModuleUnload()
 	local i = 0
 	local timer = Timer()
 	local trans = SQL:Transaction()
+
 	for steamid in pairs(self.diff) do
 		local command
 		if self.passives[steamid] then

@@ -18,7 +18,6 @@ function Tasks:__init()
 	self.opcolor = Color( 251, 184, 41 )
 	self.jobcolor = Color( 192, 255, 192 )
 
-	self.targetArrowModel = nil
 	self.targetArrowValue = 1000
 	self.targetArrowFlashNum = 3
 	self.targetArrowFlashInterval = 7
@@ -93,13 +92,8 @@ function Tasks:__init()
 	Events:Subscribe( "Lang", self, self.Lang )
 	self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick )
 
-	if not self.LocalPlayerInputEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
-
-	if not self.KeyUpEvent then
-		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
-	end
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+	if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
 end
 
 function Tasks:Lang()
@@ -461,7 +455,9 @@ end
 function Tasks:GameRender()
 	if not LocalPlayer:GetValue( "JobsVisible" ) or Game:GetState() ~= GUIState.Game or LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-	self.window:SetVisible( false )
+	if self.window and self.window:GetVisible() == true then
+		self.window:SetVisible( false )
+	end
 
 	if self.jobsTable then
 		local cameraPos = Camera:GetPosition()

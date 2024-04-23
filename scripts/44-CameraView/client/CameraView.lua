@@ -240,7 +240,7 @@ function CameraView:ZoomReset()
 	self.zoom = 0
 end
 
-function CameraView:InputPoll( args )
+function CameraView:InputPoll()
 	if self.enabled then
 		if self.antiSnap and Game:GetState() == GUIState.Game and LocalPlayer:InVehicle() and self.camera == 3 and Input:GetValue(Action.LookLeft) == 0 and Input:GetValue(Action.LookRight) == 0 then
 			if as_toggle then
@@ -264,7 +264,7 @@ function CameraView:MouseScroll( args )
 	end
 end
 
-function CameraView:EnterVehicle( args )
+function CameraView:EnterVehicle()
 	Events:Fire( "CameraState",
 	{
 		enabled = self.enabled,
@@ -278,7 +278,7 @@ function CameraView:EnterVehicle( args )
 	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 end
 
-function CameraView:LocalPlayerExitVehicle( args )
+function CameraView:LocalPlayerExitVehicle()
 	if self.CalcViewEvent then Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil end
 	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
 	if self.MouseScrollEvent then Events:Unsubscribe( self.MouseScrollEvent ) self.MouseScrollEvent = nil end

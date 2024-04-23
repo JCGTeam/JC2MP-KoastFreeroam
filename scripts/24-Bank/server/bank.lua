@@ -120,7 +120,7 @@ function Bank:PlayerMoneyChange( args )
     end
 end
 
-function Bank:PostTick( args )
+function Bank:PostTick()
     if self.timer:GetSeconds() >= 30 then
         self:CommitChanges()
         self.timer:Restart()

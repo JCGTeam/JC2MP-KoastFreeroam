@@ -281,7 +281,7 @@ function Boost:PlaneCheck( vehicle )
 	end
 end
 
-function Boost:LocalPlayerEnterVehicle( args )
+function Boost:LocalPlayerEnterVehicle()
 	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 

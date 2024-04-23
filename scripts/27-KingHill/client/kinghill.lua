@@ -74,7 +74,7 @@ function DrawCenteredShadowedText( position, text, color, textsize )
 	end
 end
 
-function KingHil:EnterLobby( args )
+function KingHil:EnterLobby()
 	self.inLobby = true
 	self.state = GamemodeState.WAITING
 	self.queue = {}
@@ -105,13 +105,13 @@ function KingHil:UpdateQueue( args )
 	self.queueMax = args.max
 end
 
-function KingHil:ExitLobby( args )
+function KingHil:ExitLobby()
 	Game:FireEvent("ply.parachute.enable")
 	Waypoint:Remove()
 	self.inLobby = false
 end
 
-function KingHil:InputPoll( args )
+function KingHil:InputPoll()
 	if not self.inLobby then return end
 
 	if self.state == GamemodeState.INPROGRESS then
@@ -120,7 +120,7 @@ function KingHil:InputPoll( args )
 	end
 end
 
-function KingHil:LocalPlayerInput( args )
+function KingHil:LocalPlayerInput()
 	if not self.inLobby then return end
 	if Game:GetState() ~= GUIState.Game then return end
 
@@ -137,7 +137,7 @@ function KingHil:LocalPlayerWorldChange( args )
 	end
 end
 
-function KingHil:PreTick( args )
+function KingHil:PreTick()
 	if not self.inLobby then return end
 
 	if self.state == GamemodeState.INPROGRESS then
@@ -161,7 +161,7 @@ function KingHil:PreTick( args )
 	end
 end
 
-function KingHil:Render( args )
+function KingHil:Render()
 	if not self.inLobby or Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetValue( "SystemFonts" ) then
 		Render:SetFont( AssetLocation.SystemFont, "Impact" )

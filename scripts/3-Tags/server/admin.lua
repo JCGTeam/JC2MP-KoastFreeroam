@@ -464,7 +464,7 @@ function deniedMessage( player, message )
 	Chat:Send( player, "[Сервер] ", Color.White, message, Color.DarkGray )
 end
 
-function Admin:ModuleLoad( args )
+function Admin:ModuleLoad()
 	local tagTable = {
 		[isYouTuber] = "YouTuber",
 		[isVip] = "VIP",

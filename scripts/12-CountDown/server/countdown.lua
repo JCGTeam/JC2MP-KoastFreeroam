@@ -73,7 +73,7 @@ function Countdown:PlayerChat( args )
 	end
 end
 
-function Countdown:PreTick( args )
+function Countdown:PreTick()
 	local milliseconds = self.countdownTimer:GetMilliseconds()
 	if milliseconds - self.timeOfLastCount >= 1000 then
 		if self.secondsToGo < 0 then

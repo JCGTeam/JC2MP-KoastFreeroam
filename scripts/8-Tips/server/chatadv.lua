@@ -34,7 +34,7 @@ function ChatAdv:loadAds( filename )
 	file:close()
 end
 
-function ChatAdv:PostTick( args )
+function ChatAdv:PostTick()
 	if self.adCount > 0 then
 		if self.timer:GetMinutes() > 15 then
 			if self.currentAd > self.adCount then

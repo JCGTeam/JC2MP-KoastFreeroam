@@ -345,7 +345,7 @@ function ServerMenu:CloseOutherWindows()
 	Events:Fire( "CloseReportMenu" )
 end
 
-function ServerMenu:WindowClosed( args )
+function ServerMenu:WindowClosed()
 	self:SetWindowVisible( false )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end

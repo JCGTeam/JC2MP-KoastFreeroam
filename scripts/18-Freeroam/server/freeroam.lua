@@ -187,7 +187,7 @@ end
 
 ChatHandlers.tp = ChatHandlers.teleport
 
-function Freeroam:ModuleUnload( args )
+function Freeroam:ModuleUnload()
     for k,v in pairs(self.vehicles) do
         if IsValid(v) then
             v:Remove()
@@ -379,25 +379,32 @@ function Freeroam:PlayerDeath( args )
         if args.killer:GetValue( "Passive" ) then
 			args.killer:SetHealth( 0 )
 		else
-            if args.killer:GetValue( "Kills" ) then
-                if args.killer:GetValue( "Kills" ) < 1000 then
-                    self.kills[ args.killer:GetId() ] = args.killer:GetValue( "Kills" ) + 1
+            local player_kills = args.player:GetValue( "Kills" )
+            local killer_kills = args.killer:GetValue( "Kills" )
+
+            if killer_kills then
+                if killer_kills < 1000 then
+                    self.kills[ args.killer:GetId() ] = killer_kills + 1
                     args.killer:SetNetworkValue( "Kills", self.kills[ args.killer:GetId() ] )
                 end
-                if args.player:GetValue( "Kills" ) == 0 then
+
+                local noreward_txt = "Без награды :c, используйте обычное оружие!"
+
+                if player_kills == 0 then
                     if WeaponsBlackList[args.killer:GetEquippedWeapon().id] == true and not args.killer:InVehicle() then
-                        Network:Send( args.killer, "KillerStats", { text = "Без награды :c, используйте обычное оружие!" } )
+                        Network:Send( args.killer, "KillerStats", { text = noreward_txt } )
                     end
-                elseif args.player:GetValue( "Kills" ) >= 0 then
+                elseif player_kills >= 0 then
                     if WeaponsBlackList[args.killer:GetEquippedWeapon().id] == true and not args.killer:InVehicle() then
-                        Network:Send( args.killer, "KillerStats", { text = "Без награды :c, используйте обычное оружие!" } )
+                        Network:Send( args.killer, "KillerStats", { text = noreward_txt } )
                     else
-                        args.killer:SetMoney( args.killer:GetMoney() + args.player:GetValue( "Kills" ) * 10 )
+                        args.killer:SetMoney( args.killer:GetMoney() + player_kills * 10 )
                         args.player:SetValue( "Kills", 0 )
                     end
                 end
             end
         end
+
         args.player:SetValue( "SpawnMode", 2 )
 	else
         args.player:SetValue( "SpawnMode", 0 )

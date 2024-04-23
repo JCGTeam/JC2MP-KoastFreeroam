@@ -84,7 +84,7 @@ function GameModesMenu:CreateGameModesMenuButton( scroll, title, image, descript
 	return gamemodesmenu_btn
 end
 
-function GameModesMenu:OpenGameModesMenu( args )
+function GameModesMenu:OpenGameModesMenu()
 	if Game:GetState() ~= GUIState.Game then return end
 
     if self.window:GetVisible() then
@@ -124,7 +124,7 @@ function GameModesMenu:OpenGameModesMenu( args )
     end
 end
 
-function GameModesMenu:CloseGameModesMenu( args )
+function GameModesMenu:CloseGameModesMenu()
 	if Game:GetState() ~= GUIState.Game then return end
 	if self.window:GetVisible() == true then
 		self:WindowClosed()

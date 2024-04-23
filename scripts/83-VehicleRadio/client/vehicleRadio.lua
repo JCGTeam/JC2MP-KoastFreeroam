@@ -149,10 +149,7 @@ function VehicleRadio:LocalPlayerExitVehicle()
 end
 
 function VehicleRadio:ModuleUnload()
-	if self.radio then
-		self.sound:Remove()
-		self.sound = nil
-	end
+	if self.radio then self.sound:Remove() self.sound = nil end
 end
 
 vehicleradio = VehicleRadio()

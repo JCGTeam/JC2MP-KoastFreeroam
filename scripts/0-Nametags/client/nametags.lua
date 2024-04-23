@@ -350,7 +350,7 @@ function Nametags:LocalPlayerInput( args )
 	end
 end
 
-function Nametags:WindowClosed( args )
+function Nametags:WindowClosed()
 	self:SetWindowOpen( false )
 end
 

@@ -6,7 +6,7 @@ function WidgetsManager:__init()
     self.valuev = 1
 end
 
-function WidgetsManager:PostTick( args )
+function WidgetsManager:PostTick()
     if self.timer:GetSeconds() >= 5 then
         self.valuev = self.valuev + 1
         for player in Server:GetPlayers() do

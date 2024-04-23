@@ -53,7 +53,7 @@ function ServerHealth:ServerStart()
     Events:Fire( "ToDiscord", { text = "**[Status] Server is running.**" })
 end
 
-function ServerHealth:KickX( args )
+function ServerHealth:KickX()
     for p in Server:GetPlayers() do
         p:Kick( "\nServer disabled, join to the server later.\n\nСервер был отключен, перезайдите позже.\nВ случае перезапуска, максимальное время ожидания 2 минуты." )
     end
@@ -94,12 +94,12 @@ function ServerHealth:GetOnline( args )
     end 
 end
 
-function ServerHealth:GetServerUpTime( args )
+function ServerHealth:GetServerUpTime()
     Events:Fire( "ToDiscordConsole", { text = "Server uptime: " .. tostring( ServerHealth:SecondsToClock( Server:GetElapsedSeconds() ) ) } )
     print( "Server uptime: " .. tostring( ServerHealth:SecondsToClock( Server:GetElapsedSeconds() ) ) )
 end
 
-function ServerHealth:GetHelp( args )
+function ServerHealth:GetHelp()
     local docs_txt = "**Documentation:** \n" ..
     "Chat: \n" ..
     "> say <text> - write console message. \n" ..

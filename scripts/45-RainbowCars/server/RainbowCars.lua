@@ -48,7 +48,7 @@ function RainbowCars:PlayerChat( args )
     end
 end
 
-function RainbowCars:PreTick( args )
+function RainbowCars:PreTick()
     for p in Server:GetPlayers() do
         if p:GetValue( "RainbowCar" ) then
             if p:InVehicle() then

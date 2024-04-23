@@ -11,7 +11,7 @@ function Victorins:__init()
 	Events:Subscribe( "PlayerChat", self, self.PlayerChat )
 end
 
-function Victorins:PostTick( args )
+function Victorins:PostTick()
 	if self.timer:GetMinutes() <= 15 then return end
 	local first, second = math.random( 100, 999 ), math.random( 100, 999 )
 	self.quizAnswer = first + second

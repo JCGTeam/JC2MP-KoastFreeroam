@@ -128,7 +128,7 @@ function ActionsMenu:CreateActionButton( title, event, color )
 	return actionBtn
 end
 
-function ActionsMenu:CreateActionsMenu( args )
+function ActionsMenu:CreateActionsMenu()
     if self.window then return end
 
     self.window = Window.Create()
@@ -364,7 +364,7 @@ function ActionsMenu:SeatInput( args )
 	end
 end
 
-function ActionsMenu:CalcView( args )
+function ActionsMenu:CalcView()
 	Camera:SetPosition( Camera:GetPosition() - Vector3( 0, 1, 0 ) )
 end
 

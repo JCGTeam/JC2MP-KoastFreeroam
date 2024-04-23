@@ -214,7 +214,7 @@ function Reports:EscPressed()
 	end
 end
 
-function Reports:OpenReportMenu( args )
+function Reports:OpenReportMenu()
 	if Game:GetState() ~= GUIState.Game then return end
 
     if self.window:GetVisible() then
@@ -244,7 +244,7 @@ function Reports:OpenReportMenu( args )
     end
 end
 
-function Reports:CloseReportMenu( args )
+function Reports:CloseReportMenu()
 	if Game:GetState() ~= GUIState.Game then return end
 	if self.window:GetVisible() == true then
 		self:WindowClosed()

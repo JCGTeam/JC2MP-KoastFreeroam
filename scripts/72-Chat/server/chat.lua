@@ -3,7 +3,7 @@ class 'BetterChat'
 local values_ru = { "Неудачно", "Удачно", "Неудачно" }
 local values_en = { "Unsuccessful", "Successfully", "Unsuccessful" }
 
-function BetterChat:__init( args )
+function BetterChat:__init()
 	SQL:Execute( "CREATE TABLE IF NOT EXISTS settings_chatpos (steamid VARCHAR UNIQUE, positionX INTEGER, positionY INTEGER)")
 	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_chatsettings (steamid VARCHAR UNIQUE, visiblejoinmessages INTEGER)")
 
@@ -37,11 +37,7 @@ end
 
 function BetterChat:ChangeChatSettings( args, sender )
 	if args.joinmessagesmode then
-		if args.joinmessagesmode == 0 then
-			sender:SetNetworkValue( "VisibleJoinMessages", nil )
-		else
-			sender:SetNetworkValue( "VisibleJoinMessages", args.joinmessagesmode )
-		end
+		sender:SetNetworkValue( "VisibleJoinMessages", ( args.joinmessagesmode == 0 ) and nil or args.joinmessagesmode )
 	end
 end
 
@@ -99,7 +95,8 @@ function BetterChat:Chat( args )
 				return false
 			elseif chatsetting == 1 then
 				for p in Server:GetPlayers() do
-					jDist = args.player:GetPosition():Distance( p:GetPosition() )
+					local jDist = args.player:GetPosition():Distance( p:GetPosition() )
+
 					if p and jDist < 50 then
 						p:SendChatMessage( p:GetValue( "Lang" ) == "EN" and "[Local] " or "[Локальный] ", Color.DarkGray, args.player:GetName(), args.player:GetColor(), ": ".. args.text, Color.White )
            			end
@@ -127,17 +124,17 @@ function BetterChat:Chat( args )
 	if cmd_name == "me" then
 		table.remove( cmd_args, 1 )
 		for p in Server:GetPlayers() do
-			jDist = args.player:GetPosition():Distance( p:GetPosition() )
+			local jDist = args.player:GetPosition():Distance( p:GetPosition() )
+
 			if jDist < 50 then
 				p:SendChatMessage( args.player:GetName() .. " " .. tostring( table.concat ( cmd_args, " " ) ), Color.Magenta )
 			end
 		end
-	end
-
-	if cmd_name == "try" then
+	elseif cmd_name == "try" then
 		table.remove( cmd_args, 1 )
 		for p in Server:GetPlayers() do
-			jDist = args.player:GetPosition():Distance( p:GetPosition() )
+			local jDist = args.player:GetPosition():Distance( p:GetPosition() )
+
 			if jDist < 50 then
 				p:SendChatMessage( args.player:GetName() .. " " .. tostring( table.concat ( cmd_args, " " ) ), Color.Magenta, " | ", Color.White, p:GetValue( "Lang" ) == "EN" and values_en[math.random(#values_en)] or values_ru[math.random(#values_ru)], Color.Magenta, " | ", Color.White )
 			end

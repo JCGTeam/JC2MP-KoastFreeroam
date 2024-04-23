@@ -244,25 +244,25 @@ function CarBattles:GameRender()
 	Render:FillArea( Vector2.Zero, Render.Size, Color( 20, 25, 0, 100 ) )
 end
 
-function CarBattles:LocalPlayerExitVehicle( args )
+function CarBattles:LocalPlayerExitVehicle()
 	self.check = false
 	Network:Send( "NoVehicle" )
 end
 
-function CarBattles:LocalPlayerDeath( args )
+function CarBattles:LocalPlayerDeath()
 	self.check = false
 	Game:FireEvent( "ply.invulnerable" )
 	self.antiboom = true
 end
 
-function CarBattles:KeyUp( args )
+function CarBattles:KeyUp()
 	if self.antiboom then
 		Game:FireEvent( "ply.vulnerable" )
 		self.antiboom = false
 	end
 end
 
-function CarBattles:GameLoad( args )
+function CarBattles:GameLoad()
 	self.check = true
 end
 

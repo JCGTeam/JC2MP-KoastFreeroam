@@ -83,7 +83,7 @@ function DrawCenteredShadowedText( position, text, color, textsize )
 	end
 end
 
-function Tron:EnterLobby( args )
+function Tron:EnterLobby()
 	self.inLobby = true
 	self.state = GamemodeState.WAITING
 	self.queue = {}
@@ -120,7 +120,7 @@ function Tron:UpdateQueue( args )
 	self.queueMax = args.max
 end
 
-function Tron:ExitLobby( args )
+function Tron:ExitLobby()
 	Game:FireEvent("ply.vulnerable")
 	self.inLobby = false
 
@@ -133,7 +133,7 @@ function Tron:ExitLobby( args )
 	LocalPlayer:SetValue( "SpectatorMode", nil )
 end
 
-function Tron:CalcView( args )
+function Tron:CalcView()
 	if not self.inLobby then return end
 
 	if self.state == GamemodeState.INPROGRESS then
@@ -187,7 +187,7 @@ function Tron:CalcView( args )
 	end
 end
 
-function Tron:InputPoll( args )
+function Tron:InputPoll()
 	if not self.inLobby then return end
 
 	if self.state == GamemodeState.INPROGRESS then
@@ -315,7 +315,7 @@ function Tron:EntityDespawn( args )
 	end
 end
 
-function Tron:PreTick( args )
+function Tron:PreTick()
 	if not self.inLobby then return end
 
 	if self.state == GamemodeState.INPROGRESS then
@@ -408,7 +408,7 @@ function Tron:PreTick( args )
 	end
 end
 
-function Tron:Render( args )
+function Tron:Render()
 	if not self.inLobby or Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetValue( "SystemFonts" ) then
 		Render:SetFont( AssetLocation.SystemFont, "Impact" )
