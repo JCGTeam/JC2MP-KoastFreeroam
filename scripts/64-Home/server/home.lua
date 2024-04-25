@@ -24,7 +24,9 @@ function Home:PlayerChat( args )
 end
 
 function Home:SetHome( args, sender )
-	if sender:GetMoney() >= self.homePrice then
+	local money = sender:GetMoney()
+
+	if money >= self.homePrice then
 		local steamID = tostring(sender:GetSteamId().id)
 
 		local qry = SQL:Query( "INSERT OR REPLACE INTO players_home (steamid, pos, angle) VALUES(?, ?, ?)" )
@@ -36,7 +38,7 @@ function Home:SetHome( args, sender )
 		Network:Send( sender, "SetHome" )
 		print( sender:GetName() .. string.format( " set home. Coordinates: (%i, %i, %i)", sender:GetPosition().x, sender:GetPosition().y, sender:GetPosition().z ) )
 
-		sender:SetMoney( sender:GetMoney() - self.homePrice )
+		sender:SetMoney( money - self.homePrice )
 	else
 		Events:Fire( "CastCenterText", { target = sender, text = "Недостаточно средств. Требуется $" .. self.homePrice .. "!", time = 3, color = Color.Red } )
 	end
@@ -103,7 +105,9 @@ function Home:SpawnInHome( args )
 end
 
 function Home:SetHomeTw( args, sender )
-	if sender:GetMoney() >= self.homeTwPrice then
+	local money = sender:GetMoney()
+
+	if money >= self.homeTwPrice then
 		local steamID = tostring(sender:GetSteamId().id)
 
 		local qry = SQL:Query('INSERT OR REPLACE INTO players_homeTw (steamid, pos, angle) VALUES(?, ?, ?)')
@@ -115,7 +119,7 @@ function Home:SetHomeTw( args, sender )
 		Network:Send( sender, "SetHome" )
 		print( sender:GetName() .. string.format( " set home 2. Coordinates: (%i, %i, %i)", sender:GetPosition().x, sender:GetPosition().y, sender:GetPosition().z ) )
 
-		sender:SetMoney( sender:GetMoney() - self.homeTwPrice )
+		sender:SetMoney( money - self.homeTwPrice )
 	else
 		Events:Fire( "CastCenterText", { target = sender, text = "Недостаточно средств. Требуется $" .. self.homeTwPrice .. "!", time = 3, color = Color.Red } )
 	end

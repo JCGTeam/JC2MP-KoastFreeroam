@@ -13,10 +13,10 @@ function HInfo:EngHelp()
 		name = "Information",
 		text =
 			"> Main:\n" ..
-			"    Group in VK              [empty_link]\n" ..
+			"    Telegram Channel     [empty_link]\n" ..
+			"    We're in Discord        [empty_link]\n" ..
 			"    Group in Steam         [empty_link]\n" ..
-			"    We're in Discord           [empty_link]\n" ..
-			"    Telegram Channel        [empty_link]\n \n" ..
+			"    Group in VK               [empty_link]\n \n" ..
 			"> Our servers:\n" ..
 			"    Just Cause 2 Multiplayer Mod:\n" ..
 			"     - Koast Freeroam – [empty_link] (You are here)\n" ..
@@ -63,10 +63,10 @@ function HInfo:RusHelp()
 		name = "Информация",
 		text =
 			"> Главное:\n" ..
-			"    Группа в VK               [empty_link]\n" ..
-			"    Группа в Steam         [empty_link]\n" ..
+			"    Канал в Telegram      [empty_link]\n" ..
 			"    Сервер в Discord      [empty_link]\n" ..
-			"    Телеграм канал         [empty_link]\n \n" ..
+			"    Группа в Steam         [empty_link]\n" ..
+			"    Группа в VK               [empty_link]\n \n" ..
 			"> Наши сервера:\n" ..
 			"    Just Cause 2 Multiplayer Mod:\n" ..
 			"     - Koast Freeroam – [empty_link] (Вы тут)\n" ..

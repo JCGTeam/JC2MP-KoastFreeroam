@@ -161,7 +161,7 @@ function SkydivingStats:DrawSpeedometer( t )
 	local speed = LocalPlayer:GetLinearVelocity():Length()
 	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
 
-	if self.average_speed == nil then
+	if not self.average_speed then
 		self.average_speed = speed
 	else
 		self.average_speed = (self.average_speed + speed)/2

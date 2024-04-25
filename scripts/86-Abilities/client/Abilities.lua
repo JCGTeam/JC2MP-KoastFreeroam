@@ -45,7 +45,7 @@ function Abilities:__init()
     self.GrappleLongerValue_3 = 200
     self.GrappleLongerValue_4 = 250
 
-    self.unlockedC = Color( 0, 255, 0, 30 )
+    self.unlocked_clr = Color( 0, 255, 0, 30 )
 
     self.window = Window.Create()
 	self.window:SetSizeRel( Vector2( 0.4, 0.5 ) )
@@ -120,7 +120,7 @@ function Abilities:__init()
 
     self.wingsuitbutton.unlockstats = Rectangle.Create( self.wingsuitbutton )
     self.wingsuitbutton.unlockstats:SetDock( GwenPosition.Fill )
-    self.wingsuitbutton.unlockstats:SetColor( self.unlockedC )
+    self.wingsuitbutton.unlockstats:SetColor( self.unlocked_clr )
     self.wingsuitbutton.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.wingsuit_txt ) self.tip_descrition:SetText( self.wingsuit_description ) self.tip_descrition:SizeToContents() end )
 
     self.wingsuitbutton.image = ImagePanel.Create( self.wingsuitbutton )
@@ -136,7 +136,7 @@ function Abilities:__init()
 
     self.boost_1button.unlockstats = Rectangle.Create( self.boost_1button )
     self.boost_1button.unlockstats:SetDock( GwenPosition.Fill )
-    self.boost_1button.unlockstats:SetColor( self.unlockedC )
+    self.boost_1button.unlockstats:SetColor( self.unlocked_clr )
     self.boost_1button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.landvehicleboost_txt ) self.tip_descrition:SetText( self.boost_description ) self.tip_descrition:SizeToContents() end )
 
     self.boost_1button.image = ImagePanel.Create( self.boost_1button )
@@ -152,7 +152,7 @@ function Abilities:__init()
 
     self.boost_2button.unlockstats = Rectangle.Create( self.boost_2button )
     self.boost_2button.unlockstats:SetDock( GwenPosition.Fill )
-    self.boost_2button.unlockstats:SetColor( self.unlockedC )
+    self.boost_2button.unlockstats:SetColor( self.unlocked_clr )
     self.boost_2button.unlockstats:SetVisible( false )
     self.boost_2button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.watervehicleboost_txt ) self.tip_descrition:SetText( self.boost_description ) self.tip_descrition:SizeToContents() end )
 
@@ -169,7 +169,7 @@ function Abilities:__init()
 
     self.boost_3button.unlockstats = Rectangle.Create( self.boost_3button )
     self.boost_3button.unlockstats:SetDock( GwenPosition.Fill )
-    self.boost_3button.unlockstats:SetColor( self.unlockedC )
+    self.boost_3button.unlockstats:SetColor( self.unlocked_clr )
     self.boost_3button.unlockstats:SetVisible( false )
     self.boost_3button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.airvehicleboost_txt ) self.tip_descrition:SetText( self.boost_description ) self.tip_descrition:SizeToContents() end )
 
@@ -186,7 +186,7 @@ function Abilities:__init()
 
     self.bonusmoneybutton.unlockstats = Rectangle.Create( self.bonusmoneybutton )
     self.bonusmoneybutton.unlockstats:SetDock( GwenPosition.Fill )
-    self.bonusmoneybutton.unlockstats:SetColor( self.unlockedC )
+    self.bonusmoneybutton.unlockstats:SetColor( self.unlocked_clr )
     self.bonusmoneybutton.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.bonusmoney_txt ) self.tip_descrition:SetText( self.bonusmoney_description ) self.tip_descrition:SizeToContents() end )
 
     self.bonusmoneybutton.image = ImagePanel.Create( self.bonusmoneybutton )
@@ -202,7 +202,7 @@ function Abilities:__init()
 
     self.moreC4_5button.unlockstats = Rectangle.Create( self.moreC4_5button )
     self.moreC4_5button.unlockstats:SetDock( GwenPosition.Fill )
-    self.moreC4_5button.unlockstats:SetColor( self.unlockedC )
+    self.moreC4_5button.unlockstats:SetColor( self.unlocked_clr )
     self.moreC4_5button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
 
     self.moreC4_5button.image = ImagePanel.Create( self.moreC4_5button )
@@ -218,7 +218,7 @@ function Abilities:__init()
 
     self.moreC4_8button.unlockstats = Rectangle.Create( self.moreC4_8button )
     self.moreC4_8button.unlockstats:SetDock( GwenPosition.Fill )
-    self.moreC4_8button.unlockstats:SetColor( self.unlockedC )
+    self.moreC4_8button.unlockstats:SetColor( self.unlocked_clr )
     self.moreC4_8button.unlockstats:SetVisible( false )
     self.moreC4_8button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
 
@@ -235,7 +235,7 @@ function Abilities:__init()
 
     self.moreC4_10button.unlockstats = Rectangle.Create( self.moreC4_10button )
     self.moreC4_10button.unlockstats:SetDock( GwenPosition.Fill )
-    self.moreC4_10button.unlockstats:SetColor( self.unlockedC )
+    self.moreC4_10button.unlockstats:SetColor( self.unlocked_clr )
     self.moreC4_10button.unlockstats:SetVisible( false )
     self.moreC4_10button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
 
@@ -253,7 +253,7 @@ function Abilities:__init()
 
     self.moreC4_15button.unlockstats = Rectangle.Create( self.moreC4_15button )
     self.moreC4_15button.unlockstats:SetDock( GwenPosition.Fill )
-    self.moreC4_15button.unlockstats:SetColor( self.unlockedC )
+    self.moreC4_15button.unlockstats:SetColor( self.unlocked_clr )
     self.moreC4_15button.unlockstats:SetVisible( false )
     self.moreC4_15button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
 
@@ -270,7 +270,7 @@ function Abilities:__init()
 
     self.supernuclearbombbutton.unlockstats = Rectangle.Create( self.supernuclearbombbutton )
     self.supernuclearbombbutton.unlockstats:SetDock( GwenPosition.Fill )
-    self.supernuclearbombbutton.unlockstats:SetColor( self.unlockedC )
+    self.supernuclearbombbutton.unlockstats:SetColor( self.unlocked_clr )
     self.supernuclearbombbutton.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.supernuclearbomb_txt ) self.tip_descrition:SetText( self.supernuclearbomb_description ) self.tip_descrition:SizeToContents() end )
 
     self.supernuclearbombbutton.image = ImagePanel.Create( self.supernuclearbombbutton )
@@ -286,7 +286,7 @@ function Abilities:__init()
 
     self.longergrapple_150button.unlockstats = Rectangle.Create( self.longergrapple_150button )
     self.longergrapple_150button.unlockstats:SetDock( GwenPosition.Fill )
-    self.longergrapple_150button.unlockstats:SetColor( self.unlockedC )
+    self.longergrapple_150button.unlockstats:SetColor( self.unlocked_clr )
     self.longergrapple_150button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
 
     self.longergrapple_150button.image = ImagePanel.Create( self.longergrapple_150button )
@@ -302,7 +302,7 @@ function Abilities:__init()
 
     self.longergrapple_200button.unlockstats = Rectangle.Create( self.longergrapple_200button )
     self.longergrapple_200button.unlockstats:SetDock( GwenPosition.Fill )
-    self.longergrapple_200button.unlockstats:SetColor( self.unlockedC )
+    self.longergrapple_200button.unlockstats:SetColor( self.unlocked_clr )
     self.longergrapple_200button.unlockstats:SetVisible( false )
     self.longergrapple_200button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
 
@@ -319,7 +319,7 @@ function Abilities:__init()
 
     self.longergrapple_350button.unlockstats = Rectangle.Create( self.longergrapple_350button )
     self.longergrapple_350button.unlockstats:SetDock( GwenPosition.Fill )
-    self.longergrapple_350button.unlockstats:SetColor( self.unlockedC )
+    self.longergrapple_350button.unlockstats:SetColor( self.unlocked_clr )
     self.longergrapple_350button.unlockstats:SetVisible( false )
     self.longergrapple_350button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
 
@@ -336,7 +336,7 @@ function Abilities:__init()
 
     self.longergrapple_500button.unlockstats = Rectangle.Create( self.longergrapple_500button )
     self.longergrapple_500button.unlockstats:SetDock( GwenPosition.Fill )
-    self.longergrapple_500button.unlockstats:SetColor( self.unlockedC )
+    self.longergrapple_500button.unlockstats:SetColor( self.unlocked_clr )
     self.longergrapple_500button.unlockstats:SetVisible( false )
     self.longergrapple_500button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
 
@@ -353,7 +353,7 @@ function Abilities:__init()
 
     self.jesusmode_button.unlockstats = Rectangle.Create( self.jesusmode_button )
     self.jesusmode_button.unlockstats:SetDock( GwenPosition.Fill )
-    self.jesusmode_button.unlockstats:SetColor( self.unlockedC )
+    self.jesusmode_button.unlockstats:SetColor( self.unlocked_clr )
     self.jesusmode_button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.jesusmode_txt ) self.tip_descrition:SetText( self.jesusmode_description ) self.tip_descrition:SizeToContents() end )
 
     self.jesusmode_button.image = ImagePanel.Create( self.jesusmode_button )
@@ -381,7 +381,6 @@ function Abilities:__init()
     Events:Subscribe( "Lang", self, self.Lang )
     Events:Subscribe( "OpenAbitiliesMenu", self, self.OpenAbitiliesMenu )
     Events:Subscribe( "CloseAbitiliesMenu", self, self.CloseAbitiliesMenu )
-    Events:Subscribe( "LocalPlayerMoneyChange", self, self.LocalPlayerMoneyChange )
 end
 
 function Abilities:Lang()
@@ -448,7 +447,9 @@ function Abilities:BoostUnlocker()
     sound:SetParameter(0,0.75)
     Network:Send( "BoostUnlock" )
 
-    if not LocalPlayer:GetValue( "Boost" ) then
+    local boost = LocalPlayer:GetValue( "Boost" )
+
+    if not boost then
         self.boost_1button.unlockstats:SetToolTip( self.landvehicleboost_txt .. " ( " .. self.unlocked_txt .. " )" )
         self.boost_1button.unlockstats:SetVisible( true )
 
@@ -456,13 +457,13 @@ function Abilities:BoostUnlocker()
         self.boost_2button:SetVisible( true )
 
         Events:Fire( "OpenWhatsNew", { titletext = self.landvehicleboost_txt, text = self.airvehboosttutorial_txt } )
-    elseif LocalPlayer:GetValue( "Boost" ) == self.boostValue_1 then
+    elseif boost == self.boostValue_1 then
         self.boost_2button.unlockstats:SetToolTip( self.watervehicleboost_txt .. " ( " .. self.unlocked_txt .. " )" )
         self.boost_2button.unlockstats:SetVisible( true )
 
         self.boost_3button:SetToolTip( self.airvehicleboost_txt .. " ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.Boost_3 ) .. " )" )
         self.boost_3button:SetVisible( true )
-    elseif LocalPlayer:GetValue( "Boost" ) == self.boostValue_2 then
+    elseif boost == self.boostValue_2 then
         self.boost_3button.unlockstats:SetToolTip( self.airvehicleboost_txt .. " ( " .. self.unlocked_txt .. " )" )
         self.boost_3button.unlockstats:SetVisible( true )
 
@@ -498,46 +499,48 @@ function Abilities:MoreC4Unlocker()
     sound:SetParameter(0,0.75)
     Network:Send( "MoreC4Unlock" )
 
-    if not LocalPlayer:GetValue( "MoreC4" ) then
+    local moreC4 = LocalPlayer:GetValue( "MoreC4" )
+
+    if not moreC4 then
         self.moreC4_5button.unlockstats:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_5 .. " " .. self.items_txt .. ") ( " .. self.unlocked_txt .. " )" )
         self.moreC4_5button.unlockstats:SetVisible( true )
 
         self.moreC4_8button:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_8 .. " " .. self.items_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.MoreC4_8 ) .. " )" )
         self.moreC4_8button:SetVisible( true )
-    elseif LocalPlayer:GetValue( "MoreC4" ) == self.moreC4Value_5 then
+    elseif moreC4 == self.moreC4Value_5 then
         self.moreC4_8button.unlockstats:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_8 .. " " .. self.items_txt .. ") ( " .. self.unlocked_txt .. " )" )
         self.moreC4_8button.unlockstats:SetVisible( true )
 
         self.moreC4_10button:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_10 .. " " .. self.items_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.MoreC4_10 ) .. " )" )
         self.moreC4_10button:SetVisible( true )
-    elseif LocalPlayer:GetValue( "MoreC4" ) == self.moreC4Value_8 then
+    elseif moreC4 == self.moreC4Value_8 then
         self.moreC4_10button.unlockstats:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_10 .. " " .. self.items_txt .. ") ( " .. self.unlocked_txt .. " )" )
         self.moreC4_10button.unlockstats:SetVisible( true )
 
         self.moreC4_15button:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_15 .. " " .. self.items_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.MoreC4_15 ) .. " )" )
         self.moreC4_15button:SetVisible( true )
-    elseif LocalPlayer:GetValue( "MoreC4" ) == self.moreC4Value_10 then
+    elseif moreC4 == self.moreC4Value_10 then
         self.moreC4_15button.unlockstats:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_15 .. " " .. self.items_txt .. ") ( " .. self.unlocked_txt .. " )" )
         self.moreC4_15button.unlockstats:SetVisible( true )
     end
 end
 
-function Abilities:UpdateButtons()
-    self.wingsuitbutton:SetEnabled( LocalPlayer:GetMoney() >= Prices.Wingsuit )
-    self.boost_1button:SetEnabled( LocalPlayer:GetMoney() >= Prices.Boost_1 )
-    self.boost_2button:SetEnabled( LocalPlayer:GetMoney() >= Prices.Boost_2 )
-    self.boost_3button:SetEnabled( LocalPlayer:GetMoney() >= Prices.Boost_3 )
-    self.bonusmoneybutton:SetEnabled( LocalPlayer:GetMoney() >= Prices.BonusMoney )
-    self.moreC4_5button:SetEnabled( LocalPlayer:GetMoney() >= Prices.MoreC4_5 )
-    self.moreC4_8button:SetEnabled( LocalPlayer:GetMoney() >= Prices.MoreC4_8 )
-    self.moreC4_10button:SetEnabled( LocalPlayer:GetMoney() >= Prices.MoreC4_10 )
-    self.moreC4_15button:SetEnabled( LocalPlayer:GetMoney() >= Prices.MoreC4_15 )
-    self.supernuclearbombbutton:SetEnabled( LocalPlayer:GetMoney() >= Prices.SuperNuclearBomb )
-    self.longergrapple_150button:SetEnabled( LocalPlayer:GetMoney() >= Prices.LongerGrapple_150 )
-    self.longergrapple_200button:SetEnabled( LocalPlayer:GetMoney() >= Prices.LongerGrapple_200 )
-    self.longergrapple_350button:SetEnabled( LocalPlayer:GetMoney() >= Prices.LongerGrapple_350 )
-    self.longergrapple_500button:SetEnabled( LocalPlayer:GetMoney() >= Prices.LongerGrapple_500 )
-    self.jesusmode_button:SetEnabled( LocalPlayer:GetMoney() >= Prices.JesusMode )
+function Abilities:UpdateButtons( money )
+    self.wingsuitbutton:SetEnabled( money >= Prices.Wingsuit )
+    self.boost_1button:SetEnabled( money >= Prices.Boost_1 )
+    self.boost_2button:SetEnabled( money >= Prices.Boost_2 )
+    self.boost_3button:SetEnabled( money >= Prices.Boost_3 )
+    self.bonusmoneybutton:SetEnabled( money >= Prices.BonusMoney )
+    self.moreC4_5button:SetEnabled( money >= Prices.MoreC4_5 )
+    self.moreC4_8button:SetEnabled( money >= Prices.MoreC4_8 )
+    self.moreC4_10button:SetEnabled( money >= Prices.MoreC4_10 )
+    self.moreC4_15button:SetEnabled( money >= Prices.MoreC4_15 )
+    self.supernuclearbombbutton:SetEnabled( money >= Prices.SuperNuclearBomb )
+    self.longergrapple_150button:SetEnabled( money >= Prices.LongerGrapple_150 )
+    self.longergrapple_200button:SetEnabled( money >= Prices.LongerGrapple_200 )
+    self.longergrapple_350button:SetEnabled( money >= Prices.LongerGrapple_350 )
+    self.longergrapple_500button:SetEnabled( money >= Prices.LongerGrapple_500 )
+    self.jesusmode_button:SetEnabled( money >= Prices.JesusMode )
 end
 
 function Abilities:SuperNuclearBombUnlocker()
@@ -568,25 +571,27 @@ function Abilities:LongerGrappleUnlocker()
     sound:SetParameter(0,0.75)
     Network:Send( "LongerGrappleUnlock" )
 
-    if not LocalPlayer:GetValue( "LongerGrapple" ) then
+    local longerGrapple = LocalPlayer:GetValue( "LongerGrapple" )
+
+    if not longerGrapple then
         self.longergrapple_150button.unlockstats:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_1 .. " " .. self.meters_txt .. ") ( " .. self.unlocked_txt .. " )" )
         self.longergrapple_150button.unlockstats:SetVisible( true )
 
         self.longergrapple_200button:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_2 .. " " .. self.meters_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.LongerGrapple_200 ) .. " )" )
         self.longergrapple_200button:SetVisible( true )
-    elseif LocalPlayer:GetValue( "LongerGrapple" ) == self.GrappleLongerValue_1 then
+    elseif longerGrapple == self.GrappleLongerValue_1 then
         self.longergrapple_200button.unlockstats:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_2 .. " " .. self.meters_txt .. ") ( " .. self.unlocked_txt .. " )" )
         self.longergrapple_200button.unlockstats:SetVisible( true )
 
         self.longergrapple_350button:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_3 .. " " .. self.meters_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.LongerGrapple_350 ) .. " )" )
         self.longergrapple_350button:SetVisible( true )
-    elseif LocalPlayer:GetValue( "LongerGrapple" ) == self.GrappleLongerValue_2 then
+    elseif longerGrapple == self.GrappleLongerValue_2 then
         self.longergrapple_350button.unlockstats:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_3 .. " " .. self.meters_txt .. ") ( " .. self.unlocked_txt .. " )" )
         self.longergrapple_350button.unlockstats:SetVisible( true )
 
         self.longergrapple_500button:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_4 .. " " .. self.meters_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.LongerGrapple_500 ) .. " )" )
         self.longergrapple_500button:SetVisible( true )
-    elseif LocalPlayer:GetValue( "LongerGrapple" ) == self.GrappleLongerValue_3 then
+    elseif longerGrapple == self.GrappleLongerValue_3 then
         self.longergrapple_500button.unlockstats:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_4 .. " " .. self.meters_txt .. ") ( " .. self.unlocked_txt .. " )" )
         self.longergrapple_500button.unlockstats:SetVisible( true )
     end
@@ -610,10 +615,6 @@ function Abilities:JesusModeUnlocker()
 end
 
 function Abilities:Render()
-    if self.window then
-        self:UpdateButtons()
-    end
-
     local is_visible = Game:GetState() == GUIState.Game
 
     if self.window:GetVisible() ~= is_visible then
@@ -633,6 +634,7 @@ function Abilities:CloseAbitiliesMenu()
 
         if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
         if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+        if self.LocalPlayerMoneyChangeEvent then Events:Unsubscribe( self.LocalPlayerMoneyChangeEvent ) self.LocalPlayerMoneyChangeEvent = nil end
 	end
 end
 
@@ -647,6 +649,8 @@ function Abilities:Open()
 			angle = Angle()
 		})
 
+        if self.window then self:UpdateButtons( LocalPlayer:GetMoney() ) end
+
         self.tip_title:SetText( self.abilities_txt ) self.tip_descrition:SetText( self.noselected_description ) self.tip_descrition:SizeToContents()
         self.tip_descrition:SetWrap( true )
 
@@ -657,6 +661,7 @@ function Abilities:Open()
 
         if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
         if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+        if not self.LocalPlayerMoneyChangeEvent then self.LocalPlayerMoneyChangeEvent = Events:Subscribe( "LocalPlayerMoneyChange", self, self.LocalPlayerMoneyChange ) end
 
         if LocalPlayer:GetValue( "Lang" ) then
             self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Balance: $" .. formatNumber( LocalPlayer:GetMoney() ) or "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
@@ -671,27 +676,29 @@ function Abilities:Open()
             self.wingsuitbutton.unlockstats:SetVisible( false )
         end
 
-        if LocalPlayer:GetValue( "Boost" ) then
+        local boost = LocalPlayer:GetValue( "Boost" )
+
+        if boost then
             self.boost_1button.unlockstats:SetToolTip( self.landvehicleboost_txt .. " ( " .. self.unlocked_txt .. " )" )
             self.boost_1button.unlockstats:SetVisible( true )
 
-            if LocalPlayer:GetValue( "Boost" ) == self.boostValue_1 then
+            if boost == self.boostValue_1 then
                 self.boost_2button:SetToolTip( self.watervehicleboost_txt .. " ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.Boost_2 ) .. " )" )
                 self.boost_2button:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "Boost" ) >= self.boostValue_2 then
+            if boost >= self.boostValue_2 then
                 self.boost_2button.unlockstats:SetToolTip( self.watervehicleboost_txt .. " ( " .. self.unlocked_txt .. " )" )
                 self.boost_2button:SetVisible( true )
                 self.boost_2button.unlockstats:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "Boost" ) == self.boostValue_2 then
+            if boost == self.boostValue_2 then
                 self.boost_3button:SetToolTip( self.airvehicleboost_txt .. " ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.Boost_3 ) .. " )" )
                 self.boost_3button:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "Boost" ) >= self.boostValue_3 then
+            if boost >= self.boostValue_3 then
                 self.boost_3button.unlockstats:SetToolTip( self.airvehicleboost_txt .. " ( " .. self.unlocked_txt .. " )" )
                 self.boost_3button:SetVisible( true )
                 self.boost_3button.unlockstats:SetVisible( true )
@@ -717,38 +724,40 @@ function Abilities:Open()
             self.bonusmoneybutton.unlockstats:SetVisible( false )
         end
 
-        if LocalPlayer:GetValue( "MoreC4" ) then
+        local moreC4 = LocalPlayer:GetValue( "MoreC4" )
+
+        if moreC4 then
             self.moreC4_5button.unlockstats:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_5 .. " " .. self.items_txt .. ") ( " .. self.unlocked_txt .. " )" )
             self.moreC4_5button.unlockstats:SetVisible( true )
 
-            if LocalPlayer:GetValue( "MoreC4" ) == self.moreC4Value_5 then
+            if moreC4 == self.moreC4Value_5 then
                 self.moreC4_8button:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_8 .. " " .. self.items_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.MoreC4_8 ) .. " )" )
                 self.moreC4_8button:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "MoreC4" ) >= self.moreC4Value_8 then
+            if moreC4 >= self.moreC4Value_8 then
                 self.moreC4_8button.unlockstats:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_8 .." " .. self.items_txt .. ") ( " .. self.unlocked_txt .. " )" )
                 self.moreC4_8button:SetVisible( true )
                 self.moreC4_8button.unlockstats:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "MoreC4" ) == self.moreC4Value_8 then
+            if LmoreC4 == self.moreC4Value_8 then
                 self.moreC4_10button:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_10 .. " " .. self.items_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.MoreC4_10 ) .. " )" )
                 self.moreC4_10button:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "MoreC4" ) >= self.moreC4Value_10 then
+            if moreC4 >= self.moreC4Value_10 then
                 self.moreC4_10button.unlockstats:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_10 .. " " .. self.items_txt .. ") ( " .. self.unlocked_txt .. " )" )
                 self.moreC4_10button:SetVisible( true )
                 self.moreC4_10button.unlockstats:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "MoreC4" ) == self.moreC4Value_10 then
+            if moreC4 == self.moreC4Value_10 then
                 self.moreC4_15button:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_15 .. " " .. self.items_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.MoreC4_15 ) .. " )" )
                 self.moreC4_15button:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "MoreC4" ) >= self.moreC4Value_15 then
+            if moreC4 >= self.moreC4Value_15 then
                 self.moreC4_15button.unlockstats:SetToolTip( self.morec4_txt .. " (" .. self.moreC4Value_15 .. " " .. self.items_txt .. ") ( " .. self.unlocked_txt .. " )" )
                 self.moreC4_15button:SetVisible( true )
                 self.moreC4_15button.unlockstats:SetVisible( true )
@@ -778,38 +787,40 @@ function Abilities:Open()
             self.supernuclearbombbutton.unlockstats:SetVisible( false )
         end
 
-        if LocalPlayer:GetValue( "LongerGrapple" ) then
+        local longerGrapple = LocalPlayer:GetValue( "LongerGrapple" )
+
+        if longerGrapple then
             self.longergrapple_150button.unlockstats:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_1 .. " " .. self.meters_txt .. ") ( " .. self.unlocked_txt .. " )" )
             self.longergrapple_150button.unlockstats:SetVisible( true )
 
-            if LocalPlayer:GetValue( "LongerGrapple" ) == self.GrappleLongerValue_1 then
+            if longerGrapple == self.GrappleLongerValue_1 then
                 self.longergrapple_200button:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_2 .. " " .. self.meters_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.LongerGrapple_200 ) .. " )" )
                 self.longergrapple_200button:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "LongerGrapple" ) >= self.GrappleLongerValue_2 then
+            if longerGrapple >= self.GrappleLongerValue_2 then
                 self.longergrapple_200button.unlockstats:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_2 .. " " .. self.meters_txt .. ") ( " .. self.unlocked_txt .. " )" )
                 self.longergrapple_200button:SetVisible( true )
                 self.longergrapple_200button.unlockstats:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "LongerGrapple" ) == self.GrappleLongerValue_2 then
+            if longerGrapple == self.GrappleLongerValue_2 then
                 self.longergrapple_350button:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_3 .. " " .. self.meters_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.LongerGrapple_350 ) .. " )" )
                 self.longergrapple_350button:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "LongerGrapple" ) >= self.GrappleLongerValue_3 then
+            if longerGrapple >= self.GrappleLongerValue_3 then
                 self.longergrapple_350button.unlockstats:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_3 .. " " .. self.meters_txt .. ") ( " .. self.unlocked_txt .. " )" )
                 self.longergrapple_350button:SetVisible( true )
                 self.longergrapple_350button.unlockstats:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "LongerGrapple" ) == self.GrappleLongerValue_3 then
+            if longerGrapple == self.GrappleLongerValue_3 then
                 self.longergrapple_500button:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_4 .. " " .. self.meters_txt .. ") ( " .. self.needed_txt .. ": $" .. formatNumber( Prices.LongerGrapple_500 ) .. " )" )
                 self.longergrapple_500button:SetVisible( true )
             end
 
-            if LocalPlayer:GetValue( "LongerGrapple" ) >= self.GrappleLongerValue_4 then
+            if longerGrapple >= self.GrappleLongerValue_4 then
                 self.longergrapple_500button.unlockstats:SetToolTip( self.longergrapple_txt .. " (" .. self.GrappleLongerValue_4 .. " " .. self.meters_txt .. ") ( " .. self.unlocked_txt .. " )" )
                 self.longergrapple_500button:SetVisible( true )
                 self.longergrapple_500button.unlockstats:SetVisible( true )
@@ -854,6 +865,8 @@ end
 
 function Abilities:LocalPlayerMoneyChange( args )
     self:UpdateMoneyString( args.new_money )
+
+    if self.window then self:UpdateButtons( args.new_money ) end
 end
 
 function Abilities:SetWindowVisible( visible )
@@ -886,6 +899,7 @@ function Abilities:WindowClosed()
 
         if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
         if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+        if self.LocalPlayerMoneyChangeEvent then Events:Unsubscribe( self.LocalPlayerMoneyChangeEvent ) self.LocalPlayerMoneyChangeEvent = nil end
 	end
 end
 

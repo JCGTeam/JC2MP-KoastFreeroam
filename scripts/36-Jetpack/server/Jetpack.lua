@@ -16,11 +16,7 @@ function Jetpack:EnableJetpack( args, sender )
         return
     end
 
-	if not sender:GetValue( "JP" ) then
-		sender:SetNetworkValue( "JP", true )
-	else
-		sender:SetNetworkValue( "JP", nil )
-	end
+	sender:SetNetworkValue( "JP", not sender:GetValue( "JP" ) )
 end
 
 jetpack = Jetpack()

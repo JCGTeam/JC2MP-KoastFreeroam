@@ -265,13 +265,13 @@ function Tuner:PostTick()
 					vehicleTransmission:SetClutchDelayTime(v:GetValue("clutch_delay"))
 
 					local gear_ratios = vehicleTransmission:GetGearRatios()
-					if v:GetValue( "gear_ratios1" ) ~= nil then gear_ratios[1] = v:GetValue( "gear_ratios1" ) end
-					if v:GetValue( "gear_ratios2" ) ~= nil then gear_ratios[2] = v:GetValue( "gear_ratios2" ) end
-					if v:GetValue( "gear_ratios3" ) ~= nil then gear_ratios[3] = v:GetValue( "gear_ratios3" ) end
-					if v:GetValue( "gear_ratios4" ) ~= nil then gear_ratios[4] = v:GetValue( "gear_ratios4" ) end
-					if v:GetValue( "gear_ratios5" ) ~= nil then gear_ratios[5] = v:GetValue( "gear_ratios5" ) end
-					if v:GetValue( "gear_ratios6" ) ~= nil then gear_ratios[6] = v:GetValue( "gear_ratios6" ) end
-					if v:GetValue( "gear_ratios7" ) ~= nil then gear_ratios[7] = v:GetValue( "gear_ratios7" ) end
+					if v:GetValue( "gear_ratios1" ) then gear_ratios[1] = v:GetValue( "gear_ratios1" ) end
+					if v:GetValue( "gear_ratios2" ) then gear_ratios[2] = v:GetValue( "gear_ratios2" ) end
+					if v:GetValue( "gear_ratios3" ) then gear_ratios[3] = v:GetValue( "gear_ratios3" ) end
+					if v:GetValue( "gear_ratios4" ) then gear_ratios[4] = v:GetValue( "gear_ratios4" ) end
+					if v:GetValue( "gear_ratios5" ) then gear_ratios[5] = v:GetValue( "gear_ratios5" ) end
+					if v:GetValue( "gear_ratios6" ) then gear_ratios[6] = v:GetValue( "gear_ratios6" ) end
+					if v:GetValue( "gear_ratios7" ) then gear_ratios[7] = v:GetValue( "gear_ratios7" ) end
 					vehicleTransmission:SetGearRatios( gear_ratios )
 
 					local wheel_ratios = vehicleTransmission:GetWheelTorqueRatios()

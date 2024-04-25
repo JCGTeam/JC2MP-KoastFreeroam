@@ -25,17 +25,9 @@ function MGAnimationFix:__init()
         [AnimationState.SWalkMg] = true
     }
 
-    if not self.checkTimer then
-        self.checkTimer = Timer()
-    end
-
-	if not self.PostTickEvent then
-		self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick )
-	end
-
-    if not self.LocalPlayerInputEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
+    if not self.checkTimer then self.checkTimer = Timer() end
+	if not self.PostTickEvent then self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick ) end
+    if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 
     Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )

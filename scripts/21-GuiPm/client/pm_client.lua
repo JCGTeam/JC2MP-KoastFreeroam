@@ -311,9 +311,11 @@ function PM:loadMessages()
 	local row = self.GUI.list:GetSelectedRow()
 	if ( row ~= nil ) then
 		local player = row:GetDataObject( "id" )
+		local steamId = player:GetSteamId()
+
 		self.GUI.messagesLabel:SetText( "" )
-		if ( self.messages [ tostring( player:GetSteamId() ) ] ) then
-			for index, msg in ipairs( self.messages [ tostring ( player:GetSteamId() ) ] ) do
+		if ( self.messages [ tostring( steamId ) ] ) then
+			for index, msg in ipairs( self.messages [ tostring ( steamId ) ] ) do
 				if IsValid( msg ) then
 					if ( index > 1 ) then
 						self.GUI.messagesLabel:SetText( self.GUI.messagesLabel:GetText() .."\n".. tostring ( msg ) )
@@ -333,14 +335,18 @@ end
 
 function PM:addMessage( data )
 	if ( data.player ) then
-		if ( not self.messages [ tostring ( data.player:GetSteamId() ) ] ) then
-			self.messages [ tostring ( data.player:GetSteamId() ) ] = {}
+		local steamId = data.player:GetSteamId()
+
+		if ( not self.messages [ tostring ( steamId ) ] ) then
+			self.messages [ tostring ( steamId ) ] = {}
 		end
+
 		local row = self.GUI.list:GetSelectedRow()
+
 		if ( row ~= nil ) then
 			local player = row:GetDataObject( "id" )
 			if ( data.player == player ) then
-				if ( #self.messages [ tostring( data.player:GetSteamId() ) ] > 0 ) then
+				if ( #self.messages [ tostring( steamId ) ] > 0 ) then
 					self.GUI.messagesLabel:SetText( self.GUI.messagesLabel:GetText() .."\n".. tostring ( data.text ) )
 				else
 					self.GUI.messagesLabel:SetText( tostring ( data.text ) )
@@ -348,7 +354,8 @@ function PM:addMessage( data )
 				self.GUI.messagesLabel:SizeToContents()
 			end
 		end
-		table.insert ( self.messages [ tostring ( data.player:GetSteamId() ) ], data.text )
+
+		table.insert ( self.messages [ tostring ( steamId ) ], data.text )
 	end
 end
 

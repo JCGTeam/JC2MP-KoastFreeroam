@@ -1,6 +1,6 @@
 class 'WeatherManager'
 
-Weathers = { 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2 }
+local Weathers = { 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2 }
 
 function WeatherManager:__init()
 	Events:Subscribe( "PostTick", self, self.PostTick )
@@ -11,11 +11,13 @@ end
 
 function WeatherManager:PostTick()
 	if self.timer:GetHours() <= 1 then return end
+
 	if Weathers[math.random(#Weathers)] == self.weather then
 		self.weather = 0
 	else
 		self.weather = Weathers[math.random(#Weathers)]
 	end
+
 	DefaultWorld:SetWeatherSeverity( self.weather )
 
 	local setweather_txt = "Weather set to "

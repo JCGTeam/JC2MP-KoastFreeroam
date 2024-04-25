@@ -232,16 +232,18 @@ function Freeroam:PlayerSpawn( args )
     local default_spawn = true
 
 	if args.player:GetWorld() == DefaultWorld then
-        if args.player:GetValue( "SpawnMode" ) then
-            if args.player:GetValue( "SpawnMode" ) == 0 then
+        local spawnMode = args.player:GetValue( "SpawnMode" )
+
+        if spawnMode then
+            if spawnMode == 0 then
                 Network:Send( args.player, "EnableAutoPassive" )
-            elseif args.player:GetValue( "SpawnMode" ) == 1 then
+            elseif spawnMode == 1 then
                 if args.player:GetValue( "SpawnInHome" ) then
                     self:PlayerSpawnFromHomeDB( args )
                 else
                     self:PlayerSpawnFromDB( args )
                 end
-            elseif args.player:GetValue( "SpawnMode" ) == 2 then
+            elseif spawnMode == 2 then
                 self:PlayerRandomSpawn( args )
             end
 
@@ -310,7 +312,7 @@ function Freeroam:PlayerJoin( args )
     self:PlayerSpawn( args )
 
     local qry = SQL:Query( "select kills from players_kills where steamid = (?)" )
-    qry:Bind( 1, args.player:GetSteamId().id )
+    qry:Bind( 1, steamID )
     local result = qry:Execute()
 
 	if #result > 0 then
@@ -375,6 +377,7 @@ end
 
 function Freeroam:PlayerDeath( args )
     if args.player:GetWorld() ~= DefaultWorld then return end
+
     if args.killer and args.killer:GetSteamId() ~= args.player:GetSteamId() then
         if args.killer:GetValue( "Passive" ) then
 			args.killer:SetHealth( 0 )

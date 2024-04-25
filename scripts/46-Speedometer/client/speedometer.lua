@@ -201,8 +201,8 @@ function Speedometer:GetUnitString()
 end
 
 function Speedometer:DrawShadowedText3( pos, text, colour, size, scale )
-	if scale == nil then scale = 1.0 end
-	if size == nil then size = TextSize.Default end
+	if not scale then scale = 1.0 end
+	if not size then size = TextSize.Default end
 
 	local shadow_colour = Color( 0, 0, 0, 150 )
 	shadow_colour = shadow_colour * 0.4
@@ -212,8 +212,8 @@ function Speedometer:DrawShadowedText3( pos, text, colour, size, scale )
 end
 
 function Speedometer:DrawShadowedText2( pos, text, colour, size, scale )
-	if scale == nil then scale = 1.0 end
-	if size == nil then size = TextSize.Default end
+	if not scale then scale = 1.0 end
+	if not size then size = TextSize.Default end
 
 	local shadow_colour = Color( 0, 0, 0, 255 )
 	shadow_colour = shadow_colour * 0.4

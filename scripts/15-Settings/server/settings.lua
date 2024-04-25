@@ -78,10 +78,10 @@ function Settings:NumberToBoolean( value )
 end
 
 function Settings:PlayerQuit( args )
-	local steamID = args.player:GetSteamId().id
+	local steamId = args.player:GetSteamId().id
 
     local cmd = SQL:Command( "INSERT OR REPLACE INTO players_settings (steamid, clockvisible, clockpendosformat, bestrecordsvisible, passivemodevisible, jesusmodevisible, killfeedvisible, chattipsvisible, chatbackgroundvisible, playersmarkersvisible, jobsmarkersvisible, customcrosshair, jethud, longergrapplevisible, jobsvisible, longergrappleenabled, vehicleejectblocker, wingsuitenabled, hydraulicsenabled, driftphysics, opendoorstipsvisible, vehiclejump) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" )
-    cmd:Bind( 1, tostring( steamID ) )
+    cmd:Bind( 1, tostring( steamId ) )
     cmd:Bind( 2, self:BooleanToNumber( args.player:GetValue( "ClockVisible" ) ) )
 	cmd:Bind( 3, self:BooleanToNumber( args.player:GetValue( "ClockPendosFormat" ) ) )
 	cmd:Bind( 4, self:BooleanToNumber( args.player:GetValue( "BestRecordVisible" ) ) )
@@ -160,10 +160,10 @@ end
 
 function Settings:SetPlyColor( args, sender )
 	local colored = args.pcolor
-	local steamID = tostring(sender:GetSteamId().id)
+	local steamId = sender:GetSteamId().id
 
 	local qry = SQL:Query('INSERT OR REPLACE INTO players_color (steamid, r, g, b) VALUES(?, ?, ?, ?)')
-	qry:Bind(1, tostring(steamID))
+	qry:Bind(1, tostring(steamId))
 	qry:Bind(2, colored.r)
 	qry:Bind(3, colored.g)
 	qry:Bind(4, colored.b)

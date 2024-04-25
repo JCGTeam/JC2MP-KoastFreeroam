@@ -32,6 +32,7 @@ function Grenades:__init()
     Events:Subscribe( "FireGrenade", self, self.FireGrenade )
     Events:Subscribe( "PostTick", self, self.PostTick )
     Events:Subscribe( "Render", self, self.Render )
+
     Network:Subscribe( "GrenadeTossed", self, self.GrenadeTossed )
 
     self.object = false
@@ -59,9 +60,7 @@ end
 
 function Grenades:InputPoll()
     if not self.thrown then
-        if not self.thrownTimer then
-            self.thrownTimer = Timer()
-        end
+        if not self.thrownTimer then self.thrownTimer = Timer() end
 
         local bs = LocalPlayer:GetBaseState()
 
@@ -80,11 +79,7 @@ function Grenades:InputPoll()
         end
 
         if not LocalPlayer:InVehicle() and not self.blacklist.animations[bs] then
-            if self.thrownUnder then
-                LocalPlayer:SetLeftArmState( AnimationState.LaSUnderThrowGrenade )
-            else
-                LocalPlayer:SetLeftArmState( AnimationState.LaSOverThrowGrenade )
-            end
+            LocalPlayer:SetLeftArmState( self.thrownUnder and AnimationState.LaSUnderThrowGrenade or AnimationState.LaSOverThrowGrenade )
         end
     end
 end

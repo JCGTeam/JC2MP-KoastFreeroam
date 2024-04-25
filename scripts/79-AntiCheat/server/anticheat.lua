@@ -26,8 +26,10 @@ end
 
 function GodCheck:CheckThisPlayer( args, sender )
     if not sender:GetVehicle() then
-    	self.phealth[ sender:GetId() ] = sender:GetHealth()
-    	if sender:GetHealth() >= self.phealth[ sender:GetId() ] then
+		local pId = sender:GetId()
+
+    	self.phealth[ pId ] = sender:GetHealth()
+    	if sender:GetHealth() >= self.phealth[ pId ] then
 	      if sender:GetHealth() > 0 then
 		      	Network:Send( sender, "Checking" )
 	    	end

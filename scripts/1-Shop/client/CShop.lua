@@ -763,8 +763,10 @@ function Shop:LoadCategories()
 
 			self.tone2Picker:SetColor( Color.White )
 			self.tone2 = self.tone2Picker:GetColor()
-			self.tone1Picker:SetColor( LocalPlayer:GetColor() )
-			self.tone2Picker:SetColor( LocalPlayer:GetColor() )
+
+			local lpColor = LocalPlayer:GetColor()
+			self.tone1Picker:SetColor( lpColor )
+			self.tone2Picker:SetColor( lpColor )
 
 			local setColorBtn = Button.Create( window )
 			setColorBtn:SetText( "Установить цвет »" )

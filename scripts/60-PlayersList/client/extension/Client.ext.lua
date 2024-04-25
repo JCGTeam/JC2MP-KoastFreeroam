@@ -1,7 +1,7 @@
 function Client:getServerPlayers()
-	local players = {LocalPlayer};
+	local players = {LocalPlayer}
 	for p in Client:GetPlayers() do
-		table.insert(players, p);
+		table.insert(players, p)
 	end
-	return players;
+	return players
 end

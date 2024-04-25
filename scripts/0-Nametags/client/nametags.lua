@@ -268,7 +268,7 @@ function Nametags:DrawFullTag( pos, name, dist, colour, health )
 	local scale = Nametags:CalculateAlpha( dist, self.player_bias, self.player_max, self.player_limit )
 
 	-- Make sure we're supposed to draw
-	if scale == nil then return end
+	if not scale then return end
 
 	local alpha = scale * 255
 
@@ -280,7 +280,7 @@ function Nametags:DrawCircleTag( pos, dist, colour )
 	local scale = math.lerp( 1, 0, math.clamp( 1, 0, dist/self.player_limit ) )
 
 	-- Make sure we're supposed to draw
-	if scale == nil then return end
+	if not scale then return end
 
 	self:DrawCircle( pos, scale, scale, colour )
 end

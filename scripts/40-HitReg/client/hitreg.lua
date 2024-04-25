@@ -61,7 +61,9 @@ function HitReg:LocalPlayerInput( args )
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
     if args.input == Action.FireRight or args.input == Action.FireLeft or args.input == Action.McFire then
-        if LocalPlayer:GetUpperBodyState() == 347 or LocalPlayer:GetUpperBodyState() == 377 or LocalPlayer:GetUpperBodyState() == 346 then
+        local ubs = LocalPlayer:GetUpperBodyState()
+
+        if ubs == 347 or ubs == 377 or ubs == 346 then
             if self.continuousFireTable[LocalPlayer:GetEquippedWeapon().id] then
                 self:Fire()
             else

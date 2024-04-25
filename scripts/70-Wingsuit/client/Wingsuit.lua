@@ -12,10 +12,13 @@ function Pigeon:__init()
 		self.name = "Нажмите Shift или RB чтобы ускориться. Нажмите Ctrl чтобы сбавить скорость."
 		self.nameTh = "%i км/ч %i метров\n"
 		self.tip = "Нажмите Q, чтобы раскрыть вингсьют."
+	
 		self.tWidg = "Хорошечный Голубь:"
 		self.tWidgTw = "Хорошечный "
 		self.tDrift = "Голубь: "
 		self.tRecord = "Личный рекорд полета на вингсьюте: "
+
+		self.pvpblock = "Вы не можете использовать это во время боя!"
 	end
 
 	self.default_speed = 50
@@ -99,6 +102,8 @@ function Pigeon:Lang()
 	self.tWidgTw = "Fantastic "
 	self.tDrift = "Pigeon: "
 	self.tRecord = "Personal flying record: "
+
+	self.pvpblock = "You cannot use this during combat!"
 end
 
 function Pigeon:Render()
@@ -191,6 +196,12 @@ function Pigeon:LocalPlayerInput()
 
 			if self.whitelist.animations[bs] then
 				if not self.RCtimer then self.RCtimer = Timer() end
+
+				if LocalPlayer:GetValue( "PigeonMod" ) and LocalPlayer:GetValue( "PVPMode" ) then
+					Events:Fire( "CastCenterText", { text = self.pvpblock, time = 3, color = Color.Red } )
+					return
+				end
+
 				self.timers.camera_start = Timer()
 				self.speed = self.default_speed
 
@@ -231,17 +242,14 @@ end
 function Pigeon:Activate( args )
 	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+
 	if self.activ then
 		if args.key == VirtualKey.Control and self.subs.camera and not self.timers.camera_start and not self.timers.camera_stop then
 			if not self.timers.activate or self.timers.activate:GetMilliseconds() > 300 then
 				self.timers.activate = Timer()
 			elseif self.timers.activate:GetMilliseconds() < 500 then
 				local ray = Physics:Raycast( LocalPlayer:GetPosition(), LocalPlayer:GetAngle() * Vector3( 0, -1, -1 ), 0, 50 )
-				if ray.distance < 50 then
-					LocalPlayer:SetBaseState(AnimationState.SFall)
-				else
-					LocalPlayer:SetBaseState(AnimationState.SSkydive)
-				end
+				LocalPlayer:SetBaseState( ( ray.distance < 50 ) and AnimationState.SFall or AnimationState.SSkydive )
 				self.timers.camera_stop = Timer()
 			end
 		elseif args.key == string.byte("C") and self.subs.camera then

@@ -172,8 +172,10 @@ function CarBattles:IsInCarBattles( player )
 end
 
 function CarBattles:NoVehicle( args, sender )
-	if IsValid( Vehicles[ sender:GetId() ] ) then
-		Vehicles[ sender:GetId() ]:SetHealth( 0 )
+	local pId = sender:GetId()
+
+	if IsValid( Vehicles[ pId ] ) then
+		Vehicles[ pId ]:SetHealth( 0 )
 	end
 	sender:SetHealth( 0 )
 end
@@ -289,17 +291,19 @@ function CarBattles:EnterCarBattles( args, sender )
 end
 
 function CarBattles:LeaveCarBattles( args, sender )
-	local p = self.players[sender:GetId()]
-	if p == nil then return end
+	local pId = sender:GetId()
+	local p = self.players[pId]
+
+	if not p then return end
 	p:Leave()
 
 	self:MessagePlayer( sender, "Вы покинули Бои на тачках. Возвращайтесь ещё :)" )
 	sender:EnableCollision( CollisionGroup.Vehicle )
-	self.players[sender:GetId()] = nil
+	self.players[pId] = nil
 	self:UpdateScores()
-	if IsValid( Vehicles[ sender:GetId() ] ) then
-		Vehicles[ sender:GetId() ]:Remove()
-		Vehicles[ sender:GetId() ] = nil
+	if IsValid( Vehicles[ pId ] ) then
+		Vehicles[ pId ]:Remove()
+		Vehicles[ pId ] = nil
 	end
 end
 

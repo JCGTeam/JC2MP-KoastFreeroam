@@ -41,8 +41,10 @@ function Abilities:Clear( args, sender )
 end
 
 function Abilities:WingsuitUnlock( args, sender )
-    if sender:GetMoney() >= Prices.Wingsuit then
-        sender:SetMoney( sender:GetMoney() - Prices.Wingsuit )
+    local money = sender:GetMoney()
+
+    if money >= Prices.Wingsuit then
+        sender:SetMoney( money - Prices.Wingsuit )
         sender:SetNetworkValue( "Wingsuit", 1 )
 
         self:SaveToDB( args, sender )
@@ -51,25 +53,28 @@ function Abilities:WingsuitUnlock( args, sender )
 end
 
 function Abilities:BoostUnlock( args, sender )
-    if not sender:GetValue( "Boost" ) then
-        if sender:GetMoney() >= Prices.Boost_1 then
-            sender:SetMoney( sender:GetMoney() - Prices.Boost_1 )
+    local money = sender:GetMoney()
+    local boost = sender:GetValue( "Boost" )
+
+    if not boost then
+        if money >= Prices.Boost_1 then
+            sender:SetMoney( money - Prices.Boost_1 )
             sender:SetNetworkValue( "Boost", self.boostValue_1 )
 
             self:SaveToDB( args, sender )
             Events:Fire( "SaveLevels" )
         end
-    elseif sender:GetValue( "Boost" ) == self.boostValue_1 then
-        if sender:GetMoney() >= Prices.Boost_2 then
-            sender:SetMoney( sender:GetMoney() - Prices.Boost_2 )
+    elseif boost == self.boostValue_1 then
+        if money >= Prices.Boost_2 then
+            sender:SetMoney( money - Prices.Boost_2 )
             sender:SetNetworkValue( "Boost", self.boostValue_2 )
 
             self:SaveToDB( args, sender )
             Events:Fire( "SaveLevels" )
         end
-    elseif sender:GetValue( "Boost" ) == self.boostValue_2 then
-        if sender:GetMoney() >= Prices.Boost_3 then
-            sender:SetMoney( sender:GetMoney() - Prices.Boost_3 )
+    elseif boost == self.boostValue_2 then
+        if money >= Prices.Boost_3 then
+            sender:SetMoney( money - Prices.Boost_3 )
             sender:SetNetworkValue( "Boost", self.boostValue_3 )
 
             self:SaveToDB( args, sender )
@@ -79,8 +84,10 @@ function Abilities:BoostUnlock( args, sender )
 end
 
 function Abilities:MoneyBonusUnlock( args, sender )
-    if sender:GetMoney() >= Prices.BonusMoney then
-        sender:SetMoney( sender:GetMoney() - Prices.BonusMoney )
+    local money = sender:GetMoney()
+
+    if money >= Prices.BonusMoney then
+        sender:SetMoney( money - Prices.BonusMoney )
         sender:SetNetworkValue( "MoneyBonus", 1 )
 
         self:SaveToDB( args, sender )
@@ -89,33 +96,36 @@ function Abilities:MoneyBonusUnlock( args, sender )
 end
 
 function Abilities:MoreC4Unlock( args, sender )
-    if not sender:GetValue( "MoreC4" ) then
-        if sender:GetMoney() >= Prices.MoreC4_5 then
-            sender:SetMoney( sender:GetMoney() - Prices.MoreC4_5 )
+    local money = sender:GetMoney()
+    local moreC4 = sender:GetValue( "MoreC4" )
+
+    if not moreC4 then
+        if money >= Prices.MoreC4_5 then
+            sender:SetMoney( money - Prices.MoreC4_5 )
             sender:SetNetworkValue( "MoreC4", 5 )
 
             self:SaveToDB( args, sender )
             Events:Fire( "SaveLevels" )
         end
-    elseif sender:GetValue( "MoreC4" ) == 5 then
-        if sender:GetMoney() >= Prices.MoreC4_8 then
-            sender:SetMoney( sender:GetMoney() - Prices.MoreC4_8 )
+    elseif moreC4 == 5 then
+        if money >= Prices.MoreC4_8 then
+            sender:SetMoney( money - Prices.MoreC4_8 )
             sender:SetNetworkValue( "MoreC4", 8 )
 
             self:SaveToDB( args, sender )
             Events:Fire( "SaveLevels" )
         end
-    elseif sender:GetValue( "MoreC4" ) == 8 then
-        if sender:GetMoney() >= Prices.MoreC4_10 then
-            sender:SetMoney( sender:GetMoney() - Prices.MoreC4_10 )
+    elseif moreC4 == 8 then
+        if money >= Prices.MoreC4_10 then
+            sender:SetMoney( money - Prices.MoreC4_10 )
             sender:SetNetworkValue( "MoreC4", 10 )
 
             self:SaveToDB( args, sender )
             Events:Fire( "SaveLevels" )
         end
-    elseif sender:GetValue( "MoreC4" ) == 10 then
-        if sender:GetMoney() >= Prices.MoreC4_15 then
-            sender:SetMoney( sender:GetMoney() - Prices.MoreC4_15 )
+    elseif moreC4 == 10 then
+        if money >= Prices.MoreC4_15 then
+            sender:SetMoney( money - Prices.MoreC4_15 )
             sender:SetNetworkValue( "MoreC4", 15 )
 
             self:SaveToDB( args, sender )
@@ -125,8 +135,10 @@ function Abilities:MoreC4Unlock( args, sender )
 end
 
 function Abilities:SuperNuclearBombUnlock( args, sender )
-    if sender:GetMoney() >= Prices.SuperNuclearBomb then
-        sender:SetMoney( sender:GetMoney() - Prices.SuperNuclearBomb )
+    local money = sender:GetMoney()
+
+    if money >= Prices.SuperNuclearBomb then
+        sender:SetMoney( money - Prices.SuperNuclearBomb )
         sender:SetNetworkValue( "SuperNuclearBomb", 1 )
 
         self:SaveToDB( args, sender )
@@ -135,33 +147,36 @@ function Abilities:SuperNuclearBombUnlock( args, sender )
 end
 
 function Abilities:LongerGrappleUnlock( args, sender )
-    if not sender:GetValue( "LongerGrapple" ) then
-        if sender:GetMoney() >= Prices.LongerGrapple_150 then
-            sender:SetMoney( sender:GetMoney() - Prices.LongerGrapple_150 )
+    local money = sender:GetMoney()
+    local longerGrapple = sender:GetValue( "LongerGrapple" )
+
+    if not longerGrapple then
+        if money >= Prices.LongerGrapple_150 then
+            sender:SetMoney( money - Prices.LongerGrapple_150 )
             sender:SetNetworkValue( "LongerGrapple", self.GrappleLongerValue_1 )
 
             self:SaveToDB( args, sender )
             Events:Fire( "SaveLevels" )
         end
-    elseif sender:GetValue( "LongerGrapple" ) == self.GrappleLongerValue_1 then
-        if sender:GetMoney() >= Prices.LongerGrapple_200 then
-            sender:SetMoney( sender:GetMoney() - Prices.LongerGrapple_200 )
+    elseif longerGrapple == self.GrappleLongerValue_1 then
+        if money >= Prices.LongerGrapple_200 then
+            sender:SetMoney( money - Prices.LongerGrapple_200 )
             sender:SetNetworkValue( "LongerGrapple", self.GrappleLongerValue_2 )
 
             self:SaveToDB( args, sender )
             Events:Fire( "SaveLevels" )
         end
-    elseif sender:GetValue( "LongerGrapple" ) == self.GrappleLongerValue_2 then
-        if sender:GetMoney() >= Prices.LongerGrapple_350 then
-            sender:SetMoney( sender:GetMoney() - Prices.LongerGrapple_350 )
+    elseif longerGrapple == self.GrappleLongerValue_2 then
+        if money >= Prices.LongerGrapple_350 then
+            sender:SetMoney( money - Prices.LongerGrapple_350 )
             sender:SetNetworkValue( "LongerGrapple", self.GrappleLongerValue_3 )
 
             self:SaveToDB( args, sender )
             Events:Fire( "SaveLevels" )
         end
-    elseif sender:GetValue( "LongerGrapple" ) == self.GrappleLongerValue_3 then
-        if sender:GetMoney() >= Prices.LongerGrapple_500 then
-            sender:SetMoney( sender:GetMoney() - Prices.LongerGrapple_500 )
+    elseif longerGrapple == self.GrappleLongerValue_3 then
+        if money >= Prices.LongerGrapple_500 then
+            sender:SetMoney( money - Prices.LongerGrapple_500 )
             sender:SetNetworkValue( "LongerGrapple", self.GrappleLongerValue_4 )
 
             self:SaveToDB( args, sender )
@@ -171,8 +186,10 @@ function Abilities:LongerGrappleUnlock( args, sender )
 end
 
 function Abilities:JesusModeUnlock( args, sender )
-    if sender:GetMoney() >= Prices.JesusMode then
-        sender:SetMoney( sender:GetMoney() - Prices.JesusMode )
+    local money = sender:GetMoney()
+
+    if money >= Prices.JesusMode then
+        sender:SetMoney( money - Prices.JesusMode )
         sender:SetNetworkValue( "JesusModeEnabled", 1 )
 
         self:SaveToDB( args, sender )
@@ -181,12 +198,15 @@ function Abilities:JesusModeUnlock( args, sender )
 end
 
 function Abilities:SaveToDB( args, sender )
-    if sender:GetValue( "PlayerLevel" ) and sender:GetValue( "PlayerLevel" ) < 16 then
-        sender:SetNetworkValue( "PlayerLevel", sender:GetValue( "PlayerLevel" ) + 1 )
+    local playerLevel = sender:GetValue( "PlayerLevel" )
+
+    if playerLevel and playerLevel < 16 then
+        sender:SetNetworkValue( "PlayerLevel", playerLevel + 1 )
     end
 
     local cmd = SQL:Command( "insert or replace into players_abilities (steamid, wings, boost, moneybonus, morec4, supernuclearbomb, longergrapple, jesusmode) values (?, ?, ?, ?, ?, ?, ?, ?)" )
     cmd:Bind( 1, sender:GetSteamId().id )
+
     if sender:GetValue( "Wingsuit" ) then
         cmd:Bind( 2, sender:GetValue( "Wingsuit" ) )
     end

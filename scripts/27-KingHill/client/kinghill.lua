@@ -27,7 +27,6 @@ function KingHil:__init()
 		zoom = 1
 	}
 	self.timer = Timer()
-	self.segments = {}
 
 	Network:Subscribe( "EnterLobby", self, self.EnterLobby )
 	Network:Subscribe( "StateChange", self, self.StateChange )
@@ -40,7 +39,6 @@ function KingHil:__init()
 	Events:Subscribe( "LocalPlayerWorldChange", self, self.LocalPlayerWorldChange )
 	Events:Subscribe( "PreTick", self, self.PreTick )
 	Events:Subscribe( "Render", self, self.Render )
-	Events:Subscribe( "GameRender", self, self.GameRender )
 	Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
 end
 
@@ -53,16 +51,6 @@ function KingHil:Lang()
 	self.lobbyneeds_txt = "We need "
 	self.lobbymore_txt = " more"
 	self.lobbyplayer_txt = "players)"
-end
-
-function KingHil:AddSegment( segments, segment )
-	segment.time = self.timer:GetSeconds()
-
-	table.insert(segments, segment)
-
-	if #segments > 8 then
-		table.remove(segments, 1)
-	end
 end
 
 function DrawCenteredShadowedText( position, text, color, textsize )
@@ -217,16 +205,6 @@ function KingHil:Render()
 		end
 
 		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.nameT, Color.White, 20 )
-	end
-end
-
-function KingHil:GameRender()
-	if self.state == GamemodeState.INPROGRESS then
-		for k, segments in pairs(self.segments) do
-			for k, segment in ipairs(segments) do
-				segment:Render()
-			end
-		end
 	end
 end
 

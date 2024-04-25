@@ -2,7 +2,9 @@ class 'ServerHealth'
 
 function ServerHealth:__init()
     self:CheckServerHealth()
+
     Events:Subscribe( "ServerStart", self, self.ServerStart )
+
     Console:Subscribe( "kickx", self, self.KickX )
     Console:Subscribe( "online", self, self.GetOnline )
     Console:Subscribe( "getuptime", self, self.GetServerUpTime )

@@ -449,11 +449,7 @@ function ServerMenu:SetWindowVisible( visible )
 			self.shop_button:SetEnabled( true )
 			self.tp_button:SetEnabled( true )
 			self.passiveon_btn:SetEnabled( true )
-			if LocalPlayer:GetValue( "JesusModeEnabled" ) then
-				self.jesusmode_btn:SetEnabled( true )
-			else
-				self.jesusmode_btn:SetEnabled( false )
-			end
+			self.jesusmode_btn:SetEnabled( LocalPlayer:GetValue( "JesusModeEnabled" ) and true or false )
 			self.hideme_btn:SetEnabled( true )
 			self.pigeonmod_btn:SetEnabled( LocalPlayer:GetValue( "Wingsuit" ) and true or false )
 		else

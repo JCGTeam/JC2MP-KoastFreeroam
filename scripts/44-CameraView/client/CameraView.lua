@@ -152,12 +152,10 @@ function CameraView:CalcView()
 
 	if not LocalPlayer:InVehicle() then return end
 
-	self.position = LocalPlayer:GetPosition()
+	local position = LocalPlayer:GetPosition()
 	local vehicle = LocalPlayer:GetVehicle()
 	local vid = vehicle:GetModelId()
 	local angle = vehicle:GetAngle()
-	local speed = LocalPlayer:GetLinearVelocity():Length()
-	local velocity = LocalPlayer:GetLinearVelocity()
 
 	local cam_pos = Vector3()
 	local t = Vector3()
@@ -209,7 +207,7 @@ function CameraView:CalcView()
 		angle.pitch = 0
 		angle.roll = 0
 
-		cam_pos = self.position + Vector3( 0, 5, 0 )
+		cam_pos = position + Vector3( 0, 5, 0 )
 
 		if self.reverse then
 			cam_pos.y = cam_pos.y + 500
@@ -257,8 +255,8 @@ end
 function CameraView:MouseScroll( args )
 	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetValue( "SpectatorMode" ) then return end
-
 	if LocalPlayer:GetValue( "VehCameraScroll" ) then return end
+
 	if self.enabled then
 		self.zoom = math.clamp( self.zoom + ( args.delta * 0.25 ), 0, 15 )
 	end

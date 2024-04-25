@@ -8,11 +8,14 @@ function Hook:GameRenderOpaque()
 	for player in Client:GetStreamedPlayers() do
 		if player:GetVehicle() and player:GetSeat() ~= 8 then return end
 
-		if player:GetBaseState() == 207 or player:GetLeftArmState() == 400 or player:GetBaseState() == 208 and player:GetAimTarget() and player:GetAimTarget().position then
+		local bs = player:GetBaseState()
+		local las = player:GetLeftArmState()
+
+		if bs == 207 or las == 400 or bs == 208 and player:GetAimTarget() and player:GetAimTarget().position then
 			hookAimTarget = player:GetAimTarget()
 		end
 
-		if player:GetBaseState() == 207 or player:GetLeftArmState() == 400 then
+		if bs == 207 or las == 400 then
 			if not effect_played then
 				effect_played = true
 				local effect = ClientEffect.Play(AssetLocation.Game, {
@@ -44,9 +47,9 @@ function Hook:GameRenderOpaque()
 		end
 
 		if IsValid( player ) then
-			if player:GetBaseState() == 208 and hookAimTarget and hookAimTarget.position then
+			if bs == 208 and hookAimTarget and hookAimTarget.position then
 				Render:DrawLine( player:GetBonePosition( "ragdoll_AttachHandLeft" ), hookAimTarget.position, Color( 100, 100, 100, 255 * math.max( 0, 1 - ( Vector3.Distance( player:GetPosition(), Camera:GetPosition() ) / 1024 ) ) ) )
-			elseif player:GetLeftArmState() == 400 and hookAimTarget and hookAimTarget.entity and hookAimTarget.entity.__type ~= "Vehicle" and hookAimTarget.entity.__type == 'ClientActor' then
+			elseif las == 400 and hookAimTarget and hookAimTarget.entity and hookAimTarget.entity.__type ~= "Vehicle" and hookAimTarget.entity.__type == "ClientActor" then
 				Render:DrawLine( player:GetBonePosition( "ragdoll_AttachHandLeft" ), hookAimTarget.entity:GetBonePosition( "ragdoll_Spine" ), Color( 100, 100, 100, 255 * math.max( 0, 1 - ( Vector3.Distance( player:GetPosition(), Camera:GetPosition() ) / 1024 ) ) ) )
 			end
 		end

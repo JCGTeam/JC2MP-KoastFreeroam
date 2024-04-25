@@ -78,7 +78,7 @@ function C4Controller:FireC4()
 	if self.planted then
 		local cameraPos = Camera:GetPosition()
 		local cameraAngle = Camera:GetAngle()
-		local raycast = Physics:Raycast( cameraPos.y < 200.5 and LocalPlayer:GetBonePosition( "ragdoll_Head" ) or cameraPos, cameraAngle * Vector3.Forward, 0, 500, false )
+		local raycast = Physics:Raycast( cameraPos.y < 200.5 and LocalPlayer:GetBonePosition( "ragdoll_Spine" ) or cameraPos, cameraAngle * Vector3.Forward, 0, 500, false )
 		local distance = raycast.distance
 		local entity = raycast.entity
 		local anglePitch = cameraAngle.pitch

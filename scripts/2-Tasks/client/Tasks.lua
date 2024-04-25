@@ -280,8 +280,8 @@ function Tasks:LocalPlayerInput( a )
 end
 
 function Tasks:DrawShadowedText( pos, text, colour, size, scale )
-    if scale == nil then scale = 1.0 end
-    if size == nil then size = TextSize.Default end
+    if not scale then scale = 1.0 end
+    if not size then size = TextSize.Default end
 
     local shadow_colour = Color( 0, 0, 0, colour.a )
     shadow_colour = shadow_colour * 0.4

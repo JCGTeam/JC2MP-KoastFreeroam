@@ -34,7 +34,7 @@ end
 
 function CBoardServer:UpdatePlayerStats(player, stats)
 	local syncStats = {}
-	if (type(stats) == "string") then stats = {stats}; end
+	if (type(stats) == "string") then stats = {stats} end
 	for i, v in ipairs(stats) do
 		syncStats[v] = CStats:getPlayerStat(player, v)
 	end
@@ -55,7 +55,7 @@ function CBoardServer:getPlayersDataList()
 			p:DisableAutoAim(p1)
 		end
 	end
-	return data;
+	return data
 end
 
 -- Event Handlers:

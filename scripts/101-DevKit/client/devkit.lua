@@ -36,9 +36,10 @@ function DevKit:PostRender()
     local pos = Vector2( 250, 20 )
 
     if LocalPlayer:GetValue( "DEBUGShowPlayerInfo" ) then
-        Render:DrawShadowedText( pos, "NAME: " .. tostring( LocalPlayer:GetName() ), LocalPlayer:GetColor(), self.text_shadow, self.text_size )
+        local lpColor = LocalPlayer:GetColor()
+        Render:DrawShadowedText( pos, "NAME: " .. tostring( LocalPlayer:GetName() ), lpColor, self.text_shadow, self.text_size )
         pos.y = pos.y + 20
-        Render:DrawShadowedText( pos, "COLOR (RGBA): " .. tostring( LocalPlayer:GetColor() ), self.text_clr, self.text_shadow, self.text_size )
+        Render:DrawShadowedText( pos, "COLOR (RGBA): " .. tostring( lpColor ), self.text_clr, self.text_shadow, self.text_size )
         pos.y = pos.y + 20
         Render:DrawShadowedText( pos, "ID: " .. tostring( LocalPlayer:GetId() ), self.text_clr, self.text_shadow, self.text_size )
         pos.y = pos.y + 20
@@ -61,6 +62,8 @@ function DevKit:PostRender()
         pos.y = pos.y + 20
         Render:DrawShadowedText( pos, "BaseState: " .. tostring( LocalPlayer:GetBaseState() ), self.text_clr, self.text_shadow, self.text_size )
         pos.y = pos.y + 20
+        Render:DrawShadowedText( pos, "LeftArmState: " .. tostring( LocalPlayer:GetLeftArmState() ), self.text_clr, self.text_shadow, self.text_size )
+        pos.y = pos.y + 20
         Render:DrawShadowedText( pos, "UpperBodyState: " .. tostring( LocalPlayer:GetUpperBodyState() ), self.text_clr, self.text_shadow, self.text_size )
 
         pos.y = pos.y + 20
@@ -77,7 +80,8 @@ function DevKit:PostRender()
         pos.y = pos.y + 20
         Render:DrawShadowedText( pos, "EquippedSlot: " .. tostring( LocalPlayer:GetEquippedSlot() ), self.text_clr, self.text_shadow, self.text_size )
         pos.y = pos.y + 20
-        Render:DrawShadowedText( pos, "EquippedWeapon: " .. "ID: " .. tostring( LocalPlayer:GetEquippedWeapon().id ) .. ", AmmpClip: " .. tostring( LocalPlayer:GetEquippedWeapon().ammo_clip ) .. ", AmmoReserve: " .. tostring( LocalPlayer:GetEquippedWeapon().ammo_reserve ), self.text_clr, self.text_shadow, self.text_size )
+        local weapon = LocalPlayer:GetEquippedWeapon()
+        Render:DrawShadowedText( pos, "EquippedWeapon: " .. "ID: " .. tostring( weapon.id ) .. ", AmmpClip: " .. tostring( weapon.ammo_clip ) .. ", AmmoReserve: " .. tostring( weapon.ammo_reserve ), self.text_clr, self.text_shadow, self.text_size )
 
         pos.y = pos.y + 20
 

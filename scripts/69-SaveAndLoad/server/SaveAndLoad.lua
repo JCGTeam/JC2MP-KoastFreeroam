@@ -19,8 +19,10 @@ function SaveAndLoad:PlayerJoin( args )
 end
 
 function SaveAndLoad:LoadModel( args )
+	local steamId = args.player:GetSteamId().id
+
     local qry = SQL:Query( "select model_id from players_models where steamid = (?)" )
-    qry:Bind( 1, args.player:GetSteamId().id )
+    qry:Bind( 1, steamId )
     local result = qry:Execute()
 
 	if #result > 0 then
@@ -29,7 +31,7 @@ function SaveAndLoad:LoadModel( args )
 
     --TipEnabler
     local qry = SQL:Query( "select warned from players_warnings where steamid = (?)" )
-    qry:Bind( 1, args.player:GetSteamId().id )
+    qry:Bind( 1, steamId )
     local result = qry:Execute()
 
 	if #result > 0 then
@@ -71,21 +73,23 @@ function SaveAndLoad:PlayerQuit( args )
 end
 
 function SaveAndLoad:SaveModel( args )
+	local steamId = args.player:GetSteamId().id
+
     if args.player:GetModelId() ~= 51 then
         local cmd = SQL:Command( "insert or replace into players_models (steamid, model_id) values (?, ?)" )
-        cmd:Bind( 1, args.player:GetSteamId().id )
+        cmd:Bind( 1, steamId )
         cmd:Bind( 2, args.player:GetModelId() )
         cmd:Execute()
     else
         local cmd = SQL:Command( "DELETE FROM players_models WHERE steamid = (?)" )
-        cmd:Bind( 1, args.player:GetSteamId().id )
+        cmd:Bind( 1, steamId )
         cmd:Execute()
     end
 
     --TipEnabler
     if args.player:GetValue( "Warned" ) then
         local cmd = SQL:Command( "insert or replace into players_warnings (steamid, warned) values (?, ?)" )
-        cmd:Bind( 1, args.player:GetSteamId().id )
+        cmd:Bind( 1, steamId )
         cmd:Bind( 2, args.player:GetValue( "Warned" ) )
         cmd:Execute()
     end

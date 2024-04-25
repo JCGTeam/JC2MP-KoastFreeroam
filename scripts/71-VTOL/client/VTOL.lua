@@ -57,9 +57,7 @@ function VTOL:Render()
 	if self.hinttimer and self.hinttimer:GetSeconds() > 10 then
 		alpha = math.clamp( 255 - ( ( self.hinttimer:GetSeconds() - 10 ) * 500 ), 0, 255 )
 
-		if self.hinttimer:GetSeconds() > 12 then
-			self.hinttimer = nil
-		end
+		if self.hinttimer:GetSeconds() > 12 then self.hinttimer = nil end
 	end
 
 	if Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue( "HiddenHUD" ) then return end
@@ -78,12 +76,7 @@ function VTOL:Render()
 
 		if self:CheckList(self.PlaneVehicles, vehicleModel) then
 			local size = Render:GetTextSize( self.namept, 14 )
-			local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - 30 )
-			if LocalPlayer:GetValue( "Boost" ) then
-				pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - 30 )
-			else
-				pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - 10 )
-			end
+			local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - ( LocalPlayer:GetValue( "Boost" ) and 30 or 10 ) )
 
 			Render:DrawShadowedText( pos, self.namept, Color( 255, 255, 255, alpha ), Color( 0, 0, 0, alpha ), 14 )
 		end
@@ -111,12 +104,12 @@ function VTOL:Thrust()
 		local vehicleModel = vehicle:GetModelId()
 
 		if self:CheckList(self.PlaneVehicles, vehicleModel) then
-			local VehicleVelocity = vehicle:GetLinearVelocity()
+			local vehicleVelocity = vehicle:GetLinearVelocity()
 			if IsValid(vehicle) then
 				if Key:IsDown(self.ReverseKey) and self.ReverseThrustActive and not LocalPlayer:GetValue( "Freeze" ) then
 					self:CheckThrust()
-					local VehicleAngle = vehicle:GetAngle()
-					local SetThrust	= VehicleVelocity + VehicleAngle * Vector3( 0, 0, self.ReverseThrust )
+					local vehicleAngle = vehicle:GetAngle()
+					local SetThrust	= vehicleVelocity + vehicleAngle * Vector3( 0, 0, self.ReverseThrust )
 					local SendInfo = {}
 						SendInfo.Player		=	LocalPlayer
 						SendInfo.Vehicle	=	vehicle

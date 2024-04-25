@@ -18,11 +18,12 @@ function BoomToSky:Render()
         self.flyTimer = nil
     else
 		local vehicle = LocalPlayer:GetVehicle()
+		local velocity = LocalPlayer:GetLinearVelocity()
 
         if vehicle then
-            vehicle:SetLinearVelocity( Vector3( LocalPlayer:GetLinearVelocity().x, self.boomvelocity, LocalPlayer:GetLinearVelocity().z ) / 2 or Vector3() )
+            vehicle:SetLinearVelocity( Vector3( velocity.x, self.boomvelocity, velocity.z ) / 2 or Vector3() )
         else
-            LocalPlayer:SetLinearVelocity( Vector3( LocalPlayer:GetLinearVelocity().x, self.boomvelocity, LocalPlayer:GetLinearVelocity().z ) or Vector3() )
+            LocalPlayer:SetLinearVelocity( Vector3( velocity.x, self.boomvelocity, velocity.z ) or Vector3() )
         end
     end
 end

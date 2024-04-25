@@ -24,6 +24,7 @@ end
 function AntiSpam:PlayerChat( args )
 	if ( args.text:len() > 0 ) then
 		local steamID = args.player:GetSteamId().id
+
 		if ( not self.messagesSent [ steamID ] ) then
 			self.messagesSent [ steamID ] = 1
 		elseif ( self.messagesSent [ steamID ] >= self.messagesForWarning ) then

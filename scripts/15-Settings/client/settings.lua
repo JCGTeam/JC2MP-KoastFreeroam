@@ -285,7 +285,7 @@ function Settings:LoadCategories()
 	self.option14:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
 
 	self.option16 = self:OptionCheckBox( scroll_control, "Отображать снег на экране", LocalPlayer:GetValue( "SnowVisible" ) or false )
-	self.option16:GetCheckBox():Subscribe( "CheckChanged", function() LocalPlayer:SetValue( "SnowVisible", self.option16:GetCheckBox():GetChecked()  ) end )
+	self.option16:GetCheckBox():Subscribe( "CheckChanged", function() LocalPlayer:SetValue( "SnowVisible", self.option16:GetCheckBox():GetChecked() ) end )
 
 	local bkpanelsLabel = Label.Create( widgets )
 	bkpanelsLabel:SetVisible( true )
@@ -528,7 +528,7 @@ function Settings:LoadCategories()
 	local tab_control = TabControl.Create( nickcolor )
 	tab_control:SetDock( GwenPosition.Fill )
 
-	self.pcolor = LocalPlayer:GetColor()
+	self.lpColor = LocalPlayer:GetColor()
 
 	self.subcategory4 = Label.Create( nickcolor )
 	self.subcategory4:SetDock( GwenPosition.Top )
@@ -538,18 +538,18 @@ function Settings:LoadCategories()
 	self.nicknameColorPreview = Label.Create( nickcolor )
 	self.nicknameColorPreview:SetText( LocalPlayer:GetName() )
 	self.nicknameColorPreview:SetTextSize( 14 )
-	self.nicknameColorPreview:SetTextColor( self.pcolor )
+	self.nicknameColorPreview:SetTextColor( self.lpColor )
 	self.nicknameColorPreview:SetDock( GwenPosition.Top )
 	self.nicknameColorPreview:SetMargin( Vector2( 5, 0 ), Vector2( 0, 4 ) )
 	self.nicknameColorPreview:SizeToContents()
 
 	self.pcolorPicker = HSVColorPicker.Create( tab_control )
-	self.pcolorPicker:SetColor( self.pcolor )
+	self.pcolorPicker:SetColor( self.lpColor )
 	self.pcolorPicker:SetDock( GwenPosition.Fill )
 	self.pcolorPicker:Subscribe( "ColorChanged", function()
-		self.nicknameColorPreview:SetTextColor( self.pcolor )
+		self.nicknameColorPreview:SetTextColor( self.lpColor )
 
-		self.pcolor = self.pcolorPicker:GetColor()
+		self.lpColor = self.pcolorPicker:GetColor()
 		self.colorChanged = true
 	end )
 
@@ -561,7 +561,7 @@ function Settings:LoadCategories()
 	self.setPlayerColorBtn:SetDock( GwenPosition.Bottom )
 	self.setPlayerColorBtn:SetMargin( Vector2( 0, 5 ), Vector2( 0, 0 ) )
 	self.setPlayerColorBtn:Subscribe( "Up", function()
-		Network:Send( "SetPlyColor", { pcolor = self.pcolor } )
+		Network:Send( "SetPlyColor", { pcolor = self.lpColor } )
 		local sound = ClientSound.Create(AssetLocation.Game, {
 				bank_id = 20,
 				sound_id = 22,

@@ -174,13 +174,16 @@ end
 
 function ClanSystem:PlayerJoin( args )
 	local clan = self:GetPlayerClan ( args.player )
-	if ( clan ) then
-		local memberRank = self:GetMemberData ( { steamID = args.player:GetSteamId().id, data = "rank" } )
-		if ( memberRank ) then
-			if ( memberRank == "Основатель" ) then
+
+	if clan then
+		local steamId = args.player:GetSteamId().id
+		local memberRank = self:GetMemberData ( { steamID = steamId, data = "rank" } )
+
+		if memberRank then
+			if memberRank == "Основатель" then
 				local transaction = SQL:Transaction()
 				local query = SQL:Command( "UPDATE clans SET steamID = ?, creator = ? WHERE name = (?)" )
-				query:Bind( 1, args.player:GetSteamId().id )
+				query:Bind( 1, steamId )
 				query:Bind( 2, args.player:GetName() )
 				query:Bind( 3, clan )
 				query:Execute()
@@ -222,24 +225,27 @@ end
 
 function ClanSystem:AddClan( args, player )
 	local clan = self:GetPlayerClan( player )
-	if ( clan ) then
+	if clan then
 		player:Message ( "Вы уже являетесь частью клана.", "err" )
 		return false
 	end
-	
-	if (player:GetMoney() >= Prices.CreateClan) then
-		player:SetMoney(player:GetMoney() - Prices.CreateClan)
+
+	local money = player:GetMoney()
+	if money >= Prices.CreateClan then
+		player:SetMoney( money - Prices.CreateClan )
 	else
 		player:Message( "Требуется $" .. formatNumber( Prices.CreateClan ) .. ", чтобы создать клан.", "err" )
 		return false
 	end	
 
 	if ( not self:Exists ( args.name ) ) then
+		local steamId = player:GetSteamId().id
 		local theDate = os.date ( "%d/%m/%y %X" )
 		local newsdefault = "Поздравляем, клан успешно создан! Здесь будут отображаться новости для всех участников клана. Зайдите в настройки клана, чтобы изменить это сообщение."
+	
 		local cmd = SQL:Command ( "INSERT INTO clans ( name, steamID, creator, description, colour, creationDate, type, clannews ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )" )
 		cmd:Bind ( 1, args.name )
-		cmd:Bind ( 2, player:GetSteamId().id )
+		cmd:Bind ( 2, steamId )
 		cmd:Bind ( 3, player:GetName() )
 		cmd:Bind ( 4, args.description )
 		cmd:Bind ( 5, args.colour )
@@ -250,7 +256,7 @@ function ClanSystem:AddClan( args, player )
 		self.clans [ args.name ] =
 			{
 				name = args.name,
-				steamID = player:GetSteamId().id,
+				steamID = steamId,
 				creator = player:GetName(),
 				description = args.description,
 				colour = args.colour,
@@ -306,9 +312,11 @@ function ClanSystem:RemoveClan( _, player )
 end
 
 function ClanSystem:AddMember( args )
+	local steamId = args.player:GetSteamId().id
 	local theDate = os.date( "%d/%m/%y %X" )
+
 	local cmd = SQL:Command ( "INSERT INTO clan_members ( steamID, clan, name, rank, joinDate ) VALUES ( ?, ?, ?, ?, ? )" )
-	cmd:Bind( 1, args.player:GetSteamId().id )
+	cmd:Bind( 1, steamId )
 	cmd:Bind( 2, args.clan )
 	cmd:Bind( 3, args.player:GetName() )
 	cmd:Bind( 4, args.rank )
@@ -317,7 +325,7 @@ function ClanSystem:AddMember( args )
 	table.insert (
 		self.clanMembers [ args.clan ],
 		{
-			steamID = args.player:GetSteamId().id,
+			steamID = steamId,
 			clan = args.clan,
 			name = args.player:GetName(),
 			rank = args.rank,

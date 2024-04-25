@@ -139,7 +139,8 @@ function News:AddItem( args )
 end
 
 function News:RemoveItem()
-	if label == nil then return end
+	if not label then return end
+
 	label:Remove()
 	label = nil
 end

@@ -24,8 +24,8 @@ function LineSegment:Intersects2D( segment )
 	s2_x = point4.x - point3.x
 	s2_y = point4.y - point3.y
 
-	s = (-s1_y * (point1.x - point3.x) + s1_x * (point1.y - point3.y)) / (-s2_x * s1_y + s1_x * s2_y);
-	t = ( s2_x * (point1.y - point3.y) - s2_y * (point1.x - point3.x)) / (-s2_x * s1_y + s1_x * s2_y);
+	s = (-s1_y * (point1.x - point3.x) + s1_x * (point1.y - point3.y)) / (-s2_x * s1_y + s1_x * s2_y)
+	t = ( s2_x * (point1.y - point3.y) - s2_y * (point1.x - point3.x)) / (-s2_x * s1_y + s1_x * s2_y)
 
 	if s >= 0 and s <= 1 and t >= 0 and t <= 1 then
 		return true, Vector2(point1.x + (t * s1_x), point1.y + (t * s1_y))

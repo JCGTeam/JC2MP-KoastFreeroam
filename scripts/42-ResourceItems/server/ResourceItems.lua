@@ -159,13 +159,8 @@ function ResourceItems:ModuleUnload()
 		end
 	end
 
-	if self.ents then
-		self.ents = nil
-	end
-
-	if self.poss then
-		self.poss = nil
-	end
+	if self.ents then self.ents = nil end
+	if self.poss then self.poss = nil end
 end
 
 resourceitems = ResourceItems()

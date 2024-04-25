@@ -222,7 +222,7 @@ function Killfeed:Render()
 
 			Render:DrawText( pos, v.player_name, player_colour )
 
-			if v.killer_name ~= nil then
+			if v.killer_name then
 				local killer_colour = v.killer_colour
 				killer_colour.a = alpha
 				local name_text = v.killer_name

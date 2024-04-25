@@ -11,14 +11,14 @@ function FreeCamManager:__init()
 
 	-- Notice other modules on serverside when cam has changed
 	Network:Subscribe("FreeCamChange", function(args, client)
-			if args.active == nil then return end
+			if not args.active then return end
 			args.player = client
 			Events:Fire("FreeCamChange", args)
 		end)
 
 	-- Forward permissions to FreeCam client
 	Events:Subscribe("FreeCam", function(args)
-			if args.player == nil then return end
+			if not args.player then return end
 			local perm = args.perm
 			if args.restore then
 				perm = FreeCamManager.CheckWhiteList(args.player)
@@ -65,8 +65,10 @@ function FreeCamManager:ToggleFreecam( args, sender )
 end
 
 function FreeCamManager.CheckWhiteList(player)
-	local perm1 = table.find(WhiteList, player:GetSteamId().id)
-	local perm2 = table.find(WhiteList, player:GetSteamId().string)
+	local steamId = player:GetSteamId()
+	local perm1 = table.find(WhiteList, steamId.id)
+	local perm2 = table.find(WhiteList, steamId.string)
+
 	if perm1 ~= nil or perm2 ~= nil then
 		return true
 	else

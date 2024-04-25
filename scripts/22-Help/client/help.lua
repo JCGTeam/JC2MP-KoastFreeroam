@@ -163,7 +163,7 @@ function Help:AddItem( args )
 end
 
 function Help:RemoveItem( args )
-	if self.tabs[args.name] == nil then return end
+	if not self.tabs[args.name] then return end
 
 	self.tabs[args.name]:GetPage():Remove()
 	self.tab_control:RemovePage( self.tabs[args.name] )

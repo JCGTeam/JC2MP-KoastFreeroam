@@ -257,12 +257,12 @@ end
 function WarpGui:AcceptWarpClick( player )
 	local playerId = tostring(player:GetSteamId().id)
 
-	if self.warpRequests[playerId] == nil then
+	if not self.warpRequests[playerId] then
 		Chat:Print( self.tag, Color.White, player:GetName() .. self.noteleport_txt, self.textColor )
 		return
 	else
 		local acceptButton = self.acceptButtons[playerId]
-		if acceptButton == nil then return end
+		if not acceptButton then return end
 		self.warpRequests[playerId] = nil
 		acceptButton:SetEnabled( false )
 		
@@ -287,9 +287,9 @@ function WarpGui:WarpRequest( args )
 
 		if whitelist == 1 or self.whitelistAll then -- In whitelist and not in blacklist
 			Network:Send( "WarpTo", {requester = requestingPlayer, target = LocalPlayer} )
-		elseif whitelist == 0 or whitelist == nil then -- Not in whitelist
+		elseif whitelist == 0 or not whitelist then -- Not in whitelist
 			local acceptButton = self.acceptButtons[playerId]
-			if acceptButton == nil then return end
+			if not acceptButton then return end
 
 			acceptButton:SetEnabled( true )
 			self.warpRequests[playerId] = true
@@ -324,7 +324,7 @@ end
 function WarpGui:WhitelistClick( playerId, button )
 	local currentWhiteList = self.whitelist[playerId]
 
-	if currentWhiteList == 0 or currentWhiteList == nil then -- Currently none, set whitelisted
+	if currentWhiteList == 0 or not currentWhiteList then -- Currently none, set whitelisted
 		self:SetWhitelist( playerId, 1, true )
 	elseif currentWhiteList == 1 then -- Currently whitelisted, blacklisted
 		self:SetWhitelist( playerId, 2, true )
@@ -337,7 +337,7 @@ function WarpGui:SetWhitelist( playerId, whitelisted, sendToServer )
 	if self.whitelist[playerId] ~= whitelisted then self.whitelist[playerId] = whitelisted end
 
 	local whitelistButton = self.whitelistButtons[playerId]
-	if whitelistButton == nil then return end
+	if not whitelistButton then return end
 
 	if whitelisted == 0 then
 		whitelistButton:SetText( "-" )
@@ -442,7 +442,7 @@ function WarpGui:PlayerQuit( args )
 	local player = args.player
 	local playerId = tostring(player:GetSteamId().id)
 
-	if self.rows[playerId] == nil then return end
+	if not self.rows[playerId] then return end
 
 	self.playerList:RemoveItem(self.rows[playerId])
 	self.rows[playerId] = nil

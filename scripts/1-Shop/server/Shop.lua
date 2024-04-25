@@ -119,9 +119,11 @@ end
 
 function Shop:ColorChanged( args, sender )
     local veh = sender:GetVehicle()
+	local pId = sender:GetId()
+
 	if IsValid(veh) then
-		if IsValid(self.vehicles[sender:GetId()]) then
-			if self.vehicles[sender:GetId()]:GetId() == veh:GetId() then
+		if IsValid(self.vehicles[pId]) then
+			if self.vehicles[pId]:GetId() == veh:GetId() then
 				veh:SetColors( args.tone1, args.tone2 )
 			else
 				sender:SendChatMessage( sender:GetValue( "Lang" ) == "EN" and "This isn't your vehicle!" or "Это не ваш транспорт!", Color( 255, 0, 0 ) )

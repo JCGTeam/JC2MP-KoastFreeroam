@@ -68,23 +68,23 @@ end
 
 function Derby:SetState( newstate )
 	self.state = newstate
-	if (newstate == "Inactive") then
+	if newstate == "Inactive" then
 		if (IsValid(self.handbrake)) then
 			Events:Unsubscribe(self.handbrake)
 		end
 		self:BackInArena()
 	end
 
-	if (newstate == "Lobby") then
+	if newstate == "Lobby" then
 		self.state = "Lobby"
 		self:BackInArena()
-	elseif (newstate == "Setup") then
+	elseif newstate == "Setup" then
 		self.state = "Setup"
 		self.handbrake = Events:Subscribe("InputPoll", function() Input:SetValue(Action.Handbrake, 1) end)
-	elseif (newstate == "Countdown") then
+	elseif newstate == "Countdown" then
 		self.state = "Countdown"
 		self.countdownTimer = Timer()
-	elseif (newstate == "Running") then
+	elseif newstate == "Running" then
 		self.state = "Running"
 		self.countdownTimer = nil
 		Events:Unsubscribe(self.handbrake)
@@ -122,7 +122,7 @@ function Derby:TriggerEvent( event )
 end
 
 function Derby:LocalPlayerInput( args )
-	if (self.state == "Running") then
+	if self.state == "Running" then
 		if LocalPlayer:InVehicle() then
 			for i, action in ipairs(self.blockedKeys) do
 				if args.input == action then
@@ -142,7 +142,7 @@ function Derby:TextPos( text, size, offsetx, offsety )
 	return pos
 end
 function Derby:Render()
-	if (self.state == "Inactive") then return end
+	if self.state == "Inactive" then return end
 	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetValue( "SystemFonts" ) then
 		Render:SetFont( AssetLocation.SystemFont, "Impact" )
@@ -155,11 +155,11 @@ function Derby:Render()
 		end
 	end
 
-	if (self.state ~= "Inactive") then
+	if self.state ~= "Inactive" then
 		local pos = Vector2(Render.Width - 367, 0)
 	end
 
-	if (self.state == "Lobby") then
+	if self.state == "Lobby" then
 		local text = self.lobbyplayers_txt .. self.playerCount
 		local textinfo = self:TextPos( text, TextSize.Large, 0, -Render.Height + 150 )
 		Render:DrawShadowedText(textinfo, text, Color.White, Color( 25, 25, 25, 150 ), TextSize.Large )
@@ -169,7 +169,7 @@ function Derby:Render()
 		Render:DrawShadowedText( textinfo, text, Color( 165, 165, 165 ), Color( 25, 25, 25, 150 ), 25 )
 	end
 
-	if (self.state == "Setup") then
+	if self.state == "Setup" then
         local text = self.loading_txt
         local textinfo = self:TextPos( text, TextSize.VeryLarge, 0, -200 )
         Render:DrawShadowedText( textinfo, text, Color.White, Color( 25, 25, 25, 150 ), TextSize.VeryLarge )
@@ -188,7 +188,7 @@ function Derby:Render()
 		end
 
 		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.nameT, Color.White, 20 )
-	elseif (self.state == "Countdown") then
+	elseif self.state == "Countdown" then
 		local time = 3 - math.floor(math.clamp(self.countdownTimer:GetSeconds(), 0 , 3))
 		local message = {self.cdgo_txt, "1", "2", "3"}
 		local text = message[time + 1]
@@ -206,7 +206,7 @@ function Derby:Render()
 		end
 
 		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.nameT, Color.White, 20 )
-	elseif (self.state == "Running") then
+	elseif self.state == "Running" then
 		local text = self.lobbyplayers_txt .. self.playerCount
 		local textinfo = self:TextPos( text, TextSize.Large, 0, -Render.Height + 215 )
 		Render:DrawShadowedText( textinfo, text, Color.White, Color( 25, 25, 25, 150 ), TextSize.Large )
@@ -222,7 +222,7 @@ function Derby:Render()
 		end
 
 		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.nameT, Color.White, 20 )
-		if (self.outOfArena) then
+		if self.outOfArena then
 			local text = self.arenaleave_txt
 			local text_width = Render:GetTextWidth(text, TextSize.VeryLarge)
 			local text_height = Render:GetTextHeight(text, TextSize.VeryLarge)
@@ -234,7 +234,7 @@ function Derby:Render()
 			Render:DrawShadowedText( pos, text, Color.White, Color( 25, 25, 25, 150 ), TextSize.Default )
 		end
 		--OUT OF VEHICLE
-		if (self.inVehicleTimer ~= nil) then
+		if self.inVehicleTimer then
 			Render:FillArea( Vector2(Render.Width - 110, 70), Vector2(Render.Width - 110, 110), Color( 0, 0, 0, 165 ) )
 			local time = 20 - math.floor(math.clamp(self.inVehicleTimer:GetSeconds(), 0, 20 ))
 			if time <= 0 then return end

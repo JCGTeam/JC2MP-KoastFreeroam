@@ -230,12 +230,14 @@ function Manhunt:EnterManhunt( args, sender )
 end
 
 function Manhunt:LeaveManhunt( args, sender )
-	local p = self.players[sender:GetId()]
+	local pId = sender:GetId()
+	local p = self.players[pId]
+
 	if p == nil then return end
 	p:Leave()
 
 	self:MessagePlayer( sender, "Вы покинули Охоту. Возвращайтесь ещё :)" )    
-	self.players[sender:GetId()] = nil
+	self.players[pId] = nil
 	if self.it == sender then self.it = nil end
 	self:UpdateScores()
 end

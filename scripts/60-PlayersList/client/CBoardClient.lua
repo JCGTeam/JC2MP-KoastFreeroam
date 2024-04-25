@@ -107,7 +107,7 @@ end
 
 -- Network event handlers:
 function CBoardClient:onSyncPlayerData( data )
-	self.tServerPlayersData = data.playersData;
+	self.tServerPlayersData = data.playersData
 	self.iServerSlots = data.slotsNum
 end
 

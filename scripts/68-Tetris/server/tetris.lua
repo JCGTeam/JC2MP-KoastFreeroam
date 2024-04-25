@@ -153,10 +153,12 @@ function ServerTetris:Reward( name, last )
 end
 
 function ServerTetris:NewScore( score, player )
-	if self.leaderboard[player:GetSteamId().id] and self.leaderboard[player:GetSteamId().id] > score then
+	local steamId = player:GetSteamId().id
+
+	if self.leaderboard[steamId] and self.leaderboard[steamId] > score then
 	else
-		self.leaderboard[player:GetSteamId().id] = score
-		self.names[player:GetSteamId().id] = player:GetName()
+		self.leaderboard[steamId] = score
+		self.names[steamId] = player:GetName()
 		self:SortLeaderboard()
 	end
 

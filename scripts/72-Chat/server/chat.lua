@@ -63,16 +63,17 @@ function BetterChat:Join( args )
 end
 
 function BetterChat:PlayerQuit( args )
-	local steamID = tostring(args.player:GetSteamId().id)
+	local steamId = args.player:GetSteamId().id
+	local visibleJoinMessages = args.player:GetValue( "VisibleJoinMessages" )
 
-	if args.player:GetValue( "VisibleJoinMessages" ) then
+	if visibleJoinMessages then
 		local cmd = SQL:Command( "INSERT OR REPLACE INTO players_chatsettings (steamid, visiblejoinmessages) values (?, ?)" )
-		cmd:Bind( 1, tostring(steamID) )
-		cmd:Bind( 2, args.player:GetValue( "VisibleJoinMessages" ) )
+		cmd:Bind( 1, steamId )
+		cmd:Bind( 2, visibleJoinMessages )
 		cmd:Execute()
 	else
         local cmd = SQL:Command( "DELETE FROM players_chatsettings WHERE steamid = (?)" )
-        cmd:Bind( 1, args.player:GetSteamId().id )
+        cmd:Bind( 1, steamId )
 		cmd:Execute()
 	end
 end

@@ -33,16 +33,16 @@ function CBoardHud:__init( CBoardClient, width, height, columns )
 
 	self.tPlayerRowColor = {
 							    Color( 0, 0, 0, 100 ); -- even rows
-							    Color( 0, 0, 0, 80 ) ; -- odd rows
-						   };
+							    Color( 0, 0, 0, 80 )  -- odd rows
+						   }
 	self.Color_LocalPlayerRowColor = Color( 255, 255, 255, 70 )
 	self.fPlayerRowHeight = Render:GetTextHeight( "A" ) * 2.5
 
 	self.tBorderCols = columns or
 	{
-		{name = "ID:", width = 0.1, getter = function(CBoardClientInstance, p) return p:GetId(); end },
-		{name = "Игрок:", width = 0.8, getter = function(CBoardClientInstance, p) return p:GetName(); end},
-	};
+		{name = "ID:", width = 0.1, getter = function(CBoardClientInstance, p) return p:GetId() end },
+		{name = "Игрок:", width = 0.8, getter = function(CBoardClientInstance, p) return p:GetName() end},
+	}
 	self:ScalecolumnsWidth()
 
 	self.fScrollLineWidth = 10
@@ -102,19 +102,19 @@ function CBoardHud:getSize()
 	return { 
 				width = math.max(math.floor(self.ScreenSize.width * self.fBoardWidth), 500), 
 				height = math.floor(self.ScreenSize.height * self.fBoardHeight)
-		   };
+		   }
 end
 
 function CBoardHud:getPosition()
-	local size = self:getSize();
+	local size = self:getSize()
 	return { 
 				x = math.floor((self.ScreenSize.width / 2) - (size.width / 2)),
 				y = math.floor((self.ScreenSize.height / 2) - (size.height / 2)) 
-		   };
+		   }
 end
 
 function CBoardHud:getAvailibleRows()
-	return math.floor(math.min(((self.BoardSize.height - self.fHeaderRowHeight) / self.fPlayerRowHeight), #self.CBoardClient:getPlayers()));
+	return math.floor(math.min(((self.BoardSize.height - self.fHeaderRowHeight) / self.fPlayerRowHeight), #self.CBoardClient:getPlayers()))
 end 
 
 function CBoardHud:ResetRowsCounter()
@@ -152,7 +152,7 @@ function CBoardHud:DrawHeader()
 	Render:FillArea( Vector2( self.BoardPosition.x-1, self.BoardPosition.y ), Vector2( self.BoardSize.width + 1, self.fHeaderRowHeight ), self.Color_HeaderColor )
 
 	-- Header columns:
-	local w = 0;
+	local w = 0
 	for i, v in ipairs(self.tBorderCols) do
 		local text = v.name..""
 		local height = Render:GetTextHeight( text, self.fTextSize, 1 )
@@ -196,7 +196,7 @@ function CBoardHud:DrawPlayerRow( player )
 	player:GetAvatar():Draw( Vector2( self.BoardPosition.x, y + 1 ), Vector2( self.fPlayerRowHeight-2, self.fPlayerRowHeight-2 ), Vector2.Zero, Vector2.One )
 
 	-- Player columns:
-	local w = 0;
+	local w = 0
 	for i, v in ipairs(self.tBorderCols) do
 		local text = tostring( v.getter(self.CBoardClient, player) )
 		local text2 = ""

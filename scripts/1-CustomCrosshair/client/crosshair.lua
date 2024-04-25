@@ -11,8 +11,6 @@ function Crosshair:__init()
 	self.alpha = 0
 	self.size = 3
 
-	self.pointColor = crossColor
-
 	self.blacklist = {
 		actions = { 
 			[Action.LookUp] = false,
@@ -22,7 +20,7 @@ function Crosshair:__init()
 		},
 
 		animations = { 
-			[AnimationState.SDead] = true,
+			[AnimationState.SDead] = true
 		},
 
 		animations2 = { 
@@ -39,12 +37,13 @@ function Crosshair:__init()
 			[AnimationState.SHitreactUncontrolledFlight] = true,
 			[AnimationState.SHitreactUncontrolledFlightPosematching] = true,
 			[AnimationState.SHitreactGetUpBlendin] = true,
-			[AnimationState.SUncontrolledSkydive] = true,
+			[AnimationState.SUncontrolledSkydive] = true
+			--[AnimationState.SDash] = true
 		},
 
 		animations3 = { 
 			[AnimationState.SSkydive] = true,
-			[AnimationState.SSkydiveDash] = true,
+			[AnimationState.SSkydiveDash] = true
 		},
 
 		animations4 = { 
@@ -75,7 +74,7 @@ function Crosshair:__init()
 			[AnimationState.SClingMidToRoof] = true,
 			[AnimationState.SClingMidToRoofInterupt] = true,
 			[AnimationState.SCartwheel] = true,
-			[AnimationState.SCartwheelInterupt] = true,
+			[AnimationState.SCartwheelInterupt] = true
 		}
 	}
 
@@ -102,11 +101,7 @@ function Crosshair:GetOption( args )
 end
 
 function Crosshair:EntityBulletHit()
-	if self.popalTimer then
-		self.popalTimer:Restart()
-	else
-		self.popalTimer = Timer()
-	end
+	if self.popalTimer then self.popalTimer:Restart() else self.popalTimer = Timer() end
 
 	self.pointColor = Color.Red
 end
@@ -124,9 +119,8 @@ function Crosshair:GetRotation()
 end
 
 function Crosshair:Render()
-	if self.popalTimer and self.popalTimer:GetSeconds() >= 0.1 then
-		self.popalTimer = nil
-	end
+	if self.popalTimer and self.popalTimer:GetSeconds() >= 0.1 then self.popalTimer = nil end
+	if self.resetTimer and self.resetTimer:GetSeconds() >= 1.25 then self:ShowCrosshair() end
 
 	if Game:GetState() ~= GUIState.Game then return end
 	Game:FireEvent( "gui.aim.hide" )
@@ -233,30 +227,26 @@ end
 
 function Crosshair:LocalPlayerInput( args )
 	if args.input == Action.ShoulderCam then
-		local time = Client:GetElapsedSeconds()
+		local ubs = LocalPlayer:GetUpperBodyState()
 
-		if time < self.cooltime then
-			return
-		else
-			if LocalPlayer:GetEquippedWeapon() == Weapon( Weapon.Sniper ) then
-				if LocalPlayer:GetUpperBodyState() == 347 then
-					if not LocalPlayer:GetValue( "CustomCrosshairVisible" ) then
-						LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
-					end
-				else
-					LocalPlayer:SetValue( "CustomCrosshairVisible", tonumber( not LocalPlayer:GetValue( "CustomCrosshairVisible" ) ) )
-				end
+		if LocalPlayer:GetEquippedWeapon() == Weapon( Weapon.Sniper ) and ( ubs == 347 or ubs == 353 or ubs == 371 ) then
+			if LocalPlayer:GetValue( "CustomCrosshairVisible" ) then
+				LocalPlayer:SetValue( "CustomCrosshairVisible", nil )
 			end
+
+			if not self.resetTimer then self.resetTimer = Timer() else self.resetTimer:Restart() end
 		end
+	end
+end
 
-		self.cooltime = time + 0.3
-	else
-		if LocalPlayer:GetValue( "GameMode" ) == "FREEROAM" then
-			if LocalPlayer:GetEquippedWeapon() ~= Weapon( Weapon.Sniper ) then
-				if not LocalPlayer:GetValue( "CustomCrosshairVisible" ) then
-					LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
-				end
-			end
+function Crosshair:ShowCrosshair()
+	local ubs = LocalPlayer:GetUpperBodyState()
+
+	if not ( ubs == 347 or ubs == 353 or ubs == 371 ) then
+		if not LocalPlayer:GetValue( "CustomCrosshairVisible" ) then
+			LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
+
+			if self.resetTimer then self.resetTimer = nil end
 		end
 	end
 end

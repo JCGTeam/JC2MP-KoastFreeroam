@@ -14,8 +14,6 @@ function Drift:__init()
 
 	Network:Subscribe( "03", self, self.onDriftAttempt )
 
-	self.showTimer = Timer()
-
 	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
 		self:Lang()
 	else
@@ -61,7 +59,6 @@ function Drift:NetworkObjectValueChange( args )
 		if not args.value then
 			if IsValid( LocalPlayer:GetVehicle() ) then
 				self:ResetMass()
-				print("RESET")
 			end
 		end
 	end
@@ -175,8 +172,10 @@ function Drift:Render()
 		self.slide = self.slide + (1 * self.multipler)
 		self.anim_tick = self.anim_tick + 1
 		self.sscore = self.score
+
+		local scoreMult = math.ceil( self.score * self.multipler )
 		local btext = self.tDriftTw
-		local text = self.tDriftTw .. tostring( math.ceil(self.score*self.multipler) )
+		local text = self.tDriftTw .. tostring( scoreMult )
 		local text_mult = "x" .. tostring( self.multipler )
 
 		if self.anim_tick < 30 then
@@ -185,33 +184,33 @@ function Drift:Render()
 			self.size = 62
 		end
 
-		if math.ceil(self.score * self.multipler) > 5000 then
+		if scoreMult > 5000 then
 			btext = self.tDrift3
-			text = self.tDrift3 .. math.ceil(self.score*self.multipler)
+			text = self.tDrift3 .. scoreMult
 		end
-		if math.ceil(self.score * self.multipler) > 10000 then
+		if scoreMult > 10000 then
 			btext = self.tDrift4
-			text = self.tDrift4 .. math.ceil(self.score*self.multipler)
+			text = self.tDrift4 .. scoreMult
 		end
-		if math.ceil(self.score * self.multipler) > 50000 then
+		if scoreMult > 50000 then
 			btext = self.tDrift5
-			text = self.tDrift5 .. math.ceil(self.score*self.multipler)
+			text = self.tDrift5 .. scoreMult
 		end
-		if math.ceil(self.score * self.multipler) > 100000 then
+		if scoreMult > 100000 then
 			btext = self.tDrift6
-			text = self.tDrift6 .. math.ceil(self.score*self.multipler)
+			text = self.tDrift6 .. scoreMult
 		end
-		if math.ceil(self.score * self.multipler) > 500000 then
+		if scoreMult > 500000 then
 			btext = self.tDrift7
-			text = self.tDrift7 .. math.ceil(self.score*self.multipler)
+			text = self.tDrift7 .. scoreMult
 		end
-		if math.ceil(self.score * self.multipler) > 1000000 then
+		if scoreMult > 1000000 then
 			btext = self.tDrift8
-			text = self.tDrift8 .. math.ceil(self.score*self.multipler)
+			text = self.tDrift8 .. scoreMult
 		end
-		if math.ceil(self.score * self.multipler) > 10000000 then
+		if scoreMult > 10000000 then
 			btext = self.tDrift9
-			text = self.tDrift9 .. math.ceil(self.score*self.multipler)
+			text = self.tDrift9 .. scoreMult
 		end
 
 		if LocalPlayer:GetValue( "BestRecordVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) and Game:GetState() == GUIState.Game then
@@ -222,25 +221,26 @@ function Drift:Render()
 			local position = Vector2(Render.Width / 2, Render.Height * 0.3 * alpha) - textSize / 2
 			local position_mult = position + Vector2(textSize.x / 2,textSize.y*1.6) - textSize_mult/2
 
-			Render:DrawShadowedText( position, text, ( object and ( math.ceil( self.score * self.multipler ) > ( object:GetValue("S") or 0 ) ) ) and Color( 255, 0, 0, 255 * alpha ) or Color( 255, 150, 0, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), self.textSize )
+			Render:DrawShadowedText( position, text, ( object and ( scoreMult > ( object:GetValue("S") or 0 ) ) ) and Color( 255, 0, 0, 255 * alpha ) or Color( 255, 150, 0, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), self.textSize )
 
 			Render:DrawShadowedText( position_mult, text_mult, Color( 255, 150, 0, 255 * alpha ), Color( 25, 25, 25, 150 * alpha), self.textSize )
 
-			Render:DrawText( position + Vector2( Render:GetTextWidth( btext, self.textSize ), 0 ), tostring( math.ceil( self.score * self.multipler ) ), Color( 255, 255, 255, 255 * alpha ), self.textSize )
+			Render:DrawText( position + Vector2( Render:GetTextWidth( btext, self.textSize ), 0 ), tostring( scoreMult ), Color( 255, 255, 255, 255 * alpha ), self.textSize )
 		end
 
 		if self.slide >= 255 then
 			local object = NetworkObject.GetByName("Drift")
-			if not object or math.ceil(self.score * self.multipler) > (object:GetValue("S") or 0) then
-				Network:Send( "01", math.ceil(self.score * self.multipler) )
-			elseif math.ceil(self.score * self.multipler) > ((object:GetValue("S") or 0) * 0.6) and (object:GetValue("N") or "None") ~= LocalPlayer:GetName() then
-				Network:Send( "02", math.ceil(self.score * self.multipler) )
+
+			if not object or scoreMult > (object:GetValue("S") or 0) then
+				Network:Send( "01", scoreMult )
+			elseif scoreMult > ((object:GetValue("S") or 0) * 0.6) and (object:GetValue("N") or "None") ~= LocalPlayer:GetName() then
+				Network:Send( "02", scoreMult )
 			end
 			local shared = SharedObject.Create("Drift")
-			if math.ceil(self.score * self.multipler) > (shared:GetValue("Record") or 0) then
-				shared:SetValue( "Record", math.ceil(self.score * self.multipler) )
-				Network:Send( "03", math.ceil(self.score * self.multipler) )
-				Game:ShowPopup( self.tRecord .. math.ceil(self.score * self.multipler), true )
+			if scoreMult > (shared:GetValue("Record") or 0) then
+				shared:SetValue( "Record", scoreMult )
+				Network:Send( "03", scoreMult )
+				Game:ShowPopup( self.tRecord .. scoreMult, true )
 			end
 			self.slide = nil
 			self.score = nil
@@ -249,30 +249,38 @@ function Drift:Render()
 		end
 	end
 
-	if LocalPlayer:GetState() ~= PlayerState.InVehicle then self.timer = nil; return end
+	if LocalPlayer:GetState() ~= PlayerState.InVehicle then self.timer = nil return end
 	local vehicle = LocalPlayer:GetVehicle()
-	if not IsValid(vehicle) then self.timer = nil; return end
-	if vehicle:GetClass() ~= VehicleClass.Land then self.timer = nil; return end
+
+	if not IsValid( vehicle ) then self.timer = nil return end
+	if vehicle:GetClass() ~= VehicleClass.Land then self.timer = nil return end
 	local velocity = vehicle:GetLinearVelocity()
-	if velocity:Length() < 3 then self.timer = nil; return end
-	local dot = Angle.Dot(Angle(Angle.FromVectors(velocity, Vector3.Forward).yaw, 0, 0), Angle(-vehicle:GetAngle().yaw, 0, 0))
-	if dot < 0.1 or dot > 0.99 then self.timer = nil; return end
-	local raycast = Physics:Raycast(vehicle:GetPosition() + Vector3(0, 0.5, 0), Vector3.Down, 0, 10, true)
-	if raycast.distance > 1 then self.timer = nil; return end
+	local horizontalVelocity = Vector3( velocity.x, 0, velocity.z )
+
+	if horizontalVelocity:Length() < 6 then self.timer = nil return end
+	local dot = Angle.Dot( Angle( Angle.FromVectors( velocity, Vector3.Forward ).yaw, 0, 0 ), Angle( -vehicle:GetAngle().yaw, 0, 0 ) )
+
+	if math.abs( dot ) < 0.1 or math.abs( dot ) > 0.99 then self.timer = nil return end
+	local raycast = Physics:Raycast( vehicle:GetPosition() + Vector3( 0, 0.5, 0 ), Vector3.Down, 0, 10 )
+
+	if raycast.distance > 1 then self.timer = nil return end
+
 	if not self.timer then
 		self.timer = Timer()
 		self.quality = 0
-		if self.sscore ~= nil then
+		if self.sscore then
 			self.multipler = self.multipler + 0.1
 		end
 		self.anim_tick = 1
 	end
-	self.quality = math.max(math.lerp(self.quality, -45 * math.pow(dot - 0.85, 2) + 1, 0.1), self.quality)
-	if self.sscore ~= nil then
-		score = self.sscore + math.ceil(self.timer:GetMilliseconds() * self.quality)
+
+	self.quality = math.max( math.lerp( self.quality, -45 * math.pow( dot - 0.85, 2 ) + 1, 0.1 ), self.quality )
+
+	if self.sscore then
+		score = self.sscore + math.ceil( self.timer:GetMilliseconds() * self.quality )
 	else
 		self.multipler = 1
-		score = math.ceil(self.timer:GetMilliseconds() * self.quality)
+		score = math.ceil( self.timer:GetMilliseconds() * self.quality )
 	end
 
 	if score < 100 then return end
@@ -280,8 +288,10 @@ function Drift:Render()
 	self.score = score
 	self.slide = 0
 	self.anim_tick = self.anim_tick + 1
+
+	local scoreMult = math.ceil( self.score * self.multipler )
 	local btext = self.tDriftTw
-	local text = self.tDriftTw .. tostring( math.ceil(self.score*self.multipler) )
+	local text = self.tDriftTw .. tostring( scoreMult )
 	local text_mult = "x" .. tostring( self.multipler )
 
 	self.angular = vehicle:GetAngularVelocity()
@@ -295,44 +305,44 @@ function Drift:Render()
 	if math.ceil( self.multipler ) > 10 then
 		self.multipler = 10
 	end
-	if math.ceil(self.score * self.multipler) > 5000 then
+	if scoreMult > 5000 then
 		btext = self.tDrift3
-		text = self.tDrift3 .. math.ceil(self.score*self.multipler)
+		text = self.tDrift3 .. scoreMult
 	end
-	if math.ceil(self.score * self.multipler) > 10000 then
+	if scoreMult > 10000 then
 		btext = self.tDrift4
-		text = self.tDrift4 .. math.ceil(self.score*self.multipler)
+		text = self.tDrift4 .. scoreMult
 	end
-	if math.ceil(self.score * self.multipler) > 50000 then
+	if scoreMult > 50000 then
 		btext = self.tDrift5
-		text = self.tDrift5 .. math.ceil(self.score*self.multipler)
+		text = self.tDrift5 .. scoreMult
 	end
-	if math.ceil(self.score * self.multipler) > 100000 then
+	if scoreMult > 100000 then
 		btext = self.tDrift6
-		text = self.tDrift6 .. math.ceil(self.score*self.multipler)
+		text = self.tDrift6 .. scoreMult
 	end
-	if math.ceil(self.score * self.multipler) > 500000 then
+	if scoreMult > 500000 then
 		btext = self.tDrift7
-		text = self.tDrift7 .. math.ceil(self.score*self.multipler)
+		text = self.tDrift7 .. scoreMult
 	end
-	if math.ceil(self.score * self.multipler) > 1000000 then
+	if scoreMult > 1000000 then
 		btext = self.tDrift8
-		text = self.tDrift8 .. math.ceil(self.score*self.multipler)
+		text = self.tDrift8 .. scoreMult
 	end
-	if math.ceil(self.score * self.multipler) > 10000000 then
+	if scoreMult > 10000000 then
 		btext = self.tDrift9
-		text = self.tDrift9 .. math.ceil(self.score*self.multipler)
+		text = self.tDrift9 .. scoreMult
 	end
 
 	if LocalPlayer:GetValue( "BestRecordVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) and Game:GetState() == GUIState.Game then
 		local textSize = Render:GetTextSize( text, self.textSize )
-		local textSize_mult = Render:GetTextSize(text_mult, self.textSize)
+		local textSize_mult = Render:GetTextSize( text_mult, self.textSize )
 
 		local position = Vector2( Render.Width / 2, Render.Height * 0.3 ) - textSize / 2
-		local position_mult = position + Vector2(textSize.x / 2,textSize.y*self.size) - textSize_mult/2
+		local position_mult = position + Vector2( textSize.x / 2, textSize.y * self.size ) - textSize_mult / 2
 
-		Render:DrawShadowedText( position, text, ( IsValid( object ) and ( math.ceil ( self.score * self.multipler ) > ( object:GetValue("S") or 0 ) ) ) and Color( 255, 0, 0 ) or Color( 255, 150, 0 ), Color( 25, 25, 25, 150 ), self.textSize )
-		Render:DrawText( position + Vector2( Render:GetTextWidth( btext, self.textSize ), 0 ), tostring( math.ceil( self.score * self.multipler ) ), Color( 255, 255, 255 ), self.textSize )
+		Render:DrawShadowedText( position, text, ( IsValid( object ) and ( scoreMult > ( object:GetValue("S") or 0 ) ) ) and Color( 255, 0, 0 ) or Color( 255, 150, 0 ), Color( 25, 25, 25, 150 ), self.textSize )
+		Render:DrawText( position + Vector2( Render:GetTextWidth( btext, self.textSize ), 0 ), tostring( scoreMult ), Color( 255, 255, 255 ), self.textSize )
 		Render:DrawShadowedText( position_mult, text_mult, Color( 255, 150, 0, 255 ), Color( 25, 25, 25, 150 ), self.textSize )
 	end
 end

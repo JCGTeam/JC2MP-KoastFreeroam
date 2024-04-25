@@ -111,7 +111,7 @@ function Jetpack:onInputPoll()
 	if LocalPlayer:GetVehicle() then return end
 
 	local velocity = Vector3.Zero
-	local raycast = Physics:Raycast( LocalPlayer:GetPosition() + Vector3( 0, 0.1, 0 ), Vector3.Down, 0, 3, true )
+	local raycast = Physics:Raycast( LocalPlayer:GetPosition() + Vector3( 0, 0.1, 0 ), Vector3.Down, 0, 3 )
 
 	if self.impulse:Length() < 20 then
 		if Input:GetValue(Action.HeliDecAltitude) > 0 then
@@ -121,17 +121,19 @@ function Jetpack:onInputPoll()
 			self.impulse = self.impulse + 0.3 * Vector3.Up
 		end
 		if raycast.distance > 2 then
+			local angle = Angle(Camera:GetAngle().yaw, 0, 0)
+
 			if Input:GetValue(Action.MoveForward) > 0 then
-				self.impulse = self.impulse + Angle(Camera:GetAngle().yaw, 0, 0) * (0.8 * Vector3.Forward)
+				self.impulse = self.impulse + angle * (0.8 * Vector3.Forward)
 			end
 			if Input:GetValue(Action.MoveBackward) > 0 then
-				self.impulse = self.impulse + Angle(Camera:GetAngle().yaw, 0, 0) * (0.8 * Vector3.Backward)
+				self.impulse = self.impulse + angle * (0.8 * Vector3.Backward)
 			end
 			if Input:GetValue(Action.MoveLeft) > 0 then
-				self.impulse = self.impulse + Angle(Camera:GetAngle().yaw, 0, 0) * (0.8 * Vector3.Left)
+				self.impulse = self.impulse + angle * (0.8 * Vector3.Left)
 			end
 			if Input:GetValue(Action.MoveRight) > 0 then
-				self.impulse = self.impulse + Angle(Camera:GetAngle().yaw, 0, 0) * (0.8 * Vector3.Right)
+				self.impulse = self.impulse + angle * (0.8 * Vector3.Right)
 			end
 		end
 	end

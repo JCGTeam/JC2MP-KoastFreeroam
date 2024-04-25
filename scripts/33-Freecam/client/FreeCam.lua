@@ -5,6 +5,7 @@ function FreeCam:__init()
 	self.Rama2Image = Image.Create( AssetLocation.Resource, "Rama2" )
 	self.Rama3Image = Image.Create( AssetLocation.Resource, "Rama3" )
 
+	self.pause = false
 	self.tip = true
 	self.RamaType = 0
 	self.speed = 1
@@ -211,7 +212,6 @@ function FreeCam:KeyUp( args )
 	end
 	if self.active then
 		if args.key == 101 then
-			if self.pause == nil then selfpause = false end
 			self.pause = not self.pause
 		elseif args.key == 90 then
 			self.tip = not self.tip
@@ -232,11 +232,9 @@ end
 
 function FreeCam:MouseDown( args )
 	if self.active and args.button == 2 then
-		if self.pause == nil then selfpause = false end
 		self.pause = not self.pause
 	end
 end
-
 
 function FreeCam:PlayerInput( args )
 	if not self.active then return end

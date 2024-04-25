@@ -172,7 +172,7 @@ function Bank:PlayerQuit( args )
 	local player = args.player
 	local playerId = tostring(player:GetSteamId().id)
 
-	if self.rows[playerId] == nil then return end
+	if not self.rows[playerId] then return end
 
 	self.plist.playerList:RemoveItem(self.rows[playerId])
 	self.rows[playerId] = nil
@@ -289,7 +289,7 @@ function Bank:Render()
 end
 
 function Bank:MoneyChange( args )
-	if args.new_money == nil then
+	if not args.new_money then
         args.new_money = LocalPlayer:GetMoney()
     end
 
