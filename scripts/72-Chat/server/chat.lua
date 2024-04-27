@@ -37,7 +37,11 @@ end
 
 function BetterChat:ChangeChatSettings( args, sender )
 	if args.joinmessagesmode then
-		sender:SetNetworkValue( "VisibleJoinMessages", ( args.joinmessagesmode == 0 ) and nil or args.joinmessagesmode )
+		if args.joinmessagesmode == 0 then
+			sender:SetNetworkValue( "VisibleJoinMessages", nil )
+		else
+			sender:SetNetworkValue( "VisibleJoinMessages", args.joinmessagesmode )
+		end
 	end
 end
 
