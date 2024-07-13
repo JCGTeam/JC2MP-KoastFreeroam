@@ -56,11 +56,12 @@ function Tasks:__init()
 
 	self.descriptionLabel:SetMargin( Vector2( 10, 10 ), Vector2( 10, 10 ) )
 
+	local textSize = 15
 	self.windowL2:SetText( self.rewardtip .. "777" )
 	self.windowL2:SetTextColor( self.opcolor )
 	self.windowL2:SetDock( GwenPosition.Top )
-	self.windowL2:SetTextSize( 15 )
-	self.windowL2:SetHeight( Render:GetTextHeight( self.windowL2:GetText(), 15 ) )
+	self.windowL2:SetTextSize( textSize )
+	self.windowL2:SetHeight( Render:GetTextHeight( self.windowL2:GetText(), textSize ) )
 
 	self.windowL3:SetText( self.vehicletip .. "Вилка" )
 	self.windowL3:SetDock( GwenPosition.Top )
@@ -73,14 +74,14 @@ function Tasks:__init()
 
 	self.StartJobLabel:SetText( "Нажмите X, чтобы начать задание" )
 	self.StartJobLabel:SetDock( GwenPosition.Fill )
-	self.StartJobLabel:SetTextSize( 15 )
+	self.StartJobLabel:SetTextSize( textSize )
 	self.StartJobLabel:SetMargin( Vector2( 0, 8 ), Vector2( 0, 8 ) )
 	self.StartJobLabel:SetAlignment( GwenPosition.CenterH )
 	self.StartJobLabel:SizeToContents()
 
 	self.windowButton:SetColor( Color( 255, 255, 255, 30 ) )
 	self.windowButton:SetDock( GwenPosition.Top )
-	self.windowButton:SetHeight( Render:GetTextHeight( "A" ) + 15 )
+	self.windowButton:SetHeight( Render:GetTextHeight( "A" ) + textSize )
 
 	Network:Subscribe( "Locations", self, self.Locations )
 	Network:Subscribe( "Jobs", self, self.Jobs )
@@ -110,7 +111,7 @@ function Tasks:Lang()
 	self.taskcomplatedcounttxt = "Tasks completed: "
 end
 
-function Tasks:ModelReceive( model , name )
+function Tasks:ModelReceive( model, name )
 	self.targetArrowModel = model
 end
 
@@ -325,21 +326,23 @@ function Tasks:DrawLocation2( k, v, dist, dir, jobDistance )
 
 	if v.position:Distance( LocalPlayer:GetPosition() ) <= 3.5 and not self.job and not LocalPlayer:GetVehicle() then
 		local theJob = self.jobsTable[k]
+
 		if self.jobUpdateTimer:GetSeconds() > 1 then
 			self.windowL1:SetText( self.delivto .. theJob.description )
 			self.windowL1:SetTextColor( self.jobcolor )
 			self.windowL2:SetText( self.rewardtip .. tostring(theJob.reward) )
 			self.windowL2:SetTextColor( self.opcolor )
 			self.windowL3:SetText( self.vehicletip .. Vehicle.GetNameByModelId(theJob.vehicle) )
+
 			self.jobUpdateTimer:Restart()
 		end
 
-		if LocalPlayer:GetValue( "SystemFonts" ) then
-			self.windowL2:SetFont( AssetLocation.SystemFont, "Impact")
-			self.StartJobLabel:SetFont( AssetLocation.SystemFont, "Impact")
-		end
-
 		if not LocalPlayer:GetValue( "HiddenHUD" ) then
+			if LocalPlayer:GetValue( "SystemFonts" ) then
+				self.windowL2:SetFont( AssetLocation.SystemFont, "Impact")
+				self.StartJobLabel:SetFont( AssetLocation.SystemFont, "Impact")
+			end
+
 			self.window:SetVisible( true )
 		end
 
@@ -387,22 +390,23 @@ function Tasks:Render()
 		local markersIsVisible = LocalPlayer:GetValue( "JobsMarkersVisible" ) and self.markers
 		local markersSize = Vector2( Render.Size.x / 185, Render.Size.x / 185 )
 		local markersAlpha = Game:GetSetting(4) / 100
-
-		local taskminimapblimp = self.taskminimapblimp
 		local locationsCount = #self.locations
 
-		for i = 1, locationsCount do
-			local v = self.locations[i]
-			local jDist = v.position:Distance2D( cameraPos )
-			local jobToRender = self.jobsTable[i]
+		if markersIsVisible then
+			self.taskminimapblimp:SetSize( markersSize )
+			self.taskminimapblimp:SetAlpha( markersAlpha )
 
-			if jDist < 1028 and jobToRender.direction then
-				local mapPos = Render:WorldToMinimap( Vector3( v.position.x, v.position.y, v.position.z ) )
+			local taskminimapblimpSize = self.taskminimapblimp:GetSize() / 2
 
-				if markersIsVisible then
-					self.taskminimapblimp:SetSize( markersSize )
-					self.taskminimapblimp:SetPosition( mapPos - self.taskminimapblimp:GetSize() / 2 )
-					self.taskminimapblimp:SetAlpha( markersAlpha )
+			for i = 1, locationsCount do
+				local jPos = self.locations[i].position
+				local jDist = jPos:Distance2D( cameraPos )
+				local jobToRender = self.jobsTable[i]
+
+				if jDist < 1028 and jobToRender.direction then
+					local mapPos = Render:WorldToMinimap( Vector3( jPos.x, jPos.y, jPos.z ) )
+
+					self.taskminimapblimp:SetPosition( mapPos - taskminimapblimpSize )
 					self.taskminimapblimp:Draw()
 				end
 			end
@@ -442,12 +446,7 @@ function Tasks:Render()
 				self.targetArrowValue = maxValue
 			end
 
-			self:DrawTargetArrow{
-				targetArrowValue = self.targetArrowValue,
-				numTicks = self.numTicks,
-				checkpointPosition = destPos,
-				model = self.targetArrowModel,
-			}
+			self:DrawTargetArrow{ targetArrowValue = self.targetArrowValue, numTicks = self.numTicks, checkpointPosition = destPos, model = self.targetArrowModel }
 		end
 	end
 end

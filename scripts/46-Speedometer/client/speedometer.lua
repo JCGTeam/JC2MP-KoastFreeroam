@@ -246,9 +246,9 @@ function Speedometer:Render()
 
 	if self.peredacha then
 		if currentGear >= 4 then        
-				gearString = tostring(currentGear)
+			gearString = tostring(currentGear)
 		elseif currentGear == 3 then
-				gearString= "3"
+			gearString= "3"
 		elseif vehicle:GetTransmission():GetGear() == 2 then
 			gearString = "2"
 		elseif vehicleVelocity.z > 1 then
@@ -262,10 +262,8 @@ function Speedometer:Render()
 
 	local factor = math.clamp( vehicle:GetHealth() - 0.4, 0.0, 0.6 ) * 2.5
 
-	local textcol
 	local col = math.lerp( LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.zHealth, LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.fHealth, factor )
-
-	textcol = col
+	local textcol = col
 
 	local text_size = speed_size + Vector2( unit_size.x + 16, 0 )
 
@@ -331,10 +329,8 @@ function Speedometer:GameRender()
 
 	local factor = math.clamp( vehicle:GetHealth() - 0.4, 0.0, 0.6 ) * 2.5
 
-	local textcol
 	local col = math.lerp( LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.zHealth, LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.fHealth, factor )
-
-	textcol = col
+	local textcol = col
 
 	local text_size = speed_size + Vector2( unit_size.x + 24, 0 )
 
