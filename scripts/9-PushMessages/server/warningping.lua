@@ -8,12 +8,14 @@ end
 
 function Messages:PostTick()
 	if self.timer:GetSeconds() <= 15 then return end
+
 	for p in Server:GetPlayers() do
 		if p:GetPing() >= 500 then
 			Network:Send( p, "text" )
 		end
-		self.timer:Restart()
 	end
+
+	self.timer:Restart()
 end
 
 messages = Messages()

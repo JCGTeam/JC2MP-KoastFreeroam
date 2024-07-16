@@ -386,15 +386,14 @@ function Tasks:Render()
 	if Game:GetState() ~= GUIState.Game or Game:GetSetting(4) <= 1 or LocalPlayer:GetValue( "HiddenHUD" ) then return end
 
 	if self.jobsTable then
-		local cameraPos = Camera:GetPosition()
 		local markersIsVisible = LocalPlayer:GetValue( "JobsMarkersVisible" ) and self.markers
-		local markersSize = Vector2( Render.Size.x / 185, Render.Size.x / 185 )
-		local markersAlpha = Game:GetSetting(4) / 100
-		local locationsCount = #self.locations
 
 		if markersIsVisible then
-			self.taskminimapblimp:SetSize( markersSize )
-			self.taskminimapblimp:SetAlpha( markersAlpha )
+			local cameraPos = Camera:GetPosition()
+			local locationsCount = #self.locations
+
+			self.taskminimapblimp:SetSize( Vector2( Render.Size.x / 185, Render.Size.x / 185 ) )
+			self.taskminimapblimp:SetAlpha( Game:GetSetting(4) / 100 )
 
 			local taskminimapblimpSize = self.taskminimapblimp:GetSize() / 2
 

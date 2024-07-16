@@ -21,10 +21,12 @@ end
 
 function LevelsSystem:SaveLevels()
 	for player in Server:GetPlayers() do
-		if player:GetValue( "PlayerLevel" ) and player:GetValue( "PlayerLevel" ) ~= 1 then
+		local playerLevel = player:GetValue( "PlayerLevel" )
+
+		if playerLevel and playerLevel ~= 1 then
 			local cmd = SQL:Command( "insert or replace into players_levels (steamid, level) values (?, ?)" )
 			cmd:Bind( 1, player:GetSteamId().id )
-			cmd:Bind( 2, player:GetValue( "PlayerLevel" ) )
+			cmd:Bind( 2, playerLevel )
 			cmd:Execute()
 		end
 	end

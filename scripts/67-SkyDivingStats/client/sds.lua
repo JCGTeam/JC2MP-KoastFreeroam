@@ -159,7 +159,6 @@ end
 
 function SkydivingStats:DrawSpeedometer( t )
 	local speed = LocalPlayer:GetLinearVelocity():Length()
-	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
 
 	if not self.average_speed then
 		self.average_speed = speed
@@ -255,6 +254,8 @@ function SkydivingStats:Render()
 	if LocalPlayer:GetBaseState() ~= AnimationState.SSkydive and LocalPlayer:GetBaseState() ~= AnimationState.SSkydiveDash then return end
 
 	local position = LocalPlayer:GetBonePosition( "ragdoll_Head" )
+
+	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
 
 	local t = Transform3()
 	t:Translate( Camera:GetPosition() )	

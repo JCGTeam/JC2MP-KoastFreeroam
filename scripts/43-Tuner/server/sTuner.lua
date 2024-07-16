@@ -5,9 +5,13 @@ function sTuner:__init()
 	Events:Subscribe( "EntityDespawn", self, self.EntityDespawn )
 
 	for p in Server:GetPlayers() do
-		if p:GetValue( "NeonColor" ) then
-			if p:GetValue( "NeonColor" ) == p:GetColor() then
-				p:SetNetworkValue( "NeonColor", p:GetColor() )
+		local neonColor = p:GetValue( "NeonColor" )
+
+		if neonColor then
+			local pColor = p:GetColor()
+
+			if neonColor == pColor then
+				p:SetNetworkValue( "NeonColor", pColor )
 			end
 		end
 	end

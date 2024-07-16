@@ -575,6 +575,7 @@ function Map:Draw()
 		for i = 1, #locations do
 			local location = locations[i]
 			local position = Map:WorldToScreen( location.position )
+
 			if position.x > 0 and position.y > 0 and position.x < Render.Width and position.y < Render.Height then
 				if location:IsActive( position, scale * (isUsingGamepad and 2 or 1) ) then
 					Map.ActiveLocation = location
@@ -587,18 +588,23 @@ function Map:Draw()
 
 	local text_clr = Color.White
 	local text_shadow = Color.Black
+	local background_clr = Color( 0, 0, 0, 150 )
 
 	if rendermap then
 		local text_size = 14
+		local pId = LocalPlayer:GetId()
+		local pWorldId = LocalPlayer:GetWorld():GetId()
+
 		for _, player in pairs( Map.Players ) do
-			if player.id ~= LocalPlayer:GetId() and player.worldId == LocalPlayer:GetWorld():GetId() then
+			if player.id ~= pId and player.worldId == pWorldId then
 				local position = Map:WorldToScreen( player.pos )
 				local str = player.name
+
 				Render:DrawCircle( position, Render.Size.y * 0.0055, text_shadow )
 				Render:FillCircle( position, Render.Size.y * 0.005, player.col )
 
 				if labels ~= 0 then
-					Render:FillArea( position + Render.Size * 0.003, Vector2( Render:GetTextWidth( str, text_size ), Render:GetTextHeight( str, text_size ) ), Color( 0, 0, 0, 150 ) )
+					Render:FillArea( position + Render.Size * 0.003, Vector2( Render:GetTextWidth( str, text_size ), Render:GetTextHeight( str, text_size ) ), background_clr )
 					Render:DrawShadowedText( position + Render.Size * 0.003, str, player.col, text_shadow, text_size )
 				end
 			end

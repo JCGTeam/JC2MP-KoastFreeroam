@@ -24,10 +24,7 @@ function Freeroam:PostTick()
 	if self.passiveTimer:GetSeconds() >= 10 then
 		self.passiveTimer = nil
 		Network:Send( "TogglePassiveAfterSpawn", { enabled = false } )
-		if self.PostTickEvent then
-			Events:Unsubscribe( self.PostTickEvent )
-			self.PostTickEvent = nil
-		end
+		if self.PostTickEvent then Events:Unsubscribe( self.PostTickEvent ) self.PostTickEvent = nil end
 	end
 end
 

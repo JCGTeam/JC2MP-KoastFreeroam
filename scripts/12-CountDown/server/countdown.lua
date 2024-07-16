@@ -75,6 +75,7 @@ end
 
 function Countdown:PreTick()
 	local milliseconds = self.countdownTimer:GetMilliseconds()
+
 	if milliseconds - self.timeOfLastCount >= 1000 then
 		if self.secondsToGo < 0 then
 			self.activeCountdowns = false
@@ -88,7 +89,7 @@ function Countdown:PreTick()
 			Chat:Broadcast( self.prefix .. "> ", Color.White, tostring(self.secondsToGo), Color.Yellow, " <", Color.White )
 		else
 			Chat:Broadcast( self.prefix .. "> ", Color.White, "Го!", Color.Yellow, " <", Color.White )
-			Events:Unsubscribe(self.tickSubscription)
+			Events:Unsubscribe( self.tickSubscription )
 			self.activeCountdowns = false
 		end
 

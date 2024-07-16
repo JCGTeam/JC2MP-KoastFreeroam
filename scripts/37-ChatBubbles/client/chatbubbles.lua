@@ -45,6 +45,7 @@ function ChatBubbles:onBubblesRender()
 
 	for playerID, bubbles in pairs ( self.bubbles ) do
 		local player = Player.GetById( playerID )
+
 		if IsValid ( player ) then
 			if ( type ( bubbles ) == "table" ) then
 				local position = player:GetPosition()
@@ -52,14 +53,14 @@ function ChatBubbles:onBubblesRender()
 				local distance = position:Distance2D( myPos )
 
 				if ( distance <= self.distance ) then
-					local height = self.height
 					for index = #bubbles, 1, -1 do
 						local data = bubbles [ index ]
+
 						if ( type ( data ) == "table" ) then
 							if ( data.timer:GetSeconds() >= self.timeout )then
 								self.bubbles [ playerID ] [ index ] = nil
 							else
-								local headPos = ( headPos + Vector3 ( 0, height, 0 ) )
+								local headPos = ( headPos + Vector3 ( 0, self.height, 0 ) )
 								local text_size = Render:GetTextSize ( data.msg, self.fontSize, self.textScale )
 								local width = Render:GetTextWidth ( data.msg, self.fontSize, self.textScale )
 								local position = Render:WorldToScreen ( headPos )

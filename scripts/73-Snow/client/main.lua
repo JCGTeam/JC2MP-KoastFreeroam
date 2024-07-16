@@ -52,18 +52,17 @@ function Snow:Render()
 	self.dt = Client:GetElapsedSeconds() - self.curTime
 	self.curTime = Client:GetElapsedSeconds()
 
-	self:RenderSnow()
-end
+	local color = Color( 255, 255, 255, self.globalOpacity )
 
-function Snow:RenderSnow()
-	for u,v in pairs(self.current) do
+	for u, v in pairs( self.current ) do
 		v.offset.y = v.offset.y + self.dt * v.dropSpeed
 		if v.offset.y > Render.Size.y then
 			self:NewFlake(u)
 		else
 			local offset = v.offset
+
 			for i = 1, (#v.pos)/3 do
-				Render:FillTriangle( offset + v.pos[3 * i - 2], offset + v.pos[3 * i - 1], offset + v.pos[3 * i], Color( 255, 255, 255, self.globalOpacity ) )
+				Render:FillTriangle( offset + v.pos[3 * i - 2], offset + v.pos[3 * i - 1], offset + v.pos[3 * i], color )
 			end
 		end
 	end

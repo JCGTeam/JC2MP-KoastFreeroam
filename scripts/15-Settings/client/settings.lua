@@ -810,17 +810,23 @@ function Settings:Open()
 		self.flipbutton:GetCheckBox():SetEnabled( true )
 		self.buttonJP:SetEnabled( true )
 		self.jpviptip:SetVisible( false )
+
 		self.subcategory2:SetPosition( Vector2( self.window:GetSize().x - 350, 50 ) )
-		self.button:SetPosition( Vector2( self.subcategory2:GetPosition().x, self.subcategory2:GetPosition().y + 20 ) )
-		self.buttonTw:SetPosition( Vector2( self.button:GetPosition().x + 105, self.subcategory2:GetPosition().y + 20 ) )
-		self.buttonTh:SetPosition( Vector2( self.buttonTw:GetPosition().x + 105, self.subcategory2:GetPosition().y + 20 ) )
+
+		local pos_y = self.subcategory2:GetPosition().y + 20
+		self.button:SetPosition( Vector2( self.subcategory2:GetPosition().x, pos_y ) )
+		self.buttonTw:SetPosition( Vector2( self.button:GetPosition().x + 105, pos_y ) )
+		self.buttonTh:SetPosition( Vector2( self.buttonTw:GetPosition().x + 105, pos_y ) )
 	else
 		self.buttonJP:SetEnabled( false )
 		self.jpviptip:SetVisible( true )
+
 		self.subcategory2:SetPosition( Vector2( self.window:GetSize().x - 350, 70 ) )
-		self.button:SetPosition( Vector2( self.subcategory2:GetPosition().x, self.subcategory2:GetPosition().y + 20 ) )
-		self.buttonTw:SetPosition( Vector2( self.button:GetPosition().x + 105, self.subcategory2:GetPosition().y + 20 ) )
-		self.buttonTh:SetPosition( Vector2( self.buttonTw:GetPosition().x + 105, self.subcategory2:GetPosition().y + 20 ) )
+
+		local pos_y = self.subcategory2:GetPosition().y + 20
+		self.button:SetPosition( Vector2( self.subcategory2:GetPosition().x, pos_y ) )
+		self.buttonTw:SetPosition( Vector2( self.button:GetPosition().x + 105, pos_y ) )
+		self.buttonTh:SetPosition( Vector2( self.buttonTw:GetPosition().x + 105, pos_y ) )
 	end
 
 	if self.active then

@@ -8,6 +8,9 @@ function Victorins:__init()
 	self.tag_ru = "[Викторина] "
 	self.tag_en = "[Quiz] "
 
+	self.text_clr = Color.White
+	self.text2_clr = Color.Yellow
+
 	Events:Subscribe( "PostTick", self, self.PostTick )
 	Events:Subscribe( "PlayerChat", self, self.PlayerChat )
 end
@@ -21,11 +24,11 @@ function Victorins:PostTick()
 
 	for p in Server:GetPlayers() do
 		if p:GetValue( "Lang" ) == "EN" then
-			p:SendChatMessage( self.tag_en, Color.White, "Who first write reply right will get $" .. self.reward .. "!", Color.Yellow )
-			p:SendChatMessage( self.tag_en, Color.White, first .. " + " .. second .. " = ???", Color.Yellow )
+			p:SendChatMessage( self.tag_en, self.text_clr, "Who first write reply right will get $" .. self.reward .. "!", self.text2_clr )
+			p:SendChatMessage( self.tag_en, self.text_clr, first .. " + " .. second .. " = ???", self.text2_clr )
 		else
-			p:SendChatMessage( self.tag_ru, Color.White, "Первый, кто напишет ответ - получит $" .. self.reward .. "!", Color.Yellow )
-			p:SendChatMessage( self.tag_ru, Color.White, first .. " + " .. second .. " = ???", Color.Yellow )
+			p:SendChatMessage( self.tag_ru, self.text_clr, "Первый, кто напишет ответ - получит $" .. self.reward .. "!", self.text2_clr )
+			p:SendChatMessage( self.tag_ru, self.text_clr, first .. " + " .. second .. " = ???", self.text2_clr )
 		end
 	end
 	self.timer:Restart()
@@ -36,9 +39,9 @@ function Victorins:PlayerChat( args )
 		if self.quizAnswer then
 			for p in Server:GetPlayers() do
 				if p:GetValue( "Lang" ) == "EN" then
-					p:SendChatMessage( self.tag_en, Color.White, args.player:GetName() .. " the first written right reply, and won $" .. self.reward .. "! Right reply: " .. self.quizAnswer, Color.Yellow )
+					p:SendChatMessage( self.tag_en, self.text_clr, args.player:GetName() .. " the first written right reply, and won $" .. self.reward .. "! Right reply: " .. self.quizAnswer, self.text2_clr )
 				else
-					p:SendChatMessage( self.tag_ru, Color.White, args.player:GetName() .. " первым написал правильный ответ, и выиграл $" .. self.reward .. "! Ответ был: " .. self.quizAnswer, Color.Yellow )
+					p:SendChatMessage( self.tag_ru, self.text_clr, args.player:GetName() .. " первым написал правильный ответ, и выиграл $" .. self.reward .. "! Ответ был: " .. self.quizAnswer, self.text2_clr )
 				end
 			end
 		end
