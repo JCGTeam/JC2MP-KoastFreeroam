@@ -53,17 +53,20 @@ function Derby:__init(name, manager, world)
 end
 
 function Derby:PostTick()
-	if self.startTimer:GetSeconds() > 60 then
+	local startTimerSeconds = self.startTimer:GetSeconds()
+	local globalStartTimerSeconds = self.globalStartTimer:GetSeconds()
+
+	if startTimerSeconds > 60 then
 		self.startTimer:Restart()
 	end
 	if (self.state == "Lobby") then
 		if (Server:GetPlayerCount() >= self.minPlayers) then
-			if ((self.numPlayers >= self.minPlayers and self.startTimer:GetSeconds() > 30) or (self.numPlayers >= self.minPlayers and self.globalStartTimer:GetSeconds() > 300)) then
+			if ((self.numPlayers >= self.minPlayers and startTimerSeconds > 30) or (self.numPlayers >= self.minPlayers and globalStartTimerSeconds > 300)) then
 				self:Start()
 				self.globalStartTimer:Restart()
 			end
 		else
-			if ((self.numPlayers >= 2 and self.startTimer:GetSeconds() > 30) or (self.numPlayers >= 2 and self.globalStartTimer:GetSeconds() > 300)) then
+			if ((self.numPlayers >= 2 and startTimerSeconds > 30) or (self.numPlayers >= 2 and globalStartTimerSeconds > 300)) then
 				self:Start()
 				self.globalStartTimer:Restart()
 			end
@@ -224,9 +227,10 @@ function Derby:CheckBoundaries()
 	for k,p in pairs(self.players) do
 		local boundary = self.spawns.Boundary.position
 		local radius = self.spawns.Boundary.radius
-		local distanceSqr = (p:GetPosition() - boundary):LengthSqr()
+		local pPos = p:GetPosition()
+		local distanceSqr = (pPos - boundary):LengthSqr()
 
-		if ((distanceSqr > radius or p:GetPosition().y > self.spawns.MaximumY) and p:InVehicle() and p:GetWorld() == self.world) then
+		if ((distanceSqr > radius or pPos.y > self.spawns.MaximumY) and p:InVehicle() and p:GetWorld() == self.world) then
 			if (p.timer ~= nil) then
 				if p.timer:GetSeconds() > 2 then
 					local vehicle = p:GetVehicle()

@@ -26,7 +26,8 @@ function Bank:__init()
 	self.rows = {}
 	self:CreateSendMoneyWindow()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.friend_txt = "Друг"
@@ -262,9 +263,10 @@ function Bank:Render()
 	if self.message_timer and self.message then
 		local alpha = 4
 
-		if self.message_timer:GetSeconds() > 4 and self.message_timer:GetSeconds() < 5 then
-			alpha = 4 - (self.message_timer:GetSeconds() - 1)
-		elseif self.message_timer:GetSeconds() >= 5 then
+		local message_timer_seconds = self.message_timer:GetSeconds()
+		if message_timer_seconds > 4 and message_timer_seconds < 5 then
+			alpha = 4 - (message_timer_seconds - 1)
+		elseif message_timer_seconds >= 5 then
 			self.message_timer = nil
 			self.message = nil
 			self.submessage = nil
@@ -293,8 +295,9 @@ function Bank:MoneyChange( args )
         args.new_money = LocalPlayer:GetMoney()
     end
 
-    if LocalPlayer:GetValue( "Lang" ) then
-		self.plist.balance:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Balance: $" .. formatNumber( args.new_money ) or "Баланс: $" .. formatNumber( args.new_money ) )
+	local lang = LocalPlayer:GetValue( "Lang" )
+    if lang then
+		self.plist.balance:SetText( lang == "EN" and "Balance: $" .. formatNumber( args.new_money ) or "Баланс: $" .. formatNumber( args.new_money ) )
     end
 
 	if Game:GetState() ~= GUIState.Game then return end

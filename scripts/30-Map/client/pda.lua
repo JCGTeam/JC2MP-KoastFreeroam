@@ -45,8 +45,9 @@ function PDA:__init()
 	self.mouseDown         = false
 	self.dragging          = false
 	self.lastMousePosition = Mouse:GetPosition()
-	
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		MTSetWp = "[СКМ] / [1] - поставить точку назначения"
@@ -237,7 +238,8 @@ function PDA:KeyUp( args )
 
 			Map.Image:SetSize( Vector2.One * Render.Height * Map.Zoom )
 
-			Map.Offset = Vector2( LocalPlayer:GetPosition().x, LocalPlayer:GetPosition().z ) / 16384
+			local position = LocalPlayer:GetPosition()
+			Map.Offset = Vector2( position.x, position.z ) / 16384
 			Map.Offset = -Vector2( Map.Offset.x * (Map.Image:GetSize().x / 2), Map.Offset.y * (Map.Image:GetSize().y / 2) ) / Map.Zoom
 		end
 	end

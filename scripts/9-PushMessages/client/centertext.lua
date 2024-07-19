@@ -20,10 +20,11 @@ function CenterText:Render()
 
 	if self.timerF and self.textF then
 		local alpha = 4
+        local timerFSeconds = self.timerF:GetSeconds()
 
-        if self.timerF:GetSeconds() > self.timeF and self.timerF:GetSeconds() < self.timeF + 1 then
-            alpha = self.timeF - (self.timerF:GetSeconds() - 1)
-        elseif self.timerF:GetSeconds() >= self.timeF + 1 then
+        if timerFSeconds > self.timeF and timerFSeconds < self.timeF + 1 then
+            alpha = self.timeF - (timerFSeconds - 1)
+        elseif timerFSeconds >= self.timeF + 1 then
             self.timerF = nil
             self.textF = nil
             self.timeF = nil

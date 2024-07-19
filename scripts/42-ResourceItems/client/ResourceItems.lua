@@ -59,7 +59,8 @@ function ResourceItems:CrateTaken()
 	})
 	sound:SetParameter(0,1)
 
-	Game:ShowPopup( ( ( LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "RU" ) and "Ящики: " or "Resource items: " ) .. self.numcrates .. "/3754", true )
+	local lang = LocalPlayer:GetValue( "Lang" )
+	Game:ShowPopup( ( ( lang and lang == "RU" ) and "Ящики: " or "Resource items: " ) .. self.numcrates .. "/3754", true )
 end
 
 function ResourceItems:SyncTriggers( args )

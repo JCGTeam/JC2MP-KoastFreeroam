@@ -24,7 +24,8 @@ function SkydivingStats:__init()
 	self.enabled = true
 	self.unit = 1
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.name = " м/с"

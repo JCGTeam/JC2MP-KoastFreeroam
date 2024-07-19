@@ -28,7 +28,8 @@ function Event:ResetTimer()
 end
 
 function Event:ResetEvent(index)
-	self.events[index].time = math.random(self.events[index].min + self.timer:GetSeconds(), self.events[index].max + self.timer:GetSeconds())
+	local timerSeconds = self.timer:GetSeconds()
+	self.events[index].time = math.random(self.events[index].min + timerSeconds, self.events[index].max + timerSeconds)
 end
 
 function Event:Update()

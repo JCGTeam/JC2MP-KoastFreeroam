@@ -40,9 +40,13 @@ function ChatAdv:PostTick()
 			if self.currentAd > self.adCount then
 				self.currentAd = 1
 			end
+
+			local tagColor = Color.White
+			local textColor = Color.DarkGray
+
 			for p in Server:GetPlayers() do
 				if p:GetValue( "Lang" ) == "RU" then
-					p:SendChatMessage( "[Реклама] ", Color.White, self.ads[self.currentAd], Color.DarkGray )
+					p:SendChatMessage( "[Реклама] ", tagColor, self.ads[self.currentAd], textColor )
 				end
 			end
 			self.currentAd = self.currentAd + 1

@@ -6,7 +6,8 @@ function Pigeon:__init()
 	self.score = 0
 	self.superspeed = false
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.name = "Нажмите Shift или RB чтобы ускориться. Нажмите Ctrl чтобы сбавить скорость."
@@ -109,11 +110,15 @@ end
 function Pigeon:Render()
 	local alpha = 255
 
-	if self.hinttimer and self.hinttimer:GetSeconds() > 4 then
-		alpha = math.clamp( 255 - ( ( self.hinttimer:GetSeconds() - 4 ) * 500 ), 0, 255 )
+	if self.hinttimer then
+		local hinttimerSeconds = self.hinttimer:GetSeconds()
 
-		if self.hinttimer:GetSeconds() > 6 then
-			self.hinttimer = nil
+		if hinttimerSeconds > 4 then
+			alpha = math.clamp( 255 - ( ( hinttimerSeconds - 4 ) * 500 ), 0, 255 )
+
+			if hinttimerSeconds > 6 then
+				self.hinttimer = nil
+			end
 		end
 	end
 
@@ -268,37 +273,23 @@ function Pigeon:DrawWings()
 	local bones = LocalPlayer:GetBones()
 	local color = LocalPlayer:GetColor()
 
+	local rightForceArm = bones.ragdoll_RightForeArm.position
+	local rightUpLeg = bones.ragdoll_RightUpLeg.position
+	local leftForeArm = bones.ragdoll_LeftForeArm.position
+	local leftUpLeg = bones.ragdoll_LeftUpLeg.position
+
 	local r = math.lerp( 0.1 * color.r, color.r, self.dt )
 	local g = math.lerp( 0.1 * color.g, color.g, self.dt )
 	local b = math.lerp( 0.1 * color.b, color.b, self.dt )
 
 	color = Color( r, g, b )
 
-	Render:FillTriangle(
-		bones.ragdoll_RightArm.position, 
-		bones.ragdoll_RightForeArm.position,
-		bones.ragdoll_RightUpLeg.position, 
-		color
-	)
+	Render:FillTriangle( bones.ragdoll_RightArm.position, rightForceArm, rightUpLeg, color )
+	Render:FillTriangle( bones.ragdoll_LeftArm.position, leftForeArm, leftUpLeg, color )
 
-	Render:FillTriangle(
-		bones.ragdoll_LeftArm.position, 
-		bones.ragdoll_LeftForeArm.position,
-		bones.ragdoll_LeftUpLeg.position, 
-		color
-	)
-
-	Render:DrawLine(
-		bones.ragdoll_RightForeArm.position,
-		bones.ragdoll_RightUpLeg.position,
-		Color.Black
-	)
-
-	Render:DrawLine(
-		bones.ragdoll_LeftForeArm.position,
-		bones.ragdoll_LeftUpLeg.position,
-		Color.Black
-	)
+	local lineColor = Color.Black
+	Render:DrawLine( rightForceArm, rightUpLeg, lineColor )
+	Render:DrawLine( leftForeArm, leftUpLeg, lineColor )
 end
 
 function Pigeon:SetVelocity()
@@ -309,6 +300,7 @@ function Pigeon:SetVelocity()
 		return
 	end
 
+	local angle = LocalPlayer:GetAngle()
 	if LocalPlayer:GetValue( "PigeonMod" ) then
 		if not LocalPlayer:GetValue( "Freeze" ) then
 			if Input:GetValue(Action.Dash) > 0 and self.speed < self.max_speed then
@@ -318,13 +310,13 @@ function Pigeon:SetVelocity()
 			end
 		end
 
-		local speed = self.speed - math.sin( LocalPlayer:GetAngle().pitch ) * 20
-		LocalPlayer:SetLinearVelocity( LocalPlayer:GetAngle() * Vector3( 0, 0, -speed ) )
+		local speed = self.speed - math.sin( angle.pitch ) * 20
+		LocalPlayer:SetLinearVelocity( angle * Vector3( 0, 0, -speed ) )
 	else
 		self.score = math.ceil( self.RCtimer:GetSeconds() )
-		local speed = self.speed - math.sin( LocalPlayer:GetAngle().pitch ) * 20
-		if LocalPlayer:GetAngle().pitch < 0.9 then
-			LocalPlayer:SetLinearVelocity( LocalPlayer:GetAngle() * Vector3( 0, 0, -speed ) + Vector3( 0, self.vertical_speed, 0 ) )
+		local speed = self.speed - math.sin( angle.pitch ) * 20
+		if angle.pitch < 0.9 then
+			LocalPlayer:SetLinearVelocity( angle * Vector3( 0, 0, -speed ) + Vector3( 0, self.vertical_speed, 0 ) )
 		end
 	end
 
@@ -395,11 +387,13 @@ function Pigeon:SetVelocity()
 
 	Render:DrawShadowedText( screen_pos, hud_str, self.BoostColor, Color( 0, 0, 0, 100 ), TextSize.Large )
 
-	text = self.name
 	Render:SetFont( AssetLocation.SystemFont, "Impact" )
-	local size = Render:GetTextSize(text, 15)
+
+	local textSize = 15
+	local size = Render:GetTextSize( self.name, textSize )
 	local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - 10 )
-	Render:DrawShadowedText( pos, text, Color.White, Color( 0, 0, 0, 180 ), 15 )
+
+	Render:DrawShadowedText( pos, self.name, Color.White, Color( 0, 0, 0, 180 ), textSize )
 end
 
 function Pigeon:Glide()

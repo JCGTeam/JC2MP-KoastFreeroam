@@ -34,28 +34,31 @@ function DailyTasks:__init()
 
     Network:Send( "GetNeededs" )
 
+    local lockColor = Color.Silver
+    local lockSymbol = "x"
+
     self.unlock = "√"
 
-    self.huntkills = "x"
-    self.huntkillsC = Color.Silver
+    self.huntkills = lockSymbol
+    self.huntkillsC = lockColor
 
-    self.tronwins = "x"
-    self.tronwinsC = Color.Silver
+    self.tronwins = lockSymbol
+    self.tronwinsC = lockColor
 
-    self.tetrisrecord = "x"
-    self.tetrisrecordC = Color.Silver
+    self.tetrisrecord = lockSymbol
+    self.tetrisrecordC = lockColor
 
-    self.driftrecord = "x"
-    self.driftrecordC = Color.Silver
+    self.driftrecord = lockSymbol
+    self.driftrecordC = lockColor
 
-    self.flyingrecord = "x"
-    self.flyingrecordC = Color.Silver
+    self.flyingrecord = lockSymbol
+    self.flyingrecordC = lockColor
 
-    self.fireworkstossed = "x"
-    self.fireworkstossedC = Color.Silver
+    self.fireworkstossed = lockSymbol
+    self.fireworkstossedC = lockColor
 
-    self.bloozing = "x"
-    self.bloozingC = Color.Silver
+    self.bloozing = lockSymbol
+    self.bloozingC = lockColor
 
     self.window = Window.Create()
     self.window:SetSizeRel( Vector2( 0.5, 0.5 ) )
@@ -84,7 +87,8 @@ function DailyTasks:__init()
 	self.list:AddColumn( "Задание:" )
     self.list:AddColumn( "√/x", 50 )
 
-    if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+    local lang = LocalPlayer:GetValue( "Lang" )
+    if lang and lang == "EN" then
 		self:Lang()
 	else
         if self.window then
@@ -171,52 +175,54 @@ function DailyTasks:Open()
     self:SetWindowVisible( not self.active )
 
     if self.active then
+        local unlockColor = Color.Chartreuse
+
         if LocalPlayer:GetValue( "HuntKills" ) then
             if LocalPlayer:GetValue( "HuntKills" ) >= self.huntkillsneeded then
                 self.huntkills = self.unlock
-                self.huntkillsC = Color.Chartreuse
+                self.huntkillsC = unlockColor
             end
         end
 
         if LocalPlayer:GetValue( "TronWins" ) then
             if LocalPlayer:GetValue( "TronWins" ) >= self.tronwinsneeded then
                 self.tronwins = self.unlock
-                self.tronwinsC = Color.Chartreuse
+                self.tronwinsC = unlockColor
             end
         end
     
         if LocalPlayer:GetValue( "TetrisRecord" ) then
             if LocalPlayer:GetValue( "TetrisRecord" ) >= self.tetrisrecordneeded then
                 self.tetrisrecord = self.unlock
-                self.tetrisrecordC = Color.Chartreuse
+                self.tetrisrecordC = unlockColor
             end
         end
 
         if LocalPlayer:GetValue( "DriftRecord" ) then
             if LocalPlayer:GetValue( "DriftRecord" ) >= self.driftrecordneeded then
                 self.driftrecord = self.unlock
-                self.driftrecordC = Color.Chartreuse
+                self.driftrecordC = unlockColor
             end
         end
 
         if LocalPlayer:GetValue( "FlyingRecord" ) then
             if LocalPlayer:GetValue( "FlyingRecord" ) >= self.flyingrecordneeded then
                 self.flyingrecord = self.unlock
-                self.flyingrecordC = Color.Chartreuse
+                self.flyingrecordC = unlockColor
             end
         end
 
         if LocalPlayer:GetValue( "FireworksTossed" ) then
             if LocalPlayer:GetValue( "FireworksTossed" ) >= self.fireworksneeded then
                 self.fireworkstossed = self.unlock
-                self.fireworkstossedC = Color.Chartreuse
+                self.fireworkstossedC = unlockColor
             end
         end
 
         if LocalPlayer:GetValue( "Bloozing" ) then
             if LocalPlayer:GetValue( "Bloozing" ) >= 1 then
                 self.bloozing = self.unlock
-                self.bloozingC = Color.Chartreuse
+                self.bloozingC = unlockColor
             end
         end
 

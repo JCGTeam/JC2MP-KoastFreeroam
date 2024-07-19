@@ -46,7 +46,8 @@ function Passive:Toggle( state, sender )
 		vehicle:SetInvulnerable( state == true )
 	end
 
-	if sender:GetValue( "Lang" ) and sender:GetValue( "Lang" ) == "EN" then
+	local lang = sender:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		Network:Send( sender, "Text", "Passive mode " .. (state and "enabled" or "disabled") )
 	else
 		Network:Send( sender, "Text", "Мирный режим " .. (state and "включён" or "отключён") )
@@ -100,8 +101,10 @@ function Passive:PostTick()
 end
 
 function Passive:CheckPassive( args, sender )
+	local sPos = sender:GetPosition()
+
 	for p in Server:GetPlayers() do
-		local jDist = sender:GetPosition():Distance( p:GetPosition() )
+		local jDist = sPos:Distance( p:GetPosition() )
 
 		if sender:GetVehicle() then
 			if jDist < 5 then

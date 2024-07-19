@@ -71,7 +71,8 @@ function WarpGui:__init()
 	self.blacklistAllCheckbox:SetMargin( Vector2( 5, 0 ), Vector2( 5, 5 ) )
 	self.blacklistAllCheckbox:GetCheckBox():Subscribe( "CheckChanged", function() self.warping = not self.warping end )	
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.tag = "[Телепорт] "

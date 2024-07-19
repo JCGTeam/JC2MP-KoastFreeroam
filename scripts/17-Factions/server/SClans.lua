@@ -705,7 +705,7 @@ function ClanSystem:FactionChat( args )
 				local pColor = args.player:GetColor()
 				local colour = ( self.clans [ clan ].colour:split ( "," ) or { 255, 255, 255 } )
 				local r, g, b = table.unpack ( colour )
-				for player in Server:GetPlayers ( ) do
+				for player in Server:GetPlayers() do
 					local pClan = self:GetPlayerClan ( player )
 					if ( pClan ) then
 						if ( pClan == clan ) then

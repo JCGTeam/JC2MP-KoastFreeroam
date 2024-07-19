@@ -5,6 +5,12 @@ function ServerHealth:__init()
 
     Events:Subscribe( "ServerStart", self, self.ServerStart )
 
+    if not Config:GetValue( "Server", "IKnowWhatImDoing" ) then
+        self.iKnowWhatImDoingWarning = "IKnowWhatImDoing is not enabled in server configuration!"
+
+        Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
+    end
+
     Console:Subscribe( "kickx", self, self.KickX )
     Console:Subscribe( "online", self, self.GetOnline )
     Console:Subscribe( "getuptime", self, self.GetServerUpTime )
@@ -15,7 +21,7 @@ function ServerHealth:CheckServerHealth()
     local func = coroutine.wrap( function()
         local last_time = Server:GetElapsedSeconds()
         local players_history = {}
-        
+
         while true do
             Timer.Sleep( 1000 )
 
@@ -28,36 +34,52 @@ function ServerHealth:CheckServerHealth()
             end
 
             local seconds_elapsed = Server:GetElapsedSeconds()
+            local last_players = players_history[tostring(string.format("%.0f", last_time))]
 
             if seconds_elapsed - last_time > 3 then
                 local msg = string.format( "**[Status] Hitch warning: Server is running %.2f seconds behind!**", seconds_elapsed - last_time )
+
                 Events:Fire( "ToDiscord", { text = msg })
                 Events:Fire( "LogMessage", { text = msg })
-                print( msg )
 
-                local last_players = players_history[tostring(string.format("%.0f", last_time))]
+                warn( msg )
             end
 
             -- Erase old players
-            players_history[tostring(string.format("%.0f", last_time))] = nil
+            last_players = nil
 
             last_time = seconds_elapsed
 
             -- Add new players
-            players_history[tostring(string.format("%.0f", last_time))] = players
+            last_players = players
         end
     end )()
 end
 
 function ServerHealth:ServerStart()
-    print( "Server is running." )
-    Events:Fire( "ToDiscordConsole", { text = "**[Status] Server is running.**" } )
-    Events:Fire( "ToDiscord", { text = "**[Status] Server is running.**" })
+    local msg = "Server is running."
+
+    print( msg )
+
+    Events:Fire( "ToDiscordConsole", { text = "**[Status] " .. msg .. "**" } )
+    Events:Fire( "ToDiscord", { text = "**[Status] " .. msg .. "**" })
+
+    if self.iKnowWhatImDoingWarning then
+        warn( self.iKnowWhatImDoingWarning )
+
+        Events:Fire( "ToDiscordConsole", { text = "**[Status] " .. self.iKnowWhatImDoingWarning .. "**" } )
+    end
+end
+
+function ServerHealth:PlayerJoin( args )
+    if self.iKnowWhatImDoingWarning then
+        args.player:Kick( self.iKnowWhatImDoingWarning )
+    end
 end
 
 function ServerHealth:KickX()
     for p in Server:GetPlayers() do
-        p:Kick( "\nServer disabled, join to the server later.\n\nСервер был отключен, перезайдите позже.\nВ случае перезапуска, максимальное время ожидания 2 минуты." )
+        p:Kick( "\nServer was shut down, please join later.\n\nСервер был отключен, перезайдите позже.\nВ случае перезапуска, максимальное время ожидания 2 минуты." )
     end
 
     local serverstopped_txt = "All players has been kicked\nSTOPPING..."
@@ -78,9 +100,11 @@ function ServerHealth:GetOnline( args )
     if args.text == "full" then
         for p in Server:GetPlayers() do
             if IsValid(p) then
-                players[p:GetId()] = p
+                local pId = p:GetId()
+
+                players[pId] = p
                 if args.text == "full" then
-                    temp = temp .. "> " .. p:GetName() .. " (ID: " .. tostring( p:GetId() ) .. ") | SteamID: " .. tostring( p:GetSteamId() ) .. " IP: " .. tostring( p:GetIP() ) .. " (" .. tostring( p:GetValue( "Country" ) ) .. ")" .. "\n"
+                    temp = temp .. "> " .. p:GetName() .. " (ID: " .. tostring( pId ) .. ") | SteamID: " .. tostring( p:GetSteamId() ) .. " IP: " .. tostring( p:GetIP() ) .. " (" .. tostring( p:GetValue( "Country" ) ) .. ")" .. "\n"
                 end
             end
         end
@@ -97,8 +121,10 @@ function ServerHealth:GetOnline( args )
 end
 
 function ServerHealth:GetServerUpTime()
-    Events:Fire( "ToDiscordConsole", { text = "Server uptime: " .. tostring( ServerHealth:SecondsToClock( Server:GetElapsedSeconds() ) ) } )
-    print( "Server uptime: " .. tostring( ServerHealth:SecondsToClock( Server:GetElapsedSeconds() ) ) )
+    local msg = "Server uptime: " .. tostring( ServerHealth:SecondsToClock( Server:GetElapsedSeconds() ) )
+
+    Events:Fire( "ToDiscordConsole", { text = msg } )
+    print( msg )
 end
 
 function ServerHealth:GetHelp()
@@ -131,9 +157,12 @@ function ServerHealth:SecondsToClock( seconds )
     if seconds <= 0 then
         return "00:00:00"
     else
-        hours = string.format( "%02.f", math.floor( seconds / 3600) )
-        mins = string.format( "%02.f", math.floor( seconds / 60 - ( hours * 60 ) ) )
-        secs = string.format( "%02.f", math.floor( seconds - hours * 3600 - mins * 60 ) )
+        local format = "%02.f"
+
+        hours = string.format( format, math.floor( seconds / 3600) )
+        mins = string.format( format, math.floor( seconds / 60 - ( hours * 60 ) ) )
+        secs = string.format( format, math.floor( seconds - hours * 3600 - mins * 60 ) )
+
         return hours .. ":" .. mins .. ":" .. secs
     end
 end

@@ -5,7 +5,8 @@ function Pong:__init()
 	self.board_clr = Color( 0, 0, 0, 100 )
 	self.shadow = Color( 25, 25, 25, 150 )
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.tip_txt = "Подсказка: Используйте мышку для перемещения платформы."

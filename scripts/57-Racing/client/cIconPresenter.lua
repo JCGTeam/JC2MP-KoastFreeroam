@@ -51,8 +51,10 @@ function IconPresenter:PresentIcon(index , time)
 
 	-- Moving and shrinking
 	local timer = Timer()
-	while timer:GetSeconds() < moveTime do
-		local x = timer:GetSeconds() / moveTime
+	local timerSeconds = timer:GetSeconds()
+
+	while timerSeconds < moveTime do
+		local x = timerSeconds / moveTime
 		x = math.pow(x , 0.75)
 		icon:SetPosition(math.lerp(startPosition , endPosition , x))
 		icon:SetSize(math.lerp(startSize , endSize , x))

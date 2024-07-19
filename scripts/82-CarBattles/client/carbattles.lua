@@ -6,7 +6,8 @@ function CarBattles:__init()
 	self.pts = 0
 	self.scores = {}
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.name = "Загрузка..."

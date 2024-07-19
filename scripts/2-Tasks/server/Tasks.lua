@@ -74,7 +74,7 @@ function Tasks:LoadLocations( filename )
 	print( "now opening " .. filename )
 	local file = io.open( filename, "r" )
 	if file == nil then
-		print( filename .. " is missing, can't load spawns" )
+		warn( filename .. " is missing, can't load spawns" )
 		return
 	end
 
@@ -378,7 +378,8 @@ function Tasks:PlayerTakeJob( args, player )
     end
 	--cooldown timer
 	if self.playerJobTimers[player:GetId()]:GetSeconds() < self.jobCooldownTime then
-		player:SendChatMessage( player:GetValue( "Lang" ) == "EN" and self.jobp_en or self.jobp_ru, Color.White, player:GetValue( "Lang" ) == "EN" and "Wait a bit before starting a new task!" or "Подождите немного прежде, чем начинать новое задание!", Color.DarkGray )
+		local lang = player:GetValue( "Lang" )
+		player:SendChatMessage( lang == "EN" and self.jobp_en or self.jobp_ru, Color.White, lang == "EN" and "Wait a bit before starting a new task!" or "Подождите немного прежде, чем начинать новое задание!", Color.DarkGray )
 		return false
 	end
 	--make sure the job is valid
@@ -450,7 +451,8 @@ function Tasks:PlayerCompleteJob( args, player )
 			player:SetMoney(player:GetMoney() + reward)
 			self.playerJobs[playerId] = nil
 			Network:Send( player, "JobFinish", reward)
-			player:SendChatMessage( player:GetValue( "Lang" ) == "EN" and self.jobp_en or self.jobp_ru, Color.White, ( player:GetValue( "Lang" ) == "EN" and "Task completed! Reward: $" or "Задание выполнено! Награда: $" ) .. reward, Color( 0, 255, 0 ) )
+			local lang = player:GetValue( "Lang" )
+			player:SendChatMessage( lang == "EN" and self.jobp_en or self.jobp_ru, Color.White, ( lang == "EN" and "Task completed! Reward: $" or "Задание выполнено! Награда: $" ) .. reward, Color( 0, 255, 0 ) )
 			self.playerJobTimers[playerId]:Restart()
 		else
 			Network:Send( player, "JobFailed", true )

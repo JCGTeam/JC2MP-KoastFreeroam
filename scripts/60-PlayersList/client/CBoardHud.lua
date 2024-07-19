@@ -56,7 +56,8 @@ function CBoardHud:__init( CBoardClient, width, height, columns )
 	self.iSlotsInfoTextSize = 20
 	self.tSlotsInfoTextPadding = {right = 10, top = 10}
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.players_txt = "Игроки: "
@@ -64,7 +65,8 @@ function CBoardHud:__init( CBoardClient, width, height, columns )
 
 	self:Update()
 
-	self.admin_pic = Image.Create( AssetLocation.Resource, "admin_PIC" )
+	--self.admin_pic = Image.Create( AssetLocation.Resource, "admin_PIC" )
+
 	-- Attach events handlers
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "PostRender", self, self.Render )
@@ -155,8 +157,8 @@ function CBoardHud:DrawHeader()
 	local w = 0
 	for i, v in ipairs(self.tBorderCols) do
 		local text = v.name..""
-		local height = Render:GetTextHeight( text, self.fTextSize, 1 )
-		Render:DrawText( Vector2( w + self.BoardPosition.x + 10, self.BoardPosition.y + (self.fHeaderRowHeight / 2 - height / 2) ), text, self.Color_HeaderTextColor, Render.Size.x / 90, 1 )
+		local height = Render:GetTextHeight( text, self.fTextSize )
+		Render:DrawText( Vector2( w + self.BoardPosition.x + 10, self.BoardPosition.y + (self.fHeaderRowHeight / 2 - height / 2) ), text, self.Color_HeaderTextColor, Render.Size.x / 90 )
 		w = w + math.floor(self.BoardSize.width * v.width)
 	end
 
@@ -197,13 +199,14 @@ function CBoardHud:DrawPlayerRow( player )
 
 	-- Player columns:
 	local w = 0
-	for i, v in ipairs(self.tBorderCols) do
-		local text = tostring( v.getter(self.CBoardClient, player) )
-		local text2 = ""
-		local height = Render:GetTextHeight( text, self.fTextSize, 1 )
+	local pColor = player:GetColor()
 
-		Render:DrawBorderedText( Vector2( w + self.BoardPosition.x + 10, y + (height / 2) ), text, player:GetColor(), self.fTextSize, 1 )
-		w = w + math.floor(self.BoardSize.width * v.width)
+	for i, v in ipairs( self.tBorderCols ) do
+		local text = tostring( v.getter(self.CBoardClient, player) )
+		local height = Render:GetTextHeight( text, self.fTextSize )
+
+		Render:DrawBorderedText( Vector2( w + self.BoardPosition.x + 10, y + (height / 2) ), text, pColor, self.fTextSize )
+		w = w + math.floor( self.BoardSize.width * v.width )
 	end
 
 	self:IncreaseBoardRealHeight( self.fPlayerRowHeight )
@@ -212,22 +215,26 @@ function CBoardHud:DrawPlayerRow( player )
 end
 
 function CBoardHud:DrawPlayersRows()
+	local CBCPlaers = self.CBoardClient:getPlayers()
+
 	for i = 1, self.iAvailibleRows do
-		local player = self.CBoardClient:getPlayers()[i + self.CBoardClient:getStartShowRow()]
+		local player = CBCPlaers[i + self.CBoardClient:getStartShowRow()]
 		if (self.CBoardClient:isPlayerAllowedForDraw(player)) then
-			self:DrawPlayerRow(player)
+			self:DrawPlayerRow( player )
 		end
 	end
 	return self
 end
 
 function CBoardHud:DrawScrollLine()
-	if (#self.CBoardClient:getPlayers() <= self:getAvailibleRows()) then
+	local CBCPlaers = self.CBoardClient:getPlayers()
+
+	if (#CBCPlaers <= self:getAvailibleRows()) then
 		return end
 
 	local boardHeight = self:getBoardRealHeight()
-	local scrollHeight = math.floor((boardHeight - self.fHeaderRowHeight) * (self:getAvailibleRows() / #self.CBoardClient:getPlayers()))
-	local scrollPosY = math.floor((self.BoardPosition.y + self.fHeaderRowHeight) + ((boardHeight - self.fHeaderRowHeight) * (self.CBoardClient:getStartShowRow() / #self.CBoardClient:getPlayers())))
+	local scrollHeight = math.floor((boardHeight - self.fHeaderRowHeight) * (self:getAvailibleRows() / #CBCPlaers))
+	local scrollPosY = math.floor((self.BoardPosition.y + self.fHeaderRowHeight) + ((boardHeight - self.fHeaderRowHeight) * (self.CBoardClient:getStartShowRow() / #CBCPlaers)))
 
 	Render:FillArea( Vector2( self.BoardPosition.x + self.BoardSize.width + self.fScrollLinePadding, scrollPosY ), Vector2( self.fScrollLineWidth, scrollHeight ), self.Color_ScrollLineColor.default )
 

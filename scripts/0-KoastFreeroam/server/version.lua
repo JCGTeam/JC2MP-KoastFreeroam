@@ -36,7 +36,7 @@ function Version:GetVersion()
         end
         file:close()
     else
-        print( "Version file not found!" )
+        warn( "Version file not found!" )
     end
 end
 
@@ -44,8 +44,10 @@ function Version:ModulesLoad()
     self:GetVersion()
 
     for p in Server:GetPlayers() do
-        if p:GetValue( "KoastBuild" ) then
-            if p:GetValue( "KoastBuild" ) ~= self.ver then
+        local kBuild = p:GetValue( "KoastBuild" )
+
+        if kBuild then
+            if kBuild ~= self.ver then
                 p:SetNetworkValue( "KoastBuild", self.ver .. " | Build: " .. self.build )
             end
         end

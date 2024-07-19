@@ -345,15 +345,18 @@ function Admin:PostTick( args )
 	if paydayCash ~= "0" then
 		if paydayTimer:GetMinutes() >= timeDelay then
 			local count = 0
+			local tagColor = Color.White
+			local msgColor = Color( 255, 180, 3 )
+
 			for p in Server:GetPlayers() do
 				count = count + 1
 				p:RequestGroupMembership( SteamId("103582791460674447"), function(args)
 					if args.member then
 						p:SetMoney(p:GetMoney() + paydayCash)
 						if p:GetValue( "Lang" ) == "EN" then
-							p:SendChatMessage( "[Reward №" .. paydayCount .. "] ", Color.White, "$" .. paydayCash .. " for subscribed on the Koast Freeroam group! :3", Color( 255, 180, 3 ) )
+							p:SendChatMessage( "[Reward №" .. paydayCount .. "] ", tagColor, "$" .. paydayCash .. " for subscribed on the Koast Freeroam group! :3", msgColor )
 						else
-							p:SendChatMessage( "[Награда №" .. paydayCount .. "] ", Color.White, "$" .. paydayCash .. " за участие в группе Koast Freeroam! :3", Color( 255, 180, 3 ) )
+							p:SendChatMessage( "[Награда №" .. paydayCount .. "] ", tagColor, "$" .. paydayCash .. " за участие в группе Koast Freeroam! :3", msgColor )
 						end
 					end
 				end )
@@ -536,6 +539,12 @@ function Admin:PlayerJoin( args )
 			end
 			break
 		end
+	end
+
+	-- VIP for all players 01.04.2024
+	if not args.player:GetValue( "Tag" ) then
+		vips[1] = tostring( args.player:GetSteamId() )
+		args.player:SetNetworkValue( "Tag", tagTable[isVip] )
 	end
 end
 
@@ -741,12 +750,16 @@ function Admin:PlayerChat( args )
 
 			if (isCreator(args.player)) then
 				if cmd_args[2] == "all*" then
+					local sPos = sender:GetPosition()
+					local sAngle = sender:GetAngle()
+					local sName = sender:GetName()
+
 					for p in Server:GetPlayers() do
-						p:Teleport(sender:GetPosition(), sender:GetAngle())
-						confirmationMessage( p, sender:GetName() .. " телепортировал всех игроков к себе." )
+						p:Teleport( sPos, sAngle )
+						confirmationMessage( p, sName .. " телепортировал всех игроков к себе." )
 					end
 					confirmationMessage( sender, "Все игроки были телепортированы к вам." )
-					Events:Fire( "ToDiscordConsole", { text = sender:GetName() .. " warp all players to yourself." } )
+					Events:Fire( "ToDiscordConsole", { text = sName .. " warp all players to yourself." } )
 					return true
 				end
 			end

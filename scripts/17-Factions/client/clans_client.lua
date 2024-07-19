@@ -314,8 +314,9 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.leaveClan:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
 	self.manageClan.leaveClan:SetHeight( 30 )
 	self.manageClan.leaveClan:SetTextSize( 15 )
-	self.manageClan.leaveClan:SetTextHoveredColor( Color.DarkOrange )
-	self.manageClan.leaveClan:SetTextPressedColor( Color.DarkOrange )
+	local btnColor = Color.DarkOrange
+	self.manageClan.leaveClan:SetTextHoveredColor( btnColor )
+	self.manageClan.leaveClan:SetTextPressedColor( btnColor )
 	self.manageClan.leaveClan:Subscribe( "Press", self, self.LeaveClan )
 
 	self.manageClan.mDownpanelsLabel = Label.Create( hometab )
@@ -547,7 +548,8 @@ function ClanSystem:ModuleLoad()
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.friend_txt = "Друг"
@@ -669,7 +671,8 @@ end
 function ClanSystem:GetClanInfo()
 	local row = self.clanMenu.list:GetSelectedRow()
 	if ( row ~= nil ) then
-		if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+		local lang = LocalPlayer:GetValue( "Lang" )
+		if lang and lang == "EN" then
 			self.clanMenu.bkpanelsLabel:SetText( "Name: " .. row:GetCellText( 0 ) .. "\nCreation date: " .. row:GetName():sub( 0, 17 ) .. "\nFounder: " .. row:GetCellText( 1 ) .. "\nType: " .. row:GetCellText( 2 ) .. "\nMembers: " .. row:GetCellText( 3 ) .. "\nDescription: " .. row:GetName():sub( 18 ) )
 		else
 			self.clanMenu.bkpanelsLabel:SetText( "Название: " .. row:GetCellText( 0 ) .. "\nДата создания: " .. row:GetName():sub( 0, 17 ) .. "\nОснователь: " .. row:GetCellText( 1 ) .. "\nТип: " .. row:GetCellText( 2 ) .. "\nУчастников: " .. row:GetCellText( 3 ) .. "\nОписание: " .. row:GetName():sub( 18 ) )
@@ -692,13 +695,15 @@ function ClanSystem:SetActive( state )
 		Network:Send( "Clans:GetClans" )
 
 		if LocalPlayer:GetMoney() >= Prices.CreateClan then
-			self.createClan.create:SetTextHoveredColor( Color.SpringGreen )
-			self.createClan.create:SetTextNormalColor( Color.SpringGreen )
-			self.createClan.create:SetTextPressedColor( Color.SpringGreen )
+			local btnColor = Color.SpringGreen
+			self.createClan.create:SetTextHoveredColor( btnColor )
+			self.createClan.create:SetTextNormalColor( btnColor )
+			self.createClan.create:SetTextPressedColor( btnColor )
 		else
-			self.createClan.create:SetTextHoveredColor( Color.Coral )
-			self.createClan.create:SetTextNormalColor( Color.Coral )
-			self.createClan.create:SetTextPressedColor( Color.Coral )
+			local btnColor = Color.Coral
+			self.createClan.create:SetTextHoveredColor( btnColor )
+			self.createClan.create:SetTextNormalColor( btnColor )
+			self.createClan.create:SetTextPressedColor( btnColor )
 		end
 
 		if not self.LocalPlayerInputEvent then
@@ -897,7 +902,8 @@ function ClanSystem:ReceiveData( args )
 	self.manageClan.newstbLabel:SetText( args.newstext )
 	self.manageClan.newstbLabel:SizeToContents()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self.manageClan.ciLabel:SetText(
 			"> Clan name: " .. tostring( args.clanData.name ) ..
 			"\n\n★ Clan type: " .. ( args.clanData.type == "Открытый" and "Публичный" or "По приглашению" ) ..

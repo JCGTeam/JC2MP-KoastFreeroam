@@ -366,10 +366,12 @@ RaceMenuUtility.CreateTimer = function(text , seconds)
 	
 	local UpdateTimer = function(self)
 		if Game:GetState() == GUIState.Game then
-			local secondsLeft = math.max(0 , seconds - self.timer:GetSeconds())
+			local timerSeconds = self.timer:GetSeconds()
+			local secondsLeft = math.max(0 , seconds - timerSeconds)
+
 			self.timerLabel:SetText(string.format("%.0f" , secondsLeft))
-			local hue = math.lerp(140 , 0 , self.timer:GetSeconds() / seconds)
-			local sat = math.lerp(0 , 1 , self.timer:GetSeconds() / seconds)
+			local hue = math.lerp(140 , 0 , timerSeconds / seconds)
+			local sat = math.lerp(0 , 1 , timerSeconds / seconds)
 			self.timerLabel:SetTextColor(Color.FromHSV(hue , sat , 0.95))
 			
 			self.base:SetVisible(true)

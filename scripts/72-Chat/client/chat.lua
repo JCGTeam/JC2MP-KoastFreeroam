@@ -27,7 +27,8 @@ function BetterChat:__init()
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "Render", self, self.Render )
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.prefix = "[Чат] "
@@ -94,13 +95,14 @@ function BetterChat:CreateChatModeListItems()
 		self.chatmodelist:AddItem( self.tPrefix, self.tPrefix )
 	end
 
-	if LocalPlayer:GetValue( "ChatMode" ) == 0 then
+	local chatMode = LocalPlayer:GetValue( "ChatMode" )
+	if chatMode == 0 then
 		self.chatmodelist:SelectItemByName( self.tGlobal )
-	elseif LocalPlayer:GetValue( "ChatMode" ) == 1 then
+	elseif chatMode == 1 then
 		self.chatmodelist:SelectItemByName( self.tLocal )
-	elseif LocalPlayer:GetValue( "ChatMode" ) == 2 then
+	elseif chatMode == 2 then
 		self.chatmodelist:SelectItemByName( self.tClan )
-	elseif LocalPlayer:GetValue( "ChatMode" ) == 3 then
+	elseif chatMode == 3 then
 		self.chatmodelist:SelectItemByName( self.tPrefix )
 	end
 end
@@ -252,13 +254,18 @@ function BetterChat:Render()
 		end
 
 		local chatPos = Chat:GetPosition()
-		local textpos = Vector2( chatPos.x, chatPos.y - Render:GetTextHeight( self.chatmode_txt, 14 ) - self.chatheight )
+		local textSize = 14
 
-		--Render:FillArea( Vector2( textpos.x - 4, textpos.y - Render:GetTextHeight( self.chatmode_txt, 14 ) / 2 ), Vector2( Render:GetTextWidth( self.chatmode_txt, 14 ) + self.chatmodelist:GetSize().x, Render:GetTextHeight( self.chatmode_txt, 14 ) * 2), Color( 10, 10, 10, 85 ) )
+		local textWidth = Render:GetTextWidth( self.chatmode_txt, textSize )
+		local textHeight = Render:GetTextHeight( self.chatmode_txt, textSize )
 
-		self.chatmodelist:SetPosition( Vector2( textpos.x + Render:GetTextWidth( self.chatmode_txt, 14 ) + 1, textpos.y - Render:GetTextHeight( self.chatmode_txt, 14 ) / 5 ) )
+		local textPos = Vector2( chatPos.x, chatPos.y - textHeight - self.chatheight )
 
-		Render:DrawShadowedText( textpos, self.chatmode_txt, Color( 215, 215, 215 ), Color( 25, 25, 25, 150 ), 14 )
+		--Render:FillArea( Vector2( textPos.x - 4, textPos.y - textHeight / 2 ), Vector2( textWidth + self.chatmodelist:GetSize().x, textHeight * 2), Color( 10, 10, 10, 85 ) )
+
+		self.chatmodelist:SetPosition( Vector2( textPos.x + textWidth + 1, textPos.y - textHeight / 5 ) )
+
+		Render:DrawShadowedText( textPos, self.chatmode_txt, Color( 215, 215, 215 ), Color( 25, 25, 25, 150 ), textSize )
 
 		if not self.chatactive then
 			self.chatmodelist:Clear()

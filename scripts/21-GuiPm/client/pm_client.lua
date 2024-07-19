@@ -76,11 +76,13 @@ function PM:__init( player )
 	self.GUI.PMDistrub:SetText( "Не беспокоить" )
 	self.GUI.PMDistrub:SetSize( Vector2( Render:GetTextWidth( self.GUI.PMDistrub:GetText() ), 25 ) )
 	if LocalPlayer:GetValue( "PMDistrub" ) then
-		self.GUI.PMDistrub:SetTextNormalColor( Color.DarkOrange )
-		self.GUI.PMDistrub:SetTextHoveredColor( Color.DarkOrange )
+		local btnColor = Color.DarkOrange
+		self.GUI.PMDistrub:SetTextNormalColor( btnColor )
+		self.GUI.PMDistrub:SetTextHoveredColor( btnColor )
 	else
-		self.GUI.PMDistrub:SetTextNormalColor( Color.White )
-		self.GUI.PMDistrub:SetTextHoveredColor( Color.White )
+		local btnColor = Color.White
+		self.GUI.PMDistrub:SetTextNormalColor( btnColor )
+		self.GUI.PMDistrub:SetTextHoveredColor( btnColor )
 	end
 	self.GUI.PMDistrub:Subscribe( "Press", self, self.ToggleDistrub )
 
@@ -130,7 +132,8 @@ function PM:__init( player )
 	self.GUI.window:Subscribe( "WindowClosed", self, self.CloseWindow )
 	self.playerToRow = {}
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.tag = "[Сообщения] "
@@ -229,11 +232,13 @@ function PM:ToggleDistrub()
 	self.dmoode = not LocalPlayer:GetValue( "PMDistrub" )
 	Network:Send( "ChangePmMode", { dvalue = self.dmoode } )
 	if LocalPlayer:GetValue( "PMDistrub" ) then
-		self.GUI.PMDistrub:SetTextNormalColor( Color.White )
-		self.GUI.PMDistrub:SetTextHoveredColor( Color.White )
+		local btnColor = Color.White
+		self.GUI.PMDistrub:SetTextNormalColor( btnColor )
+		self.GUI.PMDistrub:SetTextHoveredColor( btnColor )
 	else
-		self.GUI.PMDistrub:SetTextNormalColor( Color.DarkOrange )
-		self.GUI.PMDistrub:SetTextHoveredColor( Color.DarkOrange )
+		local btnColor = Color.DarkOrange
+		self.GUI.PMDistrub:SetTextNormalColor( btnColor )
+		self.GUI.PMDistrub:SetTextHoveredColor( btnColor )
 	end
 end
 

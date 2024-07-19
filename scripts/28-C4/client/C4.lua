@@ -47,7 +47,7 @@ function C4Controller:InputPoll()
             Action.MoveBackward,
         }
 
-		for _, action in pairs( actions ) do
+		for _, action in ipairs( actions ) do
             Input:SetValue( action, 0 )
         end
 
@@ -144,8 +144,9 @@ function C4Controller:PreTick()
 					end
 				end
 			else
-				args.values.position_offset = -entity:GetAngle() * (raycast.position - entity:GetPosition())
-				args.values.angle_offset = -entity:GetAngle() * args.angle
+				local angle = -entity:GetAngle()
+				args.values.position_offset = angle * (raycast.position - entity:GetPosition())
+				args.values.angle_offset = angle * args.angle
 			end
 		end
 

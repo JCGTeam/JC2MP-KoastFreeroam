@@ -5,14 +5,17 @@ function Hook:__init()
 end
 
 function Hook:GameRenderOpaque()
+	local cameraPos = Camera:GetPosition()
+
 	for player in Client:GetStreamedPlayers() do
 		if player:GetVehicle() and player:GetSeat() ~= 8 then return end
 
 		local bs = player:GetBaseState()
 		local las = player:GetLeftArmState()
+		local aimTarget = player:GetAimTarget()
 
-		if bs == 207 or las == 400 or bs == 208 and player:GetAimTarget() and player:GetAimTarget().position then
-			hookAimTarget = player:GetAimTarget()
+		if bs == 207 or las == 400 or bs == 208 and aimTarget and aimTarget.position then
+			hookAimTarget = aimTarget
 		end
 
 		if bs == 207 or las == 400 then
@@ -41,16 +44,14 @@ function Hook:GameRenderOpaque()
 				end
 			end
 		else
-			if effect_played then
-				effect_played = nil
-			end
+			if effect_played then effect_played = nil end
 		end
 
 		if IsValid( player ) then
 			if bs == 208 and hookAimTarget and hookAimTarget.position then
-				Render:DrawLine( player:GetBonePosition( "ragdoll_AttachHandLeft" ), hookAimTarget.position, Color( 100, 100, 100, 255 * math.max( 0, 1 - ( Vector3.Distance( player:GetPosition(), Camera:GetPosition() ) / 1024 ) ) ) )
+				Render:DrawLine( player:GetBonePosition( "ragdoll_AttachHandLeft" ), hookAimTarget.position, Color( 100, 100, 100, 255 * math.max( 0, 1 - ( Vector3.Distance( player:GetPosition(), cameraPos ) / 1024 ) ) ) )
 			elseif las == 400 and hookAimTarget and hookAimTarget.entity and hookAimTarget.entity.__type ~= "Vehicle" and hookAimTarget.entity.__type == "ClientActor" then
-				Render:DrawLine( player:GetBonePosition( "ragdoll_AttachHandLeft" ), hookAimTarget.entity:GetBonePosition( "ragdoll_Spine" ), Color( 100, 100, 100, 255 * math.max( 0, 1 - ( Vector3.Distance( player:GetPosition(), Camera:GetPosition() ) / 1024 ) ) ) )
+				Render:DrawLine( player:GetBonePosition( "ragdoll_AttachHandLeft" ), hookAimTarget.entity:GetBonePosition( "ragdoll_Spine" ), Color( 100, 100, 100, 255 * math.max( 0, 1 - ( Vector3.Distance( player:GetPosition(), cameraPos ) / 1024 ) ) ) )
 			end
 		end
 	end

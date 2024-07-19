@@ -306,18 +306,22 @@ function Grenades:Render()
 
 		imga:SetSize( Vector2( Render.Height * 0.09, Render.Height * 0.045 ) )
 
-		local timerwidth = Render:GetTextSize( text_timer, imga:GetSize().y / 1.8 ).x / 2
-		local c4maxwidth = Render:GetTextSize( text_max, imga:GetSize().y / 1.8 ).x / 2
+		local imgaSize = imga:GetSize()
+		local backgroundSize = self.background:GetSize()
+		local textbSize = self.textb:GetSize()
 
-		local pos_2d = Vector2( Render.Size.x / 0.995 - self.background:GetSize().x, ( Render.Height - Render.Height * 0.24 ) - imga:GetSize().y / 2 )
-		local pos_2d_a = Vector2( Render.Size.x / 1.009 - self.background:GetSize().x, ( Render.Height - Render.Height * 0.24 ) - self.background:GetSize().y / 2 )
-		local pos_2d_t = Vector2( Render.Size.x / 1.015 - self.textb:GetSize().x, ( Render.Height - Render.Height * 0.193 ) - self.textb:GetSize().y / 2 )
-		local pos_2d_timer = Vector2( Render.Size.x / 1.01 - timerwidth /2  - imga:GetSize().x / 2, ( Render.Height - Render.Height * 0.234 ) - self.textb:GetSize().y / 2 )
+		local timerwidth = Render:GetTextSize( text_timer, imgaSize.y / 1.8 ).x / 2
+		local c4maxwidth = Render:GetTextSize( text_max, imgaSize.y / 1.8 ).x / 2
+
+		local pos_2d = Vector2( Render.Size.x / 0.995 - backgroundSize.x, ( Render.Height - Render.Height * 0.24 ) - imgaSize.y / 2 )
+		local pos_2d_a = Vector2( Render.Size.x / 1.009 - backgroundSize.x, ( Render.Height - Render.Height * 0.24 ) - backgroundSize.y / 2 )
+		local pos_2d_t = Vector2( Render.Size.x / 1.015 - textbSize.x, ( Render.Height - Render.Height * 0.193 ) - textbSize.y / 2 )
+		local pos_2d_timer = Vector2( Render.Size.x / 1.01 - timerwidth /2  - imgaSize.x / 2, ( Render.Height - Render.Height * 0.234 ) - textbSize.y / 2 )
 		if self.c4actv then
-			pos_2d_timer = Vector2( Render.Size.x / 1.009 - timerwidth / 2 - imga:GetSize().x / 2, ( Render.Height - Render.Height * 0.242 ) - self.textb:GetSize().y / 2 )
+			pos_2d_timer = Vector2( Render.Size.x / 1.009 - timerwidth / 2 - imgaSize.x / 2, ( Render.Height - Render.Height * 0.242 ) - textbSize.y / 2 )
 		end
-		local pos_2d_c4max = Vector2( Render.Size.x / 1.0085 - c4maxwidth / 2 - imga:GetSize().x / 2, ( Render.Height - Render.Height * 0.22 ) - self.textb:GetSize().y / 2 )
-		local pos_2d_text = Vector2( Render.Size.x - ( Render:GetTextWidth( text, self.textb:GetSize().y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) ) ) - Render.Size.x / 40, ( Render.Height - Render.Height * 0.186 ) - self.textb:GetSize().y / 2 )
+		local pos_2d_c4max = Vector2( Render.Size.x / 1.0085 - c4maxwidth / 2 - imgaSize.x / 2, ( Render.Height - Render.Height * 0.22 ) - textbSize.y / 2 )
+		local pos_2d_text = Vector2( Render.Size.x - ( Render:GetTextWidth( text, textbSize.y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) ) ) - Render.Size.x / 40, ( Render.Height - Render.Height * 0.186 ) - textbSize.y / 2 )
 
 		if Game:GetSetting(4) >= 1 then
 			local sett_alpha = Game:GetSetting(4) * 2.25
@@ -338,9 +342,9 @@ function Grenades:Render()
 			local color2 = Color( 169, 169, 169, sett_alpha )
 			local shadow = Color( 0, 0, 0, sett_alpha )
 
-			Render:DrawShadowedText( pos_2d_text, text, color, shadow, self.textb:GetSize().y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) )
-			Render:DrawShadowedText( pos_2d_timer, text_timer, color, shadow, imga:GetSize().y / 0.13 / Render:GetTextWidth( "00" ) )
-			Render:DrawShadowedText( pos_2d_c4max, text_max, color2, shadow, imga:GetSize().y / 0.18 / Render:GetTextWidth( "00" ) )
+			Render:DrawShadowedText( pos_2d_text, text, color, shadow, textbSize.y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) )
+			Render:DrawShadowedText( pos_2d_timer, text_timer, color, shadow, imgaSize.y / 0.13 / Render:GetTextWidth( "00" ) )
+			Render:DrawShadowedText( pos_2d_c4max, text_max, color2, shadow, imgaSize.y / 0.18 / Render:GetTextWidth( "00" ) )
 		end
 	end
 end

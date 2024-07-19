@@ -29,7 +29,8 @@ function Speedometer:__init()
 	self.unit = 1
 	self.position = LocalPlayer:GetPosition()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.name = "м/с"
@@ -265,6 +266,7 @@ function Speedometer:Render()
 	local col = math.lerp( LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.zHealth, LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.fHealth, factor )
 	local textcol = col
 
+	local text_col = Color.White
 	local text_size = speed_size + Vector2( unit_size.x + 16, 0 )
 
 	local speed_position = Vector2( Render.Width / 2, Render.Height )
@@ -278,7 +280,7 @@ function Speedometer:Render()
 	unit_position.y = speed_position.y + (( speed_size.y - unit_size.y ) / 2)
 
 	self:DrawShadowedText2( speed_position, speed_text, textcol, self.speed_text_size )
-	self:DrawShadowedText2( unit_position, unit_text, Color.White, self.unit_text_size )
+	self:DrawShadowedText2( unit_position, unit_text, text_col, self.unit_text_size )
 
 	local bar_len = 300
 	local bar_start = (Render.Width - bar_len) / 2
@@ -286,7 +288,7 @@ function Speedometer:Render()
 	local bar_pos = Vector2( bar_start, speed_position.y + text_size.y )
 	local final_pos = Vector2( bar_len, 6 )
 	if self.peredacha then
-		self:DrawShadowedText2( bar_pos - Vector2( 30, 20 ), gearString, Color.White, self.unit_text_size )
+		self:DrawShadowedText2( bar_pos - Vector2( 30, 20 ), gearString, text_col, self.unit_text_size )
 	end
 
 	bar_len = bar_len * vehicle:GetHealth()
@@ -332,6 +334,7 @@ function Speedometer:GameRender()
 	local col = math.lerp( LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.zHealth, LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.fHealth, factor )
 	local textcol = col
 
+	local text_col = Color.White
 	local text_size = speed_size + Vector2( unit_size.x + 24, 0 )
 
 	local t = Transform3()
@@ -364,12 +367,12 @@ function Speedometer:GameRender()
 	Render:SetTransform( t )
 
 	self:DrawShadowedText3( Vector3( 0, 0, 0 ), speed_text, textcol, self.speed_text_size )
-	self:DrawShadowedText3( Vector3( speed_size.x + 24, (speed_size.y - unit_size.y)/2, 0), unit_text, Color.White, self.unit_text_size )
+	self:DrawShadowedText3( Vector3( speed_size.x + 24, (speed_size.y - unit_size.y)/2, 0), unit_text, text_col, self.unit_text_size )
 
 	local bar_pos = Vector3( 0, text_size.y + 4, 0 )
 	local bar_len = text_size.x * vehicle:GetHealth()
 	if self.peredacha then
-		self:DrawShadowedText3( Vector3( bar_pos.x - 60, (speed_size.y - unit_size.y)/0.5, 0), gearString, Color.White, self.unit_text_size )
+		self:DrawShadowedText3( Vector3( bar_pos.x - 60, (speed_size.y - unit_size.y)/0.5, 0), gearString, text_col, self.unit_text_size )
 	end
 
 	Render:FillArea( bar_pos + Vector3( 1, 1, 4 ), Vector3( bar_len, 16, 0 ), col )

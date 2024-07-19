@@ -61,6 +61,9 @@ function LineSegment:Render()
 	local height = self.height
 	local color = self.color
 
-	Render:FillTriangle( startPoint:GetPosition(), endPoint:GetPosition() + endPoint:GetAngle() * Vector3.Up * height, endPoint:GetPosition(), color )
-	Render:FillTriangle( startPoint:GetPosition(), endPoint:GetPosition() + endPoint:GetAngle() * Vector3.Up * height, startPoint:GetPosition() + startPoint:GetAngle() * Vector3.Up * height, color )
+	local startPointPos = startPoint:GetPosition()
+	local endPointPos = endPoint:GetPosition()
+
+	Render:FillTriangle( startPointPos, endPointPos + endPoint:GetAngle() * Vector3.Up * height, endPointPos, color )
+	Render:FillTriangle( startPointPos, endPointPos + endPoint:GetAngle() * Vector3.Up * height, startPointPos + startPoint:GetAngle() * Vector3.Up * height, color )
 end

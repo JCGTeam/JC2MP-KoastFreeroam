@@ -13,8 +13,10 @@ function Grenades:GrenadeTossed( args, sender )
 end
 
 function Grenades:GrenadeExplode( args, sender )
-	if sender:GetPosition():Distance(args.position) < args.type.radius then
-		local falloff = (args.type.radius - sender:GetPosition():Distance(args.position)) / (args.type.radius * 0.6)
+	local distance = sender:GetPosition():Distance( args.position )
+
+	if distance < args.type.radius then
+		local falloff = (args.type.radius - distance) / (args.type.radius * 0.6)
 
 		if not sender:GetValue("Passive") then
 			sender:Damage(falloff)

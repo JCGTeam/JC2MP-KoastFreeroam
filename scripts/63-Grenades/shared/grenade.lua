@@ -85,13 +85,15 @@ function Grenade:__init(position, velocity, type)
 end
 
 function Grenade:Update()
-	local delta = (self.timer:GetSeconds() - self.lastTime) / 1
+	local timerSeconds = self.timer:GetSeconds()
+	local delta = (timerSeconds - self.lastTime) / 1
 
-	if self.timer:GetSeconds() < self.fusetime then
+	if timerSeconds < self.fusetime then
 		if not self.stopped then
 			self.velocity = (self.velocity - (self.velocity * self.drag * delta)) + (Vector3.Down * self.weight * 9.81 * delta)
 
-			local ray = Physics:Raycast(self.object:GetPosition(), self.velocity * delta, 0, 1, true)
+			local objectPos = self.object:GetPosition()
+			local ray = Physics:Raycast(objectPos, self.velocity * delta, 0, 1, true)
 
 			if ray.distance <= math.min(self.velocity:Length() * delta, 1) then
 				local dotTimesTwo = 2 * self.velocity:Dot(ray.normal)
@@ -107,51 +109,53 @@ function Grenade:Update()
 			end
 
 			if not self.stopped then
-				self.object:SetPosition(self.object:GetPosition() + (self.velocity * delta))
-				self.effect:SetPosition(self.object:GetPosition())
+				self.object:SetPosition(objectPos + (self.velocity * delta))
+				self.effect:SetPosition(objectPos)
 				self.object:SetAngle(Angle.FromVectors(self.velocity, Vector3.Right))
 				if self.sound then
-					self.firesound:SetPosition(self.object:GetPosition())
+					self.firesound:SetPosition(objectPos)
 				end
 				self.effect:SetAngle(self.object:GetAngle())
 			else
-				self.object:SetPosition(self.object:GetPosition() + (Vector3.Up * 0.05))
-				self.effect:SetPosition(self.object:GetPosition())
+				self.object:SetPosition(objectPos + (Vector3.Up * 0.05))
+				self.effect:SetPosition(objectPos)
 			end
 		end
 	else
 		self:Detonate()
 	end
 
-	self.lastTime = self.timer:GetSeconds()
+	self.lastTime = timerSeconds
 end
 
 function Grenade:Detonate()
+	local objectPos = self.object:GetPosition()
+
 	Network:Send("GrenadeExplode", {
-		["position"] = self.object:GetPosition(),
+		["position"] = objectPos,
 		["angle"] = self.object:GetAngle(),
 		["type"] = self.type
 	})
 
 	local effect = ClientEffect.Play(AssetLocation.Game, {
-		["position"] = self.object:GetPosition(),
+		["position"] = objectPos,
 		["angle"] = Angle(),
 		["effect_id"] = self.effect_id
 	})
 
 	if self.frag then
 		local sound = ClientSound.Play(AssetLocation.Game, {
-			position = self.object:GetPosition(),
+			position = objectPos,
 			bank_id = 11,
 			sound_id = 13,
 			variable_id_timeline = 0,
 			variable_id_distance = 1,
 			variable_id_focus = 2
 		})
-		if self.object:GetPosition().y < 200 then
+		if objectPos.y < 200 then
 			local effect = ClientEffect.Play(AssetLocation.Game, {
 				effect_id = 112,
-				position = Vector3(self.object:GetPosition().x, 200, self.object:GetPosition().z),
+				position = Vector3(objectPos.x, 200, objectPos.z),
 				angle = Angle()
 			})
 		end

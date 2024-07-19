@@ -1,7 +1,8 @@
 class 'WhatsNew'
 
 function WhatsNew:__init()
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.continue_txt = "Продолжить ( ͡° ͜ʖ ͡°)"

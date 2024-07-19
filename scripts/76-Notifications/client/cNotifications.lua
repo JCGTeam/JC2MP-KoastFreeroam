@@ -42,23 +42,28 @@ function Notifications:PostRender()
 			return
 		end
 
-		if Render:GetTextWidth( self.mainTxt, 15 ) > 200 then
+		local mainTxtSize = 15
+		local subTxtSize = 12
+
+		if Render:GetTextWidth( self.mainTxt, mainTxtSize ) > 200 then
 			self.fadeInTimer = nil
 			return
 		end
 
 		if self.subTxt ~= nil then
-			if Render:GetTextWidth( self.subTxt, 15 ) > 230 then
+			if Render:GetTextWidth( self.subTxt, subTxtSize ) > 230 then
 				self.fadeInTimer = nil
 				return
 			end
 		end
 
 		if self.fadeInTimer ~= nil then
-			self.txtAlpha = math.clamp( 0 + ( self.fadeInTimer:GetSeconds() * 400 ), 0, 200 )
-			self.renderAlpha1 = math.clamp( 0 + ( self.fadeInTimer:GetSeconds() * 360 ), 0, 180 )
-			self.renderAlpha2 = math.clamp( 0 + ( self.fadeInTimer:GetSeconds() * 340 ), 0, 170 )
-			self.imageAlpha = math.clamp( 0 + ( self.fadeInTimer:GetSeconds() * 2 ), 0, 1 )
+			local fadeInTimerSeconds = self.fadeInTimer:GetSeconds()
+
+			self.txtAlpha = math.clamp( 0 + ( fadeInTimerSeconds * 400 ), 0, 200 )
+			self.renderAlpha1 = math.clamp( 0 + ( fadeInTimerSeconds * 360 ), 0, 180 )
+			self.renderAlpha2 = math.clamp( 0 + ( fadeInTimerSeconds * 340 ), 0, 170 )
+			self.imageAlpha = math.clamp( 0 + ( fadeInTimerSeconds * 2 ), 0, 1 )
 
 			if self.txtAlpha >= 200 or  self.renderAlpha1 >= 180 or self.renderAlpha2 >= 170 or self.imageAlpha >= 1 then
 				self.txtAlpha = 200
@@ -78,10 +83,12 @@ function Notifications:PostRender()
 		end
 
 		if self.fadeOutTimer ~= nil then
-			self.txtAlpha = math.clamp( 200 - ( self.fadeOutTimer:GetSeconds() * 66.66666666666667 ), 0, 200 )
-			self.renderAlpha1 = math.clamp( 180 - ( self.fadeOutTimer:GetSeconds() * 60 ), 0, 180 )
-			self.renderAlpha2 = math.clamp( 170 - ( self.fadeOutTimer:GetSeconds() * 56.66666666666667 ), 0, 170 )
-			self.imageAlpha = math.clamp( 1 - ( self.fadeOutTimer:GetSeconds() / 3 ), 0, 1 )
+			local fadeOutTimerSeconds = self.fadeOutTimer:GetSeconds()
+
+			self.txtAlpha = math.clamp( 200 - ( fadeOutTimerSeconds * 66.66666666666667 ), 0, 200 )
+			self.renderAlpha1 = math.clamp( 180 - ( fadeOutTimerSeconds * 60 ), 0, 180 )
+			self.renderAlpha2 = math.clamp( 170 - ( fadeOutTimerSeconds * 56.66666666666667 ), 0, 170 )
+			self.imageAlpha = math.clamp( 1 - ( fadeOutTimerSeconds / 3 ), 0, 1 )
 
 			if self.txtAlpha <= 0 or  self.renderAlpha1 <= 0 or self.renderAlpha2 <= 0 or self.imageAlpha <= 0 then
 				self.fadeOutTimer = nil
@@ -114,10 +121,10 @@ function Notifications:PostRender()
 		end
 
 		if self.subTxt ~= nil then
-			Render:DrawText( Vector2( ( Render.Width - 107.5 ) - ( Render:GetTextWidth( self.mainTxt, 15 ) / 2 ), 56 ), self.mainTxt, Color( 210, 210, 210, self.txtAlpha ), 15 )
-			Render:DrawText( Vector2( ( Render.Width - 107.5 ) - ( Render:GetTextWidth( self.subTxt, 12 ) / 2 ), 73 ), self.subTxt, Color( 140, 140, 140, self.txtAlpha ), 12 )
+			Render:DrawText( Vector2( ( Render.Width - 107.5 ) - ( Render:GetTextWidth( self.mainTxt, mainTxtSize ) / 2 ), 56 ), self.mainTxt, Color( 210, 210, 210, self.txtAlpha ), mainTxtSize )
+			Render:DrawText( Vector2( ( Render.Width - 107.5 ) - ( Render:GetTextWidth( self.subTxt, subTxtSize ) / 2 ), 73 ), self.subTxt, Color( 140, 140, 140, self.txtAlpha ), subTxtSize )
 		else
-			Render:DrawText( Vector2( ( Render.Width - 107.5 ) - ( Render:GetTextWidth( self.mainTxt, 15 ) / 2 ), 64 ), self.mainTxt, Color( 210, 210, 210, self.txtAlpha ), 15 )
+			Render:DrawText( Vector2( ( Render.Width - 107.5 ) - ( Render:GetTextWidth( self.mainTxt, mainTxtSize ) / 2 ), 64 ), self.mainTxt, Color( 210, 210, 210, self.txtAlpha ), mainTxtSize )
 		end
 	else
 		if self.processTimer then

@@ -128,12 +128,13 @@ function QuickTP:PostRender()
 
 	if self.timerF then
 		local endAlpha = 100
-	
-		if self.timerF:GetSeconds() > 0 and self.timerF:GetSeconds() < 0.1 / animationSpeed then
-			alpha = math.clamp( self.timerF:GetSeconds() * 10 * animationSpeed, 0, endAlpha )
+		local timerFSeconds = self.timerF:GetSeconds()
+
+		if timerFSeconds > 0 and timerFSeconds < 0.1 / animationSpeed then
+			alpha = math.clamp( timerFSeconds * 10 * animationSpeed, 0, endAlpha )
 			self.border = false
 			animplay = false
-		elseif self.timerF:GetSeconds() > 0.1 / animationSpeed then
+		elseif timerFSeconds > 0.1 / animationSpeed then
 			self.border = true
 			animplay = true
 			self.timerF = nil

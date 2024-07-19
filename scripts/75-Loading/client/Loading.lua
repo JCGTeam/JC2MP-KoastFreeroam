@@ -16,7 +16,8 @@ function Load:__init()
 	self.text_clr = Color.White
 	self.text_shadow = Color( 0, 0, 0 )
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.name = "СОВЕТ: Нажмите [ B ], чтобы открыть меню сервера."

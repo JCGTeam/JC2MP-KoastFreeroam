@@ -23,7 +23,8 @@ function Boost:__init()
 	self.windowOpen   = false
 	self.delta        = 0
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.name = "Нажмите "
@@ -142,11 +143,15 @@ end
 function Boost:Render( args )
 	local alpha = 255
 
-	if self.hinttimer and self.hinttimer:GetSeconds() > 12 then
-		alpha = math.clamp( 255 - ( ( self.hinttimer:GetSeconds() - 12 ) * 500 ), 0, 255 )
+	if self.hinttimer then
+		local hinttimerSeconds = self.hinttimer:GetSeconds()
 
-		if self.hinttimer:GetSeconds() > 14 then
-			self.hinttimer = nil
+		if hinttimerSeconds > 12 then
+			alpha = math.clamp( 255 - ( ( hinttimerSeconds - 12 ) * 500 ), 0, 255 )
+
+			if hinttimerSeconds > 14 then
+				self.hinttimer = nil
+			end
 		end
 	end
 

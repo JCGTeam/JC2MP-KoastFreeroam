@@ -5,8 +5,10 @@ function HookHit:__init()
 end
 
 function HookHit:HitPlayers( args, sender )
+	local sPos = sender:GetPosition()
+
 	for p in Server:GetPlayers() do
-		local jDist = sender:GetPosition():Distance( p:GetPosition() )
+		local jDist = sPos:Distance( p:GetPosition() )
 
 		if jDist < 2 then
 			if p ~= sender then

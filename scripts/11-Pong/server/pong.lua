@@ -3,6 +3,8 @@ class 'Pong'
 function Pong:__init()
 	self.tag = "[Понг] "
 
+	self.tag_clr = Color.White
+
 	Events:Subscribe( "PlayerChat", self, self.PlayerChat )
 
 	Network:Subscribe( "Win", self, self.Win )
@@ -28,8 +30,8 @@ function Pong:PlayerChat( args )
 		end
 
 		if not params[2] then
-			Chat:Send( player, self.tag, Color.White, "Используйте /pong <сложность>", Color.Yellow )
-			Chat:Send( player, self.tag, Color.White, "Сложности: Noob, Easy, Medium, Hard, Extreme", Color( 165, 165, 165 ) )
+			Chat:Send( player, self.tag, self.tag_clr, "Используйте /pong <сложность>", Color.Yellow )
+			Chat:Send( player, self.tag, self.tag_clr, "Сложности: Noob, Easy, Medium, Hard, Extreme", Color( 165, 165, 165 ) )
 			return false
 		end
 

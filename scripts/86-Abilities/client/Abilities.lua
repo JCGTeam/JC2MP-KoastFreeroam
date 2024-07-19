@@ -55,7 +55,8 @@ function Abilities:__init()
     self.window:SetVisible( self.active )
     self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
 
-    if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+    local lang = LocalPlayer:GetValue( "Lang" )
+    if lang and lang == "EN" then
 		self:Lang()
 	else
         self.needed_txt = "Цена"
@@ -663,8 +664,9 @@ function Abilities:Open()
         if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
         if not self.LocalPlayerMoneyChangeEvent then self.LocalPlayerMoneyChangeEvent = Events:Subscribe( "LocalPlayerMoneyChange", self, self.LocalPlayerMoneyChange ) end
 
-        if LocalPlayer:GetValue( "Lang" ) then
-            self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Balance: $" .. formatNumber( LocalPlayer:GetMoney() ) or "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
+        local lang = LocalPlayer:GetValue( "Lang" )
+        if lang then
+            self.money_text:SetText( lang == "EN" and "Balance: $" .. formatNumber( LocalPlayer:GetMoney() ) or "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
             self.money_text:SizeToContents()
         end
 
@@ -857,8 +859,9 @@ function Abilities:UpdateMoneyString( money )
         money = LocalPlayer:GetMoney()
     end
 
-    if LocalPlayer:GetValue( "Lang" ) then
-        self.money_text:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Balance: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
+    local lang = LocalPlayer:GetValue( "Lang" )
+    if lang then
+        self.money_text:SetText( lang == "EN" and "Balance: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
         self.money_text:SizeToContents()
     end
 end

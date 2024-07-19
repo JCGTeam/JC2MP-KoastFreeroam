@@ -28,15 +28,16 @@ function Home:SetHome( args, sender )
 
 	if money >= self.homePrice then
 		local steamID = tostring(sender:GetSteamId().id)
+		local sPos = sender:GetPosition()
 
 		local qry = SQL:Query( "INSERT OR REPLACE INTO players_home (steamid, pos, angle) VALUES(?, ?, ?)" )
 		qry:Bind( 1, steamID )
-		qry:Bind( 2, tostring( sender:GetPosition() ) )
+		qry:Bind( 2, tostring( sPos ) )
 		qry:Bind( 3, tostring( sender:GetAngle() ) )
 		qry:Execute()
 
 		Network:Send( sender, "SetHome" )
-		print( sender:GetName() .. string.format( " set home. Coordinates: (%i, %i, %i)", sender:GetPosition().x, sender:GetPosition().y, sender:GetPosition().z ) )
+		print( sender:GetName() .. string.format( " set home. Coordinates: (%i, %i, %i)", sPos.x, sPos.y, sPos.z ) )
 
 		sender:SetMoney( money - self.homePrice )
 	else
@@ -66,8 +67,9 @@ function Home:GoHome( args, sender )
 
 		sender:Teleport( Vector3( tonumber( pos_x ), tonumber( pos_y ), tonumber( pos_z ) ), Angle( tonumber( angle_x ), tonumber( angle_y ), tonumber( angle_z ) ) )
 
-		Network:SendNearby( sender, "WarpDoPoof", sender:GetPosition() )
-		Network:Send( sender, "WarpDoPoof", sender:GetPosition() )
+		local sPos = sender:GetPosition()
+		Network:SendNearby( sender, "WarpDoPoof", sPos )
+		Network:Send( sender, "WarpDoPoof", sPos )
 
 		Events:Fire( "CastCenterText", { target = sender, text = "Мам, я дома!", time = 6, color = Color.Yellow } )
 	else
@@ -92,8 +94,10 @@ function Home:SpawnInHome( args )
 
 		args.player:Teleport( Vector3( tonumber( pos_x ), tonumber( pos_y ), tonumber( pos_z ) ), Angle( tonumber( angle_x ), tonumber( angle_y ), tonumber( angle_z ) ) )
 
+		local pPos = args.player:GetPosition()
+
 		for p in Server:GetPlayers() do
-			local jDist = args.player:GetPosition():Distance( p:GetPosition() )
+			local jDist = pPos:Distance( p:GetPosition() )
 
 			if jDist < 50 then
 				Network:Send( p, "WarpDoPoof", Vector3( tonumber( pos_x ), tonumber( pos_y ), tonumber( pos_z ) ) )
@@ -109,15 +113,16 @@ function Home:SetHomeTw( args, sender )
 
 	if money >= self.homeTwPrice then
 		local steamID = tostring(sender:GetSteamId().id)
+		local sPos = sender:GetPosition()
 
 		local qry = SQL:Query('INSERT OR REPLACE INTO players_homeTw (steamid, pos, angle) VALUES(?, ?, ?)')
 		qry:Bind( 1, tostring( steamID ) )
-		qry:Bind( 2, tostring( sender:GetPosition() ) )
+		qry:Bind( 2, tostring( sPos ) )
 		qry:Bind( 3, tostring( sender:GetAngle() ) )
 		qry:Execute()
 
 		Network:Send( sender, "SetHome" )
-		print( sender:GetName() .. string.format( " set home 2. Coordinates: (%i, %i, %i)", sender:GetPosition().x, sender:GetPosition().y, sender:GetPosition().z ) )
+		print( sender:GetName() .. string.format( " set home 2. Coordinates: (%i, %i, %i)", sPos.x, sPos.y, sPos.z ) )
 
 		sender:SetMoney( money - self.homeTwPrice )
 	else
@@ -147,8 +152,9 @@ function Home:GoHomeTw( args, sender )
 
 		sender:Teleport( Vector3( tonumber( pos_x ), tonumber( pos_y ), tonumber( pos_z ) ), Angle( tonumber( angle_x ), tonumber( angle_y ), tonumber( angle_z ) ) )
 
-		Network:SendNearby( sender, "WarpDoPoof", sender:GetPosition() )
-		Network:Send( sender, "WarpDoPoof", sender:GetPosition() )
+		local sPos = sender:GetPosition()
+		Network:SendNearby( sender, "WarpDoPoof", sPos )
+		Network:Send( sender, "WarpDoPoof", sPos )
 
 		Events:Fire( "CastCenterText", { target = sender, text = "Мам, я в дом 2!", time = 6, color = Color.Yellow } )
 	else

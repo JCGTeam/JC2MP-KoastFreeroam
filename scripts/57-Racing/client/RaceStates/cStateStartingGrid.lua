@@ -78,11 +78,11 @@ end
 
 function StateStartingGrid:Render()
 	-- Countdown timer
-	--
+	local timerSeconds = self.timer:GetSeconds()
 	-- If there is a valid count down time left, and it's ready to be shown, show it.
 	if
 		#self.countDownTimes > 0 and
-		self.timer:GetSeconds() > self.race.startingGridSeconds - self.countDownTimes[1]
+		timerSeconds > self.race.startingGridSeconds - self.countDownTimes[1]
 	then
 		LargeMessage(
 			tostring(settings.countDownNumMessages - self.messageCount) ,
@@ -92,7 +92,7 @@ function StateStartingGrid:Render()
 		table.remove(self.countDownTimes , 1)
 	end
 	-- If the timer is done, change our race's state to StateRacing.
-	if self.timer:GetSeconds() > self.race.startingGridSeconds then
+	if timerSeconds > self.race.startingGridSeconds then
 		self.race:SetState("StateRacing")
 	end
 

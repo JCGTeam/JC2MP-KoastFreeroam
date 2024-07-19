@@ -34,11 +34,12 @@ function BloozeMod:CalcView()
         end
     end
 
-    if self.timer:GetSeconds() <= 5 then
-        self.value = self.value + self.timer:GetSeconds() * 0.0002
+    local timerSeconds = self.timer:GetSeconds()
+    if timerSeconds <= 5 then
+        self.value = self.value + timerSeconds * 0.0002
     else
         if self.value >= 0 then
-            self.value = self.value - self.timer:GetSeconds() * 0.0002
+            self.value = self.value - timerSeconds * 0.0002
         else
             self.timer:Restart()
             self.naklon = self.naklon + 1

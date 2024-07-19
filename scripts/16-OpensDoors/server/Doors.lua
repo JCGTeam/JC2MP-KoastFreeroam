@@ -5,6 +5,9 @@ function Doors:__init()
 
 	self:LoadPlaces( "places.txt" )
 
+    self.tag_clr = Color.White
+    self.text_clr = Color.DarkGray
+
 	Events:Subscribe( "ClientModuleLoad", self, self.ClientModuleLoad )
 	Network:Subscribe( "GetPlayers", self, self.GetPlayers )
 end
@@ -47,12 +50,17 @@ function Doors:ClientModuleLoad( args )
 end
 
 function Doors:GetPlayers( args, sender )
+    local sName = sender:GetName()
+    local sPos = sender:GetPosition()
+
 	for p in Server:GetPlayers() do
-		local jDist = sender:GetPosition():Distance( p:GetPosition() )
+		local jDist = sPos:Distance( p:GetPosition() )
 
 		if jDist < 50 then
 			Network:Send( p, "OpenDoors" )
-			Chat:Send( p, p:GetValue( "Lang" ) == "EN" and "[Doors] " or "[Ворота] ", Color.White, sender:GetName() .. ( p:GetValue( "Lang" ) == "EN" and " opened the doors." or " открыл ворота." ), Color.DarkGray )
+
+            local pLang = p:GetValue( "Lang" )
+			Chat:Send( p, pLang == "EN" and "[Doors] " or "[Ворота] ", self.tag_clr, sName .. ( pLang == "EN" and " opened the doors." or " открыл ворота." ), self.text_clr )
 		end
 	end
 end

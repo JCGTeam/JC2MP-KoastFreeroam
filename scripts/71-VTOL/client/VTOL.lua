@@ -54,10 +54,14 @@ end
 function VTOL:Render()
 	local alpha = 255
 
-	if self.hinttimer and self.hinttimer:GetSeconds() > 10 then
-		alpha = math.clamp( 255 - ( ( self.hinttimer:GetSeconds() - 10 ) * 500 ), 0, 255 )
+	if self.hinttimer then
+		local hinttimerSeconds = self.hinttimer:GetSeconds()
 
-		if self.hinttimer:GetSeconds() > 12 then self.hinttimer = nil end
+		if hinttimerSeconds > 10 then
+			alpha = math.clamp( 255 - ( ( hinttimerSeconds - 10 ) * 500 ), 0, 255 )
+
+			if hinttimerSeconds > 12 then self.hinttimer = nil end
+		end
 	end
 
 	if Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue( "HiddenHUD" ) then return end

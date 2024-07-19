@@ -7,7 +7,8 @@ function KingHil:__init()
 	self.queueMin = 0
 	self.queueMax = 0
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang  = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.nameT = "Игроки"
@@ -183,9 +184,10 @@ function KingHil:Render()
 		Waypoint:SetPosition(self.stateArgs.finish)
 
 		local distance = LocalPlayer:GetPosition():Distance(self.stateArgs.position)
+		local timerSeconds = self.timer:GetSeconds()
 
-		if self.timer:GetSeconds() > 0 and distance >= self.stateArgs.maxRadius then
-			DrawCenteredShadowedText( Render.Size / 2, self.nameTFi .. math.max(math.ceil(5 - self.timer:GetSeconds()), 1) .. "...", Color.Red, TextSize.Huge )
+		if timerSeconds > 0 and distance >= self.stateArgs.maxRadius then
+			DrawCenteredShadowedText( Render.Size / 2, self.nameTFi .. math.max(math.ceil(5 - timerSeconds), 1) .. "...", Color.Red, TextSize.Huge )
 		end
 	end
 

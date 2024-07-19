@@ -245,7 +245,8 @@ function Tetris:__init()
 
 	self:PopulateGrid()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.window:SetTitle( "▧ Тетрис - Список лидеров" )
@@ -515,25 +516,30 @@ function Tetris:ShowScore()
 		Render:SetFont( AssetLocation.SystemFont, "Impact" )
 	end
 
+	local shadow_clr = Color( 25, 25, 25, 150 )
+
 	local pos = Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tScores .. tostring(self.totalScore), 20 ) / 2, 50 )
-	Render:DrawShadowedText( pos, self.tScores .. tostring(self.totalScore), Color( 255, 255, 0 ), Color( 25, 25, 25, 150 ), 20 )
+	Render:DrawShadowedText( pos, self.tScores .. tostring(self.totalScore), Color( 255, 255, 0 ), shadow_clr, 20 )
 
 	if not self.inGame then
+		local text_clr = Color.White
+		local text_size = 32
+
 		if self.firstGo then
-			local pos = ( Render.Size - Render:GetTextSize( self.tSetHelp, 32 ) ) / 2
-			Render:DrawShadowedText( pos, self.tSetHelp, Color.White, Color( 25, 25, 25, 150 ), 32 )
-			pos = ( Render.Size - Render:GetTextSize( self.tSetHelp2, 32 ) ) / 2
-			Render:DrawShadowedText( pos, self.tSetHelp2, Color.White, Color( 25, 25, 25, 150 ), 32 )
+			local pos = ( Render.Size - Render:GetTextSize( self.tSetHelp, text_size ) ) / 2
+			Render:DrawShadowedText( pos, self.tSetHelp, text_clr, shadow_clr, text_size )
+			pos = ( Render.Size - Render:GetTextSize( self.tSetHelp2, text_size ) ) / 2
+			Render:DrawShadowedText( pos, self.tSetHelp2, text_clr, shadow_clr, text_size )
 		else
-			local pos = ( Render.Size - Render:GetTextSize( self.tDied, 32 ) ) / 2
-			Render:DrawShadowedText( pos, self.tDied, Color.Red, Color( 25, 25, 25, 150 ), 32 )
+			local pos = ( Render.Size - Render:GetTextSize( self.tDied, text_size ) ) / 2
+			Render:DrawShadowedText( pos, self.tDied, Color.Red, shadow_clr, text_size )
 			local msg = self.tSetGOver .. tostring( self.totalScore )
-			pos = ( Render.Size - Render:GetTextSize( msg, 32 ) ) / 2
-			Render:DrawShadowedText( pos, msg, Color.White, Color( 25, 25, 25, 150 ), 32 )
-			pos = ( Render.Size - Render:GetTextSize( self.tSetGOver2, 32 ) ) / 2
-			Render:DrawShadowedText( pos, self.tSetGOver2, Color.White, Color( 25, 25, 25, 150 ), 32 )
-			pos = ( Render.Size - Render:GetTextSize( self.tSetGOver3, 32 ) ) / 2
-			Render:DrawShadowedText( pos, self.tSetGOver3, Color.White, Color( 25, 25, 25, 150 ), 32 )
+			pos = ( Render.Size - Render:GetTextSize( msg, text_size ) ) / 2
+			Render:DrawShadowedText( pos, msg, text_clr, shadow_clr, text_size )
+			pos = ( Render.Size - Render:GetTextSize( self.tSetGOver2, text_size ) ) / 2
+			Render:DrawShadowedText( pos, self.tSetGOver2, text_clr, shadow_clr, text_size )
+			pos = ( Render.Size - Render:GetTextSize( self.tSetGOver3, text_size ) ) / 2
+			Render:DrawShadowedText( pos, self.tSetGOver3, text_clr, shadow_clr, text_size )
 		end
 	end
 end

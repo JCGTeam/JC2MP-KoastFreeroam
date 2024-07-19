@@ -62,7 +62,8 @@ function Settings:__init()
 
 	self:LoadCategories()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.window:SetTitle( "▧ Настройки" )
@@ -554,8 +555,9 @@ function Settings:LoadCategories()
 	end )
 
 	self.setPlayerColorBtn = Button.Create( nickcolor )
-	self.setPlayerColorBtn:SetTextHoveredColor( Color.GreenYellow )
-	self.setPlayerColorBtn:SetTextPressedColor( Color.GreenYellow )
+	local btnColor = Color.GreenYellow
+	self.setPlayerColorBtn:SetTextHoveredColor( btnColor )
+	self.setPlayerColorBtn:SetTextPressedColor( btnColor )
 	self.setPlayerColorBtn:SetTextSize( 15 )
 	self.setPlayerColorBtn:SetHeight( 30 )
 	self.setPlayerColorBtn:SetDock( GwenPosition.Bottom )
@@ -757,13 +759,17 @@ function Settings:GameRender()
 		self.SkyImage7:Draw()
 
 		local speed = 1
+
 		if self.timer then
-			if self.timer:GetSeconds() <= speed then
+			local timerSeconds = self.timer:GetSeconds()
+
+			if timerSeconds <= speed then
 				self.SkyImage7 = self.AnimeImage1
 			else
 				self.SkyImage7 = self.AnimeImage2
 			end
-			if self.timer:GetSeconds() >= speed * 2 then
+
+			if timerSeconds >= speed * 2 then
 				self.timer:Restart()
 			end
 		end

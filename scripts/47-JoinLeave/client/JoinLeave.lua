@@ -5,7 +5,8 @@ function JoinLeave:__init()
 	self.join_clr =  Color( 255, 215, 0 )
 	self.left_clr = Color.DarkGray
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.tag = "[Сервер] "

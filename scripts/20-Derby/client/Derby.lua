@@ -20,7 +20,8 @@ function Derby:__init()
 
 	self.handbrake = nil
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.nameT = "Игроки"

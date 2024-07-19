@@ -8,6 +8,9 @@ function GodCheck:__init()
 	self.FCText = "Читы найдены! Если вы не используете их, напишите администрации сервера."
 	self.NFCText = "Читы не найдены."
 
+	self.tag_clr = Color.White
+	self.text_clr = Color.Yellow
+
 	Network:Subscribe( "SuspicionLevel", self, self.SuspicionLevel )
 	Network:Subscribe( "CheckThisPlayer", self, self.CheckThisPlayer )
 	Network:Subscribe( "ItsCheater", self, self.ItsCheater )
@@ -38,26 +41,30 @@ function GodCheck:CheckThisPlayer( args, sender )
 end
 
 function GodCheck:ItsCheater( args, sender )
-	if sender:GetHealth() >= self.phealth[ sender:GetId() ] then
-		print( sender:GetName() .. " - " .. "Suspicion of cheating: Level 1/2" )
-		if sender:GetHealth() > 0 then
-			Chat:Send( sender, self.ACPrefix, Color.White, self.CHText, Color.Yellow )
+	local sHealth = sender:GetHealth()
 
-			print( sender:GetName() .. " - " .. self.CHText )
-			print( sender:GetName() .. " - Health: " .. sender:GetHealth() )
+	if sHealth >= self.phealth[ sender:GetId() ] then
+		local sName = sender:GetName()
+
+		print( sName .. " - " .. "Suspicion of cheating: Level 1/2" )
+		if sHealth > 0 then
+			Chat:Send( sender, self.ACPrefix, self.tag_clr, self.CHText, self.text_clr )
+
+			print( sName .. " - " .. self.CHText )
+			print( sName .. " - Health: " .. sHealth )
 
 			sender:SetHealth( 0 )
 
-			print( sender:GetName() .. " - " .. self.FCText )
-			print( sender:GetName() .. " - Health: " .. sender:GetHealth() )
+			print( sName .. " - " .. self.FCText )
+			print( sName .. " - Health: " .. sHealth )
 		else
-			Chat:Send( sender, self.ACPrefix, Color.White, self.CHText, Color.Yellow )
-			Chat:Send( sender, self.ACPrefix, Color.White, self.NFCText, Color.Yellow )
+			Chat:Send( sender, self.ACPrefix, self.tag_clr, self.CHText, self.text_clr )
+			Chat:Send( sender, self.ACPrefix, self.tag_clr, self.NFCText, self.text_clr )
 
-			print( sender:GetName() .. " - " .. "Suspicion of cheating: Level 2/2" )
-			print( sender:GetName() .. " - " .. self.CHText )
-			print( sender:GetName() .. " - Health: " .. sender:GetHealth() )
-			print( sender:GetName() .. " - " .. self.NFCText )
+			print( sName .. " - " .. "Suspicion of cheating: Level 2/2" )
+			print( sName .. " - " .. self.CHText )
+			print( sName .. " - Health: " .. sHealth )
+			print( sName .. " - " .. self.NFCText )
 		end
 	end
 end

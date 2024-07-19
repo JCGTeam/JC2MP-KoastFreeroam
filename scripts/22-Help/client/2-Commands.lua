@@ -66,7 +66,8 @@ function HCommands:RusHelp()
 end
 
 function HCommands:ModuleLoad()
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:EngHelp()
 	else
 		self:RusHelp()

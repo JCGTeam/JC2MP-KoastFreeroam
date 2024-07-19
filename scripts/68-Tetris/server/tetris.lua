@@ -16,6 +16,9 @@ function ServerTetris:__init()
 
 	Network:Subscribe( "001", self, self.onTetrisRecord )
 	Network:Subscribe( "002", self, self.onTetrisAttempt )
+
+	self.tag_clr = Color.White
+	self.text_clr = Color( 255, 150, 0 )
 end
 
 function ServerTetris:onModuleLoad()
@@ -66,51 +69,54 @@ end
 
 function ServerTetris:onTetrisRecord( score, player )
 	local object = NetworkObject.GetByName("Tetris") or NetworkObject.Create("Tetris")
+	local pName = player:GetName()
+	local objectN = object:GetValue("N")
+
 	if score < (object:GetValue("S") or 0) then return end
-	if object:GetValue("N") ~= player:GetName() then
-		if object:GetValue("N") ~= nil then
+	if objectN ~= pName then
+		if objectN ~= nil then
 			player:SetMoney( player:GetMoney() + 50 )
 			if player:GetValue( "Lang" ) == "EN" then
-				player:SendChatMessage( "[Record] ", Color.White, "Reward: $50 for a new tetris record!", Color( 255, 150, 0 ) )
+				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new tetris record!", self.text_clr )
 			else
-				player:SendChatMessage( "[Рекорд] ", Color.White, "Награда: $50 за новый рекорд по тетрису!", Color( 255, 150, 0 ) )
+				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд по тетрису!", self.text_clr )
 			end
 
 			for p in Server:GetPlayers() do
 				if p:GetValue( "Lang" ) == "EN" then
-					p:SendChatMessage( "[Record] ", Color.White, player:GetName() .. " has broken the player's tetris record " .. object:GetValue("N") .. ", his reward: $50!", Color( 255, 150, 0 ) )
+					p:SendChatMessage( "[Record] ", self.tag_clr, pName .. " has broken the player's tetris record " .. objectN .. ", his reward: $50!", self.text_clr )
 				else
-					p:SendChatMessage( "[Рекорд] ", Color.White, player:GetName() .. " побил рекорд по тетрису игрока " .. object:GetValue("N") .. ", его награда: $50!", Color( 255, 150, 0 ) )
+					p:SendChatMessage( "[Рекорд] ", self.tag_clr, pName .. " побил рекорд по тетрису игрока " .. objectN .. ", его награда: $50!", self.text_clr )
 				end
 			end
 		else
 			player:SetMoney( player:GetMoney() + 50 )
 			if player:GetValue( "Lang" ) == "EN" then
-				player:SendChatMessage( "[Record] ", Color.White, "Reward: $50 for a new tetris record!", Color( 255, 150, 0 ) )
+				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new tetris record!", self.text_clr )
 			else
-				player:SendChatMessage( "[Рекорд] ", Color.White, "Награда: $50 за новый рекорд по тетрису!", Color( 255, 150, 0 ) )
+				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд по тетрису!", self.text_clr )
 			end
 
 			for p in Server:GetPlayers() do
 				if p:GetValue( "Lang" ) == "EN" then
-					p:SendChatMessage( "[Record] ", Color.White, player:GetName() .. " set a new tetris record: " .. score .. "!", Color( 255, 150, 0 ) )
+					p:SendChatMessage( "[Record] ", self.tag_clr, pName .. " set a new tetris record: " .. score .. "!", self.text_clr )
 				else
-					p:SendChatMessage( "[Рекорд] ", Color.White, player:GetName() .. " установил новый рекорд по тетрису: " .. score .. "!", Color( 255, 150, 0 ) )
+					p:SendChatMessage( "[Рекорд] ", self.tag_clr, pName .. " установил новый рекорд по тетрису: " .. score .. "!", self.text_clr )
 				end
 			end
 		end
 	else
 		for p in Server:GetPlayers() do
 			if p:GetValue( "Lang" ) == "EN" then
-				p:SendChatMessage( "[Record] ", Color.White, player:GetName() .. " updated a tetris record: " .. score .. "!", Color( 255, 150, 0 ) )
+				p:SendChatMessage( "[Record] ", self.tag_clr, pName .. " updated a tetris record: " .. score .. "!", self.text_clr )
 			else
-				p:SendChatMessage( "[Рекорд] ", Color.White, player:GetName() .. " обновил хорошечный рекорд по тетрису: " .. score .. "!", Color( 255, 150, 0 ) )
+				p:SendChatMessage( "[Рекорд] ", self.tag_clr, pName .. " обновил хорошечный рекорд по тетрису: " .. score .. "!", self.text_clr )
 			end
 		end
 	end
 
 	object:SetNetworkValue("S", score)
-	object:SetNetworkValue("N", player:GetName())
+	object:SetNetworkValue("N", pName)
 	object:SetNetworkValue("P", player)
 	object:SetNetworkValue("E", 10)
 	object:SetNetworkValue("C", player:GetColor())
@@ -128,23 +134,24 @@ function ServerTetris:Reward( name, last )
 			if not last then
 				player:SetMoney( player:GetMoney() + 15 )
 				if player:GetValue( "Lang" ) == "EN" then
-					player:SendChatMessage( "[Record] ", Color.White, "Reward: $15 for keeping tetris record!", Color( 255, 150, 0 ) )
+					player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $15 for keeping tetris record!", self.text_clr )
 				else
-					player:SendChatMessage( "[Рекорд] ", Color.White, "Награда: $15 за удержание рекорда по тетрису!", Color( 255, 150, 0 ) )
+					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $15 за удержание рекорда по тетрису!", self.text_clr )
 				end
 			else
 				player:SetMoney( player:GetMoney() + 500 )
 				if player:GetValue( "Lang" ) == "EN" then
-					player:SendChatMessage( "[Record] ", Color.White, "You won a fantastic tetris! Your reward: $500!", Color( 255, 150, 0 ) )
+					player:SendChatMessage( "[Record] ", self.tag_clr, "You won a fantastic tetris! Your reward: $500!", self.text_clr )
 				else
-					player:SendChatMessage( "[Рекорд] ", Color.White, "Вы победили в хорошечном тетрисе! Ваша награда: $500!", Color( 255, 150, 0 ) )
+					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Вы победили в хорошечном тетрисе! Ваша награда: $500!", self.text_clr )
 				end
 
+				local pName = player:GetName()
 				for p in Server:GetPlayers() do
 					if p:GetValue( "Lang" ) == "EN" then
-						p:SendChatMessage( "[Record] ", Color.White, player:GetName() .. " won a fantastic tetris and won $500!", Color( 255, 150, 0 ) )
+						p:SendChatMessage( "[Record] ", self.tag_clr, pName .. " won a fantastic tetris and won $500!", self.text_clr )
 					else
-						p:SendChatMessage( "[Рекорд] ", Color.White, player:GetName() .. " победил в хорошечном тетрисе и выиграл $500!", Color( 255, 150, 0 ) )
+						p:SendChatMessage( "[Рекорд] ", self.tag_clr, pName .. " победил в хорошечном тетрисе и выиграл $500!", self.text_clr )
 					end
 				end
 			end

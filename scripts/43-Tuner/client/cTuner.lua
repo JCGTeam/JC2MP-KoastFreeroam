@@ -48,7 +48,8 @@ function Tuner:__init()
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	end
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.gear = "Передача: "
@@ -208,12 +209,15 @@ function Tuner:Render()
 
 		if IsValid(v) then
 			local vehId = v:GetId() + 1
+
 			if v:GetValue( "Neon" ) and not checked[vehId] then
+				local neonPos = v:GetPosition() + Vector3.Up
+
 				if self.neons[vehId] then
-					self.neons[vehId]:SetPosition( v:GetPosition() + Vector3( 0, 1, 0 ) )
+					self.neons[vehId]:SetPosition( neonPos )
 				else
 					self.neons[vehId] = ClientLight.Create{
-						position = v:GetPosition() + Vector3(0, 1, 0),
+						position = neonPos,
 						color = v:GetValue("NeonColor") or Color.White,
 						constant_attenuation = 0,
 						linear_attenuation = 0,
@@ -1366,7 +1370,8 @@ end
 function Tuner:EnterVehicle( args )
 	self:InitGUI()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.gui.window:SetTitle( "▧ Тюнинг" )

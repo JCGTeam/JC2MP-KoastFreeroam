@@ -48,7 +48,8 @@ function ServerMenu:__init()
 
 	self:LoadCategories()
 
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:Lang()
 	else
 		self.pigeonmodtxt = "Режим голубя"
@@ -145,14 +146,17 @@ function ServerMenu:LoadCategories()
 	self.scroll_control:SetSize( Vector2( self.window:GetSize().x - 15, 215 ) )
 	self.scroll_control:SetDock( GwenPosition.Top )
 
+	local textSize = 19
+	local textWidth = Render:GetTextWidth( self.resizer_txt, textSize )
+
 	self.shop_button = self:CreateServerMenuButton( "Черный рынок", self.shopimage, "Транспорт, оружие, внешность и прочие.", 5, self.CastShop )
-	self.tp_button = self:CreateServerMenuButton( "Телепортация", self.tpimage, "Телепортация к игрокам.", self.shop_button:GetPosition().x + Render:GetTextWidth( self.resizer_txt, 19 ) + 15, self.CastWarpGUI )
-	self.clans_button = self:CreateServerMenuButton( "Кланы", self.clansimage, "Управление кланом и другие кланы игроков.", self.tp_button:GetPosition().x + Render:GetTextWidth( self.resizer_txt, 19 ) + 15, self.CastClansMenu )
-	self.pm_button = self:CreateServerMenuButton( "Сообщения", self.pmimage, "Общайтесь лично с игроками.", self.clans_button:GetPosition().x + Render:GetTextWidth( self.resizer_txt, 19 ) + 15, self.CastGuiPm )
-	self.tasks_button = self:CreateServerMenuButton( "Задания", self.dedmimage, "Ежедневные задания за которые вы получаете награды.", self.pm_button:GetPosition().x + Render:GetTextWidth( self.resizer_txt, 19 ) + 15, self.CastDedMorozMenu )
-	self.minigames_button = self:CreateServerMenuButton( "Развлечения", self.mainmenuimage, "Различные развлечения.", self.tasks_button:GetPosition().x + Render:GetTextWidth( self.resizer_txt, 19 ) + 15, self.CastMainMenu )
-	self.abilities_button = self:CreateServerMenuButton( "Способности", self.abiltiesimage, "Прокачка способностей и навыков.", self.minigames_button:GetPosition().x + Render:GetTextWidth( self.resizer_txt, 19 ) + 15, self.CastAbilitiesMenu )
-	self.sett_button = self:CreateServerMenuButton( "Настройки", self.settimage, "Настройки сервера.", self.abilities_button:GetPosition().x + Render:GetTextWidth( self.resizer_txt, 19 ) + 15, self.CastSettingsMenu )
+	self.tp_button = self:CreateServerMenuButton( "Телепортация", self.tpimage, "Телепортация к игрокам.", self.shop_button:GetPosition().x + textWidth + 15, self.CastWarpGUI )
+	self.clans_button = self:CreateServerMenuButton( "Кланы", self.clansimage, "Управление кланом и другие кланы игроков.", self.tp_button:GetPosition().x + textWidth + 15, self.CastClansMenu )
+	self.pm_button = self:CreateServerMenuButton( "Сообщения", self.pmimage, "Общайтесь лично с игроками.", self.clans_button:GetPosition().x + textWidth + 15, self.CastGuiPm )
+	self.tasks_button = self:CreateServerMenuButton( "Задания", self.dedmimage, "Ежедневные задания за которые вы получаете награды.", self.pm_button:GetPosition().x + textWidth + 15, self.CastDedMorozMenu )
+	self.minigames_button = self:CreateServerMenuButton( "Развлечения", self.mainmenuimage, "Различные развлечения.", self.tasks_button:GetPosition().x + textWidth + 15, self.CastMainMenu )
+	self.abilities_button = self:CreateServerMenuButton( "Способности", self.abiltiesimage, "Прокачка способностей и навыков.", self.minigames_button:GetPosition().x + textWidth + 15, self.CastAbilitiesMenu )
+	self.sett_button = self:CreateServerMenuButton( "Настройки", self.settimage, "Настройки сервера.", self.abilities_button:GetPosition().x + textWidth + 15, self.CastSettingsMenu )
 
 	self.leftlabel = Label.Create( self.window )
 	self.leftlabel:SetDock( GwenPosition.Left )
@@ -227,8 +231,9 @@ function ServerMenu:LoadCategories()
 	self.bonus_btn:SetEnabled( false )
 	self.bonus_btn:SetText( "Достигните 9-го уровня" )
 	self.bonus_btn:SetSize( Vector2( Render:GetTextWidth( self.bonus_btn:GetText(), 15 ), Render:GetTextHeight( self.bonus:GetText() ) + 15 ) )
-	self.bonus_btn:SetTextHoveredColor( Color.Yellow )
-	self.bonus_btn:SetTextPressedColor( Color.Yellow )
+	local btnColor = Color.Yellow
+	self.bonus_btn:SetTextHoveredColor( btnColor )
+	self.bonus_btn:SetTextPressedColor( btnColor )
 	self.bonus_btn:SetTextSize( 15 )
 	self.bonus_btn:SetDock( GwenPosition.Top )
 	self.bonus_btn:Subscribe( "Press", self, self.Cash )
@@ -258,17 +263,20 @@ function ServerMenu:LoadCategories()
 end
 
 function ServerMenu:CreateServerMenuButton( title, image, description, pos, event )
+	local textSize = 19
+	local textWidth = Render:GetTextWidth( self.resizer_txt, textSize )
+
 	local servermenu_img = ImagePanel.Create( self.scroll_control )
 	servermenu_img:SetImage( image )
 	servermenu_img:SetPosition( Vector2( pos, 20 ) )
-	servermenu_img:SetSize( Vector2( Render:GetTextWidth( self.resizer_txt, 19 ), Render:GetTextWidth( self.resizer_txt, 19 ) ) )
+	servermenu_img:SetSize( Vector2( textWidth, textWidth ) )
 
 	local servermenu_btn = MenuItem.Create( self.scroll_control )
 	servermenu_btn:SetPosition( servermenu_img:GetPosition() )
-	servermenu_btn:SetSize( Vector2( servermenu_img:GetSize().x, Render:GetTextWidth( self.resizer_txt, 19 ) * 1.25 ) )
+	servermenu_btn:SetSize( Vector2( servermenu_img:GetSize().x,textWidth * 1.25 ) )
 	servermenu_btn:SetText( title )
-	servermenu_btn:SetTextPadding( Vector2( 0, Render:GetTextWidth( self.resizer_txt, 19 ) ), Vector2.Zero )
-	servermenu_btn:SetTextSize( 19 )
+	servermenu_btn:SetTextPadding( Vector2( 0, textWidth ), Vector2.Zero )
+	servermenu_btn:SetTextSize( textSize )
 	servermenu_btn:SetToolTip( description )
 	servermenu_btn:Subscribe( "Press", self, event )
 
@@ -425,8 +433,9 @@ function ServerMenu:SetWindowVisible( visible )
 			self.pigeonmod_btn:SetVisible( false )
 		end
 
-		if LocalPlayer:GetValue( "Lang" ) then
-			if LocalPlayer:GetValue( "Lang" ) == "RU" then
+		local lang = LocalPlayer:GetValue( "Lang" )
+		if lang then
+			if lang == "RU" then
 				self.level:SetText( "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
 
 				self.passiveon_btn:SetText( LocalPlayer:GetValue( "Passive" ) and "Отключить" or "Включить" )
@@ -611,8 +620,9 @@ function ServerMenu:UpdateMoneyString( money )
         money = LocalPlayer:GetMoney()
     end
 
-    if LocalPlayer:GetValue( "Lang" ) then
-		self.level:SetText( LocalPlayer:GetValue( "Lang" ) == "EN" and "Balance: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
+	local lang = LocalPlayer:GetValue( "Lang" )
+    if lang then
+		self.level:SetText( lang == "EN" and "Balance: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
     end
 end
 

@@ -17,6 +17,9 @@ function BetterChat:__init()
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
 	Events:Subscribe( "PlayerChat", self, self.Chat )
 
+	self.msgColor = Color.White
+	self.msgActionColor = Color.Magenta
+
     self.distance = 30
     self.toggle = 0
 end
@@ -92,18 +95,27 @@ function BetterChat:Chat( args )
 			local chatsetting = args.player:GetValue( "ChatMode" )
 
 			if chatsetting == 0 then
+				local tagColor = Color.LightSkyBlue
+				local pName = args.player:GetName()
+				local pColor = args.player:GetColor()
+
 				for p in Server:GetPlayers() do
-					p:SendChatMessage( p:GetValue( "Lang" ) == "EN" and "[Global] " or "[Общий] ", Color.LightSkyBlue, args.player:GetName(), args.player:GetColor(), ": "..args.text, Color.White )
+					p:SendChatMessage( p:GetValue( "Lang" ) == "EN" and "[Global] " or "[Общий] ", tagColor, pName, pColor, ": "..args.text, self.msgColor )
 				end
-				Events:Fire( "ToDiscordConsole", { text = "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] [Global] " .. args.player:GetName() .. ": "..args.text } )
-				print( "(" .. args.player:GetId() .. ") " .. "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] " .. "[Global] " .. args.player:GetName() .. ": " .. args.text )
+				Events:Fire( "ToDiscordConsole", { text = "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] [Global] " .. pName .. ": "..args.text } )
+				print( "(" .. args.player:GetId() .. ") " .. "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] " .. "[Global] " .. pName .. ": " .. args.text )
 				return false
 			elseif chatsetting == 1 then
+				local tagColor = Color.DarkGray
+				local pName = args.player:GetName()
+				local pColor = args.player:GetColor()
+				local pPos = args.player:GetPosition()
+
 				for p in Server:GetPlayers() do
-					local jDist = args.player:GetPosition():Distance( p:GetPosition() )
+					local jDist = pPos:Distance( p:GetPosition() )
 
 					if p and jDist < 50 then
-						p:SendChatMessage( p:GetValue( "Lang" ) == "EN" and "[Local] " or "[Локальный] ", Color.DarkGray, args.player:GetName(), args.player:GetColor(), ": ".. args.text, Color.White )
+						p:SendChatMessage( p:GetValue( "Lang" ) == "EN" and "[Local] " or "[Локальный] ", tagColor, pName, pColor, ": ".. args.text, self.msgColor )
            			end
            		end
 				return false
@@ -127,21 +139,27 @@ function BetterChat:Chat( args )
     local cmd_name = cmd_args[ 1 ]:lower()
 
 	if cmd_name == "me" then
+		local pName = args.player:GetName()
+		local pPos = args.player:GetPosition()
+
 		table.remove( cmd_args, 1 )
 		for p in Server:GetPlayers() do
-			local jDist = args.player:GetPosition():Distance( p:GetPosition() )
+			local jDist = pPos:Distance( p:GetPosition() )
 
 			if jDist < 50 then
-				p:SendChatMessage( args.player:GetName() .. " " .. tostring( table.concat ( cmd_args, " " ) ), Color.Magenta )
+				p:SendChatMessage( pName .. " " .. tostring( table.concat ( cmd_args, " " ) ), self.msgActionColor )
 			end
 		end
 	elseif cmd_name == "try" then
+		local pName = args.player:GetName()
+		local pPos = args.player:GetPosition()
+
 		table.remove( cmd_args, 1 )
 		for p in Server:GetPlayers() do
-			local jDist = args.player:GetPosition():Distance( p:GetPosition() )
+			local jDist = pPos:Distance( p:GetPosition() )
 
 			if jDist < 50 then
-				p:SendChatMessage( args.player:GetName() .. " " .. tostring( table.concat ( cmd_args, " " ) ), Color.Magenta, " | ", Color.White, p:GetValue( "Lang" ) == "EN" and values_en[math.random(#values_en)] or values_ru[math.random(#values_ru)], Color.Magenta, " | ", Color.White )
+				p:SendChatMessage( pName .. " " .. tostring( table.concat ( cmd_args, " " ) ), self.msgActionColor, " | ", self.msgColor, p:GetValue( "Lang" ) == "EN" and values_en[math.random(#values_en)] or values_ru[math.random(#values_ru)], self.msgActionColor, " | ", self.msgColor )
 			end
 		end
 	end

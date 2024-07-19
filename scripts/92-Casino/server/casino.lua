@@ -31,8 +31,9 @@ function CoinFlip:Coinflip( args, sender )
     if math.random( 0, 100 ) < CASINO_CONFIGURATION.CHANCE then
         sender:SetMoney( sender:GetMoney() + amount * 2 )
 
+        local lang = sender:GetValue( "Lang" )
         local wintext = "Вы выиграли "
-        if sender:GetValue( "Lang" ) and sender:GetValue( "Lang" ) == "EN" then
+        if lang and lang == "EN" then
             wintext = "You won "
         end
 
@@ -40,8 +41,9 @@ function CoinFlip:Coinflip( args, sender )
     else
         sender:SetMoney( sender:GetMoney() - amount )
 
+        local lang = sender:GetValue( "Lang" )
         local losetext = "Вы проиграли "
-        if sender:GetValue( "Lang" ) and sender:GetValue( "Lang" ) == "EN" then
+        if lang and lang == "EN" then
             losetext = "You lost "
         end
 

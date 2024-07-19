@@ -89,7 +89,8 @@ function HFAQ:RusHelp()
 end
 
 function HFAQ:ModuleLoad()
-	if LocalPlayer:GetValue( "Lang" ) and LocalPlayer:GetValue( "Lang" ) == "EN" then
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
 		self:EngHelp()
 	else
 		self:RusHelp()

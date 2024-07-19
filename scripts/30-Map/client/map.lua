@@ -531,11 +531,12 @@ function Map:Draw()
 
 	if timerF then
 		local endAlpha = 100
-	
-		if timerF:GetSeconds() > 0 and timerF:GetSeconds() < 0.1 / animationSpeed then
-			alpha = math.clamp( timerF:GetSeconds() * 10 * animationSpeed, 0, endAlpha )
+		local timerFSeconds = timerF:GetSeconds()
+
+		if timerFSeconds > 0 and timerFSeconds < 0.1 / animationSpeed then
+			alpha = math.clamp( timerFSeconds * 10 * animationSpeed, 0, endAlpha )
 			animplay = false
-		elseif timerF:GetSeconds() > 0.1 / animationSpeed then
+		elseif timerFSeconds > 0.1 / animationSpeed then
 			Map.Border = true
 			timerF = nil
 		end
