@@ -27,7 +27,7 @@ function PM:send( data, player )
 
 		if not data.player:GetValue( "PMDistrub" ) then
 			data.player:SendChatMessage ( data.pLang == "EN" and self.tag2_en or self.tag2_ru, self.text_clr, data.pLang == "EN" and " from " or " от ", Color.White, tostring ( pName ), player:GetColor(), ": ".. tostring ( data.text ), self.text_clr )
-			player:SendChatMessage ( pLang == "EN" and self.tag2_en or self.tag2_ru, self.text_clr, pLang == "EN" and " to " or " для ", Color.White, ( data.pName ), data.player:GetColor(), ": ".. tostring ( data.text ), self.text_clr)
+			player:SendChatMessage ( pLang == "EN" and self.tag2_en or self.tag2_ru, self.text_clr, pLang == "EN" and " to " or " для ", Color.White, ( data.player:GetName() ), data.player:GetColor(), ": ".. tostring ( data.text ), self.text_clr)
 
 			Network:Send ( player, "PM.addMessage", { player = data.player, text = os.date ( "[%X] " ) .. pName .. ": ".. data.text } )
 			Network:Send ( data.player, "PM.notification", { msgsender = pName } )

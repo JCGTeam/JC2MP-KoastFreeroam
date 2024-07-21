@@ -12,10 +12,9 @@ function Hook:GameRenderOpaque()
 
 		local bs = player:GetBaseState()
 		local las = player:GetLeftArmState()
-		local aimTarget = player:GetAimTarget()
 
-		if bs == 207 or las == 400 or bs == 208 and aimTarget and aimTarget.position then
-			hookAimTarget = aimTarget
+		if bs == 207 or las == 400 or bs == 208 and player:GetAimTarget() and player:GetAimTarget().position then
+			hookAimTarget = player:GetAimTarget()
 		end
 
 		if bs == 207 or las == 400 then
