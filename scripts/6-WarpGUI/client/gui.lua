@@ -25,6 +25,9 @@ function WarpGui:__init()
 	self.cooltime = 0
 
 	self.textColor = Color( 200, 50, 200 )
+
+	self.textSize = 13
+
 	self.rows = {}
 	self.acceptButtons = {}
 	self.whitelistButtons = {}
@@ -59,15 +62,16 @@ function WarpGui:__init()
 	self.filter:Subscribe( "Blur", self, self.Blur )
 	self.filter:Subscribe( "EscPressed", self, self.EscPressed )
 
+	local textSize = 15
 	self.whitelistAllCheckbox = LabeledCheckBox.Create( self.window )
     self.whitelistAllCheckbox:SetDock( GwenPosition.Top )
-	self.whitelistAllCheckbox:GetLabel():SetTextSize( 15 )
+	self.whitelistAllCheckbox:GetLabel():SetTextSize( textSize )
 	self.whitelistAllCheckbox:SetMargin( Vector2( 5, 5 ), Vector2( 5, 0 ) )
 	self.whitelistAllCheckbox:GetCheckBox():Subscribe( "CheckChanged", function() self.whitelistAll = self.whitelistAllCheckbox:GetCheckBox():GetChecked() end )
 
 	self.blacklistAllCheckbox = LabeledCheckBox.Create( self.window )
 	self.blacklistAllCheckbox:SetDock( GwenPosition.Top )
-	self.blacklistAllCheckbox:GetLabel():SetTextSize( 15 )
+	self.blacklistAllCheckbox:GetLabel():SetTextSize( textSize )
 	self.blacklistAllCheckbox:SetMargin( Vector2( 5, 0 ), Vector2( 5, 5 ) )
 	self.blacklistAllCheckbox:GetCheckBox():Subscribe( "CheckChanged", function() self.warping = not self.warping end )	
 
@@ -154,7 +158,7 @@ function WarpGui:CreateListButton( text, enabled, listItem )
 
 	local button = Button.Create( listItem )
 	button:SetText( text )
-	button:SetTextSize( 13 )
+	button:SetTextSize( self.textSize )
 	button:SetDock( GwenPosition.Fill )
 	button:SetEnabled( enabled )
 
@@ -342,13 +346,13 @@ function WarpGui:SetWhitelist( playerId, whitelisted, sendToServer )
 
 	if whitelisted == 0 then
 		whitelistButton:SetText( "-" )
-		whitelistButton:SetTextSize( 13 )
+		whitelistButton:SetTextSize( self.textSize )
 	elseif whitelisted == 1 then
 		whitelistButton:SetText( self.autotp_txt )
-		whitelistButton:SetTextSize( 13 )
+		whitelistButton:SetTextSize( self.textSize )
 	elseif whitelisted == 2 then
 		whitelistButton:SetText( self.blacklist_txt )
-		whitelistButton:SetTextSize( 13 )
+		whitelistButton:SetTextSize( self.textSize )
 	end
 
 	if sendToServer then

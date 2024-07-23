@@ -965,7 +965,7 @@ end
 
 function Admin:spectateCamera()
 	if self.victim and self.spVictimPos and self.spVictimAng and IsValid( self.victim, false ) then
-		if self.updTimer and self.updTimer:GetSeconds() >= 1 then
+		if self.updTimer and self.updTimer:GetSeconds() >= 3 then
 			self.updTimer = nil
 		end
 

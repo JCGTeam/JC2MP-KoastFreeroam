@@ -55,6 +55,8 @@ function ActionsMenu:__init()
         ["VIP"] = true
     }
 
+	self.textSize = 15
+
     Events:Subscribe( "Lang", self, self.Lang )
     Events:Subscribe( "KeyUp", self, self.KeyUp )
 end
@@ -118,7 +120,7 @@ function ActionsMenu:CreateActionButton( title, event, color )
 		actionBtn:SetTextHoveredColor( color )
 		actionBtn:SetTextPressedColor( color )
 	end
-    actionBtn:SetTextSize( 15 )
+    actionBtn:SetTextSize( self.textSize )
     actionBtn:SetHeight( 30 )
 	actionBtn:SetDock( GwenPosition.Top )
     if LocalPlayer:GetValue( "SystemFonts" ) then
@@ -133,7 +135,7 @@ function ActionsMenu:CreateActionsMenu()
     if self.window then return end
 
     self.window = Window.Create()
-    self.window:SetSize( Vector2( Render:GetTextWidth( self.vehiclerepair_txt, 15 ) + 90, 430 ) )
+    self.window:SetSize( Vector2( Render:GetTextWidth( self.vehiclerepair_txt, self.textSize ) + 90, 430 ) )
     self.window:SetMinimumSize( Vector2( 300, 315 ) )
     self.window:SetPosition( Vector2( Render.Size.x - self.window:GetSize().x - 45, Render.Size.y / 2 - self.window:GetSize().y / 2 ) )
     self.window:SetVisible( false )

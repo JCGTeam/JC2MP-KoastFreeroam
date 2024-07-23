@@ -15,6 +15,7 @@ function Load:__init()
 
 	self.text_clr = Color.White
 	self.text_shadow = Color( 0, 0, 0 )
+	self.background_clr = Color( 0, 0, 0, 150 )
 
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
@@ -77,7 +78,7 @@ function Load:PostRender()
 		self.BackgroundImage:SetSize( Vector2( Render.Width, Render.Height ) )
 		self.BackgroundImage:Draw()
 
-		Render:FillArea( TxtPos - self.border_width, Vector2( Render.Width, 100 ) + self.border_width * 2, Color( 0, 0, 0, 150 ) )
+		Render:FillArea( TxtPos - self.border_width, Vector2( Render.Width, 100 ) + self.border_width * 2, self.background_clr )
 
 		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 

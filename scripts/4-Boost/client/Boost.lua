@@ -186,14 +186,22 @@ function Boost:Render( args )
 			if not LocalPlayer:GetValue( "VehBrake" ) then
 				LocalPlayer:SetValue( "VehBrake", true )
 			end
+
 			vehicle:SetLinearVelocity( Vector3.Zero )
+			vehicle:SetAngularVelocity( Vector3.Zero )
+
 			self.vpos = self.vpos or vehicle:GetPosition()
+			self.vangle = self.vangle or vehicle:GetAngle()
+
 			vehicle:SetPosition( self.vpos )
+			vehicle:SetAngle( self.vangle )
 		else
 			if LocalPlayer:GetValue( "VehBrake" ) then
 				LocalPlayer:SetValue( "VehBrake", nil )
 			end
+
 			self.vpos = nil
+			self.vangle = nil
 		end
 	end
 

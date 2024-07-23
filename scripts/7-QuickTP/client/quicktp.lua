@@ -106,7 +106,6 @@ end
 
 function QuickTP:CloseMenu()
 	if self.subRender then Events:Unsubscribe( self.subRender ) self.subRender = nil end
-
 	if self.subMouse then Events:Unsubscribe( self.subMouse ) self.subMouse = nil end
 
 	Mouse:SetVisible( false )

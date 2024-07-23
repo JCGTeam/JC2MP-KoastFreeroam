@@ -2,6 +2,7 @@ class "sClaymores"
 
 function sClaymores:__init()
 	self:initVars()
+
 	Events:Subscribe( "ModuleUnload", self, self.onModuleUnload )
 	Network:Subscribe( "01", self, self.addClaymore )
 	Network:Subscribe( "02", self, self.removeClaymore )

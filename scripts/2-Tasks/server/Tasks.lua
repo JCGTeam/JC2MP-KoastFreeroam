@@ -74,7 +74,7 @@ function Tasks:LoadLocations( filename )
 	print( "now opening " .. filename )
 	local file = io.open( filename, "r" )
 	if file == nil then
-		warn( filename .. " is missing, can't load spawns" )
+		print( filename .. " is missing, can't load spawns" )
 		return
 	end
 

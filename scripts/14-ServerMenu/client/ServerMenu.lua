@@ -34,6 +34,9 @@ function ServerMenu:__init()
 	self.resizer_txt = "Черный ниггер"
 	self.resizer_txt2 = "Отклюючиить"
 
+	self.textSize = 19
+	self.textSize2 = 14
+
 	self.cooldown = 0.5
 	self.cooltime = 0
 
@@ -128,7 +131,7 @@ function ServerMenu:LoadCategories()
 	self.help_button:SetVisible( true )
 	self.help_button:SetText( "ПОМОЩЬ / ПРАВИЛА" )
 	self.help_button:SetDock( GwenPosition.Fill )
-	self.help_button:SetTextSize( 14 )
+	self.help_button:SetTextSize( self.textSize2 )
 	self.help_button:SetMargin( Vector2( 5, 0 ), Vector2( 0, 0 ) )
 	self.help_button:Subscribe( "Press", self, self.CastHelpMenu )
 
@@ -136,7 +139,7 @@ function ServerMenu:LoadCategories()
 	self.news_button:SetVisible( true )
 	self.news_button:SetText( "НОВОСТИ" )
 	self.news_button:SetDock( GwenPosition.Left )
-	self.news_button:SetTextSize( 14 )
+	self.news_button:SetTextSize( self.textSize2 )
 	self.news_button:SetMargin( Vector2( 0, 0 ), Vector2( 0, 0 ) )
 	self.news_button:SetWidth( Render:GetTextWidth( "НОВОСТИ" ) + 25 )
 	self.news_button:Subscribe( "Press", self, self.CastNewsMenu )
@@ -146,22 +149,25 @@ function ServerMenu:LoadCategories()
 	self.scroll_control:SetSize( Vector2( self.window:GetSize().x - 15, 215 ) )
 	self.scroll_control:SetDock( GwenPosition.Top )
 
-	local textSize = 19
-	local textWidth = Render:GetTextWidth( self.resizer_txt, textSize )
+	local textWidth = Render:GetTextWidth( self.resizer_txt, self.textSize )
 
+	local spacing = textWidth + 15
 	self.shop_button = self:CreateServerMenuButton( "Черный рынок", self.shopimage, "Транспорт, оружие, внешность и прочие.", 5, self.CastShop )
-	self.tp_button = self:CreateServerMenuButton( "Телепортация", self.tpimage, "Телепортация к игрокам.", self.shop_button:GetPosition().x + textWidth + 15, self.CastWarpGUI )
-	self.clans_button = self:CreateServerMenuButton( "Кланы", self.clansimage, "Управление кланом и другие кланы игроков.", self.tp_button:GetPosition().x + textWidth + 15, self.CastClansMenu )
-	self.pm_button = self:CreateServerMenuButton( "Сообщения", self.pmimage, "Общайтесь лично с игроками.", self.clans_button:GetPosition().x + textWidth + 15, self.CastGuiPm )
-	self.tasks_button = self:CreateServerMenuButton( "Задания", self.dedmimage, "Ежедневные задания за которые вы получаете награды.", self.pm_button:GetPosition().x + textWidth + 15, self.CastDedMorozMenu )
-	self.minigames_button = self:CreateServerMenuButton( "Развлечения", self.mainmenuimage, "Различные развлечения.", self.tasks_button:GetPosition().x + textWidth + 15, self.CastMainMenu )
-	self.abilities_button = self:CreateServerMenuButton( "Способности", self.abiltiesimage, "Прокачка способностей и навыков.", self.minigames_button:GetPosition().x + textWidth + 15, self.CastAbilitiesMenu )
-	self.sett_button = self:CreateServerMenuButton( "Настройки", self.settimage, "Настройки сервера.", self.abilities_button:GetPosition().x + textWidth + 15, self.CastSettingsMenu )
+	self.tp_button = self:CreateServerMenuButton( "Телепортация", self.tpimage, "Телепортация к игрокам.", self.shop_button:GetPosition().x + spacing, self.CastWarpGUI )
+	self.clans_button = self:CreateServerMenuButton( "Кланы", self.clansimage, "Управление кланом и другие кланы игроков.", self.tp_button:GetPosition().x + spacing, self.CastClansMenu )
+	self.pm_button = self:CreateServerMenuButton( "Сообщения", self.pmimage, "Общайтесь лично с игроками.", self.clans_button:GetPosition().x + spacing, self.CastGuiPm )
+	self.tasks_button = self:CreateServerMenuButton( "Задания", self.dedmimage, "Ежедневные задания за которые вы получаете награды.", self.pm_button:GetPosition().x + spacing, self.CastDedMorozMenu )
+	self.minigames_button = self:CreateServerMenuButton( "Развлечения", self.mainmenuimage, "Различные развлечения.", self.tasks_button:GetPosition().x + spacing, self.CastMainMenu )
+	self.abilities_button = self:CreateServerMenuButton( "Способности", self.abiltiesimage, "Прокачка способностей и навыков.", self.minigames_button:GetPosition().x + spacing, self.CastAbilitiesMenu )
+	self.sett_button = self:CreateServerMenuButton( "Настройки", self.settimage, "Настройки сервера.", self.abilities_button:GetPosition().x + spacing, self.CastSettingsMenu )
+
+	local textWidth2 = Render:GetTextWidth( self.resizer_txt2, self.textSize2 )
+	local textHeight2 = Render:GetTextHeight( self.resizer_txt2, self.textSize2 )
 
 	self.leftlabel = Label.Create( self.window )
 	self.leftlabel:SetDock( GwenPosition.Left )
 	self.leftlabel:SetMargin( Vector2( 0, 15 ), Vector2( 5, 5 ) )
-	self.leftlabel:SetSize( Vector2( Render:GetTextHeight( self.resizer_txt2, 14 ) + 750, 0 ) )
+	self.leftlabel:SetSize( Vector2( textHeight2 + 750, 0 ) )
 
 	self.passive = Label.Create( self.leftlabel )
 	self.passive:SetTextColor( Color.MediumSpringGreen )
@@ -169,11 +175,12 @@ function ServerMenu:LoadCategories()
 	self.passive:SetPosition( Vector2( 5, 0 ) )
 	self.passive:SizeToContents()
 
+	spacing = textHeight2 + 15
 	self.passiveon_btn = Button.Create( self.leftlabel )
 	self.passiveon_btn:SetVisible( true )
 	self.passiveon_btn:SetText( "Включить" )
-	self.passiveon_btn:SetSize( Vector2( Render:GetTextWidth( self.resizer_txt2, 14 ), Render:GetTextHeight( self.resizer_txt2, 14 ) + 15 ) )
-	self.passiveon_btn:SetTextSize( 14 )
+	self.passiveon_btn:SetSize( Vector2( textWidth2, spacing ) )
+	self.passiveon_btn:SetTextSize( self.textSize2 )
 	self.passiveon_btn:SetPosition( Vector2( 5, Render:GetTextHeight( self.passive:GetText() ) ) )
 	self.passiveon_btn:Subscribe( "Press", self, self.CastPassive )
 
@@ -185,8 +192,8 @@ function ServerMenu:LoadCategories()
 
 	self.jesusmode_btn = Button.Create( self.leftlabel )
 	self.jesusmode_btn:SetText( "Включить" )
-	self.jesusmode_btn:SetSize( Vector2( Render:GetTextWidth( self.resizer_txt2, 14 ), Render:GetTextHeight( self.resizer_txt2, 14 ) + 15 ) )
-	self.jesusmode_btn:SetTextSize( 14 )
+	self.jesusmode_btn:SetSize( Vector2( textWidth2, spacing ) )
+	self.jesusmode_btn:SetTextSize( self.textSize2 )
 	self.jesusmode_btn:SetPosition( Vector2( self.passiveon_btn:GetSize().x + self.passiveon_btn:GetPosition().x + 10, Render:GetTextHeight( self.jesusmode:GetText() ) ) )
 	self.jesusmode_btn:Subscribe( "Press", self, self.CastJesusMode )
 
@@ -197,8 +204,8 @@ function ServerMenu:LoadCategories()
 
 	self.hideme_btn = Button.Create( self.leftlabel )
 	self.hideme_btn:SetText( "Включить" )
-	self.hideme_btn:SetSize( Vector2( Render:GetTextWidth( self.resizer_txt2, 14 ) * 1.15, Render:GetTextHeight( self.resizer_txt2, 14 ) + 15 ) )
-	self.hideme_btn:SetTextSize( 14 )
+	self.hideme_btn:SetSize( Vector2( textWidth2 * 1.15, spacing ) )
+	self.hideme_btn:SetTextSize( self.textSize2 )
 	self.hideme_btn:SetPosition( Vector2( self.jesusmode_btn:GetSize().x + self.jesusmode_btn:GetPosition().x + 10, Render:GetTextHeight( self.passive:GetText() ) ) )
 	self.hideme_btn:Subscribe( "Press", self, self.CastHideMe )
 
@@ -210,8 +217,8 @@ function ServerMenu:LoadCategories()
 
 	self.pigeonmod_btn = Button.Create( self.leftlabel )
 	self.pigeonmod_btn:SetText( "Включить" )
-	self.pigeonmod_btn:SetSize( Vector2( Render:GetTextWidth( self.resizer_txt2, 14 ) * 1.15, Render:GetTextHeight( self.resizer_txt2, 14 ) + 15 ) )
-	self.pigeonmod_btn:SetTextSize( 14 )
+	self.pigeonmod_btn:SetSize( Vector2( textWidth2 * 1.15, spacing ) )
+	self.pigeonmod_btn:SetTextSize( self.textSize2 )
 	self.pigeonmod_btn:SetPosition( Vector2( self.hideme_btn:GetSize().x + self.hideme_btn:GetPosition().x + 10, Render:GetTextHeight( self.passive:GetText() ) ) )
 	self.pigeonmod_btn:Subscribe( "Press", self, self.CastPigeonMod )
 	self.pigeonmod_btn:SetVisible( false )
@@ -240,10 +247,10 @@ function ServerMenu:LoadCategories()
 
 	self.report_btn = Button.Create( self.rightlabel )
 	self.report_btn:SetText( "Обратная связь" )
-	self.report_btn:SetSize( Vector2( 0, Render:GetTextHeight( self.report_btn:GetText(), 14 ) + 10 ) )
-	self.report_btn:SetTextSize( 14 )
+	self.report_btn:SetSize( Vector2( 0, Render:GetTextHeight( self.report_btn:GetText(), self.textSize2 ) + 10 ) )
+	self.report_btn:SetTextSize( self.textSize2 )
 	self.report_btn:SetDock( GwenPosition.Bottom )
-	self.report_btn:SetMargin( Vector2( Render:GetTextWidth( self.report_btn:GetText(), 14 ), 5 ), Vector2( 0, 0 ) )
+	self.report_btn:SetMargin( Vector2( Render:GetTextWidth( self.report_btn:GetText(), self.textSize2 ), 5 ), Vector2( 0, 0 ) )
 	self.report_btn:Subscribe( "Press", self, self.CastReportMenu )
 
 	self.gametime = Label.Create( self.leftlabel )
@@ -263,8 +270,7 @@ function ServerMenu:LoadCategories()
 end
 
 function ServerMenu:CreateServerMenuButton( title, image, description, pos, event )
-	local textSize = 19
-	local textWidth = Render:GetTextWidth( self.resizer_txt, textSize )
+	local textWidth = Render:GetTextWidth( self.resizer_txt, self.textSize )
 
 	local servermenu_img = ImagePanel.Create( self.scroll_control )
 	servermenu_img:SetImage( image )
@@ -276,7 +282,7 @@ function ServerMenu:CreateServerMenuButton( title, image, description, pos, even
 	servermenu_btn:SetSize( Vector2( servermenu_img:GetSize().x,textWidth * 1.25 ) )
 	servermenu_btn:SetText( title )
 	servermenu_btn:SetTextPadding( Vector2( 0, textWidth ), Vector2.Zero )
-	servermenu_btn:SetTextSize( textSize )
+	servermenu_btn:SetTextSize( self.textSize )
 	servermenu_btn:SetToolTip( description )
 	servermenu_btn:Subscribe( "Press", self, event )
 

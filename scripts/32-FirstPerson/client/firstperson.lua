@@ -67,7 +67,7 @@ function FirstPerson:Active()
 		Events:Fire( "ZoomReset" )
 	end
 
-	Events:Fire( "CastCenterText", { text = ( self.enabled and self.on or self.off ), time = 2, color = Color( 0, 222, 0 ) } )
+	Events:Fire( "CastCenterText", { text = ( self.enabled and self.on or self.off ), time = 2, color = Color.White } )
 end
 
 function FirstPerson:KeyUp( args )
