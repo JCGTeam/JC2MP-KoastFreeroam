@@ -42,13 +42,12 @@ end
 
 function StateRacing:ExitVehicleCoroutineFunction()
 	local timer = Timer()
-	local timerSeconds = timer:GetSeconds()
 
-	while timerSeconds <= 1.25 do
+	while timer:GetSeconds() <= 1.25 do
 		coroutine.yield()
 	end
 
-	while timerSeconds <= 7 do
+	while timer:GetSeconds() <= 7 do
 		DrawText(
 			Vector2(Render.Width * 0.5 , Render.Height * 0.29) ,
 			"Нажмите "..Controls.GetInputNameByControl("Возродиться")..", чтобы возродиться" ,
