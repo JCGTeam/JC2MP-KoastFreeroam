@@ -127,7 +127,7 @@ function Bank:PostTick()
     end
 end
 
-function Bank:CommitChanges( )
+function Bank:CommitChanges()
     local count = table.count(self.money_queue)
     if count > 0 then
         print( "Committing " .. tostring(count) .. " changes to db" )

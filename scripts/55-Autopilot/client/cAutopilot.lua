@@ -17,6 +17,8 @@ function Autopilot:__init()
 	self.panel_toggle_button = "R"
 	self.mouse_toggle_button = "M"
 
+	self.namept = "Нажмите R чтобы включить автопилот."
+
 	local vehicle = LocalPlayer:GetVehicle()
 	if IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
 		local model = vehicle:GetModelId()
@@ -28,6 +30,7 @@ function Autopilot:__init()
 
 	self:InitGUI()
 
+	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "ModuleLoad", self, self.WindowResize )
 	Events:Subscribe( "ResolutionChange", self, self.ResolutionChange )
 	Events:Subscribe( "KeyDown", self, self.KeyDown )
@@ -40,8 +43,12 @@ function Autopilot:__init()
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.InputBlock )
 		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.PanelOpen )
 		self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.DrawApproach )
-		self.RenderEvent = Events:Subscribe( "Render", self, self.DrawTarget )
+		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
 	end
+end
+
+function Autopilot:Lang()
+	self.namept = "Press R to enable autopilot panel."
 end
 
 function Autopilot:InitGUI()
@@ -593,6 +600,7 @@ end
 function Autopilot:EnterPlane( args )
 	if args.is_driver then
 		local model = args.vehicle:GetModelId()
+
 		if planes[model] and planes[model].available then
 			self:AutopilotOff()
 			self.vehicle = args.vehicle
@@ -601,7 +609,13 @@ function Autopilot:EnterPlane( args )
 			if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.InputBlock ) end
 			if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.PanelOpen ) end
 			if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.DrawApproach ) end
-			if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.DrawTarget ) end
+			if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+		end
+
+		if not self.hinttimer then
+			self.hinttimer = Timer()
+		else
+			self.hinttimer:Restart()
 		end
 	end
 end
@@ -867,13 +881,27 @@ function Autopilot:TargetHold()
 	end
 end
 
-function Autopilot:DrawTarget()
+function Autopilot:Render()
+	local alpha = 255
+
+	if self.hinttimer then
+		local hinttimerSeconds = self.hinttimer:GetSeconds()
+
+		if hinttimerSeconds > 10 then
+			alpha = math.clamp( 255 - ( ( hinttimerSeconds - 10 ) * 500 ), 0, 255 )
+
+			if hinttimerSeconds > 12 then self.hinttimer = nil end
+		end
+	end
+
 	if Game:GetState() ~= GUIState.Game then return end
-	Render:SetFont( AssetLocation.Disk, "Roboto.ttf" )
+
 	if config[9].on and self.draw_target then
 		local target = self.target
 
 		if target and IsValid(target.vehicle) then
+			Render:SetFont( AssetLocation.Disk, "Roboto.ttf" )
+
 			local name = target.vehicle:GetName()
 			local model = target.vehicle:GetModelId()
 			local center = Render:WorldToScreen(target.position + target.vehicle:GetAngle() * Vector3.Up * 2)
@@ -889,6 +917,29 @@ function Autopilot:DrawTarget()
 
 			local distance_string = string.format("%i%s", target.distance * units.distance[settings.distance][2], units.distance[settings.distance][1])
 			Render:DrawText( center + Vector2(n * 1.25, -0.3 * Render:GetTextHeight(distance_string, 1.2 * self.text_size)), distance_string, color, 1.2 * self.text_size )
+		end
+	end
+
+	if LocalPlayer:GetValue( "HiddenHUD" ) then return end
+	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+	if not LocalPlayer:GetVehicle() then return end
+	if not self.hinttimer then return end
+
+	local vehicle = LocalPlayer:GetVehicle()
+
+	if LocalPlayer:GetState() == PlayerState.InVehicle and IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
+		local model = vehicle:GetModelId()
+
+		if planes[model] and planes[model].available then
+			if LocalPlayer:GetValue( "SystemFonts" ) then
+				Render:SetFont( AssetLocation.SystemFont, "Impact" )
+			end
+
+			local textSize = 14
+			local size = Render:GetTextSize( self.namept, textSize )
+			local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - ( LocalPlayer:GetValue( "Boost" ) and 30 or 10 ) )
+
+			Render:DrawShadowedText( pos, self.namept, Color( 255, 255, 255, alpha ), Color( 0, 0, 0, alpha ), textSize )
 		end
 	end
 end

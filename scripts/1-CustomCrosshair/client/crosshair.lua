@@ -87,13 +87,16 @@ function Crosshair:GetOption( args )
 			self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
 			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 			self.EntityBulletHitEvent = Events:Subscribe( "EntityBulletHit", self, self.EntityBulletHit )
+			self.ModuleUnloadEvent = Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
 		end
 	else
 		if self.RenderEvent then
-			Game:FireEvent( "gui.aim.show" )
+			self:ModuleUnload()
+
 			Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil
 			Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil
 			Events:Unsubscribe( self.EntityBulletHitEvent ) self.EntityBulletHitEvent = nil
+			Events:Unsubscribe( self.ModuleUnloadEvent ) self.ModuleUnloadEvent = nil
 		end
 
 		if self.popalTimer then self.popalTimer = nil end
@@ -249,6 +252,10 @@ function Crosshair:ShowCrosshair()
 			if self.resetTimer then self.resetTimer = nil end
 		end
 	end
+end
+
+function Crosshair:ModuleUnload()
+	Game:FireEvent( "gui.aim.show" )
 end
 
 crosshair = Crosshair()

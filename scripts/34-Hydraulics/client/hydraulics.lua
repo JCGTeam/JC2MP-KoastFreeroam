@@ -82,13 +82,11 @@ function Hydraulics:InputPoll()
 end
 
 function Hydraulics:LocalPlayerEnterVehicle( args )
-	local vehicle = args.vehicle
-
-	self.lastVehicle = vehicle
+	self.lastVehicle = args.vehicle
 	self.defaultLengths = {}
 
-	local suspension = vehicle:GetSuspension()
-    local wheelCount = vehicle:GetWheelCount()
+	local suspension = args.vehicle:GetSuspension()
+    local wheelCount = args.vehicle:GetWheelCount()
 
 	for wheelIndex = 1, wheelCount do
 		self.defaultLengths[wheelIndex] = suspension:GetLength(wheelIndex)
@@ -98,12 +96,10 @@ function Hydraulics:LocalPlayerEnterVehicle( args )
 end
 
 function Hydraulics:LocalPlayerExitVehicle( args )
-	local vehicle = args.vehicle
-
 	if not LocalPlayer:InVehicle() then
-		local suspension = vehicle:GetSuspension()
+		local suspension = args.vehicle:GetSuspension()
 		if suspension then
-			for wheelIndex = 1, vehicle:GetWheelCount() do
+			for wheelIndex = 1, args.vehicle:GetWheelCount() do
 				suspension:SetLength(wheelIndex, self.defaultLengths[wheelIndex])
 			end
 		end

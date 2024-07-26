@@ -38,18 +38,16 @@ function AntiCrash:InputPoll()
     end
 end
 
-function AntiCrash:LocalPlayerEnterVehicle()
-    local vehicle = LocalPlayer:GetVehicle()
-    local id = vehicle and vehicle:GetModelId()
+function AntiCrash:LocalPlayerEnterVehicle( args )
+    local id = args.vehicle:GetModelId()
 
     if self.allowed_vehicles[id] then return end
 
 	if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll ) end
 end
 
-function AntiCrash:LocalPlayerExitVehicle()
-    local vehicle = LocalPlayer:GetVehicle()
-    local id = vehicle and vehicle:GetModelId()
+function AntiCrash:LocalPlayerExitVehicle( args )
+    local id = args.vehicle:GetModelId()
 
     if self.allowed_vehicles[id] then return end
 
