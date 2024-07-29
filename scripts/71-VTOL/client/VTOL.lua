@@ -50,21 +50,19 @@ function VTOL:Thrust()
 	if Game:GetState() ~= GUIState.Game then return end
 	local vehicle = LocalPlayer:GetVehicle()
 
-	if LocalPlayer:GetState() == PlayerState.InVehicle and IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
+	if LocalPlayer:GetState() == PlayerState.InVehicle and IsValid( vehicle ) and vehicle:GetDriver() == LocalPlayer then
 		if self:CheckList( self.PlaneVehicles, vehicle:GetModelId() ) then
 			local vehicleVelocity = vehicle:GetLinearVelocity()
 
-			if IsValid(vehicle) then
-				if Key:IsDown(self.ReverseKey) and self.ReverseThrustActive and not LocalPlayer:GetValue( "Freeze" ) then
-					self:CheckThrust()
-					local vehicleAngle = vehicle:GetAngle()
-					local SetThrust	= vehicleVelocity + vehicleAngle * Vector3( 0, 0, self.ReverseThrust )
-					local SendInfo = {}
-					SendInfo.Player		=	LocalPlayer
-					SendInfo.Vehicle	=	vehicle
-					SendInfo.Thrust		=	SetThrust
-					Network:Send( "ActivateThrust", SendInfo )
-				end
+			if Key:IsDown(self.ReverseKey) and self.ReverseThrustActive and not LocalPlayer:GetValue( "Freeze" ) then
+				self:CheckThrust()
+				local vehicleAngle = vehicle:GetAngle()
+				local SetThrust	= vehicleVelocity + vehicleAngle * Vector3( 0, 0, self.ReverseThrust )
+				local SendInfo = {}
+				SendInfo.Player		=	LocalPlayer
+				SendInfo.Vehicle	=	vehicle
+				SendInfo.Thrust		=	SetThrust
+				Network:Send( "ActivateThrust", SendInfo )
 			end
 		end
 	end
