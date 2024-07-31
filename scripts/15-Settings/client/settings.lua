@@ -39,10 +39,8 @@ function Settings:__init()
         ["GlAdmin"] = true
     }
 
-	self.SkyImage1 = Image.Create( AssetLocation.Resource, "Sky1" )
 	self.SkyImage2 = Image.Create( AssetLocation.Resource, "Sky2" )
 	self.SkyImage3 = Image.Create( AssetLocation.Resource, "Sky3" )
-	self.SkyImage4 = Image.Create( AssetLocation.Resource, "Sky4" )
 	self.SkyImage5 = Image.Create( AssetLocation.Resource, "Sky5" )
 	self.SkyImage6 = Image.Create( AssetLocation.Resource, "Sky6" )
 	self.SkyImage7 = Image.Create( AssetLocation.Resource, "Sky6" )
@@ -110,9 +108,18 @@ function Settings:__init()
 		self.skyOptionRnb:GetLabel():SetText( "Переливания цветов неба" )
 
 		--self.subcategory5:SetText( "Выполнить консольную команду на сервере:" )
-
-		self.hidetext:SizeToContents()
 	end
+
+	self.hidetext:SizeToContents()
+	self.hidetexttip:SizeToContents()
+	self.subcategory:SizeToContents()
+	self.subcategory3:SizeToContents()
+	self.subcategory4:SizeToContents()
+	--self.subcategory5:SizeToContents()
+	self.subcategory6:SizeToContents()
+	self.jpviptip:SizeToContents()
+	self.subcategory2:SizeToContents()
+	self.nicknameColorPreview:SizeToContents()
 
 	Network:Subscribe( "ResetDone", self, self.ResetDone )
 
@@ -131,8 +138,6 @@ function Settings:Lang()
 	self.window:SetTitle( "▧ Settings" )
 	self.hidetexttip:SetText( "Press F11 to hide/show server UI" )
 	self.hidetext:SetText( "Used server UI hiding" )
-	self.hidetexttip:SizeToContents()
-	self.hidetext:SizeToContents()
 	self.buttonBoost:SetText( "Boost Setting (for vehicles)" )
 	self.buttonSpeedo:SetText( "Speedometer Setting" )
 	self.buttonSDS:SetText( "Skydiving Settings" )
@@ -206,8 +211,6 @@ function Settings:Lang()
 
 	self.subcategory5:SetText( "Run console command on the server:" )
 	]]--
-
-	self.hidetext:SizeToContents()
 end
 
 function Settings:LoadUI()
@@ -222,11 +225,11 @@ function Settings:LoadCategories()
 	self.window:SetVisible( self.active )
 	self.window:Subscribe( "WindowClosed", self, self.Open )
 
-	self.tab = TabControl.Create( self.window )
-	self.tab:SetDock( GwenPosition.Fill )
+	local tab = TabControl.Create( self.window )
+	tab:SetDock( GwenPosition.Fill )
 
 	local widgets = BaseWindow.Create( self.window )
-	self.tab:AddPage( "Основное", widgets )
+	tab:AddPage( "Основное", widgets )
 
 	local scroll_control = ScrollControl.Create( widgets )
 	scroll_control:SetScrollable( false, true )
@@ -236,7 +239,6 @@ function Settings:LoadCategories()
 	self.subcategory6 = Label.Create( scroll_control )
 	self.subcategory6:SetDock( GwenPosition.Top )
 	self.subcategory6:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
-	self.subcategory6:SizeToContents()
 
 	self.option1 = self:OptionCheckBox( scroll_control, "Отображать часы", LocalPlayer:GetValue( "ClockVisible" ) or false )
 	self.option1:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 1 , boolean = not LocalPlayer:GetValue( "ClockVisible" ) } ) end )
@@ -309,7 +311,6 @@ function Settings:LoadCategories()
 	self.hidetexttip = Label.Create( bkpanelsLabel )
 	self.hidetexttip:SetDock( GwenPosition.Bottom )
 	self.hidetexttip:SetMargin( Vector2( 5, 5 ), Vector2( 5, 4 ) )
-	self.hidetexttip:SizeToContents()
 
 	self.hidetext = Label.Create( bkpanelsLabel )
 	self.hidetext:SetVisible( false )
@@ -356,7 +357,6 @@ function Settings:LoadCategories()
 	self.subcategory = Label.Create( scroll_bkpanels )
 	self.subcategory:SetDock( GwenPosition.Top )
 	self.subcategory:SetMargin( Vector2( 0, 10 ), Vector2( 0, 4 ) )
-	self.subcategory:SizeToContents()
 
 	self.buttonSPOff = Button.Create( scroll_bkpanels )
 	self.buttonSPOff:SetHeight( btnHeight )
@@ -366,7 +366,7 @@ function Settings:LoadCategories()
 	self.buttonSPOff:Subscribe( "Press", self, function() Network:Send( "SPOff" ) end )
 
 	local powers = BaseWindow.Create( self.window )
-	self.tab:AddPage( "Способности", powers )
+	tab:AddPage( "Способности", powers )
 
 	local bkpanelsLabel = Label.Create( powers )
 	bkpanelsLabel:SetVisible( true )
@@ -474,7 +474,6 @@ function Settings:LoadCategories()
 	self.subcategory3 = Label.Create( bkpanelsLabel )
 	self.subcategory3:SetDock( GwenPosition.Bottom )
 	self.subcategory3:SetMargin( Vector2( 0, 0 ), Vector2( 0, 5 ) )
-	self.subcategory3:SizeToContents()
 
 	local bkpanelsLabel = Label.Create( powers )
 	bkpanelsLabel:SetVisible( true )
@@ -491,7 +490,6 @@ function Settings:LoadCategories()
 	self.jpviptip:SetTextColor( Color.DarkGray )
 	self.jpviptip:SetDock( GwenPosition.Top )
 	self.jpviptip:SetMargin( Vector2( 0, 3 ), Vector2( 0, 5 ) )
-	self.jpviptip:SizeToContents()
 
 	self.buttonJP = Button.Create( scroll_bkpanels )
 	self.buttonJP:SetEnabled( false )
@@ -505,7 +503,6 @@ function Settings:LoadCategories()
 	self.subcategory2:SetVisible( false )
 	self.subcategory2:SetDock( GwenPosition.Top )
 	self.subcategory2:SetMargin( Vector2( 0, 10 ), Vector2( 0, 5 ) )
-	self.subcategory2:SizeToContents()
 
 	local weathertabsLabel = Label.Create( scroll_bkpanels )
 	weathertabsLabel:SetVisible( true )
@@ -532,7 +529,7 @@ function Settings:LoadCategories()
 	self.buttonTh:Subscribe( "Press", self, function() self:ChangeWeather( 2, self.buttonTh:GetText() ) end )
 
 	local nickcolor = BaseWindow.Create( self.window )
-	self.tab:AddPage( "Цвет ника", nickcolor )
+	tab:AddPage( "Цвет ника", nickcolor )
 
 	local tab_control = TabControl.Create( nickcolor )
 	tab_control:SetDock( GwenPosition.Fill )
@@ -542,7 +539,6 @@ function Settings:LoadCategories()
 	self.subcategory4 = Label.Create( nickcolor )
 	self.subcategory4:SetDock( GwenPosition.Top )
 	self.subcategory4:SetMargin( Vector2( 5, 10 ), Vector2( 0, 0 ) )
-	self.subcategory4:SizeToContents()
 
 	self.nicknameColorPreview = Label.Create( nickcolor )
 	self.nicknameColorPreview:SetText( LocalPlayer:GetName() )
@@ -550,7 +546,6 @@ function Settings:LoadCategories()
 	self.nicknameColorPreview:SetTextColor( self.lpColor )
 	self.nicknameColorPreview:SetDock( GwenPosition.Top )
 	self.nicknameColorPreview:SetMargin( Vector2( 5, 0 ), Vector2( 0, 4 ) )
-	self.nicknameColorPreview:SizeToContents()
 
 	self.pcolorPicker = HSVColorPicker.Create( tab_control )
 	self.pcolorPicker:SetColor( self.lpColor )
@@ -584,7 +579,7 @@ function Settings:LoadCategories()
 	end )
 
 	local skyOptions = BaseWindow.Create( self.window )
-	self.tab:AddPage( "Небо", skyOptions )
+	tab:AddPage( "Небо", skyOptions )
 
 	local scroll_control = ScrollControl.Create( skyOptions )
 	scroll_control:SetScrollable( false, true )
@@ -647,7 +642,7 @@ function Settings:LoadCategories()
 
 	if self.debug_permissions[gettag] then
 		local debug = BaseWindow.Create( self.window )
-		self.tab:AddPage( "DEBUG", debug )
+		tab:AddPage( "DEBUG", debug )
 
 		local scroll_control = ScrollControl.Create( debug )
 		scroll_control:SetScrollable( false, true )
@@ -666,7 +661,6 @@ function Settings:LoadCategories()
 		self.subcategory5 = Label.Create( scroll_control )
 		self.subcategory5:SetDock( GwenPosition.Top )
 		self.subcategory5:SetMargin( Vector2( 0, 10 ), Vector2( 0, 4 ) )
-		self.subcategory5:SizeToContents()
 
 		local consoleCommand = TextBox.Create( scroll_control )
 		consoleCommand:SetDock( GwenPosition.Top )
@@ -724,16 +718,6 @@ end
 
 function Settings:GameRender()
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
-
-	if self.skyFo then
-		self.SkyImage4:SetSize( Vector2( Render.Width, Render.Height ) )
-		self.SkyImage4:Draw()
-	end
-
-	if self.sky then
-		self.SkyImage1:SetSize( Vector2( Render.Width, Render.Height ) )
-		self.SkyImage1:Draw()
-	end
 
 	if self.skyFi then
 		self.SkyImage5:SetSize( Vector2( Render.Width, Render.Height ) )
@@ -793,55 +777,56 @@ end
 
 function Settings:Open()
 	self:SetWindowVisible( not self.active )
-	if LocalPlayer:GetValue( "JesusModeEnabled" ) then
-		self.option4:SetVisible( true )
-	else
-		self.option4:SetVisible( false )
-	end
-
-	if LocalPlayer:GetValue( "LongerGrapple" ) then
-		self.buttonLH:GetLabel():SetText( self.longerGrapple_txt .. " (" .. LocalPlayer:GetValue( "LongerGrapple" ) .. self.meters .. ")" )
-		self.buttonLH:GetLabel():SetEnabled( true )
-		self.buttonLH:GetCheckBox():SetEnabled( true )
-	else
-		self.buttonLH:GetLabel():SetText( self.longerGrapple_txt .. " (150" .. self.meters .. ") | " .. self.unavailable_txt )
-		self.buttonLH:GetLabel():SetEnabled( false )
-		self.buttonLH:GetCheckBox():SetEnabled( false )
-	end
-
-	local gettag = LocalPlayer:GetValue( "Tag" )
-
-	if self.permissions[gettag] then
-		self.subcategory2:SetVisible( true )
-		self.button:SetVisible( true )
-		self.buttonTw:SetVisible( true )
-		self.buttonTh:SetVisible( true )
-
-		self.rollbutton:GetCheckBox():SetEnabled( true )
-		self.spinbutton:GetCheckBox():SetEnabled( true )
-		self.flipbutton:GetCheckBox():SetEnabled( true )
-		self.buttonJP:SetEnabled( true )
-		self.jpviptip:SetVisible( false )
-
-		self.subcategory2:SetPosition( Vector2( self.window:GetSize().x - 350, 50 ) )
-
-		local pos_y = self.subcategory2:GetPosition().y + 20
-		self.button:SetPosition( Vector2( self.subcategory2:GetPosition().x, pos_y ) )
-		self.buttonTw:SetPosition( Vector2( self.button:GetPosition().x + 105, pos_y ) )
-		self.buttonTh:SetPosition( Vector2( self.buttonTw:GetPosition().x + 105, pos_y ) )
-	else
-		self.buttonJP:SetEnabled( false )
-		self.jpviptip:SetVisible( true )
-
-		self.subcategory2:SetPosition( Vector2( self.window:GetSize().x - 350, 70 ) )
-
-		local pos_y = self.subcategory2:GetPosition().y + 20
-		self.button:SetPosition( Vector2( self.subcategory2:GetPosition().x, pos_y ) )
-		self.buttonTw:SetPosition( Vector2( self.button:GetPosition().x + 105, pos_y ) )
-		self.buttonTh:SetPosition( Vector2( self.buttonTw:GetPosition().x + 105, pos_y ) )
-	end
 
 	if self.active then
+		if LocalPlayer:GetValue( "JesusModeEnabled" ) then
+			self.option4:SetVisible( true )
+		else
+			self.option4:SetVisible( false )
+		end
+	
+		if LocalPlayer:GetValue( "LongerGrapple" ) then
+			self.buttonLH:GetLabel():SetText( self.longerGrapple_txt .. " (" .. LocalPlayer:GetValue( "LongerGrapple" ) .. self.meters .. ")" )
+			self.buttonLH:GetLabel():SetEnabled( true )
+			self.buttonLH:GetCheckBox():SetEnabled( true )
+		else
+			self.buttonLH:GetLabel():SetText( self.longerGrapple_txt .. " (150" .. self.meters .. ") | " .. self.unavailable_txt )
+			self.buttonLH:GetLabel():SetEnabled( false )
+			self.buttonLH:GetCheckBox():SetEnabled( false )
+		end
+	
+		local gettag = LocalPlayer:GetValue( "Tag" )
+	
+		if self.permissions[gettag] then
+			self.subcategory2:SetVisible( true )
+			self.button:SetVisible( true )
+			self.buttonTw:SetVisible( true )
+			self.buttonTh:SetVisible( true )
+	
+			self.rollbutton:GetCheckBox():SetEnabled( true )
+			self.spinbutton:GetCheckBox():SetEnabled( true )
+			self.flipbutton:GetCheckBox():SetEnabled( true )
+			self.buttonJP:SetEnabled( true )
+			self.jpviptip:SetVisible( false )
+	
+			self.subcategory2:SetPosition( Vector2( self.window:GetSize().x - 350, 50 ) )
+	
+			local pos_y = self.subcategory2:GetPosition().y + 20
+			self.button:SetPosition( Vector2( self.subcategory2:GetPosition().x, pos_y ) )
+			self.buttonTw:SetPosition( Vector2( self.button:GetPosition().x + 105, pos_y ) )
+			self.buttonTh:SetPosition( Vector2( self.buttonTw:GetPosition().x + 105, pos_y ) )
+		else
+			self.buttonJP:SetEnabled( false )
+			self.jpviptip:SetVisible( true )
+	
+			self.subcategory2:SetPosition( Vector2( self.window:GetSize().x - 350, 70 ) )
+	
+			local pos_y = self.subcategory2:GetPosition().y + 20
+			self.button:SetPosition( Vector2( self.subcategory2:GetPosition().x, pos_y ) )
+			self.buttonTw:SetPosition( Vector2( self.button:GetPosition().x + 105, pos_y ) )
+			self.buttonTh:SetPosition( Vector2( self.buttonTw:GetPosition().x + 105, pos_y ) )
+		end
+
 		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
         if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	else

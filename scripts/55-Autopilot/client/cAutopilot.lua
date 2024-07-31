@@ -931,9 +931,7 @@ function Autopilot:Render()
 		local model = vehicle:GetModelId()
 
 		if planes[model] and planes[model].available then
-			if LocalPlayer:GetValue( "SystemFonts" ) then
-				Render:SetFont( AssetLocation.SystemFont, "Impact" )
-			end
+			if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 			local textSize = 14
 			local size = Render:GetTextSize( self.namept, textSize )

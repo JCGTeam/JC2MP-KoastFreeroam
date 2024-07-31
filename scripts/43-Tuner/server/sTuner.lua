@@ -1,34 +1,12 @@
 class "sTuner"
 
 function sTuner:__init()
-	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
 	Events:Subscribe( "EntityDespawn", self, self.EntityDespawn )
-
-	for p in Server:GetPlayers() do
-		local neonColor = p:GetValue( "NeonColor" )
-
-		if neonColor then
-			local pColor = p:GetColor()
-
-			if neonColor == pColor then
-				p:SetNetworkValue( "NeonColor", pColor )
-			end
-		end
-	end
 
 	Network:Subscribe( "UpdateNeonColor", self, self.UpdateNeonColor )
 	Network:Subscribe( "ToggleSyncNeon", self, self.ToggleSyncNeon )
 	Network:Subscribe( "ActivateThrust", self, self.ActivateThrust )
-	Network:Subscribe( "ActivateAngularThrust", self, self.ActivateAngularThrust )
 	Network:Subscribe( "SyncTune", self, self.syncTune )
-end
-
-function sTuner:PlayerJoin( args )
-	if args.player:GetVehicle() then
-		if args.player:GetColor():GetVehicle() then
-			args.player:GetColor():GetVehicle():SetNetworkValue( "NeonColor", args.player:GetColor() )
-		end
-	end
 end
 
 function sTuner:EntityDespawn( args )
@@ -139,6 +117,8 @@ end
 function sTuner:ToggleSyncNeon( args, sender )
 	local vehicle = sender:GetVehicle()
 
+	Network:Broadcast( "ToggleNeonLight", { vehicle = vehicle, value = vehicle:GetValue( "Neon" ) } )
+
     if vehicle:GetValue( "Neon" ) then
 		vehicle:SetNetworkValue( "Neon", nil )
 	else
@@ -148,13 +128,7 @@ end
 
 function sTuner:ActivateThrust( infoTable )
 	if IsValid(infoTable.Vehicle) then
-		infoTable.Vehicle:SetLinearVelocity( infoTable.Thrust )
-	end
-end
-
-function sTuner:ActivateAngularThrust( infoTable )
-	if IsValid(infoTable.Vehicle) then
-		infoTable.Vehicle:SetAngularVelocity( infoTable.Thrust )
+		infoTable.Vehicle:SetLinearVelocity(infoTable.Thrust)
 	end
 end
 

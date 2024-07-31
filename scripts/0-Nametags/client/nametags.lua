@@ -356,9 +356,10 @@ function Nametags:WindowClosed()
 end
 
 function Nametags:Render()
-	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 	-- If we're not supposed to draw now, then take us out
 	if not self.enabled or Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue( "HiddenHUD" ) then return end
+
+	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 	if LocalPlayer:GetValue( "TagHide" ) then
 		local text = "/hidetag"

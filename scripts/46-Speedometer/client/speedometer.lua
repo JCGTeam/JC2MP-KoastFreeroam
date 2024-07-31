@@ -232,6 +232,7 @@ function Speedometer:Render()
 	if Game:GetState() ~= GUIState.Game or not self.enabled or LocalPlayer:GetValue( "HiddenHUD" ) then return end
 	if not self.bottom_aligned then return end
 	if not LocalPlayer:InVehicle() then return end
+
 	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
 
 	local vehicle = LocalPlayer:GetVehicle()
@@ -300,6 +301,7 @@ function Speedometer:GameRender()
 	if Game:GetState() ~= GUIState.Game or not self.enabled or LocalPlayer:GetValue( "HiddenHUD" ) then return end
 	if self.bottom_aligned then return end
 	if not LocalPlayer:InVehicle() then return end
+
 	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
 
 	local vehicle = LocalPlayer:GetVehicle()

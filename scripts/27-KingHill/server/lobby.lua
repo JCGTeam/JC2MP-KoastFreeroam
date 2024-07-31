@@ -1,6 +1,6 @@
 class "Lobby"
 
-values = { 100, 150, 200, 250, 300, 350, 400, 450, 500 }
+local values = { 100, 150, 200, 250, 300, 350, 400, 450, 500 }
 
 function Lobby:__init( config )
 	self.state = GamemodeState.WAITING
@@ -11,7 +11,7 @@ function Lobby:__init( config )
 	self.startingTime = 0
 	self.waitingTime = 30
 
-	vmoney = values[math.random(#values)]
+	self.bonus = values[math.random(#values)]
 
 	self.name = config.name
 	self.position = config.position
@@ -180,7 +180,7 @@ function Lobby:PreTick()
 			local playerCount = self:GetQueue():GetSize()
 
 			if playerCount == 0 then
-				KingHill.Broadcast( "Присоединяйся в царь горы! Главный приз: $" .. vmoney .. "! ( Карта: " .. self.name .. " )", Color( 228, 142, 56 ) )
+				KingHill.Broadcast( "Присоединяйся в царь горы! Главный приз: $" .. self.bonus .. "! ( Карта: " .. self.name .. " )", Color( 228, 142, 56 ) )
 			else
 				KingHill.Broadcast( "Царь Горы с " .. playerCount .. " игрок" .. (playerCount == 1 and "ом" or "ами") .. " в ожидание начала! ( Карта: " .. self.name .. " )", Color( 228, 142, 56 ) )
 			end
@@ -314,12 +314,11 @@ end
 
 function Lobby:Disband( winner )
 	self:SetState(GamemodeState.ENDING)
-	vmoney = values[math.random(#values)]
 
 	if winner then
 		self:Broadcast( winner:GetName() .. " победил!", Color.Yellow )
-		winner:SetMoney( winner:GetMoney() + vmoney )
-		Chat:Broadcast( "[Царь Горы] ", Color.White, winner:GetName(), winner:GetColor(), " забрался на вершину первым и выиграл $" .. vmoney .. "!", Color( 228, 142, 56 ) )
+		winner:SetMoney( winner:GetMoney() + self.bonus )
+		Chat:Broadcast( "[Царь Горы] ", Color.White, winner:GetName(), winner:GetColor(), " забрался на вершину первым и выиграл $" .. self.bonus .. "!", Color( 228, 142, 56 ) )
 		winner:ClearInventory()
 	end
 
@@ -327,6 +326,8 @@ function Lobby:Disband( winner )
 		player:SetWorld(DefaultWorld)
 		player:SetNetworkValue( "GameMode", "FREEROAM" )
 	end
+
+	self.bonus = values[math.random(#values)]
 end
 
 function Lobby:Remove()

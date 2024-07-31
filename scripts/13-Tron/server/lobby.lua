@@ -1,6 +1,6 @@
 class "Lobby"
 
-values = { 100, 150, 200, 250, 300, 350, 400, 450, 500 }
+local values = { 100, 150, 200, 250, 300, 350, 400, 450, 500 }
 
 function Lobby:__init( config )
 	self.state = GamemodeState.WAITING
@@ -11,7 +11,7 @@ function Lobby:__init( config )
 	self.startingTime = 0
 	self.waitingTime = 30
 
-	vmoney = values[math.random(#values)]
+	self.bonus = values[math.random(#values)]
 
 	self.name = config.name
 	self.position = config.position
@@ -200,7 +200,7 @@ function Lobby:PreTick()
 			local playerCount = self:GetQueue():GetSize()
 
 			if playerCount == 0 then
-				Tron.Broadcast( "Присоединяйся в трон! Главный приз: $" .. vmoney .. "! ( Карта: " .. self.name .. " )", Color( 228, 142, 56 ) )
+				Tron.Broadcast( "Присоединяйся в трон! Главный приз: $" .. self.bonus .. "! ( Карта: " .. self.name .. " )", Color( 228, 142, 56 ) )
 			else
 				Tron.Broadcast( "Трон с " .. playerCount .. " игрок" .. (playerCount == 1 and "ом" or "мя") .. " в ожидание начала! ( Карта: " .. self.name .. " )", Color( 228, 142, 56 ) )
 			end
@@ -378,12 +378,11 @@ end
 
 function Lobby:Disband( winner )
 	self:SetState(GamemodeState.ENDING)
-	vmoney = values[math.random(#values)]
 
 	if winner then
 		self:Broadcast( winner:GetName() .. " победил!", Color( 228, 142, 56 ) )
-		winner:SetMoney( winner:GetMoney() + vmoney )
-		Chat:Broadcast( "[Трон] ", Color.White, winner:GetName(), winner:GetColor(), " победил в трон и выиграл $" .. vmoney .. "!", Color( 228, 142, 56 ) )
+		winner:SetMoney( winner:GetMoney() + self.bonus )
+		Chat:Broadcast( "[Трон] ", Color.White, winner:GetName(), winner:GetColor(), " победил в трон и выиграл $" .. self.bonus .. "!", Color( 228, 142, 56 ) )
 		if winner:GetValue( "TronWins" ) then
 			winner:SetNetworkValue( "TronWins", winner:GetValue( "TronWins" ) + 1 )
 		end
@@ -393,6 +392,8 @@ function Lobby:Disband( winner )
 		player:SetNetworkValue( "GameMode", "FREEROAM" )
 		player:SetWorld(DefaultWorld)
 	end
+
+	self.bonus = values[math.random(#values)]
 end
 
 function Lobby:Remove()

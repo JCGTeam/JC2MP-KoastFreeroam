@@ -1,7 +1,7 @@
 class 'Tuner'
 
 function Tuner:__init()
-	self.planevehicles = { 24, 30, 34, 39, 51, 59, 81, 85 }
+	self.planeVehicles = { 24, 30, 34, 39, 51, 59, 81, 85 }
 
 	self.blacklist = {
 		Action.VehicleFireLeft,
@@ -14,16 +14,10 @@ function Tuner:__init()
 	}
 
 	local vehicle = LocalPlayer:GetVehicle()
-	if IsValid(vehicle) then
-		local vehicleModel = vehicle:GetModelId()
-
-		if self:CheckList(self.planevehicles, vehicleModel) then
-			self.CarFlyActive = true
-		else
-			self.CarFlyActive = false
-		end
+	if vehicle then
+		self.vehicleFly = self:CheckList( self.planeVehicles, vehicle:GetModelId() ) and true or false
 	else
-		self.CarFlyActive = false
+		self.vehicleFly = false
 	end
 
 	self.MaxThrust = 5
@@ -31,19 +25,20 @@ function Tuner:__init()
 	self.CurrentThrust = 0
 	self.CarFlyLandThrust = 2
 	self.ThrustIncreaseFactor = 1.05
-	self.ThrustDecreaseFactor = 0.9
-	self.ThrustDecreaseInteger = 1
-	self.ThrustDecreaseTimer = Timer()
 
 	self:InitGUI()
+
 	self.SyncTimer = Timer()
 
 	self.neons = {}
 
-	self.neonEnabled = false
+	for v in Client:GetVehicles() do
+		if v:GetValue( "Neon" ) then
+			self:CreateNeon( v )
+		end
+	end
 
-	local vehicle = LocalPlayer:GetVehicle()
-	if IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
+	if vehicle and vehicle:GetDriver() == LocalPlayer then
 		self:InitVehicle(vehicle)
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	end
@@ -57,17 +52,17 @@ function Tuner:__init()
 		self.gui.window:SetTitle( "▧ Тюнинг" )
 	end
 
+	Network:Subscribe( "ToggleNeonLight", self, self.ToggleNeonLight )
+
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "Render", self, self.Render )
-	Events:Subscribe( "ModuleUnload", self, self.RemoveNeon )
-
 	Events:Subscribe( "KeyUp", self, self.KeyUp )
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.EnterVehicle )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.ExitVehicle )
-	Events:Subscribe( "EntityDespawn", self, self.VehicleDespawn )
-
+	Events:Subscribe( "EntitySpawn", self, self.EntitySpawn )
+	Events:Subscribe( "EntityDespawn", self, self.EntityDespawn )
+	Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
 	Events:Subscribe( "PostTick", self, self.PostTick )
-	Events:Subscribe( "PostTick", self, self.Thrust )
 end
 
 function Tuner:Lang()
@@ -186,57 +181,53 @@ function Tuner:CheckList( tableList, modelID )
 	return false
 end
 
-function Tuner:ToggleNeon()
-	Network:Send( "ToggleSyncNeon" )
+function Tuner:CreateNeon( vehicle )
+	if not vehicle then return end
+
+	local vId = vehicle:GetId()
+
+	if not self.neons[vId] then
+		local neonPos = vehicle:GetPosition() + Vector3.Up
+
+		self.neons[vId] = ClientLight.Create{
+			position = neonPos,
+			color = vehicle:GetValue( "NeonColor" ) or Color.White,
+			constant_attenuation = 0,
+			linear_attenuation = 0,
+			quadratic_attenuation = 0,
+			multiplier = 10.0,
+			radius = 4
+		}
+	end
 end
 
-function Tuner:RemoveNeon()
-	for vehId, _ in pairs( self.neons ) do
-		if IsValid(self.neons[vehId], false) then self.neons[vehId]:Remove() end
-		self.neons[vehId] = nil
+function Tuner:RemoveNeon( vehicle )
+	if not vehicle then return end
+
+	local vId = vehicle:GetId()
+
+	if self.neons[vId] and IsValid( self.neons[vId] ) then
+		self.neons[vId]:Remove()
+		self.neons[vId] = nil
+	end
+end
+
+function Tuner:ToggleNeonLight( args )
+	if args.value then
+		self:RemoveNeon( args.vehicle )
+	else
+		self:CreateNeon( args.vehicle )
 	end
 end
 
 function Tuner:Render()
-	local checked = {}
-
 	for v in Client:GetVehicles() do
-		table.insert(checked, v)
-	end
+		local vId = v:GetId()
+		local neon = self.neons[vId]
 
-	for i = 1, #checked do
-		local v = checked[i]
-
-		if IsValid(v) then
-			local vehId = v:GetId() + 1
-
-			if v:GetValue( "Neon" ) and not checked[vehId] then
-				local neonPos = v:GetPosition() + Vector3.Up
-
-				if self.neons[vehId] then
-					self.neons[vehId]:SetPosition( neonPos )
-				else
-					self.neons[vehId] = ClientLight.Create{
-						position = neonPos,
-						color = v:GetValue("NeonColor") or Color.White,
-						constant_attenuation = 0,
-						linear_attenuation = 0,
-						quadratic_attenuation = 0,
-						multiplier = 10.0,
-						radius = 4
-					}
-				end
-				checked[vehId] = true
-			end
-		end
-	end
-
-	for vehId, neon in pairs( self.neons ) do
-		if not checked[vehId] then
-			if IsValid(neon, false) then
-				neon:Remove()
-			end
-			self.neons[vehId] = nil
+		if neon then
+			local neonPos = v:GetPosition() + Vector3.Up
+			neon:SetPosition( neonPos )
 		end
 	end
 
@@ -254,61 +245,53 @@ end
 function Tuner:PostTick()
 	if self.SyncTimer:GetSeconds() <= 1 then return end
 
-	local vehicles = {}
-
 	for v in Client:GetVehicles() do
-		table.insert(vehicles, v)
-	end
+		if v:GetValue("vehid") then
+			local vehicleTransmission = v:GetTransmission()
 
-	for _, v in pairs(vehicles) do
-		if IsValid(v) then
-			if v:GetValue("vehid") then
-				local vehicleTransmission = v:GetTransmission()
+			if vehicleTransmission then
+				vehicleTransmission:SetClutchDelayTime(v:GetValue("clutch_delay"))
 
-				if vehicleTransmission then
-					vehicleTransmission:SetClutchDelayTime(v:GetValue("clutch_delay"))
+				local gear_ratios = vehicleTransmission:GetGearRatios()
+				if v:GetValue( "gear_ratios1" ) then gear_ratios[1] = v:GetValue( "gear_ratios1" ) end
+				if v:GetValue( "gear_ratios2" ) then gear_ratios[2] = v:GetValue( "gear_ratios2" ) end
+				if v:GetValue( "gear_ratios3" ) then gear_ratios[3] = v:GetValue( "gear_ratios3" ) end
+				if v:GetValue( "gear_ratios4" ) then gear_ratios[4] = v:GetValue( "gear_ratios4" ) end
+				if v:GetValue( "gear_ratios5" ) then gear_ratios[5] = v:GetValue( "gear_ratios5" ) end
+				if v:GetValue( "gear_ratios6" ) then gear_ratios[6] = v:GetValue( "gear_ratios6" ) end
+				if v:GetValue( "gear_ratios7" ) then gear_ratios[7] = v:GetValue( "gear_ratios7" ) end
+				vehicleTransmission:SetGearRatios( gear_ratios )
 
-					local gear_ratios = vehicleTransmission:GetGearRatios()
-					if v:GetValue( "gear_ratios1" ) then gear_ratios[1] = v:GetValue( "gear_ratios1" ) end
-					if v:GetValue( "gear_ratios2" ) then gear_ratios[2] = v:GetValue( "gear_ratios2" ) end
-					if v:GetValue( "gear_ratios3" ) then gear_ratios[3] = v:GetValue( "gear_ratios3" ) end
-					if v:GetValue( "gear_ratios4" ) then gear_ratios[4] = v:GetValue( "gear_ratios4" ) end
-					if v:GetValue( "gear_ratios5" ) then gear_ratios[5] = v:GetValue( "gear_ratios5" ) end
-					if v:GetValue( "gear_ratios6" ) then gear_ratios[6] = v:GetValue( "gear_ratios6" ) end
-					if v:GetValue( "gear_ratios7" ) then gear_ratios[7] = v:GetValue( "gear_ratios7" ) end
-					vehicleTransmission:SetGearRatios( gear_ratios )
-
-					local wheel_ratios = vehicleTransmission:GetWheelTorqueRatios()
-					for wheel, ratio in ipairs(wheel_ratios) do
-						wheel_ratios[wheel] = v:GetValue( "wheel_ratios" .. wheel )
-					end
-					vehicleTransmission:SetWheelTorqueRatios( wheel_ratios )
-
-					vehicleTransmission:SetReverseGearRatio( v:GetValue( "reverse_ratio" ) )
-					vehicleTransmission:SetPrimaryTransmissionRatio( v:GetValue( "primary_transmission_ratio" ) )
+				local wheel_ratios = vehicleTransmission:GetWheelTorqueRatios()
+				for wheel, ratio in ipairs(wheel_ratios) do
+					wheel_ratios[wheel] = v:GetValue( "wheel_ratios" .. wheel )
 				end
+				vehicleTransmission:SetWheelTorqueRatios( wheel_ratios )
 
-				local vehicleAerodynamics = v:GetAerodynamics()
+				vehicleTransmission:SetReverseGearRatio( v:GetValue( "reverse_ratio" ) )
+				vehicleTransmission:SetPrimaryTransmissionRatio( v:GetValue( "primary_transmission_ratio" ) )
+			end
 
-				if vehicleAerodynamics then
-					vehicleAerodynamics:SetAirDensity( v:GetValue( "airdensity" ) )
-					vehicleAerodynamics:SetFrontalArea( v:GetValue( "frontalarea" ) )
-					vehicleAerodynamics:SetDragCoefficient( v:GetValue( "dragcoeff" ) )
-					vehicleAerodynamics:SetLiftCoefficient( v:GetValue( "liftcoeff" ) )
-					--vehicleAerodynamics:SetExtraGravity( v:GetValue( "gravity" ) )
-				end
+			local vehicleAerodynamics = v:GetAerodynamics()
 
-				local vehicleSuspension = v:GetSuspension()
+			if vehicleAerodynamics then
+				vehicleAerodynamics:SetAirDensity( v:GetValue( "airdensity" ) )
+				vehicleAerodynamics:SetFrontalArea( v:GetValue( "frontalarea" ) )
+				vehicleAerodynamics:SetDragCoefficient( v:GetValue( "dragcoeff" ) )
+				vehicleAerodynamics:SetLiftCoefficient( v:GetValue( "liftcoeff" ) )
+				--vehicleAerodynamics:SetExtraGravity( v:GetValue( "gravity" ) )
+			end
 
-				if vehicleSuspension then
-					for wheel = 1, v:GetWheelCount() do
-						vehicleSuspension:SetLength( wheel, v:GetValue( "wheel" .. wheel .. "_length" ) )
-						vehicleSuspension:SetStrength( wheel, v:GetValue( "wheel" .. wheel .. "_strength" ) )
-						vehicleSuspension:SetChassisDirection( wheel, v:GetValue( "wheel" .. wheel .. "_direction" ) )
-						vehicleSuspension:SetChassisPosition( wheel, v:GetValue( "wheel" .. wheel .. "_position" ) )
-						vehicleSuspension:SetDampingCompression( wheel, v:GetValue( "wheel" .. wheel .. "_dampcompression" ) )
-						vehicleSuspension:SetDampingRelaxation( wheel, v:GetValue( "wheel" .. wheel .. "_damprelaxation" ) )
-					end
+			local vehicleSuspension = v:GetSuspension()
+
+			if vehicleSuspension then
+				for wheel = 1, v:GetWheelCount() do
+					vehicleSuspension:SetLength( wheel, v:GetValue( "wheel" .. wheel .. "_length" ) )
+					vehicleSuspension:SetStrength( wheel, v:GetValue( "wheel" .. wheel .. "_strength" ) )
+					vehicleSuspension:SetChassisDirection( wheel, v:GetValue( "wheel" .. wheel .. "_direction" ) )
+					vehicleSuspension:SetChassisPosition( wheel, v:GetValue( "wheel" .. wheel .. "_position" ) )
+					vehicleSuspension:SetDampingCompression( wheel, v:GetValue( "wheel" .. wheel .. "_dampcompression" ) )
+					vehicleSuspension:SetDampingRelaxation( wheel, v:GetValue( "wheel" .. wheel .. "_damprelaxation" ) )
 				end
 			end
 		end
@@ -340,13 +323,14 @@ function Tuner:InitGUI()
 	self.gui.susp.window = BaseWindow.Create( self.gui.window )
 
 	local vehicle = LocalPlayer:GetVehicle()
+	if not vehicle then return end
 
-	if IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer and vehicle:GetClass() == VehicleClass.Land then
+	if vehicle:GetDriver() == LocalPlayer and vehicle:GetClass() == VehicleClass.Land then
 		self.gui.veh.window:Subscribe( "Render", self, self.VehicleUpdate )
 	else
 		self.gui.veh.window:Subscribe( "Render", self, self.OtherVehicleUpdate )
 	end
-	if IsValid(vehicle) and vehicle:GetClass() == VehicleClass.Land then
+	if vehicle:GetClass() == VehicleClass.Land then
 		self.gui.trans.window:Subscribe( "Render", self, self.TransmissionUpdate )
 		self.gui.susp.window:Subscribe( "Render", self, self.SuspensionUpdate )
 		self.gui.aero.window:Subscribe( "Render", self, self.AerodynamicsUpdate )
@@ -357,7 +341,7 @@ function Tuner:InitGUI()
 		self.gui.window:SetSize( Vector2( 360, 465 ) )
 	end )
 
-	if IsValid(vehicle) and vehicle:GetClass() == VehicleClass.Land then
+	if vehicle:GetClass() == VehicleClass.Land then
 		self.gui.trans.button = self.gui.tabs:AddPage("Трансмиссия", self.gui.trans.window)
 		self.gui.trans.button:Subscribe( "Press", function()
 			local gears = self.trans:GetMaxGear()
@@ -412,22 +396,21 @@ function Tuner:InitGUI()
 
 	self.gui.neon.button = self.gui.tabs:AddPage( "Неон", self.gui.neon.window )
 	local neoncolor = HSVColorPicker.Create( self.gui.neon.window )
-	if LocalPlayer:GetValue( "NeonColor" ) then
-		neoncolor:SetColor( LocalPlayer:GetValue( "NeonColor" ) )
-	end
+	neoncolor:SetColor( vehicle:GetValue( "NeonColor" ) or vehicle:GetColors() )
 	neoncolor:SetDock( GwenPosition.Fill )
+
 	local neontoggle = Button.Create( self.gui.neon.window )
 	neontoggle:SetText( "Включить/отключить неон" )
 	neontoggle:SetTextSize( 15 )
 	neontoggle:SetHeight( 30 )
 	neontoggle:SetDock( GwenPosition.Bottom )
-	neontoggle:Subscribe( "Up", function() Network:Send( "Change") Network:Send( "UpdateNeonColor", { neoncolor = neoncolor:GetColor() } ) self:ToggleNeon() end )
+	neontoggle:Subscribe( "Up", function() Network:Send( "UpdateNeonColor", { neoncolor = neoncolor:GetColor() } ) Network:Send( "ToggleSyncNeon" ) end )
 	self.gui.neon.button:Subscribe( "Press", function()
 		self.gui.window:SetSize( Vector2( 460, 350 ) )
 	end )
 
 	self:InitVehicleGUI()
-	if IsValid(vehicle) and vehicle:GetClass() == VehicleClass.Land then
+	if vehicle:GetClass() == VehicleClass.Land then
 		self:InitTransmissionGUI()
 		self:InitSuspensionGUI()
 	end
@@ -609,17 +592,11 @@ end
 function Tuner:InitAerodynamicsGUI()
 	local vehicle = LocalPlayer:GetVehicle()
 
-	if IsValid(vehicle) then
-		local vehicleModel = vehicle:GetModelId()
+	if not vehicle then return end
 
-		if self:CheckList(self.planevehicles, vehicleModel) then
-			self.CarFlyActive = true
-		else
-			self.CarFlyActive = false
-		end
-	end
+	self.vehicleFly = self:CheckList( self.planeVehicles, vehicle:GetModelId() ) and true or false
 
-	if IsValid(vehicle) and vehicle:GetClass() == VehicleClass.Land then
+	if vehicle:GetClass() == VehicleClass.Land then
 		self.gui.aero.labels = {}
 		self.gui.aero.getters = {}
 		self.gui.aero.setters = {}
@@ -725,21 +702,21 @@ function Tuner:InitAerodynamicsGUI()
 	end
 
 	self.gui.aero.fly = CheckBox.Create( self.gui.aero.window )
-	if IsValid(vehicle) and vehicle:GetClass() == VehicleClass.Land then
+	if vehicle:GetClass() == VehicleClass.Land then
 		self.gui.aero.fly:SetPosition( Vector2( 5, 160 ))
 	else
 		self.gui.aero.fly:SetPosition( Vector2( 5, 5 ))
 	end
-	self.gui.aero.fly:SetChecked( self.CarFlyActive )
+	self.gui.aero.fly:SetChecked( self.vehicleFly )
 	self.gui.aero.fly:Subscribe( "CheckChanged",
-		function() self.CarFlyActive = not self.CarFlyActive end )
+		function() self.vehicleFly = not self.vehicleFly end )
 
 	self.gui.aero.flyT = Label.Create( self.gui.aero.window )
 	self.gui.aero.flyT:SetText( "Вертикальный взлёт ( Кнопка Z )" )
 	self.gui.aero.flyT:SetPosition( self.gui.aero.fly:GetPosition() + Vector2( 20, 3 ) )
 	self.gui.aero.flyT:SizeToContents()
 
-	if IsValid(vehicle) and vehicle:GetClass() == VehicleClass.Land then
+	if vehicle:GetClass() == VehicleClass.Land then
 		for i, label in ipairs(self.gui.aero.labels) do
 			label:SetPosition( Vector2( 5, 5 + 22 * (i - 1) )) 
 			label:SizeToContents()
@@ -1037,7 +1014,8 @@ function Tuner:InitSuspensionGUI()
 end
 
 function Tuner:SyncTune()
-	if self.veh == nil or not IsValid(self.veh) then return end
+	if not ( self.veh and IsValid( self.veh ) ) then return end
+
 	if self.veh:GetDriver() == LocalPlayer then
 		local args = {}
 
@@ -1266,41 +1244,37 @@ end
 function Tuner:KeyUp( args )
 	if Game:GetState() ~= GUIState.Game then return end
 
-	if args.key == string.byte("N") and IsValid( self.veh ) then
-		if LocalPlayer:GetWorld() ~= DefaultWorld then return end
-		self:SetWindowVisible( not self.active )
-		self.timer = nil
-		if self.active then
-			self.gui.tabs:SetCurrentTab( self.gui.veh.button )
+	if IsValid( self.veh ) then
+		if args.key == string.byte("N") then
+			if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+			self:SetWindowVisible( not self.active )
+			self.timer = nil
+
+			if self.active then
+				self.gui.tabs:SetCurrentTab( self.gui.veh.button )
+			end
 
 			local effect = ClientEffect.Create(AssetLocation.Game, {
-				effect_id = 382,
-
-				position = Camera:GetPosition(),
-				angle = Angle()
-			})
-		else
-			local effect = ClientEffect.Create(AssetLocation.Game, {
-				effect_id = 383,
+				effect_id = self.active and 382 or 383,
 
 				position = Camera:GetPosition(),
 				angle = Angle()
 			})
 		end
-	end
 
-	if self.trans and self.trans:GetManual() and IsValid( self.veh ) then
-		if args.key == VirtualKey.Numpad1 then
-			if self.peredacha < self.trans:GetMaxGear() then
-				self.peredacha = self.peredacha + 1
-				self.trans:SetGear( self.peredacha )
-				Game:ShowPopup( self.gear .. self.peredacha, false )
-			end
-		elseif args.key == VirtualKey.Numpad2 then
-			if self.peredacha > 1 then
-				self.peredacha = self.peredacha - 1
-				self.trans:SetGear( self.peredacha )
-				Game:ShowPopup( self.gear .. self.peredacha, false )
+		if self.trans and self.trans:GetManual() then
+			if args.key == VirtualKey.Numpad1 then
+				if self.peredacha < self.trans:GetMaxGear() then
+					self.peredacha = self.peredacha + 1
+					self.trans:SetGear( self.peredacha )
+					Game:ShowPopup( self.gear .. self.peredacha, false )
+				end
+			elseif args.key == VirtualKey.Numpad2 then
+				if self.peredacha > 1 then
+					self.peredacha = self.peredacha - 1
+					self.trans:SetGear( self.peredacha )
+					Game:ShowPopup( self.gear .. self.peredacha, false )
+				end
 			end
 		end
 	end
@@ -1316,27 +1290,6 @@ function Tuner:WindowClosed()
 	})
 end
 
-function Tuner:LocalPlayerInput( args )
-	if ( self.gui.window:GetVisible() and Game:GetState() == GUIState.Game ) then
-		for index, action in ipairs(self.blacklist) do
-			if action == args.input then
-				return false
-			end
-		end
-		if args.input == Action.GuiPause then
-			self:SetWindowVisible( false )
-		end
-	end
-end
-
-function Tuner:SetWindowVisible( visible )
-    if self.active ~= visible then
-		self.active = visible
-		self.gui.window:SetVisible( visible )
-		Mouse:SetVisible( visible )
-	end
-end
-
 function Tuner:CheckThrust()
 	self.CurrentThrust = self.CurrentThrust * self.ThrustIncreaseFactor
 	if self.CurrentThrust < self.MinThrust then
@@ -1346,24 +1299,44 @@ function Tuner:CheckThrust()
 	end
 end
 
-function Tuner:Thrust()
+function Tuner:LocalPlayerInput( args )
+	if self.gui.window:GetVisible() and Game:GetState() == GUIState.Game then
+		for index, action in ipairs(self.blacklist) do
+			if action == args.input then
+				return false
+			end
+		end
+
+		if args.input == Action.GuiPause then
+			self:SetWindowVisible( false )
+		end
+	end
+
+	if not self.vehicleFly then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld or Game:GetState() ~= GUIState.Game then return end
 
 	local vehicle = LocalPlayer:GetVehicle()
-	if LocalPlayer:GetState() == PlayerState.InVehicle and IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
 
-	local VehicleVelocity = vehicle:GetLinearVelocity()
-		if self.CarFlyActive then
-			if Key:IsDown(90) then
-				self:CheckThrust()
-				local SetThrust = Vector3( VehicleVelocity.x, self.CurrentThrust, VehicleVelocity.z )
-				local SendInfo = {}
-					SendInfo.Player = LocalPlayer
-					SendInfo.Vehicle = vehicle
-					SendInfo.Thrust = SetThrust
-				Network:Send(  "ActivateThrust", SendInfo )
-			end
+	if LocalPlayer:InVehicle() and IsValid( vehicle ) and vehicle:GetDriver() == LocalPlayer then
+		if Key:IsDown(90) then
+			local vehicleVelocity = vehicle:GetLinearVelocity()
+
+			self:CheckThrust()
+			local SetThrust = Vector3( vehicleVelocity.x, self.CurrentThrust, vehicleVelocity.z )
+			local SendInfo = {}
+			SendInfo.Player = LocalPlayer
+			SendInfo.Vehicle = vehicle
+			SendInfo.Thrust = SetThrust
+			Network:Send( "ActivateThrust", SendInfo )
 		end
+	end
+end
+
+function Tuner:SetWindowVisible( visible )
+    if self.active ~= visible then
+		self.active = visible
+		self.gui.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
 	end
 end
 
@@ -1392,16 +1365,36 @@ function Tuner:ExitVehicle( args )
 
 	if self.veh and args.vehicle == self.veh then
 		self:Disable()
-		if LocalPlayer:GetValue( "Neon" ) then
-			Network:Send( "ToggleSyncNeon", { value = nil } )
-			self.neonEnabled = false
+	end
+end
+
+function Tuner:EntitySpawn( args )
+	local entity = args.entity
+
+	if entity.__type == "Vehicle" then
+		if entity:GetValue( "Neon" ) then
+			self:CreateNeon( entity )
 		end
 	end
 end
 
-function Tuner:VehicleDespawn( args )
-	if args.entity.__type == "Vehicle" and args.entity == self.veh then
-		self:Disable()
+function Tuner:EntityDespawn( args )
+	local entity = args.entity
+
+	if entity.__type == "Vehicle" then
+		if entity == self.veh then
+			self:Disable()
+		end
+
+		self:RemoveNeon( entity )
+	end
+end
+
+function Tuner:ModuleUnload()
+	for k, v in pairs( self.neons ) do
+		if IsValid(v) then
+			v:Remove()
+		end
 	end
 end
 

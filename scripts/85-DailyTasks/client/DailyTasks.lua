@@ -79,7 +79,6 @@ function DailyTasks:__init()
     self.hidetexttip = Label.Create( self.LeftLabel )
 	self.hidetexttip:SetDock( GwenPosition.Top )
 	self.hidetexttip:SetMargin( Vector2( 0, 2 ), Vector2( 0, 4 ) )
-    self.hidetexttip:SizeToContents()
 
     self.list = SortedList.Create( self.LeftLabel )
 	self.list:SetDock( GwenPosition.Fill )
@@ -114,6 +113,8 @@ function DailyTasks:__init()
         self.fireworkstask2_txt = " осколочных гранат ( ͡° ͜ʖ ͡°)"
         self.fireworkstip_txt = "Нажмите на G, чтобы выбрать гранату"
 	end
+
+    self.hidetexttip:SizeToContents()
 
     Events:Subscribe( "Lang", self, self.Lang )
     Network:Subscribe( "NewNeededs", self, self.NewNeededs )

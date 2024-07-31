@@ -1,25 +1,43 @@
 class 'Admin'
 
 function Admin:__init()
-	self.message = ""
+	local lang = LocalPlayer:GetValue( "Lang" )
+    if lang and lang == "EN" then
+		self:Lang()
+	else
+		self.tag = "[Объявление] "
+	end
 
+	self.textColor = Color( 255, 210, 0 )
+	self.textColor2 = Color.White
+
+	Events:Subscribe( "Lang", self, self.Lang )
 	Network:Subscribe( "Notice", self, self.ClientFunction )
 end
 
+function Admin:Lang()
+	self.tag = "[Notice] "
+end
+
 function Admin:PostRender()
-	if self.timer then
+	if self.timer and self.message then
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			Render:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
 
-		local size = Render.Size.x / 40
-		local testpos = Vector2( (Render.Size.x / 1.9) - (Render:GetTextSize( self.message, size ).x / 2), 80 )
-	
-		Render:DrawShadowedText( testpos, self.message, Color( 255, 210, 0 ), Color( 0, 0, 0 ), size )
+		local size = 30
+		local testpos = Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tag .. self.message, size ) / 2, 80 )
+		local shadowColor = Color( 0, 0, 0 )
+
+		Render:DrawShadowedText( testpos, self.tag, self.textColor, shadowColor, size )
+
+		testpos.x = testpos.x + Render:GetTextWidth( self.tag, size )
+
+		Render:DrawShadowedText( testpos, self.message, self.textColor2, shadowColor, size )
 
 		if self.timer:GetSeconds() > 10 then
 			self.timer = nil
-			self.message = ""
+			self.message = nil
 
 			if self.PostRenderEvent then Events:Unsubscribe( self.PostRenderEvent ) self.PostRenderEvent = nil end
 		end
@@ -29,6 +47,8 @@ end
 function Admin:ClientFunction( args )
 	self.timer = Timer()
 	self.message = args.text
+
+	Chat:Print( self.tag, self.textColor, self.message, self.textColor2 )
 
 	if not self.PostRenderEvent then self.PostRenderEvent = Events:Subscribe( "PostRender", self, self.PostRender ) end
 end

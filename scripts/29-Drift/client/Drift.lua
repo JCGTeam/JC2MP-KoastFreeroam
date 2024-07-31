@@ -93,9 +93,9 @@ function Drift:Render()
 	local object = NetworkObject.GetByName("Drift")
 
 	if LocalPlayer:GetValue( "BestRecordVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) and Game:GetState() == GUIState.Game then
-		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
-
 		if Game:GetSetting(4) >= 1 then
+			if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
+
 			local sett_alpha = Game:GetSetting(4) * 2.25
 
 			if object and LocalPlayer:GetValue("GetWidget") == 2 then

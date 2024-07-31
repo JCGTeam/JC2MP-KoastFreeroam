@@ -156,10 +156,6 @@ function Menu:LocalPlayerInput()
 	return false
 end
 
-function Menu:GetActive()
-	return self.active
-end
-
 function Menu:SetActive( active )
 	if self.active ~= active then
 		if not active then

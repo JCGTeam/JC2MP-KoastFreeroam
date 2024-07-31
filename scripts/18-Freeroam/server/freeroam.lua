@@ -10,6 +10,7 @@ function Freeroam:__init()
     self.vehicles               = {}
     self.player_spawns          = {}
     self.teleports              = {}
+    self.custom_teleports       = {}
     self.kills                  = {}
 
     self.one_handed = { Weapon.Handgun, Weapon.Revolver, Weapon.SMG, Weapon.SawnOffShotgun }
@@ -26,6 +27,9 @@ function Freeroam:__init()
 	Events:Subscribe( "PlayerSpawn", self, self.PlayerSpawn )
     Events:Subscribe( "PlayerSpawnFromDB", self, self.PlayerSpawnFromDB )
     Events:Subscribe( "ToggleSpawnInHome", self, self.ToggleSpawnInHome )
+    Events:Subscribe( "AddCustomTeleport", self, self.AddCustomTeleport )
+    Events:Subscribe( "ClearCustomTeleports", self, self.ClearCustomTeleports )
+
 	Network:Subscribe( "GiveMeWeapon", self, self.GiveMeWeapon )
     Network:Subscribe( "SetSpawnMode", self, self.SetSpawnMode )
     Network:Subscribe( "TogglePassiveAfterSpawn", self, self.TogglePassiveAfterSpawn )
@@ -123,6 +127,23 @@ function Freeroam:ParseTeleport( line )
     local vector        = Vector3( tonumber( pos_str[1] ), tonumber( pos_str[2] ), tonumber( pos_str[3] ) )
 
     self.teleports[ tokens[1] ] = vector
+end
+
+function Freeroam:AddCustomTeleport( args )
+    self.teleports[ args.name ] = Vector3( args.pos.x, args.pos.y, args.pos.z )
+    table.insert( self.custom_teleports, args.name )
+
+    print( "Added custom teleport. Name: " .. tostring( args.name ) .. ", Pos: " .. tostring( args.pos ) )
+end
+
+function Freeroam:ClearCustomTeleports()
+    for _, name in ipairs( self.custom_teleports ) do
+        self.teleports[name] = nil
+    end
+
+    self.custom_teleports = {}
+
+    print( "Removed all custom teleports" )
 end
 
 function Freeroam:GiveNewWeapons( p )

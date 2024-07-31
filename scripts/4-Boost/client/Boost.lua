@@ -207,10 +207,10 @@ function Boost:Render( args )
 
 	if Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue( "HiddenHUD" ) then return end
 	if not self.hinttimer then return end
-	if LocalPlayer:GetValue( "SystemFonts" ) then
-		Render:SetFont( AssetLocation.SystemFont, "Impact" )
-	end
+
 	if self.textEnabled and (land or boat or heli or plane) then
+		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
+
 		local text = self.name
 		if land or boat then
 			text = text .. "Shift "

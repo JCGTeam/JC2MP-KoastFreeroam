@@ -2,7 +2,6 @@ class 'VTOL'
 
 function VTOL:__init()
 	self.ReverseThrustActive = true
-	self.ReverseKey = 88
 	self.PlaneVehicles = { 24, 30, 34, 39, 51, 59, 81, 85 }
 
 	self.MaxThrust				=	0.3		--	The maximum thrust speed.						Default: 10
@@ -12,7 +11,7 @@ function VTOL:__init()
 	self.ThrustIncreaseFactor	=	1.05	--	How quickly thrust is increased.				Default: 1.05
 
 	if LocalPlayer:InVehicle() then
-		self.PreTickEvent = Events:Subscribe( "PreTick", self, self.Thrust )
+		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	end
 
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
@@ -22,7 +21,7 @@ end
 function VTOL:LocalPlayerEnterVehicle( args )
 	if args.is_driver then
 		if self:CheckList( self.PlaneVehicles, args.vehicle:GetModelId() ) then
-			if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe( "PreTick", self, self.Thrust ) end
+			if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 
 			self.CurrentThrust = 0
 		end
@@ -30,7 +29,7 @@ function VTOL:LocalPlayerEnterVehicle( args )
 end
 
 function VTOL:LocalPlayerExitVehicle()
-	if self.PreTickEvent then Events:Unsubscribe( self.PreTickEvent ) self.PreTickEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 end
 
 function VTOL:CheckThrust()
@@ -46,15 +45,15 @@ function VTOL:CheckThrust()
 	end
 end
 
-function VTOL:Thrust()
+function VTOL:LocalPlayerInput( args )
 	if Game:GetState() ~= GUIState.Game then return end
 	local vehicle = LocalPlayer:GetVehicle()
 
-	if LocalPlayer:GetState() == PlayerState.InVehicle and IsValid( vehicle ) and vehicle:GetDriver() == LocalPlayer then
+	if LocalPlayer:InVehicle() and IsValid( vehicle ) and vehicle:GetDriver() == LocalPlayer then
 		if self:CheckList( self.PlaneVehicles, vehicle:GetModelId() ) then
 			local vehicleVelocity = vehicle:GetLinearVelocity()
 
-			if Key:IsDown(self.ReverseKey) and self.ReverseThrustActive and not LocalPlayer:GetValue( "Freeze" ) then
+			if args.input == Action.Handbrake and self.ReverseThrustActive and not LocalPlayer:GetValue( "Freeze" ) then
 				self:CheckThrust()
 				local vehicleAngle = vehicle:GetAngle()
 				local SetThrust	= vehicleVelocity + vehicleAngle * Vector3( 0, 0, self.ReverseThrust )

@@ -776,6 +776,34 @@ function Admin:PlayerChat( args )
 			return true
 		end
 
+		if (cmd_args[1]) == "/addcustomtp" then
+			if #cmd_args < 2 then
+				deniedMessage( sender, invalidArgs )
+				return false
+			end
+
+			if cmd_args[2] == "" then
+				deniedMessage( sender, invalidArgs )
+				return false
+			end
+
+			Events:Fire( "AddCustomTeleport", { name = cmd_args[2], pos = sender:GetPosition() } )
+			confirmationMessage( sender, "Точка для телепортации /tp " .. cmd_args[2] .. " успешно создана." )
+
+			local text = sender:GetName() .. " added custom teleport: /tp " .. cmd_args[2]
+			print( text )
+			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. text } )
+		end
+
+		if (cmd_args[1]) == "/clearallcustomtp" then
+			Events:Fire( "ClearCustomTeleports" )
+			confirmationMessage( sender, "Созданные точки для телепортации очищены." )
+
+			local text = sender:GetName() .. " cleared all custom teleports"
+			print( text )
+			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. text } )
+		end
+
 		if (cmd_args[1]) == "/boton" then
 			if not self.boton then
 				Chat:Send( args.player, "[Админ-система] ", Color.White, "НА РАБОТУ! ГОВНО ЧИСТИТЬ!", Color.Brown )
@@ -843,9 +871,13 @@ function Admin:PlayerChat( args )
 				return false
 			end
 
-			local stringname = args.text:sub(9, 256)
+			local stringname = args.text:sub( 9, 256 )
 
 			Network:Broadcast( "Notice", { text = stringname } )
+
+			local text = sender:GetName() .. " made notice: " .. stringname
+			print( text )
+			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. text } )
 		end
 
 		if (cmd_args[1]) == "/addmoney" then
