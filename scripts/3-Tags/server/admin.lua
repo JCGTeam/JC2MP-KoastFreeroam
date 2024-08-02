@@ -880,6 +880,33 @@ function Admin:PlayerChat( args )
 			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. text } )
 		end
 
+		if (cmd_args[1]) == "/joinnotice" then
+			if #cmd_args < 2 then
+				deniedMessage( sender, invalidArgs )
+				return false
+			end
+
+			local stringname = args.text:sub( 13, 256 )
+
+			Events:Fire( "SetJoinNotice", stringname )
+
+			confirmationMessage( sender, "Сообщение при входе успешно задано: " .. stringname )
+
+			local text = sender:GetName() .. " made join notice: " .. stringname
+			print( text )
+			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. text } )
+		end
+
+		if (cmd_args[1]) == "/clearjoinnotice" then
+			Events:Fire( "SetJoinNotice", nil )
+
+			confirmationMessage( sender, "Сообщение при входе успешно удалено." )
+
+			local text = sender:GetName() .. " cleared join notice"
+			print( text )
+			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. text } )
+		end
+
 		if (cmd_args[1]) == "/addmoney" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )

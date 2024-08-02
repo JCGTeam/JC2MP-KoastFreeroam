@@ -14,6 +14,7 @@ function JoinLeave:__init()
 
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
   	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
+	Events:Subscribe( "SetJoinNotice", self, self.SetJoinNotice )
 end
 
 function JoinLeave:PlayerJoin( args )
@@ -51,12 +52,20 @@ function JoinLeave:PlayerJoin( args )
 		Chat:Send( args.player, "> Players List: ", text_clr, "F5", text2_clr )
 		Chat:Send( args.player, "==============", text_clr )
 	end
+
+	if self.joinNotice then
+		Chat:Send( args.player, self.languageslist[pcountry] and "[Объявление] " or "[Notice] ", Color( 255, 210, 0 ), self.joinNotice, Color.White )
+	end
 end
 
 function JoinLeave:PlayerQuit( args )
 	Network:Broadcast( "PlayerQuit", { player = args.player } )
 
 	Events:Fire( "ToDiscordConsole", { text = ">" .. args.player:GetName() .. " left the server." } )
+end
+
+function JoinLeave:SetJoinNotice( text )
+	self.joinNotice = text
 end
 
 joinLeave = JoinLeave()

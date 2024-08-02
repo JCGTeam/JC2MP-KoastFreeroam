@@ -6,6 +6,7 @@ function ManhuntPlayer:__init( player, Manhunt )
 	self.start_pos = player:GetPosition()
 	self.start_world = player:GetWorld()
 	self.inventory = player:GetInventory()
+	self.health = player:GetHealth()
 	self.color = player:GetColor()
 	self.oob = false
 	self.pts = 0
@@ -28,13 +29,13 @@ function ManhuntPlayer:Spawn()
 	self.player:ClearInventory()
 	if self.Manhunt.it == self.player then
 		self.player:SetColor( Color( 255, 170, 0 ) )
-		self.player:GiveWeapon( 0, Weapon(Weapon.Revolver) )
-		self.player:GiveWeapon( 1, Weapon(Weapon.SMG) )
-		self.player:GiveWeapon( 2, Weapon(Weapon.MachineGun) )
+		self.player:GiveWeapon( 0, Weapon( Weapon.Revolver ) )
+		self.player:GiveWeapon( 1, Weapon( Weapon.SMG ) )
+		self.player:GiveWeapon( 2, Weapon( Weapon.MachineGun ) )
 	else
-		self.player:GiveWeapon( 0, Weapon(Weapon.Revolver) )
-		self.player:GiveWeapon( 1, Weapon(Weapon.Sniper) )
-		self.player:GiveWeapon( 2, Weapon(Weapon.MachineGun) )
+		self.player:GiveWeapon( 0, Weapon( Weapon.Revolver ) )
+		self.player:GiveWeapon( 1, Weapon( Weapon.Sniper ) )
+		self.player:GiveWeapon( 2, Weapon( Weapon.MachineGun ) )
 		self.player:SetColor( Color.White )
 	end
 	self.player:SetHealth( 1 )
@@ -44,11 +45,11 @@ end
 function ManhuntPlayer:Leave()
 	self.player:SetWorld( self.start_world )
 	self.player:Teleport( self.start_pos, Angle() )
-	self.player:SetHealth( 1 )
+	self.player:SetHealth( self.health )
 
 	self.player:ClearInventory()
 	self.player:SetNetworkValue( "GameMode", "FREEROAM" )
-	for k,v in pairs(self.inventory) do
+	for k,v in pairs( self.inventory ) do
 		self.player:GiveWeapon( k, v )
 	end
 	self.player:SetColor( self.color )

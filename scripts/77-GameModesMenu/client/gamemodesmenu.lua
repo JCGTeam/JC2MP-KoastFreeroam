@@ -29,6 +29,7 @@ function GameModesMenu:__init()
 	self.tetrisimage = Image.Create( AssetLocation.Resource, "TetrisICO" )
 	self.pongimage = Image.Create( AssetLocation.Resource, "PongICO" )
 	self.casinoimage = Image.Create( AssetLocation.Resource, "CasinoICO" )
+	self.customimage = Image.Create( AssetLocation.Resource, "CustomICO" )
 
 	self.resizer_txt = "Черный ниггер"
     self:CreateWindow()
@@ -36,11 +37,15 @@ function GameModesMenu:__init()
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
 		self:Lang()
+	else
+		self.customButton_txt = "Неизвестно"
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "OpenGameModesMenu", self, self.OpenGameModesMenu )
 	Events:Subscribe( "CloseGameModesMenu", self, self.CloseGameModesMenu )
+	Events:Subscribe( "AddCustomGameModeButton", self, self.AddCustomGameModeButton )
+	Events:Subscribe( "RemoveCustomGameModeButton", self, self.RemoveCustomGameModeButton )
 end
 
 function GameModesMenu:Lang()
@@ -65,6 +70,8 @@ function GameModesMenu:Lang()
 	self.mainButton.pong:SetToolTip( "Gopnik waiting you in pong." )
 	self.mainButton.casino:SetText( "Casino" )
 	self.mainButton.casino:SetToolTip( "Money gambling." )
+
+	self.customButton_txt = "Unknown"
 end
 
 function GameModesMenu:CreateGameModesMenuButton( scroll, title, image, description, pos, event )
@@ -117,6 +124,9 @@ function GameModesMenu:OpenGameModesMenu()
 			self.mainButton.tetris:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.mainButton.pong:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.mainButton.casino:SetFont( AssetLocation.SystemFont, "Impact" )
+			if self.mainButton.custom then
+				self.mainButton.custom:SetFont( AssetLocation.SystemFont, "Impact" )
+			end
 		end
 
 		if not self.RenderEvent then
@@ -228,6 +238,55 @@ function GameModesMenu:CreateWindow()
 	self.mainButton.casino:Subscribe( "Press", self, self.CasinoToggle )
 end
 
+function GameModesMenu:AddCustomGameModeButton( args )
+	if not self.mainButton.custom then
+		local textSize = 19
+		local textWidth = Render:GetTextWidth( self.resizer_txt, textSize )
+		local spacing = textWidth + 15
+		spacing = textWidth / 1.2 + 15
+
+		self.mainButton.custom_IMG = ImagePanel.Create( self.mainButton.scroll_mg )
+		self.mainButton.custom_IMG:SetImage( self.customimage )
+		self.mainButton.custom_IMG:SetPosition( Vector2( self.mainButton.casino_IMG:GetPosition().x + spacing, 0 ) )
+		self.mainButton.custom_IMG:SetSize( Vector2( textWidth / 1.2, textWidth / 1.2 ) )
+
+		self.mainButton.custom = MenuItem.Create( self.mainButton.scroll_mg )
+		self.mainButton.custom:SetPosition( self.mainButton.custom_IMG:GetPosition() )
+		self.mainButton.custom:SetSize( Vector2( self.mainButton.custom_IMG:GetSize().x, textWidth * 1.25 / 1.15 ) )
+		self.mainButton.custom:SetText( ( args and args.title ) or self.customButton_txt )
+		self.mainButton.custom:SetTextPadding( Vector2( 0, textWidth / 1.15 ), Vector2.Zero )
+		self.mainButton.custom:SetTextSize( textSize )
+		if args then
+			if args.description then
+				self.mainButton.custom:SetToolTip( args.description )
+			end
+			if args.fireevent then
+				self.customButtonEvent = self.mainButton.custom:Subscribe( "Press", function() self:CustomToggle( args.fireevent ) end )
+			end
+		end
+
+		if LocalPlayer:GetValue( "SystemFonts" ) then
+			self.mainButton.custom:SetFont( AssetLocation.SystemFont, "Impact" )
+		end
+	else
+		self.mainButton.custom:SetText( ( args and args.title ) or self.customButton_txt )
+		if args then
+			if args.description then
+				self.mainButton.custom:SetToolTip( args.description )
+			end
+			if args.fireevent then
+				if self.customButtonEvent then self.mainButton.custom:Unsubscribe( self.customButtonEvent ) end
+				self.customButtonEvent = self.mainButton.custom:Subscribe( "Press", function() self:CustomToggle( args.fireevent ) end )
+			end
+		end
+	end
+end
+
+function GameModesMenu:RemoveCustomGameModeButton()
+	if self.mainButton.custom_IMG then self.mainButton.custom_IMG:Remove() self.mainButton.custom_IMG = nil end
+	if self.mainButton.custom then self.mainButton.custom:Remove() self.mainButton.custom = nil end
+end
+
 function GameModesMenu:HuntToggle()
 	Events:Fire( "GoHunt" )
 	self:GameModesMenuClosed()
@@ -278,6 +337,11 @@ end
 
 function GameModesMenu:CasinoToggle()
 	Events:Fire( "OpenCasinoMenu" )
+	self:GameModesMenuClosed()
+end
+
+function GameModesMenu:CustomToggle( fireevent )
+	Events:Fire( fireevent )
 	self:GameModesMenuClosed()
 end
 

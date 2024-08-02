@@ -206,9 +206,9 @@ function Admin:saveMessages( args )
 end
 
 function Admin:onModuleUnload()
-	for vehicle in pairs ( self.vehicles ) do
-		if IsValid ( vehicle, false ) then
-			vehicle:Remove()
+	for k, v in pairs( self.vehicles ) do
+		if IsValid(v) then
+			v:Remove()
 		end
 	end
 end
@@ -222,6 +222,12 @@ end
 
 function Admin:onPlayerQuit( args )
 	self.canChat [ tostring ( args.player:GetSteamId() ) ] = nil
+
+	local pId = args.player:GetId()
+	if self.vehicles [ pId ] and IsValid( self.vehicles [ pId ] ) then
+		self.vehicles [ pId ]:Remove()
+		self.vehicles [ pId ] = nil
+	end
 end
 
 function Admin:requestPermissions( _, player )
@@ -484,7 +490,12 @@ function Admin:executeAction ( args, player )
 				end
 			elseif ( args [ 1 ] == "player.warp" ) then
 				if IsValid ( args [ 2 ], false ) then
+					if player:GetWorld() ~= args [ 2 ]:GetWorld() then
+						player:Message ( "Игрок в другом мире!", "err" )
+						return
+					end
 					local playerPos = args [ 2 ]:GetPosition()
+--					player:SetWorld( args [ 2 ]:GetWorld() )
 					player:SetPosition ( playerPos + Vector3 ( 2, 0, 0 ) )
 					player:Message( "Вы телепортировались к ".. args [ 2 ]:GetName(), "info" )
 --					for _, thePlayer in pairs ( self.canChat ) do
@@ -498,7 +509,12 @@ function Admin:executeAction ( args, player )
 			elseif ( args [ 1 ] == "player.warpto" ) then
 				if IsValid ( args [ 2 ], false ) then
 					if IsValid ( args [ 3 ], false ) then
+						if args [ 2 ]:GetWorld() ~= args [ 3 ]:GetWorld() then
+							player:Message ( "Игроки в разных мирах!", "err" )
+							return
+						end
 						local playerPos = args [ 2 ]:GetPosition()
+--						args [ 3 ]:SetWorld( args [ 2 ]:GetWorld() )
 						args [ 3 ]:SetPosition ( playerPos + Vector3 ( 2, 0, 0 ) )
 --						for _, thePlayer in pairs ( self.canChat ) do
 --							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." телепортировал " .. args [ 3 ]:GetName() .. " к " .. args [ 2 ]:GetName() } )
@@ -539,10 +555,9 @@ function Admin:executeAction ( args, player )
 						else
 							template = ""
 						end
-						for vehicle in pairs ( self.vehicles ) do
-							if IsValid ( vehicle, false ) then
-								vehicle:Remove()
-							end
+						if self.vehicles [ args [ 2 ]:GetId() ] then
+							self.vehicles [ args [ 2 ]:GetId() ]:Remove()
+							self.vehicles [ args [ 2 ]:GetId() ] = nil
 						end
 						local vehicle = Vehicle.Create (
 							{
@@ -553,12 +568,12 @@ function Admin:executeAction ( args, player )
 							}
 						)
 						if ( vehicle ) then
-							vehicle:SetUnoccupiedRespawnTime( 30 )
+							vehicle:SetUnoccupiedRespawnTime( 15 )
 							vehicle:SetDeathRemove( true )
 							vehicle:SetUnoccupiedRemove( true )
 							--vehicle:SetWorld( args [ 2 ]:GetWorld() )
 							args [ 2 ]:EnterVehicle ( vehicle, VehicleSeat.Driver )
-							self.vehicles [ vehicle ] = vehicle
+							self.vehicles [ args [ 2 ]:GetId() ] = vehicle
 							player:Message( "Вы дали ".. args [ 2 ]:GetName() .." транспорт ".. tostring ( Vehicle.GetNameByModelId ( args [ 3 ] ) ), "info" )
 							print( player:GetName() .. " give ".. args [ 2 ]:GetName() .. " vehicle ".. tostring ( Vehicle.GetNameByModelId ( args [ 3 ] ) ) )
 							Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " give ".. args [ 2 ]:GetName() .. " vehicle ".. tostring ( Vehicle.GetNameByModelId ( args [ 3 ] ) ) } )

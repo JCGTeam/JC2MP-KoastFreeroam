@@ -60,7 +60,6 @@ function Lobby:AddToQueue( player )
 
 			if self:GetQueue():GetSize() == self.minPlayers then
 				self:Broadcast( "Игра начинается через: " .. math.ceil(self.startingTime - self.timer:GetSeconds()) .. " секунд.", Color( 228, 142, 56 ) )
-				self.inventory = player:GetInventory()
 			else
 				--self:Broadcast("Wait time extended.", Color.Yellow, player)
 			end
@@ -198,15 +197,15 @@ function Lobby:PreTick()
 				local position = center + (angle * (Vector3.Forward * self.radius))
 				local color = Color.FromHSV(hue, 1, 1)
 
-				player:SetWorld(self.world)
+				player:SetWorld( self.world )
 				player:SetNetworkValue( "GameMode", "Царь Горы" )
-				player:SetPosition(position + (Vector3.Up * 5))
-				player:SetAngle(angle)
+				player:SetPosition( position + (Vector3.Up * 5) )
+				player:SetAngle( angle )
 				player:SetHealth( 1 )
 				player:ClearInventory()
-				player:GiveWeapon( 2, Weapon(Weapon.PanayRocketLauncher) )
+				player:GiveWeapon( 2, Weapon( Weapon.PanayRocketLauncher ) )
 
-				player:SetNetworkValue("KhillFiring", true)
+				player:SetNetworkValue( "KhillFiring", true )
 
 				theta = theta + ((math.pi * 2) / self:GetQueue():GetSize()) % (math.pi * 2)
 				hue = math.floor(hue + (360 / self:GetQueue():GetSize())) % 360
@@ -285,26 +284,25 @@ function Lobby:PlayerWorldChange( args )
 		self.playerOrigins[player:GetId()] = {
 			position = player:GetPosition() + (Vector3.Up * 5),
 			angle = player:GetAngle(),
-			inventory = player:GetInventory()
+			inventory = player:GetInventory(),
+			health = player:GetHealth()
 		}
 	elseif self.world == args.old_world then
 		local pId = player:GetId()
 
-		player:SetPosition(self.playerOrigins[pId].position)
-		player:SetAngle(self.playerOrigins[pId].angle)
+		player:SetPosition( self.playerOrigins[pId].position )
+		player:SetAngle( self.playerOrigins[pId].angle )
+		player:SetHealth( self.playerOrigins[pId].health )
+		player:ClearInventory()
 
-		for slot, weapon in pairs(self.playerOrigins[pId].inventory) do
-			player:GiveWeapon(slot, weapon)
+		for slot, weapon in pairs( self.playerOrigins[pId].inventory ) do
+			player:GiveWeapon( slot, weapon )
 		end
 
 		if self:GetState() < GamemodeState.ENDING then
 			self:Broadcast( player:GetName() .. " покинул лобби.", Color( 228, 142, 56 ), player )
 			KingHill.SendMessage( args.player, "Вы покинули лобби.", Color( 228, 142, 56 ) )
 			player:SetNetworkValue( "GameMode", "FREEROAM" )
-			player:ClearInventory()
-			for k,v in pairs(self.inventory) do
-				player:GiveWeapon( k, v )
-			end
 		end
 	elseif self:GetState() == GamemodeState.WAITING and self:GetQueue():Contains(player) then -- Catch people switching worlds during waiting period
 		self:RemoveFromQueue(player)

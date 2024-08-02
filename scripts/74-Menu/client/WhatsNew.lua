@@ -36,10 +36,6 @@ function WhatsNew:Open( args )
 		sound:SetParameter(0,1)
 	end
 
-	if not self.RenderEvent then
-		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-	end
-
 	self.actions = {
 		[3] = true,
 		[4] = true,
@@ -58,9 +54,8 @@ function WhatsNew:Open( args )
 		[16] = true
 	}
 
-	if not self.LocalPlayerInputEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
+	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 
 	if not self.Menu_background then
 		self.Menu_background = Rectangle.Create()
@@ -100,7 +95,7 @@ function WhatsNew:Render()
 
 	if self.usepause then
 		Game:FireEvent( "ply.pause" )
-		Render:DrawText( Vector2( 20, Render.Height - 40 ), self.copyright_txt, self.text_clr, 15 )
+		Render:DrawText( Vector2( 20, Render.Height - Render:GetTextHeight( self.copyright_txt ) - 20 ), self.copyright_txt, self.text_clr, 15 )
 	end
 end
 
@@ -123,6 +118,7 @@ function WhatsNew:Close()
 
 	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+
 	if self.Menu_button then self.Menu_button:Remove() self.Menu_button = nil end
 	if self.Menu_background then self.Menu_background:Remove() self.Menu_background = nil end
 

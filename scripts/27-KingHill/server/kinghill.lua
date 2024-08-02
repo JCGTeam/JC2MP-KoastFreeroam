@@ -107,7 +107,7 @@ function KingHill:PlayerChat( args )
 				end
 			end
 		elseif args[1] == "forcekhill" then
-			if table.find(self.admins, player:GetSteamId().id) then
+			if player:GetValue( "Tag" ) == "Creator" or player:GetValue( "Tag" ) == "GlAdmin" then
 				for k, lobby in pairs(self.lobbies) do
 					lobby:Disband()
 				end

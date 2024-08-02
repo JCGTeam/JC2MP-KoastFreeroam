@@ -172,8 +172,8 @@ function CarBattles:UpdateScores( scores )
 end
 
 function CarBattles:RightText( msg, y, color )
-	local w = Render:GetTextWidth( msg, TextSize.Default )
-	Render:DrawText( Vector2(Render.Width - w - 5, y), msg, color, TextSize.Default )
+	local w = Render:GetTextWidth( msg )
+	Render:DrawShadowedText( Vector2( Render.Width - w - 5, y ), msg, color, Color.Black )
 end
 
 function CarBattles:Render()
@@ -206,16 +206,11 @@ function CarBattles:Render()
 	if Game:GetState() ~= GUIState.Game then return end
 
 	local color = Color.White
-	local shadowColor = Color.Black
-
-	self:RightText( self.yourscorestxt .. self.pts, Render:GetTextHeight( "A" ) * 3.5 + 1, shadowColor )
-	self:RightText( self.leaderboardtxt, Render:GetTextHeight( self.yourscorestxt .. self.pts ) * 5 + 1, shadowColor )
 
 	self:RightText( self.yourscorestxt .. self.pts, Render:GetTextHeight( "A" ) * 3.5, Color( 255, 255, 0 ) )
 	self:RightText( self.leaderboardtxt, Render:GetTextHeight( self.yourscorestxt .. self.pts ) * 5, Color( 255, 255, 0 ) )
 
 	for i = 1, math.min(#self.scores, 10), 1 do
-		self:RightText( ""..i..". "..self.scores[i].name..": "..self.scores[i].pts, Render:GetTextHeight( self.leaderboardtxt ) * 5 + 1 + i * 16, shadowColor )
 		self:RightText( ""..i..". "..self.scores[i].name..": "..self.scores[i].pts, Render:GetTextHeight( self.leaderboardtxt ) * 5 + i * 16, self.scores[i].it and Color( 255, 170, 0 ) or color )
 	end
 

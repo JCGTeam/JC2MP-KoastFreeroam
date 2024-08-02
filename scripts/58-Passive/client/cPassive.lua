@@ -45,7 +45,9 @@ function Passive:Lang()
 end
 
 function Passive:LocalPlayerWorldChange()
-	Network:Send( "Disable" )
+	if not LocalPlayer:GetValue( "Passive" ) then return end
+
+	Network:Send( "Toggle", not LocalPlayer:GetValue( "Passive" ) )
 end
 
 function Passive:LocalPlayerInput( args )

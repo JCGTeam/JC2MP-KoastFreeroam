@@ -44,6 +44,8 @@ function RaceManagerJoinable:CreateRace()
 			info.position = player:GetPosition()
 			info.modelId = player:GetModelId()
 			info.inventory = player:GetInventory()
+			info.health = player:GetHealth()
+			player:SetHealth( 1 )
 			player:ClearInventory()
 			self.playerIdToRacerInfo[player:GetId()] = info
 		end
@@ -106,6 +108,9 @@ function RaceManagerJoinable:ManagedPlayerLeave(player)
 	if racerInfo then
 		player:SetPosition(racerInfo.position)
 		player:SetModelId(racerInfo.modelId)
+		player:SetHealth(racerInfo.health)
+		player:ClearInventory()
+
 		for slot , weapon in pairs(racerInfo.inventory) do
 			player:GiveWeapon(slot , weapon)
 		end

@@ -21,7 +21,7 @@ function CBoardHud:__init( CBoardClient, width, height, columns )
 	self.CBoardClient = CBoardClient
 
 	-- Settings:
-	self.fBoardWidth = width
+	self.fBoardWidth = math.clamp( Render:GetTextWidth( "A" ) / 11 * width, 0, 0.95 )
 	self.fBoardHeight = height
 
 	self.Color_BordersColor = Color.White

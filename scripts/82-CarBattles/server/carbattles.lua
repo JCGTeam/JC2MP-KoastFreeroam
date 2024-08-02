@@ -43,6 +43,7 @@ function CarBattlesPlayer:__init( player, CarBattles )
 	self.start_pos = player:GetPosition()
 	self.start_world = player:GetWorld()
 	self.inventory = player:GetInventory()
+	self.health = player:GetHealth()
 	self.oob = false
 	self.pts = 0
 	self.dead = false
@@ -92,7 +93,7 @@ function CarBattlesPlayer:Leave()
 	self.player:SetWorld( self.start_world )
 	self.player:SetNetworkValue( "GameMode", "FREEROAM" )
 	self.player:Teleport( self.start_pos, Angle() )
-	self.player:SetHealth( 1 )
+	self.player:SetHealth( self.health )
 
 	self.player:ClearInventory()
 	for k,v in pairs(self.inventory) do

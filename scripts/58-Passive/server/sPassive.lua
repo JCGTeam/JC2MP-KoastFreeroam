@@ -20,7 +20,6 @@ function Passive:__init()
 
 	Network:Subscribe( "TogglePVPMode", self, self.TogglePVPMode )
 	Network:Subscribe( "Toggle", self, self.Toggle )
-	Network:Subscribe( "Disable", self, self.Disable )
 	--Network:Subscribe("CheckPassive", self, self.CheckPassive)
 
 	--Events:Subscribe( "PlayerExitVehicle", self, self.PlayerExitVehicle )
@@ -51,19 +50,6 @@ function Passive:Toggle( state, sender )
 		Network:Send( sender, "Text", "Passive mode " .. (state and "enabled" or "disabled") )
 	else
 		Network:Send( sender, "Text", "Мирный режим " .. (state and "включён" or "отключён") )
-	end
-
-	local steamid = tostring( sender:GetSteamId().id )
-	self.diff[steamid] = not self.diff[steamid] or nil
-	self.passives[steamid] = state or nil
-end
-
-function Passive:Disable( state, sender )
-	sender:SetNetworkValue("Passive", state or nil)
-
-	local vehicle = sender:GetVehicle()
-	if IsValid(vehicle) and vehicle:GetDriver() == sender then
-		vehicle:SetInvulnerable(state == true)
 	end
 
 	local steamid = tostring( sender:GetSteamId().id )

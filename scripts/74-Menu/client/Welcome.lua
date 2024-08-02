@@ -23,15 +23,13 @@ function WelcomeScreen:Open()
 	self.text_clr = Color.White
 	self.background_clr = Color( 10, 10, 10, 200 )
 
-	if not self.RenderEvent then
-		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-	end
-
-	if not self.LocalPlayerInputEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
+	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+	if not self.ResolutionChangeEvent then self.ResolutionChangeEvent = Events:Subscribe( "ResolutionChange", self, self.ResolutionChange ) end
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 
 	self.rico = Image.Create( AssetLocation.Resource, "Rico" )
+	self.rico:SetSize( Vector2( 350, 700 ) )
+	self.rico:SetPosition( Vector2( Render.Size.x - 350, Render.Size.y - 520 ) )
 
 	if not self.Menu_background then
 		self.Menu_background = Rectangle.Create()
@@ -46,7 +44,7 @@ function WelcomeScreen:Open()
 		self.Menu_button:SetDock( GwenPosition.Fill )
 		self.Menu_button:SetText( "Продолжить ( ͡° ͜ʖ ͡°)" )
 		self.Menu_button:SetTextSize( 15 )
-		self.Menu_button:Subscribe( "Press", self, self.Menu )
+		self.Menu_button:Subscribe( "Press", self, self.Close )
 	end
 
 	if not self.Help_background then
@@ -79,20 +77,24 @@ function WelcomeScreen:Render()
 
 	Render:FillArea( Vector2.Zero, Render.Size, self.background_clr )
 
-	self.rico:SetPosition( Vector2( Render.Width - 350, Render.Height - 520 ) )
-	self.rico:SetSize( Vector2( 350, 700 ) )
 	self.rico:Draw()
 
 	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.title, Render.Size.x / 40 ) / 2, Render.Size.x / 7 ), self.title, self.text_clr, Render.Size.x / 40 )
 	Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.text, Render.Size.x / 70 ) / 2, Render.Size.x / 5 ), self.text, self.text_clr, Render.Size.x / 70 )
-	Render:DrawText( Vector2( 20, Render.Height - 40 ), self.copyright_txt, self.text_clr, 15 )
+	Render:DrawText( Vector2( 20, Render.Height - Render:GetTextHeight( self.copyright_txt ) - 20 ), self.copyright_txt, self.text_clr, 15 )
 end
 
-function WelcomeScreen:Menu()
-	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+function WelcomeScreen:ResolutionChange( args )
+	self.rico:SetPosition( Vector2( args.size.x - 350, args.size.y - 520 ) )
+end
+
+function WelcomeScreen:Close()
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.ResolutionChangeEvent then Events:Unsubscribe( self.ResolutionChangeEvent ) self.ResolutionChangeEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+
 	if self.Menu_background then self.Menu_button:Remove() self.Menu_button = nil self.Menu_background:Remove() self.Menu_background = nil end
 	if self.Help_button then self.Help_button:Remove() self.Help_button = nil end
 	if self.Help_background then self.Help_background:Remove() self.Help_background = nil end

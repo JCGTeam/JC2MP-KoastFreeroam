@@ -232,15 +232,16 @@ function Lobby:PreTick()
 					vehicleArgs[k] = v
 				end
 
-				local vehicle = Vehicle.Create(vehicleArgs)
+				local vehicle = Vehicle.Create( vehicleArgs )
 
-				player:SetWorld(self.world)
+				player:SetWorld( self.world )
 				player:SetNetworkValue( "GameMode", "Трон" )
-				player:SetPosition(position + (Vector3.Up * 5))
+				player:SetPosition( position + (Vector3.Up * 5) )
+				player:SetHealth( 1 )
 				player:ClearInventory()
 
-				player:SetValue("TronVehicle", vehicle:GetId())
-				player:SetNetworkValue("TronFiring", true)
+				player:SetValue( "TronVehicle", vehicle:GetId() )
+				player:SetNetworkValue( "TronFiring", true )
 
 				theta = theta + ((math.pi * 2) / self:GetQueue():GetSize()) % (math.pi * 2)
 				hue = math.floor(hue + (360 / self:GetQueue():GetSize())) % 360
@@ -341,16 +342,19 @@ function Lobby:PlayerWorldChange( args )
 		self.playerOrigins[player:GetId()] = {
 			position = player:GetPosition() + (Vector3.Up * 5),
 			angle = player:GetAngle(),
-			inventory = player:GetInventory()
+			inventory = player:GetInventory(),
+			health = player:GetHealth()
 		}
 	elseif self.world == args.old_world then
 		local pId = player:GetId()
 
-		player:SetPosition(self.playerOrigins[pId].position)
-		player:SetAngle(self.playerOrigins[pId].angle)
+		player:SetPosition( self.playerOrigins[pId].position )
+		player:SetAngle( self.playerOrigins[pId].angle )
+		player:SetHealth( self.playerOrigins[pId].health )
+		player:ClearInventory()
 
-		for slot, weapon in pairs(self.playerOrigins[pId].inventory) do
-			player:GiveWeapon(slot, weapon)
+		for slot, weapon in pairs( self.playerOrigins[pId].inventory ) do
+			player:GiveWeapon( slot, weapon )
 		end
 
 		if self:GetState() < GamemodeState.ENDING then

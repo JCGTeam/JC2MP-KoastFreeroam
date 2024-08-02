@@ -98,7 +98,7 @@ function Tron:EnterLobby()
 	}
 	self.collisionFired = false
 
-	if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.GameRender ) end
+	if not self.GameRenderOpaqueEvent then self.GameRenderOpaqueEvent = Events:Subscribe( "GameRenderOpaque", self, self.GameRenderOpaque ) end
 	if not self.CaclViewEvent then self.CaclViewEvent = Events:Subscribe( "CalcView", self, self.CalcView ) end
 	if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll ) end
 	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
@@ -125,7 +125,7 @@ function Tron:ExitLobby()
 	Game:FireEvent("ply.vulnerable")
 	self.inLobby = false
 
-	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
+	if self.GameRenderOpaqueEvent then Events:Unsubscribe( self.GameRenderOpaqueEvent ) self.GameRenderOpaqueEvent = nil end
 	if self.CaclViewEvent then Events:Unsubscribe( self.CaclViewEvent ) self.CaclViewEvent = nil end
 	if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
 	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
@@ -498,11 +498,10 @@ function Tron:Render()
 		end
 
 		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.nameT, Color.White, 20 )
-		Render:FillArea( Vector2.Zero, Render.Size, Color( 0, 0, 255, 10 ) )
 	end
 end
 
-function Tron:GameRender()
+function Tron:GameRenderOpaque()
 	if self.state == GamemodeState.INPROGRESS then
 		for k, segments in pairs(self.segments) do
 			for k, segment in ipairs(segments) do
@@ -511,7 +510,7 @@ function Tron:GameRender()
 		end
 	end
 	if self.state == GamemodeState.INPROGRESS or self.state == GamemodeState.COUNTDOWN or self.state == GamemodeState.PREPARING then
-		Render:FillArea( Vector2.Zero, Render.Size, Color( 0, 0, 255, 50 ) )
+		Render:FillArea( Vector2.Zero, Render.Size, Color( 0, 0, 255, 20 ) )
 	end
 end
 
