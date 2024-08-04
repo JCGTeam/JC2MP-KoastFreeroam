@@ -210,7 +210,7 @@ function Derby:RespawnPlayers()
 	for k,p in pairs(self.eventPlayers) do
 		if (p.player:InVehicle() == false) then
 			local vehicle = p.derbyVehicle
-			if vehicle and IsValid( vehicle ) then
+			if IsValid( vehicle ) then
 				p.player:EnterVehicle(vehicle, VehicleSeat.Driver)
 			end
 		else

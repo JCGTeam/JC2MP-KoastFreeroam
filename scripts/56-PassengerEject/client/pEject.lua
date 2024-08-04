@@ -17,7 +17,7 @@ function Eject:LocalPlayerInput( args )
 		local vehicle = LocalPlayer:GetVehicle()
 
 		if vehicle and LocalPlayer:InVehicle() then
-			if vehicle:GetDriver() and IsValid( vehicle:GetDriver() ) and vehicle:GetDriver().__type ~= 'LocalPlayer' and not self.invalidVehicles[vehicle:GetModelId()] then
+			if vehicle:GetDriver() and vehicle:GetDriver().__type ~= 'LocalPlayer' and not self.invalidVehicles[vehicle:GetModelId()] then
 				local args = {}
 				args.vehicle = vehicle
 				Network:Send( "EjectPassenger", args )

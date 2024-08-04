@@ -224,7 +224,7 @@ function Admin:onPlayerQuit( args )
 	self.canChat [ tostring ( args.player:GetSteamId() ) ] = nil
 
 	local pId = args.player:GetId()
-	if self.vehicles [ pId ] and IsValid( self.vehicles [ pId ] ) then
+	if IsValid( self.vehicles [ pId ] ) then
 		self.vehicles [ pId ]:Remove()
 		self.vehicles [ pId ] = nil
 	end
@@ -556,8 +556,10 @@ function Admin:executeAction ( args, player )
 							template = ""
 						end
 						if self.vehicles [ args [ 2 ]:GetId() ] then
-							self.vehicles [ args [ 2 ]:GetId() ]:Remove()
-							self.vehicles [ args [ 2 ]:GetId() ] = nil
+							if IsValid( self.vehicles [ pId ] ) then
+								self.vehicles [ args [ 2 ]:GetId() ]:Remove()
+								self.vehicles [ args [ 2 ]:GetId() ] = nil
+							end
 						end
 						local vehicle = Vehicle.Create (
 							{

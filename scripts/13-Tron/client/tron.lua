@@ -152,7 +152,7 @@ function Tron:CalcView()
 
 				local player = players[self.spec.listOffset + 1]
 
-				if self.spec.player and IsValid(self.spec.player) and player ~= self.spec.player then
+				if IsValid(self.spec.player) and player ~= self.spec.player then
 					self.spec.listOffset = table.find(players, self.spec.player)
 
 					if self.spec.listOffset then
@@ -331,7 +331,7 @@ function Tron:PreTick()
 		for k, player in ipairs(players) do
 			local vehicle = player:GetVehicle()
 
-			if IsValid(player) and player:InVehicle() and IsValid(vehicle) and player == vehicle:GetDriver() then
+			if IsValid(vehicle) and player == vehicle:GetDriver() and IsValid(player) and player:InVehicle() then
 				local vehicleId = vehicle:GetId()
 
 				if not self.segments[vehicleId] then
@@ -362,7 +362,7 @@ function Tron:PreTick()
 
 					local vehicle = LocalPlayer:GetVehicle()
 
-					if LocalPlayer:InVehicle() and IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
+					if vehicle and vehicle:GetDriver() == LocalPlayer and LocalPlayer:InVehicle() then
 						if vehicle ~= vehicle or k < #segments then
 							local vehPos = vehicle:GetPosition()
 							local vehAngle = vehicle:GetAngle()
@@ -428,7 +428,9 @@ function Tron:Render()
 
 		if self.queue then
 			for k, player in ipairs(self.queue) do
-				DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - (k * 20) ), player:GetName(), player:GetColor() )
+				if IsValid( player ) then
+					DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - (k * 20) ), player:GetName(), player:GetColor() )
+				end
 			end
 
 			DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#self.queue + 1) * 20) ), self.nameTTw, Color.White, 20 )

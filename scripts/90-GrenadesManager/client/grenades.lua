@@ -77,7 +77,7 @@ function Grenades:LocalPlayerInput( args )
 	
 		local driver = LocalPlayer:GetVehicle() and LocalPlayer:GetVehicle():GetDriver()
 
-		if driver and IsValid( driver ) and driver.__type == 'LocalPlayer' then
+		if driver and driver.__type == 'LocalPlayer' then
 			local vehicle = LocalPlayer:GetVehicle()
 			local vehicleModel = vehicle:GetModelId()
 			local vehicleTemplate = vehicle:GetTemplate()

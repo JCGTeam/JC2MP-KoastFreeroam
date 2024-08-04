@@ -206,7 +206,7 @@ function Tuner:RemoveNeon( vehicle )
 
 	local vId = vehicle:GetId()
 
-	if self.neons[vId] and IsValid( self.neons[vId] ) then
+	if IsValid( self.neons[vId] ) then
 		self.neons[vId]:Remove()
 		self.neons[vId] = nil
 	end
@@ -1014,7 +1014,7 @@ function Tuner:InitSuspensionGUI()
 end
 
 function Tuner:SyncTune()
-	if not ( self.veh and IsValid( self.veh ) ) then return end
+	if not IsValid( self.veh ) then return end
 
 	if self.veh:GetDriver() == LocalPlayer then
 		local args = {}
@@ -1317,7 +1317,7 @@ function Tuner:LocalPlayerInput( args )
 
 	local vehicle = LocalPlayer:GetVehicle()
 
-	if LocalPlayer:InVehicle() and IsValid( vehicle ) and vehicle:GetDriver() == LocalPlayer then
+	if vehicle and vehicle:GetDriver() == LocalPlayer and LocalPlayer:InVehicle() then
 		if Key:IsDown(90) then
 			local vehicleVelocity = vehicle:GetLinearVelocity()
 

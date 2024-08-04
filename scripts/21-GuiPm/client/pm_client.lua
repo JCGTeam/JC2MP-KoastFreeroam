@@ -350,7 +350,8 @@ function PM:addMessage( data )
 
 		if ( row ~= nil ) then
 			local player = row:GetDataObject( "id" )
-			if ( data.player == player ) then
+
+			if IsValid( player ) and data.player == player then
 				if ( #self.messages [ tostring( steamId ) ] > 0 ) then
 					self.GUI.messagesLabel:SetText( self.GUI.messagesLabel:GetText() .."\n".. tostring ( data.text ) )
 				else

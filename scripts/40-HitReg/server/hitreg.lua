@@ -17,7 +17,7 @@ function HitReg:PostTick()
         local explosionTime = vehicleInfo.explosionTime
 
         if currentTime - explosionTime >= Config:GetValue( "Vehicle", "DeathRespawnTime" ) then
-            if vehicle and IsValid ( vehicle ) then
+            if IsValid( vehicle ) then
                 vehicle:Respawn()
             end
             table.insert( removedIndices, i )

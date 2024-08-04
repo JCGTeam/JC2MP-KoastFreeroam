@@ -27,7 +27,7 @@ function ResourceItems:PostTick()
 		for i = 1, #self.crates do
 			if self.crates[i] then
 				local ent = StaticObject.GetById( self.crates[i].id )
-				if ent and IsValid( ent ) then
+				if IsValid( ent ) then
 					local radius = ent:GetPosition():Distance( playerPosition )
 
 					if radius <= 100 then

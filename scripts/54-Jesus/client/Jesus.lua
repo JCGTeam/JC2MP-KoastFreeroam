@@ -46,7 +46,7 @@ end
 function Jesus:Master( player )
 	if player:GetValue( "WaterWalk" ) then
 		local PlayerVehicle	 = player:GetVehicle()
-		if PlayerVehicle and IsValid(PlayerVehicle) then
+		if IsValid(PlayerVehicle) then
 			local PlayerVehicleID = PlayerVehicle:GetModelId()
 			if self:CheckList(self.NoSurfaceVehicles, PlayerVehicleID) then
 				self:Remove(player)
@@ -118,7 +118,7 @@ end
 function Jesus:Remove( player )
 	local pId = player:GetId()
 
-	if self.Surfaces[pId] and IsValid(self.Surfaces[pId]) then
+	if IsValid(self.Surfaces[pId]) then
 		self.Surfaces[pId]:Remove()
 		self.Surfaces[pId] = nil
 	end
@@ -128,7 +128,7 @@ end
 function Jesus:Anchor( player )
 	local vehicle = player:GetVehicle()
 
-	if vehicle and IsValid(vehicle) and player:InVehicle() then
+	if IsValid(vehicle) and player:InVehicle() then
 		if Vector3.Distance(vehicle:GetPosition(), player:GetPosition()) < self.MaxDistance / 2 then
 			return vehicle
 		end
@@ -138,7 +138,7 @@ end
 
 function Jesus:RemoveAllSurfaces()
 	for k, v in pairs(self.Surfaces) do
-		if v and IsValid(v) then
+		if IsValid(v) then
 			v:Remove()
 		end
 	end
@@ -197,7 +197,7 @@ function Jesus:JesusToggle()
 end
 
 function LocalPlayer:SetSystemValue( valueName, value )
-	if self and IsValid(self) and valueName then
+	if IsValid(self) and valueName then
 		local SendInfo = {}
 			SendInfo.player	= self
 			SendInfo.name = tostring( valueName )

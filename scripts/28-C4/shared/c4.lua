@@ -43,7 +43,7 @@ end
 function C4:GetParent()
 	local parent = self.WNO:GetValue("parent")
 
-	if parent and IsValid(parent) then
+	if IsValid(parent) then
 		return parent
 	end
 

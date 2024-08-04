@@ -927,7 +927,7 @@ function Autopilot:Render()
 
 	local vehicle = LocalPlayer:GetVehicle()
 
-	if LocalPlayer:GetState() == PlayerState.InVehicle and IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
+	if vehicle and vehicle:GetDriver() == LocalPlayer and LocalPlayer:GetState() == PlayerState.InVehicle then
 		local model = vehicle:GetModelId()
 
 		if planes[model] and planes[model].available then
