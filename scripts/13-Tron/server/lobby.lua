@@ -350,7 +350,9 @@ function Lobby:PlayerWorldChange( args )
 
 		player:SetPosition( self.playerOrigins[pId].position )
 		player:SetAngle( self.playerOrigins[pId].angle )
-		player:SetHealth( self.playerOrigins[pId].health )
+		if player:GetHealth() > 0 then
+			player:SetHealth( self.playerOrigins[pId].health )
+		end
 		player:ClearInventory()
 
 		for slot, weapon in pairs( self.playerOrigins[pId].inventory ) do

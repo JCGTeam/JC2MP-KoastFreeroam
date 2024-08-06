@@ -28,7 +28,7 @@ function Jesus:__init()
 	Events:Subscribe( "PostTick", self, self.PostTick )
 	Events:Subscribe( "ModuleUnload", self, self.RemoveAllSurfaces )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
-	Events:Subscribe( "JesusToggle", self, self.JesusToggle )
+	Events:Subscribe( "ToggleJesus", self, self.ToggleJesus )
 end
 
 function Jesus:Lang()
@@ -186,7 +186,7 @@ function Jesus:CheckList( tableList, modelID )
 	return false
 end
 
-function Jesus:JesusToggle()
+function Jesus:ToggleJesus()
 	if LocalPlayer:GetWorld() ~= DefaultWorld then
 		Events:Fire( "CastCenterText", { text = self.notusable, time = 3, color = Color.Red } )
 		return

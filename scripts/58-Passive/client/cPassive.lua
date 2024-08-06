@@ -10,6 +10,9 @@ function Passive:__init()
 		self:Lang()
 	else
 		self.name = "Мирный"
+		self.passivemode = "Мирный режим "
+		self.enabled = "отключён"
+		self.disabled = "включён"
 		self.pvpblock = "Вы не можете использовать мирный режим во время боя!"
 		self.w = "Подождите "
 		self.ws = " секунд, чтобы включить/отключить мирный!"
@@ -22,9 +25,7 @@ function Passive:__init()
 		[15] = true, [137] = true, [138] = true, [139] = true
 		}
 
-	Network:Subscribe( "Text", self, self.Text )
-
-	Events:Subscribe( "PassiveOn", self, self.PassiveOn )
+	Events:Subscribe( "TogglePassive", self, self.TogglePassive )
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	Events:Subscribe( "InputPoll", self, self.InputPoll )
 	Events:Subscribe( "LocalPlayerBulletHit", self, self.LocalPlayerDamage )
@@ -38,6 +39,9 @@ end
 
 function Passive:Lang()
 	self.name = "Passive"
+	self.passivemode = "Passive mode "
+	self.enabled = "disabled"
+	self.disabled = "enabled"
 	self.pvpblock = "You cannot use Passive Mode during combat!"
 	self.w = "Wait "
 	self.ws = " seconds to toggle passive mode!"
@@ -65,18 +69,16 @@ function Passive:InputPoll()
 	Input:SetValue( Action.FireLeft, 0 )
 end
 
-function Passive:Text( message )
-	Events:Fire( "CastCenterText", { text = message, time = 3, color = Color( 0, 222, 0, 250 ) } )
-end
-
-function Passive:PassiveOn()
+function Passive:TogglePassive()
 	if LocalPlayer:GetWorld() ~= DefaultWorld then
 		Events:Fire( "CastCenterText", { text = self.notusable, time = 3, color = Color.Red } )
 		return
 	end
 
+	local state = LocalPlayer:GetValue( "Passive" )
 	local time = Client:GetElapsedSeconds()
-	if not LocalPlayer:GetValue( "Passive" ) then
+
+	if not state then
 		if LocalPlayer:GetValue( "PVPMode" ) then
 			Events:Fire( "CastCenterText", { text = self.pvpblock, time = 6, color = Color.Red } )
 			return false
@@ -88,7 +90,10 @@ function Passive:PassiveOn()
 		end
 	end
 
-	Network:Send( "Toggle", not LocalPlayer:GetValue( "Passive" ) )
+	Network:Send( "Toggle", not state )
+
+	Events:Fire( "CastCenterText", { text = self.passivemode .. ( state and self.enabled or self.disabled ), time = 3, color = Color( 0, 222, 0, 250 ) } )
+
 	self.cooltime = time + self.cooldown
 	return false
 end

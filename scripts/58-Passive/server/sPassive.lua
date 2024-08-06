@@ -45,13 +45,6 @@ function Passive:Toggle( state, sender )
 		vehicle:SetInvulnerable( state == true )
 	end
 
-	local lang = sender:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		Network:Send( sender, "Text", "Passive mode " .. (state and "enabled" or "disabled") )
-	else
-		Network:Send( sender, "Text", "Мирный режим " .. (state and "включён" or "отключён") )
-	end
-
 	local steamid = tostring( sender:GetSteamId().id )
 	self.diff[steamid] = not self.diff[steamid] or nil
 	self.passives[steamid] = state or nil

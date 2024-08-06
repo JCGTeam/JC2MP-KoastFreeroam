@@ -45,14 +45,16 @@ end
 function ManhuntPlayer:Leave()
 	self.player:SetWorld( self.start_world )
 	self.player:Teleport( self.start_pos, Angle() )
-	self.player:SetHealth( self.health )
-
+	if self.player:GetHealth() > 0 then
+		self.player:SetHealth( self.health )
+	end
 	self.player:ClearInventory()
 	self.player:SetNetworkValue( "GameMode", "FREEROAM" )
 	for k,v in pairs( self.inventory ) do
 		self.player:GiveWeapon( k, v )
 	end
 	self.player:SetColor( self.color )
+
 	Network:Send( self.player, "ManhuntExit" )
 end
 

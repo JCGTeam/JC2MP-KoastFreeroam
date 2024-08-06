@@ -108,7 +108,9 @@ function RaceManagerJoinable:ManagedPlayerLeave(player)
 	if racerInfo then
 		player:SetPosition(racerInfo.position)
 		player:SetModelId(racerInfo.modelId)
-		player:SetHealth(racerInfo.health)
+		if player:GetHealth() > 0 then
+			player:SetHealth(racerInfo.health)
+		end
 		player:ClearInventory()
 
 		for slot , weapon in pairs(racerInfo.inventory) do

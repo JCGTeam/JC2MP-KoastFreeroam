@@ -42,7 +42,6 @@ end
 function Manhunt:Enter()
 	if not self.EventRender then self.EventRender = Events:Subscribe( "Render", self, self.Render ) end
 	self.inMode = true
-	self.superman = false
 	Game:FireEvent("ply.grappling.disable")
 	Game:FireEvent("parachute00.pickup.execute")
 	--Game:FireEvent("ply.parachute.disable")
@@ -52,7 +51,6 @@ function Manhunt:Exit()
 	if self.EventRender then Events:Unsubscribe( self.EventRender ) self.EventRender = nil end
 	Waypoint:Remove()
 	self.inMode = false
-	self.superman = true
 	Game:FireEvent("ply.grappling.enable")
 	Events:Fire( "RestoreParachute" )
 	--Game:FireEvent("ply.parachute.enable")

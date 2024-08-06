@@ -19,7 +19,9 @@ function Player:Leave()
     self.player:SetWorld( self.start_world )
     self.player:SetNetworkValue( "GameMode", "FREEROAM" )
     self.player:SetPosition( self.start_pos )
-    self.player:SetHealth( self.health )
+    if self.player:GetHealth() > 0 then
+        self.player:SetHealth( self.health )
+    end
 
     self.player:ClearInventory()
     for k,v in pairs(self.inventory) do

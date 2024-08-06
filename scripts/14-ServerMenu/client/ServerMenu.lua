@@ -553,14 +553,14 @@ end
 
 function ServerMenu:CastPassive()
 	self:SetWindowVisible( not self.active )
-	Events:Fire( "PassiveOn" )
+	Events:Fire( "TogglePassive" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastJesusMode()
 	self:SetWindowVisible( not self.active )
-	Events:Fire( "JesusToggle" )
+	Events:Fire( "ToggleJesus" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
