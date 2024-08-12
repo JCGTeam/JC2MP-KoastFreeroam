@@ -118,7 +118,7 @@ function Manhunt:Render()
 
 	local pos = Vector2( (Render.Width - text_width)/2, (Render.Height - text_height)/2 )
 
-	Render:DrawShadowedText( pos, text, Color.Red, shadowColor, TextSize.Gigantic )
+	Render:DrawShadowedText( pos, text, Color.Red, Color.Black, TextSize.Gigantic )
 end
 
 manhunt = Manhunt()
