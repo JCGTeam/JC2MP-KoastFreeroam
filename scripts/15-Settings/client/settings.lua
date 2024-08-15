@@ -31,12 +31,14 @@ function Settings:__init()
         ["Admin"] = true,
         ["AdminD"] = true,
         ["ModerD"] = true,
+		["Organizer"] = true,
+		["Parther"] = true,
         ["VIP"] = true
     }
 
 	self.debug_permissions = {
-        ["Creator"] = true,
-        ["GlAdmin"] = true
+		["Creator"] = true,
+		["GlAdmin"] = true
     }
 
 	self.SkyImage2 = Image.Create( AssetLocation.Resource, "Sky2" )
@@ -129,7 +131,7 @@ function Settings:__init()
 	Events:Subscribe( "GameRender", self, self.GameRender )
 	Events:Subscribe( "OpenSettingsMenu", self, self.OpenSettingsMenu )
 	Events:Subscribe( "CloseSettingsMenu", self, self.CloseSettingsMenu )
-	Events:Subscribe( "KeyUp", self, self.KeyHide )
+	Events:Subscribe( "KeyUp", self, self.KeyUp )
 
 	self:GameLoad()
 end
@@ -798,15 +800,22 @@ function Settings:Open()
 		local gettag = LocalPlayer:GetValue( "Tag" )
 	
 		if self.permissions[gettag] then
+			local pWorld = LocalPlayer:GetWorld() == DefaultWorld
+
 			self.subcategory2:SetVisible( true )
 			self.button:SetVisible( true )
 			self.buttonTw:SetVisible( true )
 			self.buttonTh:SetVisible( true )
+
+			self.button:SetEnabled( pWorld )
+			self.buttonTw:SetEnabled( pWorld )
+			self.buttonTh:SetEnabled( pWorld )
 	
 			self.rollbutton:GetCheckBox():SetEnabled( true )
 			self.spinbutton:GetCheckBox():SetEnabled( true )
 			self.flipbutton:GetCheckBox():SetEnabled( true )
-			self.buttonJP:SetEnabled( true )
+
+			self.buttonJP:SetEnabled( pWorld )
 			self.jpviptip:SetVisible( false )
 	
 			self.subcategory2:SetPosition( Vector2( self.window:GetSize().x - 350, 50 ) )
@@ -921,7 +930,7 @@ function Settings:ResetDone()
 	self.buttonSPOff:SetText( self.posreset_txt )
 end
 
-function Settings:KeyHide( args )
+function Settings:KeyUp( args )
 	if Game:GetState() ~= GUIState.Game then return end
 
 	if args.key == VirtualKey.F11 then

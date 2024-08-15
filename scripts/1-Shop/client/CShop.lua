@@ -24,12 +24,14 @@ function Shop:__init()
 	}
 
 	self.permissions = {
-        ["Creator"] = true,
-        ["GlAdmin"] = true,
-        ["Admin"] = true,
-        ["AdminD"] = true,
-        ["ModerD"] = true,
-        ["VIP"] = true
+		["Creator"] = true,
+		["GlAdmin"] = true,
+		["Admin"] = true,
+		["AdminD"] = true,
+		["ModerD"] = true,
+		["Organizer"] = true,
+		["Parther"] = true,
+		["VIP"] = true
     }
 
 	self.cooldown = 5

@@ -5,3 +5,4 @@ ads.txt
 autoreboot.bat
 scripts/3-Tags/server/*.txt
 !scripts/3-Tags/server/readme.txt
+scripts/22-Help/client/7-Sponsors.lua

@@ -1,7 +1,8 @@
 class 'Admin'
 
 local vipPrefix = "[VIP] "
-local youtuberPrefix = "[YouTube Деятель] "
+local partherPrefix = "[Партнёр] "
+local organizerPrefix = "[Организатор] "
 local moderDPrefix = "[Модератор $] "
 local adminDPrefix = "[Админ $] "
 local adminPrefix = "[Админ] "
@@ -11,7 +12,8 @@ local creatorPrefix = "[Пошлый Создатель] "
 local lennyPrefix = "( ͡° ͜ʖ ͡°) "
 
 local vips = {}
-local youtubers = {}
+local parthers = {}
+local organizers = {}
 local modersD = {}
 local adminsD = {}
 local admins = {}
@@ -56,12 +58,12 @@ function Admin:loadVips(filename)
 	file:close()
 end
 
-function Admin:loadYouTubers(filename)
+function Admin:loadParthers(filename)
 	local file = io.open(filename, "r")
 	local i = 0
 
 	if file == nil then
-		print( "YouTubers were not found" )
+		print( "Parthers were not found" )
 		return
 	end
 
@@ -69,7 +71,26 @@ function Admin:loadYouTubers(filename)
 		i = i + 1
 		
 		if string.sub(filename, 1, 2) ~= "--" then
-			youtubers[i] = line
+			parthers[i] = line
+		end
+	end
+	file:close()
+end
+
+function Admin:loadOrganizers(filename)
+	local file = io.open(filename, "r")
+	local i = 0
+
+	if file == nil then
+		print( "Organizers were not found" )
+		return
+	end
+
+	for line in file:lines() do
+		i = i + 1
+		
+		if string.sub(filename, 1, 2) ~= "--" then
+			organizers[i] = line
 		end
 	end
 	file:close()
@@ -181,7 +202,8 @@ function Admin:__init()
 
 	Console:Subscribe( "getroles", self, self.GetRoles )
 	Console:Subscribe( "addvip", self, self.AddVip )
-	Console:Subscribe( "addyoutuber", self, self.AddYouTuber )
+	Console:Subscribe( "addparther", self, self.AddParther )
+	Console:Subscribe( "addorganizer", self, self.AddOrganizer )
 	Console:Subscribe( "addmoderD", self, self.AddModerD )
 	Console:Subscribe( "addadminD", self, self.AddAdminD )
 	Console:Subscribe( "addadmin", self, self.AddAdmin )
@@ -189,7 +211,8 @@ function Admin:__init()
 	Console:Subscribe( "addmoney", self, self.AddMoney )
 
 	self:loadVips( "server/vips.txt" )
-	self:loadYouTubers( "server/youtubers.txt" )
+	self:loadParthers( "server/parthers.txt" )
+	self:loadOrganizers( "server/organizers.txt" )
 	self:loadModersD( "server/modersD.txt" )
 	self:loadAdminsD( "server/adminsD.txt" )
 	self:loadAdmins( "server/admins.txt" )
@@ -202,7 +225,7 @@ function Admin:EffectPlay( args, sender )
 end
 
 function Admin:GetRoles( args )
-	if args.text == "vips" or args.text == "youtubers" or args.text == "modersD" or args.text == "adminsD" or args.text == "admins" 
+	if args.text == "vips" or args.text == "parthers" or args.text == "organizers" or args.text == "modersD" or args.text == "adminsD" or args.text == "admins" 
 	or args.text == "gladmins" or args.text == "creators" then
 		local file = io.open("server/" .. args.text .. ".txt", "r")
 		local i = 0
@@ -222,86 +245,100 @@ end
 
 function Admin:AddVip( args )
 	local file = io.open("server/vips.txt", "a")
-	local text = args.text
 
-	file:write("\n" .. text)
+	file:write("\n" .. args.text)
 	file:close()
 
 	self:loadVips( "server/vips.txt" )
 	self:ModuleLoad()
 
-	print( "Vip added: " .. args.text )
-	Events:Fire( "ToDiscordConsole", { text = "Vip added: " .. args.text })
+	local console_text = "VIP added: " .. args.text
+	print( console_text )
+	Events:Fire( "ToDiscordConsole", { text = console_text } )
 end
 
-function Admin:AddYouTuber( args )
-	local file = io.open("server/youtubers.txt", "a")
-	local text = args.text
+function Admin:AddParther( args )
+	local file = io.open("server/parthers.txt", "a")
 
-	file:write("\n" .. text)
+	file:write("\n" .. args.text)
 	file:close()
 
-	self:loadYouTubers( "server/youtubers.txt" )
+	self:loadParthers( "server/parthers.txt" )
 	self:ModuleLoad()
 
-	print( "YouTuber added: " .. args.text )
-	Events:Fire( "ToDiscordConsole", { text = "YouTuber added: " .. args.text })
+	local console_text = "Parther added: " .. args.text
+	print( console_text )
+	Events:Fire( "ToDiscordConsole", { text = console_text } )
+end
+
+function Admin:AddOrganizer( args )
+	local file = io.open("server/organizers.txt", "a")
+
+	file:write("\n" .. args.text)
+	file:close()
+
+	self:loadOrganizers( "server/organizers.txt" )
+	self:ModuleLoad()
+
+	local console_text = "Organizer added: " .. args.text
+	print( console_text )
+	Events:Fire( "ToDiscordConsole", { text = console_text } )
 end
 
 function Admin:AddModerD( args )
 	local file = io.open("server/modersD.txt", "a")
-	local text = args.text
 
-	file:write("\n" .. text)
+	file:write("\n" .. args.text)
 	file:close()
 
 	self:loadModersD( "server/modersD.txt" )
 	self:ModuleLoad()
 
-	print( "ModerD added: " .. args.text )
-	Events:Fire( "ToDiscordConsole", { text = "ModerD added: " .. args.text })
+	local console_text = "ModerD added: " .. args.text
+	print( console_text )
+	Events:Fire( "ToDiscordConsole", { text = console_text } )
 end
 
 function Admin:AddAdminD( args )
 	local file = io.open("server/adminsD.txt", "a")
-	local text = args.text
 
-	file:write("\n" .. text)
+	file:write("\n" .. args.text)
 	file:close()
 
 	self:loadAdminsD( "server/adminsD.txt" )
 	self:ModuleLoad()
 
-	print( "AdminD added: " .. args.text )
-	Events:Fire( "ToDiscordConsole", { text = "AdminD added: " .. args.text })
+	local console_text = "AdminD added: " .. args.text
+	print( console_text )
+	Events:Fire( "ToDiscordConsole", { text = console_text } )
 end
 
 function Admin:AddAdmin( args )
 	local file = io.open("server/admins.txt", "a")
-	local text = args.text
 
-	file:write("\n" .. text)
+	file:write("\n" .. args.text)
 	file:close()
 
 	self:loadAdmins( "server/admins.txt" )
 	self:ModuleLoad()
 
-	print( "Admin added: " .. args.text )
-	Events:Fire( "ToDiscordConsole", { text = "Admin added: " .. args.text })
+	local console_text = "Admin added: " .. args.text
+	print( console_text )
+	Events:Fire( "ToDiscordConsole", { text = console_text } )
 end
 
 function Admin:AddGlAdmin( args )
 	local file = io.open("server/gladmins.txt", "a")
-	local text = args.text
 
-	file:write("\n" .. text)
+	file:write("\n" .. args.text)
 	file:close()
 
 	self:loadGlAdmins( "server/gladmins.txt" )
 	self:ModuleLoad()
 
-	print( "Gl Admin added: " .. args.text )
-	Events:Fire( "ToDiscordConsole", { text = "Gl Admin added: " .. args.text })
+	local console_text = "Gl Admin added: " .. args.text
+	print( console_text )
+	Events:Fire( "ToDiscordConsole", { text = console_text } )
 end
 
 function Admin:AddMoney( args )
@@ -309,32 +346,31 @@ function Admin:AddMoney( args )
 
 	if #text < 2 then
 		print( "Use: addmoney <player> <money>" )
-		Events:Fire( "ToDiscordConsole", { text = "Use: addmoney <player> <money>" })
+		Events:Fire( "ToDiscordConsole", { text = "Use: addmoney <player> <money>" } )
 		return false
 	end
 
 	local player = Player.Match(text[1])[1]
 
 	if not IsValid(player) then
-		print( (text[1]) .. " not found." )
-		Events:Fire( "ToDiscordConsole", { text = (text[1]) .. " not found." })
+		print( text[1] .. " not found." )
+		Events:Fire( "ToDiscordConsole", { text = text[1] .. " not found." } )
 		return false
 	elseif text[3] == "" then
 		print( "Use: addmoney <player> <money>" )
-		Events:Fire( "ToDiscordConsole", { text = "Use: addmoney <player> <money>" })
+		Events:Fire( "ToDiscordConsole", { text = "Use: addmoney <player> <money>" } )
 		return false
-	elseif not tonumber(text[2]) then
+	elseif not tonumber( text[2] ) then
 		print( "Use: addmoney <player> <money>" )
-		Events:Fire( "ToDiscordConsole", { text = "Use: addmoney <player> <money>" })
+		Events:Fire( "ToDiscordConsole", { text = "Use: addmoney <player> <money>" } )
 		return false
 	end
 
-	player:SetMoney( player:GetMoney() + (text[2]) )
-	self:loadModersD( "server/modersD.txt" )
-	self:ModuleLoad()
+	player:SetMoney( player:GetMoney() + text[2] )
 
-	print( "Added $" .. (text[2]) .. " for " .. (text[1]) )
-	Events:Fire( "ToDiscordConsole", { text = "Added $" .. (text[2]) .. " for " .. (text[1]) })
+	local console_text = "Added $" .. text[2] .. " for " .. text[1]
+	print( console_text )
+	Events:Fire( "ToDiscordConsole", { text = console_text } )
 end
 
 function Admin:PostTick( args )
@@ -352,7 +388,7 @@ function Admin:PostTick( args )
 				count = count + 1
 				p:RequestGroupMembership( SteamId("103582791460674447"), function(args)
 					if args.member then
-						p:SetMoney(p:GetMoney() + paydayCash)
+						p:SetMoney( p:GetMoney() + paydayCash )
 						if p:GetValue( "Lang" ) == "EN" then
 							p:SendChatMessage( "[Reward №" .. paydayCount .. "] ", tagColor, "$" .. paydayCash .. " for subscribed on the Koast Freeroam group! :3", msgColor )
 						else
@@ -361,7 +397,9 @@ function Admin:PostTick( args )
 					end
 				end )
 			end
+
 			Events:Fire( "ToDiscord", { text = "[Status] Server is now online. Players: " .. count .. "/" .. Config:GetValue( "Server", "MaxPlayers" ) })
+
 			paydayCount = paydayCount + 1
 			paydayTimer:Restart()
 		end
@@ -369,25 +407,38 @@ function Admin:PostTick( args )
 end
 
 function isVip( player )
-	local vipsstring = ""
+	local string = ""
 	for i,line in ipairs(vips) do
-		vipsstring = vipsstring .. line .. " "
+		string = string .. line .. " "
 	end
 
-	if(string.match(vipsstring, tostring(player:GetSteamId()))) then
+	if(string.match(string, tostring(player:GetSteamId()))) then
 		return true
 	end
 
 	return false
 end
 
-function isYouTuber( player )
-	local youtubersstring = ""
-	for i,line in ipairs(youtubers) do
-		youtubersstring = youtubersstring .. line .. " "
+function isParther( player )
+	local string = ""
+	for i,line in ipairs(parthers) do
+		string = string .. line .. " "
 	end
 
-	if(string.match(youtubersstring, tostring(player:GetSteamId()))) then
+	if(string.match(string, tostring(player:GetSteamId()))) then
+		return true
+	end
+
+	return false
+end
+
+function isOrganizer( player )
+	local string = ""
+	for i,line in ipairs(organizers) do
+		string = string .. line .. " "
+	end
+
+	if(string.match(string, tostring(player:GetSteamId()))) then
 		return true
 	end
 
@@ -395,12 +446,12 @@ function isYouTuber( player )
 end
 
 function isModerD( player )
-	local modersDstring = ""
+	local string = ""
 	for i,line in ipairs(modersD) do
-		modersDstring = modersDstring .. line .. " "
+		string = string .. line .. " "
 	end
 
-	if(string.match(modersDstring, tostring(player:GetSteamId()))) then
+	if(string.match(string, tostring(player:GetSteamId()))) then
 		return true
 	end
 
@@ -408,12 +459,12 @@ function isModerD( player )
 end
 
 function isAdminD( player )
-	local adminsDstring = ""
+	local string = ""
 	for i,line in ipairs(adminsD) do
-		adminsDstring = adminsDstring .. line .. " "
+		string = string .. line .. " "
 	end
 
-	if(string.match(adminsDstring, tostring(player:GetSteamId()))) then
+	if(string.match(string, tostring(player:GetSteamId()))) then
 		return true
 	end
 
@@ -421,12 +472,12 @@ function isAdminD( player )
 end
 	
 function isAdmin( player )
-	local adminstring = ""
+	local string = ""
 	for i,line in ipairs(admins) do
-		adminstring = adminstring .. line .. " "
+		string = string .. line .. " "
 	end
 
-	if(string.match(adminstring, tostring(player:GetSteamId()))) then
+	if(string.match(string, tostring(player:GetSteamId()))) then
 		return true
 	end
 
@@ -434,12 +485,12 @@ function isAdmin( player )
 end
 
 function isGlAdmin( player )
-	local gladminstring = ""
+	local string = ""
 	for i,line in ipairs(gladmins) do
-		gladminstring = gladminstring .. line .. " "
+		string = string .. line .. " "
 	end
 
-	if(string.match(gladminstring, tostring(player:GetSteamId()))) then
+	if(string.match(string, tostring(player:GetSteamId()))) then
 		return true
 	end
 
@@ -447,12 +498,12 @@ function isGlAdmin( player )
 end
 
 function isCreator( player )
-	local creatorstring = ""
+	local string = ""
 	for i,line in ipairs(creators) do
-		creatorstring = creatorstring .. line .. " "
+		string = string .. line .. " "
 	end
 
-	if(string.match(creatorstring, tostring(player:GetSteamId()))) then
+	if(string.match(string, tostring(player:GetSteamId()))) then
 		return true
 	end
 
@@ -469,7 +520,8 @@ end
 
 function Admin:ModuleLoad()
 	local tagTable = {
-		[isYouTuber] = "YouTuber",
+		[isParther] = "Parther",
+		[isOrganizer] = "Organizer",
 		[isVip] = "VIP",
 		[isModerD] = "ModerD",
 		[isAdminD] = "AdminD",
@@ -509,7 +561,8 @@ end
 
 function Admin:PlayerJoin( args )
 	local tagTable = {
-		[isYouTuber] = "YouTuber",
+		[isParther] = "Parther",
+		[isOrganizer] = "Organizer",
 		[isVip] = "VIP",
 		[isModerD] = "ModerD",
 		[isAdminD] = "AdminD",
@@ -550,64 +603,34 @@ end
 
 function Admin:PlayerChat( args )
     local cmd_args = args.text:split( " " )
-	sender = args.player
+	local sender = args.player
 
-	if args.player:GetValue("NT_TagName") then
-		if args.player:GetValue("NT_TagName") == "Наблюдатель" then
-			if (cmd_args[1]) == "/hidetag" then
-				if args.player:GetValue( "TagHide" ) then
-					Chat:Send( args.player, "[Сервер] ", Color.White, "Тэг над головой включён.", Color( 124, 242, 0 ) )
-					args.player:SetNetworkValue( "TagHide", false )
+	if sender:GetValue( "NT_TagName" ) then
+		if sender:GetValue( "NT_TagName" ) == "Наблюдатель" then
+			if cmd_args[1] == "/hidetag" then
+				if sender:GetValue( "TagHide" ) then
+					Chat:Send( sender, "[Сервер] ", Color.White, "Тэг над головой включён.", Color( 124, 242, 0 ) )
+					sender:SetNetworkValue( "TagHide", false )
 				else
-					Chat:Send( args.player, "[Сервер] ", Color.White, "Тэг над головой отключён.", Color( 124, 242, 0 ) )
-					args.player:SetNetworkValue( "TagHide", true )
+					Chat:Send( sender, "[Сервер] ", Color.White, "Тэг над головой отключён.", Color( 124, 242, 0 ) )
+					sender:SetNetworkValue( "TagHide", true )
 				end
 			end
 		end
 	end
 
-	if (isCreator(args.player)) or (isAdmin(args.player)) then
-		if (cmd_args[1]) == "/sky" then
-			if #cmd_args > 2 then
-				local player = Player.Match(cmd_args[2])[1]
-				if not IsValid(player) then
-					deniedMessage( sender, nullPlayer )
-					return false
-				end
-
-				Events:Fire( "BoomToSky", { player = player, sender = sender, type = 1 } )
-				return true
-			end
-		end
-
-		if (cmd_args[1]) == "/down" then
-			if #cmd_args > 2 then
-				local player = Player.Match(cmd_args[2])[1]
-				if not IsValid(player) then
-					deniedMessage( sender, nullPlayer )
-					return false
-				end
-
-				Events:Fire( "BoomToSky", { player = player, sender = sender, type = 2 } )
-				return true
-			end
-		end
-	end
-
-	if (isCreator(args.player)) or (isGlAdmin(args.player)) or (isAdmin(args.player)) or (isAdminD(args.player)) or (isModerD(args.player)) then
-		if not args.player:GetValue("NT_TagName") then
-			if (cmd_args[1]) == "/hidetag" then
-				if args.player:GetValue( "TagHide" ) then
-					Chat:Send( args.player, "[Сервер] ", Color.White, "Тэг над головой включён.", Color( 124, 242, 0 ) )
-					args.player:SetNetworkValue( "TagHide", false )
+	if isCreator( sender ) or isGlAdmin( sender ) or isAdmin( sender ) or isAdminD( sender ) or isModerD( sender ) then
+		if not sender:GetValue("NT_TagName") then
+			if cmd_args[1] == "/hidetag" then
+				if sender:GetValue( "TagHide" ) then
+					Chat:Send( sender, "[Сервер] ", Color.White, "Тэг над головой включён.", Color( 124, 242, 0 ) )
+					sender:SetNetworkValue( "TagHide", false )
 				else
-					Chat:Send( args.player, "[Сервер] ", Color.White, "Тэг над головой отключён.", Color( 124, 242, 0 ) )
-					args.player:SetNetworkValue( "TagHide", true )
+					Chat:Send( sender, "[Сервер] ", Color.White, "Тэг над головой отключён.", Color( 124, 242, 0 ) )
+					sender:SetNetworkValue( "TagHide", true )
 				end
 			end
-		end
-
-		if (cmd_args[1]) == "/petyx" then
+		elseif cmd_args[1] == "/petyx" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
@@ -624,16 +647,14 @@ function Admin:PlayerChat( args )
 				return false
 			end
 
-			Chat:Broadcast( "[Сервер] ", Color.White,player:GetName() .. " стал петухом на этом сервере!", Color( 255, 0, 200 ) )
-			Chat:Send( args.player, "[Сервер] ", Color.White, "Вы сделали " .. player:GetName() .. " петухом!", Color( 124, 242, 0 ) )
-			confirmationMessage( player, args.player:GetName() .. playerSetPetyx )
+			Chat:Broadcast( "[Сервер] ", Color.White, player:GetName() .. " стал петухом на этом сервере!", Color( 255, 0, 200 ) )
+			Chat:Send( sender, "[Сервер] ", Color.White, "Вы сделали " .. player:GetName() .. " петухом!", Color( 124, 242, 0 ) )
+			confirmationMessage( player, sender:GetName() .. playerSetPetyx )
 
 			player:SetValue( "Petux", 1 )
 
 			return true
-		end
-
-		if (cmd_args[1]) == "/unpetyx" then
+		elseif cmd_args[1] == "/unpetyx" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
@@ -650,14 +671,12 @@ function Admin:PlayerChat( args )
 			end
 
 			Chat:Broadcast( "[Сервер] ", Color.White, player:GetName() .. " больше не петух на этом сервере!", Color( 0, 255, 0 ) )
-			Chat:Send( args.player, "[Сервер] ", Color.White, player:GetName() .. " больше не петух!", Color( 124, 242, 0 ) )
-			confirmationMessage( player, args.player:GetName() .. playerUnpetyx )
+			Chat:Send( sender, "[Сервер] ", Color.White, player:GetName() .. " больше не петух!", Color( 124, 242, 0 ) )
+			confirmationMessage( player, sender:GetName() .. playerUnpetyx )
 
 			player:SetValue( "Petux", nil )
 			return true
-		end
-
-		if (cmd_args[1]) == "/bb" then
+		elseif cmd_args[1] == "/bb" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
@@ -671,9 +690,7 @@ function Admin:PlayerChat( args )
 
 			Chat:Broadcast( "[Сервер] ", Color.White, "Администрация: ", Color( 250, 255, 130 ), player:GetName() .. ", прощай, удачи! ", Color.White )
 			return true
-		end
-
-		if (cmd_args[1]) == "/hi" then
+		elseif cmd_args[1] == "/hi" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
@@ -687,9 +704,7 @@ function Admin:PlayerChat( args )
 
 			Chat:Broadcast( "[Сервер] ", Color.White, "Администрация: ", Color( 250, 255, 130 ), player:GetName() .. ", привет! Приятной игры :3", Color.White )
 			return true
-		end
-
-		if (cmd_args[1]) == "/getmoney" then
+		elseif cmd_args[1] == "/getmoney" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
@@ -706,8 +721,37 @@ function Admin:PlayerChat( args )
 		end
 	end
 
-	if (isCreator(args.player)) or (isGlAdmin(args.player)) or (isAdmin(args.player)) then
-		if (cmd_args[1]) == "/debugrepair" then
+	if isCreator( sender ) or isGlAdmin( sender ) or isAdmin( sender ) then
+		if cmd_args[1] == "/clearchat" then
+			for i = 0, 999 do
+				Chat:Broadcast( "", Color.White )
+			end
+
+			Chat:Broadcast( "[Сервер] ", Color.White, "Чат очищен администратором " .. sender:GetName() .. ".", Color.White )
+			Events:Fire( "ToDiscordConsole", { text = "[Admin] Chat has been cleared by " .. sender:GetName() .. "." } )
+		elseif cmd_args[1] == "/sky" then
+			if #cmd_args > 2 then
+				local player = Player.Match(cmd_args[2])[1]
+				if not IsValid(player) then
+					deniedMessage( sender, nullPlayer )
+					return false
+				end
+
+				Events:Fire( "BoomToSky", { player = player, sender = sender, type = 1 } )
+				return true
+			end
+		elseif cmd_args[1] == "/down" then
+			if #cmd_args > 2 then
+				local player = Player.Match(cmd_args[2])[1]
+				if not IsValid(player) then
+					deniedMessage( sender, nullPlayer )
+					return false
+				end
+
+				Events:Fire( "BoomToSky", { player = player, sender = sender, type = 2 } )
+				return true
+			end
+		elseif cmd_args[1] == "/debugrepair" then
 			if not sender:GetVehicle() then
 				deniedMessage( sender, inVehicle )
 				return false
@@ -716,15 +760,13 @@ function Admin:PlayerChat( args )
 			if sender:GetMoney() >= 0 then
 				confirmationMessage( sender, "Отладочная починка" )
 
-				veh = sender:GetVehicle()
-				veh:SetColors( Color( 255, 62, 150 ), Color( 205, 41, 144 ) )
-				veh:Respawn()
-				sender:EnterVehicle( veh, VehicleSeat.Driver )
+				local vehicle = sender:GetVehicle()
+				vehicle:SetColors( Color( 255, 62, 150 ), Color( 205, 41, 144 ) )
+				vehicle:Respawn()
+				sender:EnterVehicle( vehicle, VehicleSeat.Driver )
 				return true
 			end
-		end
-
-		if (cmd_args[1]) == "/skick" then
+		elseif cmd_args[1] == "/skick" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
@@ -740,15 +782,13 @@ function Admin:PlayerChat( args )
 			player:Kick( "\nВы были бесшумно выгнаны по причине:\n" .. args.text:sub(7) )
 			Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " has invisibly kicked by " .. sender:GetName() .. " Reason: " .. args.text:sub(7) } )
 			return true
-		end
-
-		if (cmd_args[1]) == "/ptphere" then
+		elseif cmd_args[1] == "/ptphere" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
 			end
 
-			if (isCreator(args.player)) then
+			if isCreator( sender ) then
 				if cmd_args[2] == "all*" then
 					local sPos = sender:GetPosition()
 					local sAngle = sender:GetAngle()
@@ -770,83 +810,22 @@ function Admin:PlayerChat( args )
 				return false
 			end
 
-			player:Teleport( args.player:GetPosition(), args.player:GetAngle() )
-			confirmationMessage( player, args.player:GetName() .. playerTele )
+			player:Teleport( sender:GetPosition(), sender:GetAngle() )
+			confirmationMessage( player, sender:GetName() .. playerTele )
 			confirmationMessage( sender, player:GetName() .. playerTele2 )
 			return true
 		end
-
-		if (cmd_args[1]) == "/addcustomtp" then
-			if #cmd_args < 2 then
-				deniedMessage( sender, invalidArgs )
-				return false
-			end
-
-			if cmd_args[2] == "" then
-				deniedMessage( sender, invalidArgs )
-				return false
-			end
-
-			Events:Fire( "AddCustomTeleport", { name = cmd_args[2], pos = sender:GetPosition() } )
-			confirmationMessage( sender, "Точка для телепортации /tp " .. cmd_args[2] .. " успешно создана." )
-
-			local text = sender:GetName() .. " added custom teleport: /tp " .. cmd_args[2]
-			print( text )
-			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. text } )
-		end
-
-		if (cmd_args[1]) == "/clearallcustomtp" then
-			Events:Fire( "ClearCustomTeleports" )
-			confirmationMessage( sender, "Созданные точки для телепортации очищены." )
-
-			local text = sender:GetName() .. " cleared all custom teleports"
-			print( text )
-			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. text } )
-		end
-
-		if (cmd_args[1]) == "/boton" then
-			if not self.boton then
-				Chat:Send( args.player, "[Админ-система] ", Color.White, "НА РАБОТУ! ГОВНО ЧИСТИТЬ!", Color.Brown )
-				Events:Fire( "ToDiscordConsole", { text = "[Admin] Bot Enabled!" } )
-				print( args.player, " - Bot Enabled" )
-				Events:Fire( "EnableWF" )
-				self.boton = true
-			else
-				Chat:Send( args.player, "[Админ-система] ", Color.White, "ЧИСТИ-ЧИСТИ", Color.Brown )
-			end
-		end
-
-		if (cmd_args[1]) == "/botoff" then
-			if self.boton then
-				Chat:Send( args.player, "[Админ-система] ", Color.White, "Нихуя не можешь сделать, пошол нахой отсюда!", Color.Brown )
-				print( args.player, " - Bot Disabled" )
-				Events:Fire( "ToDiscordConsole", { text = "[Admin] Bot Disabled!" } )
-				Events:Fire( "DisableWF" )
-				self.boton = false
-			end
-		end
 	end
 
-	if (isCreator(args.player)) or (isGlAdmin(args.player)) then
-		if (cmd_args[1]) == "/clearchat" then
-			for i = 0, 999 do
-				Chat:Broadcast( "", Color.White )
-			end
-
-			Chat:Broadcast( "[Сервер] ", Color.White, "Чат очищен администратором " .. args.player:GetName() .. ".", Color.White )
-			Events:Fire( "ToDiscordConsole", { text = "[Admin] Chat has been cleared by " .. args.player:GetName() .. "." } )
-		end
-
-		if (cmd_args[1]) == "/remveh" then
-			for veh in Server:GetVehicles() do
-				veh:Remove()
+	if isCreator( sender ) or isGlAdmin( sender ) then
+		if cmd_args[1] == "/remveh" then
+			for v in Server:GetVehicles() do
+				v:Remove()
 			end
 
 			confirmationMessage( sender, "Все транспортные средства на сервере были удалены." )
 			return true
-		end
-
-		if (cmd_args[1]) == "/ban" then
+		elseif cmd_args[1] == "/ban" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
@@ -863,68 +842,24 @@ function Admin:PlayerChat( args )
 			Server:AddBan(player:GetSteamId())
 			player:Kick( "You have been banned from the server." )
 			return true
-		end
-
-		if (cmd_args[1]) == "/notice" then
+		elseif cmd_args[1] == "/addmoney" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
 			end
 
-			local stringname = args.text:sub( 9, 256 )
-
-			Network:Broadcast( "Notice", { text = stringname } )
-
-			local text = sender:GetName() .. " made notice: " .. stringname
-			print( text )
-			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. text } )
-		end
-
-		if (cmd_args[1]) == "/joinnotice" then
-			if #cmd_args < 2 then
-				deniedMessage( sender, invalidArgs )
-				return false
-			end
-
-			local stringname = args.text:sub( 13, 256 )
-
-			Events:Fire( "SetJoinNotice", stringname )
-
-			confirmationMessage( sender, "Сообщение при входе успешно задано: " .. stringname )
-
-			local text = sender:GetName() .. " made join notice: " .. stringname
-			print( text )
-			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. text } )
-		end
-
-		if (cmd_args[1]) == "/clearjoinnotice" then
-			Events:Fire( "SetJoinNotice", nil )
-
-			confirmationMessage( sender, "Сообщение при входе успешно удалено." )
-
-			local text = sender:GetName() .. " cleared join notice"
-			print( text )
-			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. text } )
-		end
-
-		if (cmd_args[1]) == "/addmoney" then
-			if #cmd_args < 2 then
-				deniedMessage( sender, invalidArgs )
-				return false
-			end
-
-			amount = cmd_args[3]
-			if(tonumber(amount) == nil) then
+			local amount = cmd_args[3]
+			if tonumber( amount ) == nil then
 				deniedMessage( sender, invalidNum )
 				return false
 			end
 
 			if cmd_args[2] == "all*" then
 				for p in Server:GetPlayers() do
-					p:SetMoney(p:GetMoney() + tonumber(cmd_args[3]))
+					p:SetMoney( p:GetMoney() + tonumber( amount ) )
 				end
-				Chat:Broadcast( "[Сервер] ", Color.White, "У всех теперь есть дополнительные $" .. tonumber(cmd_args[3]) .. "! Любезно предоставлено " .. args.player:GetName() .. ".", Color( 0, 255, 45 ) )
-				Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. "У всех теперь есть дополнительные $" .. tonumber(cmd_args[3]) .. "! Любезно предоставлено " .. args.player:GetName() .. "." } )
+				Chat:Broadcast( "[Сервер] ", Color.White, "У всех теперь есть дополнительные $" .. tonumber( amount ) .. "! Любезно предоставлено " .. sender:GetName() .. ".", Color( 0, 255, 45 ) )
+				Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. "У всех теперь есть дополнительные $" .. tonumber( amount ) .. "! Любезно предоставлено " .. sender:GetName() .. "." } )
 				return true
 			end
 
@@ -934,13 +869,11 @@ function Admin:PlayerChat( args )
 				return false
 			end
 
-			player:SetMoney(player:GetMoney() + tonumber(cmd_args[3]))
+			player:SetMoney( player:GetMoney() + tonumber( cmd_args[3] ) )
 			confirmationMessage( sender, "Вы добавили $" .. cmd_args[3] .. " игроку " .. player:GetName() .. "!" )
 			confirmationMessage( player, sender:GetName() .. " добавил вам $" .. cmd_args[3] .. "!" )
 			return true
-		end
-
-		if (cmd_args[1]) == "/setgm" then
+		elseif cmd_args[1] == "/setgm" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
@@ -955,9 +888,7 @@ function Admin:PlayerChat( args )
 			confirmationMessage( sender, "Установлен режим: " .. cmd_args[3] .. " для " .. player:GetName() )
 			player:SetNetworkValue( "GameMode", cmd_args[3] )
 			return true
-		end
-
-		if (cmd_args[1]) == "/setlang" then
+		elseif cmd_args[1] == "/setlang" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
@@ -977,9 +908,7 @@ function Admin:PlayerChat( args )
 			confirmationMessage( sender, "Установлен язык: " .. cmd_args[3] .. " для " .. player:GetName() )
 			player:SetNetworkValue( "Lang", cmd_args[3] )
 			return true
-		end
-
-		if (cmd_args[1]) == "/setlevel" then
+		elseif cmd_args[1] == "/setlevel" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
 				return false
@@ -1002,19 +931,97 @@ function Admin:PlayerChat( args )
 		end
 	end
 
-	if (cmd_args[1]) == "/pos" or (cmd_args[1]) == "/coords" then
-		local pos = args.player:GetPosition()
-		Chat:Send( args.player, args.player:GetValue( "Lang" ) == "EN" and "Your coordinates: " or "Ваши координаты: ", Color.White, tostring( pos.x .. ", " .. pos.y .. ", " .. pos.z ), Color.DarkGray )
+	if isCreator( sender ) or isGlAdmin( sender ) or isAdmin( sender ) or isOrganizer( sender ) then
+		if cmd_args[1] == "/notice" then
+			if #cmd_args < 2 then
+				deniedMessage( sender, invalidArgs )
+				return false
+			end
+
+			local stringname = args.text:sub( 9, 256 )
+
+			Network:Broadcast( "Notice", { text = stringname } )
+
+			local console_text = sender:GetName() .. " made notice: " .. stringname
+			print( console_text )
+			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. console_text } )
+		elseif cmd_args[1] == "/joinnotice" then
+			if #cmd_args < 2 then
+				deniedMessage( sender, invalidArgs )
+				return false
+			end
+
+			local stringname = args.text:sub( 13, 256 )
+
+			Events:Fire( "SetJoinNotice", stringname )
+
+			confirmationMessage( sender, "Сообщение при входе успешно задано: " .. stringname )
+
+			local console_text = sender:GetName() .. " made join notice: " .. stringname
+			print( console_text )
+			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. console_text } )
+		elseif cmd_args[1] == "/clearjoinnotice" then
+			Events:Fire( "SetJoinNotice", nil )
+
+			confirmationMessage( sender, "Сообщение при входе успешно удалено." )
+
+			local console_text = sender:GetName() .. " cleared join notice"
+			print( console_text )
+			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. console_text } )
+		elseif cmd_args[1] == "/addcustomtp" then
+			if #cmd_args < 2 then
+				deniedMessage( sender, invalidArgs )
+				return false
+			end
+
+			if cmd_args[2] == "" then
+				deniedMessage( sender, invalidArgs )
+				return false
+			end
+
+			Events:Fire( "AddCustomTeleport", { name = cmd_args[2], pos = sender:GetPosition() } )
+			confirmationMessage( sender, "Точка для телепортации /tp " .. cmd_args[2] .. " успешно создана." )
+
+			local console_text = sender:GetName() .. " added custom teleport: /tp " .. cmd_args[2]
+			print( console_text )
+			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. console_text } )
+		elseif cmd_args[1] == "/clearallcustomtp" then
+			Events:Fire( "ClearCustomTeleports" )
+			confirmationMessage( sender, "Созданные точки для телепортации очищены." )
+
+			local console_text = sender:GetName() .. " cleared all custom teleports"
+			print( console_text )
+			Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. console_text } )
+		elseif cmd_args[1] == "/boton" then
+			if not self.boton then
+				Chat:Send( sender, "[Админ-система] ", Color.White, "НА РАБОТУ! ГОВНО ЧИСТИТЬ!", Color.Brown )
+				Events:Fire( "ToDiscordConsole", { text = "[Admin] Bot Enabled!" } )
+				print( sender, " - Bot Enabled" )
+				Events:Fire( "EnableWF" )
+				self.boton = true
+			else
+				Chat:Send( sender, "[Админ-система] ", Color.White, "ЧИСТИ-ЧИСТИ", Color.Brown )
+			end
+		elseif cmd_args[1] == "/botoff" then
+			if self.boton then
+				Chat:Send( sender, "[Админ-система] ", Color.White, "Нихуя не можешь сделать, пошол нахой отсюда!", Color.Brown )
+				print( sender, " - Bot Disabled" )
+				Events:Fire( "ToDiscordConsole", { text = "[Admin] Bot Disabled!" } )
+				Events:Fire( "DisableWF" )
+				self.boton = false
+			end
+		end
+	end
+
+	if cmd_args[1] == "/pos" or cmd_args[1] == "/coords" then
+		local pos = sender:GetPosition()
+		Chat:Send( sender, sender:GetValue( "Lang" ) == "EN" and "Your coordinates: " or "Ваши координаты: ", Color.White, tostring( pos.x .. ", " .. pos.y .. ", " .. pos.z ), Color.DarkGray )
 		print( "Coordinates: (" .. tostring( pos.x .. ", " .. pos.y .. ", " .. pos.z ) .. ")" )
-	end
-
-	if (cmd_args[1]) == "/angle" then
-		Chat:Send( args.player, args.player:GetValue( "Lang" ) == "EN" and "Your angle: " or "Ваш угол: ", Color.White, tostring( args.player:GetAngle() ), Color.DarkGray )
-		print( "Angle: (" .. tostring( args.player:GetAngle() ) .. ")" )
-	end
-
-	if (cmd_args[1]) == "/mass" then
-		if args.player:GetWorld() ~= DefaultWorld then
+	elseif cmd_args[1] == "/angle" then
+		Chat:Send( sender, sender:GetValue( "Lang" ) == "EN" and "Your angle: " or "Ваш угол: ", Color.White, tostring( sender:GetAngle() ), Color.DarkGray )
+		print( "Angle: (" .. tostring( sender:GetAngle() ) .. ")" )
+	elseif cmd_args[1] == "/mass" then
+		if sender:GetWorld() ~= DefaultWorld then
 			deniedMessage( sender, warning )
 			return
 		end
@@ -1055,14 +1062,12 @@ function Admin:PlayerChat( args )
 			deniedMessage( sender, inVehicle )
 		end
 		return true
-	end
-
-	if (cmd_args[1]) == "/down" then
-		if args.player:GetValue( "PVPMode" ) then
+	elseif cmd_args[1] == "/down" then
+		if sender:GetValue( "PVPMode" ) then
 			deniedMessage( sender, "Вы не можете использовать это во время боя!" )
 			return
 		end
-		if args.player:GetWorld() ~= DefaultWorld then
+		if sender:GetWorld() ~= DefaultWorld then
 			deniedMessage( sender, warning )
 			return
 		end
@@ -1076,67 +1081,69 @@ function Admin:PlayerChat( args )
 		end
 	end
 
-	if not args.player:GetValue( "Mute" ) then
-		local text = args.text
-		if string.sub(text, 1, 1) ~= "/" then
-			if args.player:GetValue("NT_TagName") then
-				if args.player:GetValue( "ChatMode" ) == 3 then
-					Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), "[" .. args.player:GetValue("NT_TagName") .. "] ", args.player:GetValue("NT_TagColor"), args.player:GetName(), args.player:GetColor(), ": " .. args.text, Color.White )
+	if not sender:GetValue( "Mute" ) then
+		if string.sub( args.text, 1, 1 ) ~= "/" then
+			if sender:GetValue( "NT_TagName" ) then
+				if sender:GetValue( "ChatMode" ) == 3 then
+					Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), "[" .. sender:GetValue("NT_TagName") .. "] ", sender:GetValue( "NT_TagColor" ), sender:GetName(), sender:GetColor(), ": " .. args.text, Color.White )
 
-					local console_text = "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] " .. "[" .. args.player:GetValue("NT_TagName") .. "] " .. args.player:GetName() .. ": ".. args.text
-					print( "(" .. args.player:GetId() .. ") " .. console_text )
+					local console_text = "[" .. tostring( sender:GetValue( "Country" ) ) .. "] " .. "[" .. sender:GetValue( "NT_TagName")  .. "] " .. sender:GetName() .. ": ".. args.text
+					print( "(" .. sender:GetId() .. ") " .. console_text )
 					Events:Fire( "ToDiscordConsole", { text = console_text } )
 				end
 				return false
 			else
-				if args.player:GetValue( "ChatMode" ) == 3 then
-					local text = args.text
-					if args.player:GetValue( "ChatMode" ) == 3 then
-						if (isVip(args.player)) then
-							Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), vipPrefix, Color( 255, 100, 232 ), args.player:GetName(), args.player:GetColor(), ": " .. text, Color.White )
+				if sender:GetValue( "ChatMode" ) == 3 then
+					if isVip( sender ) then
+						Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), vipPrefix, Color( 255, 100, 232 ), sender:GetName(), sender:GetColor(), ": " .. args.text, Color.White )
 
-							local console_text = "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] " .. vipPrefix .. args.player:GetName() .. ": " .. args.text
-							print( "(" .. args.player:GetId() .. ") " .. console_text )
-							Events:Fire( "ToDiscordConsole", { text = console_text } )
-						elseif (isYouTuber(args.player)) then
-							Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), youtuberPrefix, Color( 255, 0, 50 ), args.player:GetName(), args.player:GetColor(), ": " .. text, Color.White )
+						local console_text = "[" .. tostring( sender:GetValue( "Country" ) ) .. "] " .. vipPrefix .. sender:GetName() .. ": " .. args.text
+						print( "(" .. sender:GetId() .. ") " .. console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
+					elseif isParther( sender ) then
+						Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 255 ), partherPrefix, Color( 135, 206, 250 ), sender:GetName(), sender:GetColor(), ": " .. args.text, Color.White )
 
-							local console_text = "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] " .. youtuberPrefix .. args.player:GetName() .. ": " .. args.text
-							print( "(" .. args.player:GetId() .. ") " .. console_text )
-							Events:Fire( "ToDiscordConsole", { text = console_text } )
-						elseif (isModerD(args.player)) then
-							Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), moderDPrefix, Color( 255, 148, 48 ), args.player:GetName(), args.player:GetColor(), ": " .. text, Color.White )
+						local console_text = "[" .. tostring( sender:GetValue( "Country" ) ) .. "] " .. partherPrefix .. sender:GetName() .. ": " .. args.text
+						print( "(" .. sender:GetId() .. ") " .. console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
+					elseif isOrganizer( sender ) then
+						Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 255 ), organizerPrefix, Color( 255, 190, 125 ), sender:GetName(), sender:GetColor(), ": " .. args.text, Color.White )
 
-							local console_text = "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] " .. moderDPrefix .. args.player:GetName() .. ": " .. args.text
-							print( "(" .. args.player:GetId() .. ") " .. console_text )
-							Events:Fire( "ToDiscordConsole", { text = console_text } )
-						elseif (isAdminD(args.player)) then
-							Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), adminDPrefix, Color( 255, 48, 48 ), args.player:GetName(), args.player:GetColor(), ": " .. text, Color.White )
+						local console_text = "[" .. tostring( sender:GetValue( "Country" ) ) .. "] " .. organizerPrefix .. sender:GetName() .. ": " .. args.text
+						print( "(" .. sender:GetId() .. ") " .. console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
+					elseif isModerD( sender ) then
+						Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), moderDPrefix, Color( 255, 148, 48 ), sender:GetName(), sender:GetColor(), ": " .. args.text, Color.White )
 
-							local console_text = "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] " .. adminDPrefix .. args.player:GetName() .. ": " .. args.text
-							print( "(" .. args.player:GetId() .. ") " .. console_text )
-							Events:Fire( "ToDiscordConsole", { text = console_text } )
-						elseif (isAdmin(args.player)) then
-							Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), adminPrefix, Color( 255, 48, 48 ), args.player:GetName(), args.player:GetColor(), ": " .. text, Color.White )
+						local console_text = "[" .. tostring( sender:GetValue( "Country" ) ) .. "] " .. moderDPrefix .. sender:GetName() .. ": " .. args.text
+						print( "(" .. sender:GetId() .. ") " .. console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
+					elseif isAdminD( sender ) then
+						Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), adminDPrefix, Color( 255, 48, 48 ), sender:GetName(), sender:GetColor(), ": " .. args.text, Color.White )
 
-							local console_text = "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] " .. adminPrefix .. args.player:GetName() .. ": " .. args.text
-							print( "(" .. args.player:GetId() .. ") " .. console_text )
-							Events:Fire( "ToDiscordConsole", { text = console_text } )
-						elseif (isGlAdmin(args.player)) then
-							Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), gladminPrefix, Color( 255, 48, 48 ), args.player:GetName(), args.player:GetColor(), ": " .. text, Color.White )
+						local console_text = "[" .. tostring( sender:GetValue( "Country" ) ) .. "] " .. adminDPrefix .. sender:GetName() .. ": " .. args.text
+						print( "(" .. sender:GetId() .. ") " .. console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
+					elseif isAdmin( sender ) then
+						Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), adminPrefix, Color( 255, 48, 48 ), sender:GetName(), sender:GetColor(), ": " .. args.text, Color.White )
 
-							local console_text = "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] " .. gladminPrefix ..  args.player:GetName() .. ": " .. args.text
-							print( "(" .. args.player:GetId() .. ") " .. console_text )
-							Events:Fire( "ToDiscordConsole", { text = console_text } )
-						elseif (isCreator(args.player)) then
-							Chat:Broadcast( lennyPrefix, Color( 255, 255, 50 ), creatorPrefix, Color( 63, 153, 255 ), args.player:GetName(), args.player:GetColor(), ": " .. args.text, Color.White )
+						local console_text = "[" .. tostring( sender:GetValue( "Country" ) ) .. "] " .. adminPrefix .. sender:GetName() .. ": " .. args.text
+						print( "(" .. sender:GetId() .. ") " .. console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
+					elseif isGlAdmin( sender ) then
+						Chat:Broadcast( zvezdaPrefix, Color( 255, 255, 50 ), gladminPrefix, Color( 255, 48, 48 ), sender:GetName(), sender:GetColor(), ": " .. args.text, Color.White )
 
-							local console_text = "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] " .. creatorPrefix .. args.player:GetName() .. ": ".. args.text
-							print( "(" .. args.player:GetId() .. ") " .. console_text )
-							Events:Fire( "ToDiscordConsole", { text = console_text } )
-						end
-						return false
+						local console_text = "[" .. tostring( sender:GetValue( "Country" ) ) .. "] " .. gladminPrefix ..  sender:GetName() .. ": " .. args.text
+						print( "(" .. sender:GetId() .. ") " .. console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
+					elseif isCreator( sender ) then
+						Chat:Broadcast( lennyPrefix, Color( 255, 255, 50 ), creatorPrefix, Color( 63, 153, 255 ), sender:GetName(), sender:GetColor(), ": " .. args.text, Color.White )
+
+						local console_text = "[" .. tostring( sender:GetValue( "Country" ) ) .. "] " .. creatorPrefix .. sender:GetName() .. ": ".. args.text
+						print( "(" .. sender:GetId() .. ") " .. console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					end
+					return false
 				end
 			end
 		end

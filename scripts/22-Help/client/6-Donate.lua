@@ -71,8 +71,7 @@ function HDonate:RusHelp()
 		name = "Донат",
 		text =
 			"> Ссылки:\n" ..
-			"    Купить - [empty_link]\n" ..
-			"    Купить (VK) - [empty_link]\n \n" ..
+			"    Купить - [empty_link]\n \n" ..
 			"> VIP:\n" ..
 			"    - Префикс VIP.\n" ..
 			"    - Доступ ко вкладкам *VIP* в чёрном рынке.\n" ..

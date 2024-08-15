@@ -12,6 +12,7 @@ function CarBattles:__init()
 	else
 		self.name = "Загрузка..."
 		self.nameTw = "Загрузка идет слишком долго? Перезайдите на сервер."
+		self.nameTh = "Нажмите R, чтобы встать на колеса"
 		self.healtxt = "++ Восстановление ++"
 		self.yourscorestxt = "Ваши очки: "
 		self.leaderboardtxt = "[Лидеры]"
@@ -61,6 +62,7 @@ end
 function CarBattles:Lang()
 	self.name = "Loading..."
 	self.nameTw = "Loading very long? Reconnect to the server."
+	self.nameTh = "Press R to stand on wheels"
 	self.healtxt = "++ Healing ++"
 	self.yourscorestxt = "Your points: "
 	self.leaderboardtxt = "[Leaders]"
@@ -120,26 +122,29 @@ function CarBattles:HealSound()
 end
 
 function CarBattles:Enter()
-	self.LocalPlayerInputEvent =		Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	self.LocalPlayerExitVehicleEvent =	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
-	self.RenderEvent =					Events:Subscribe( "Render", self, self.Render )
-	self.GameRenderEvent =				Events:Subscribe( "GameRender", self, self.GameRender )
-	self.LocalPlayerDeathEvent =		Events:Subscribe( "LocalPlayerDeath", self, self.LocalPlayerDeath )
-	self.GameLoadEvent =				Events:Subscribe( "GameLoad", self, self.GameLoad )
-	self.KeyUpEvent =					Events:Subscribe( "KeyUp", self, self.KeyUp )
-	self.RespawnEvent = 				Events:Subscribe( "LocalPlayerInput", self, self.Respawn )
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+	if not self.LocalPlayerExitVehicleEvent then self.LocalPlayerExitVehicleEvent = Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle ) end
+	if not self.LocalPlayerEjectVehicleEvent then self.LocalPlayerExitVehicleEvent = Events:Subscribe( "LocalPlayerEjectVehicle", self, self.LocalPlayerEjectVehicle ) end
+	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+	if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.GameRender ) end
+	if not self.LocalPlayerDeathEvent then self.LocalPlayerDeathEvent = Events:Subscribe( "LocalPlayerDeath", self, self.LocalPlayerDeath ) end
+	if not self.GameLoadEvent then self.GameLoadEvent = Events:Subscribe( "GameLoad", self, self.GameLoad ) end
+	if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
+	if not self.RespawnEvent then self.RespawnEvent = Events:Subscribe( "LocalPlayerInput", self, self.Respawn ) end
+
 	self.antifly = true
 end
 
 function CarBattles:Exit()
-	Events:Unsubscribe( self.LocalPlayerInputEvent )
-	Events:Unsubscribe( self.LocalPlayerExitVehicleEvent )
-	Events:Unsubscribe( self.RenderEvent )
-	Events:Unsubscribe( self.GameRenderEvent )
-	Events:Unsubscribe( self.LocalPlayerDeathEvent )
-	Events:Unsubscribe( self.GameLoadEvent )
-	Events:Unsubscribe( self.KeyUpEvent )
-	Events:Unsubscribe( self.RespawnEvent )
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.LocalPlayerExitVehicleEvent then Events:Unsubscribe( self.LocalPlayerExitVehicleEvent ) self.LocalPlayerExitVehicleEvent = nil end
+	if self.LocalPlayerEjectVehicleEvent then Events:Unsubscribe( self.LocalPlayerEjectVehicleEvent ) self.LocalPlayerEjectVehicleEvent = nil end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
+	if self.LocalPlayerDeathEvent then Events:Unsubscribe( self.LocalPlayerDeathEvent ) self.LocalPlayerDeathEvent = nil end
+	if self.GameLoadEvent then Events:Unsubscribe( self.GameLoadEvent ) self.GameLoadEvent = nil end
+	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
+	if self.RespawnEvent then Events:Unsubscribe( self.RespawnEvent ) self.RespawnEvent = nil end
 
 	if LocalPlayer:GetOutlineEnabled() == true then
 		Network:Send( "EnableCollision" )
@@ -179,8 +184,6 @@ end
 function CarBattles:Render()
 	local vehicle = LocalPlayer:GetVehicle()
 
-	Network:Send( "Health" )
-
 	if self.check then
 		if not LocalPlayer:InVehicle() then
 			self.warning = true
@@ -198,6 +201,8 @@ function CarBattles:Render()
 	end
 
 	if vehicle then
+		Network:Send( "Health" )
+
 		if vehicle:GetHealth() <= 0.1 then
 			Network:Send( "NoVehicle" )
 		end
@@ -234,6 +239,19 @@ function CarBattles:Render()
 		pos.x = ( Render.Width - Render:GetTextWidth( self.nameTw, TextSize.Default ) ) / 2
 		Render:DrawShadowedText( pos, self.nameTw, Color.DarkGray, Color( 25, 25, 25, 150 ), TextSize.Default )
 	end
+
+	if vehicle then
+		local angle = vehicle:GetAngle()
+
+		if vehicle:GetLinearVelocity():Length() < 1 and ( math.abs( angle.pitch ) > 1.5 or math.abs( angle.roll ) > 1.5 ) then
+			local text_size = 24
+			local text_width = Render:GetTextWidth( self.nameTh, text_size )
+			local text_height = Render:GetTextHeight( self.nameTh, text_size )
+			local pos = Vector2( Render.Size.x / 2 - text_width / 2, ( Render.Size.y / 2 - text_height / 2 ) - 100 )
+
+			Render:DrawShadowedText( pos, self.nameTh, Color.White, Color( 25, 25, 25, 150 ), text_size )
+		end
+	end
 end
 
 function CarBattles:GameRender()
@@ -242,7 +260,16 @@ end
 
 function CarBattles:LocalPlayerExitVehicle()
 	self.check = false
-	Network:Send( "NoVehicle" )
+
+	if not LocalPlayer:IsTeleporting() then
+		Network:Send( "NoVehicle" )
+	end
+end
+
+function CarBattles:LocalPlayerEjectVehicle()
+    if LocalPlayer:GetPosition().y > 200.5 then
+		return false
+	end
 end
 
 function CarBattles:LocalPlayerDeath()

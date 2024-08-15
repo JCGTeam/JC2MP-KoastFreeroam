@@ -14,11 +14,11 @@ function LoadNews:GetENGNews( args, sender )
 		s = getnewsfile:read( "*a" )
 
 		if s then
-			Network:Send( sender, "LoadNews", { ntext = s } )
+			Network:Send( sender, "LoadNews", { text = s } )
 		end
 		getnewsfile:close()
 	else
-		Network:Send( sender, "LoadNews", { ntext = "LOAD ERROR\nNews file not found. Path: " .. self.ENGNewsFilePath } )
+		Network:Send( sender, "LoadNews", { text = "LOAD ERROR\nNews file not found. Path: " .. self.ENGNewsFilePath } )
 	end
 end
 
@@ -28,11 +28,11 @@ function LoadNews:GetRUSNews( args, sender )
 		s = getnewsfile:read( "*a" )
 
 		if s then
-			Network:Send( sender, "LoadNews", { ntext = s } )
+			Network:Send( sender, "LoadNews", { text = s } )
 		end
 		getnewsfile:close()
 	else
-		Network:Send( sender, "LoadNews", { ntext = "ОШИБКА ЗАГРУЗКИ\nФайл новостей не найден. Путь: " .. self.RUSNewsFilePath } )
+		Network:Send( sender, "LoadNews", { text = "ОШИБКА ЗАГРУЗКИ\nФайл новостей не найден. Путь: " .. self.RUSNewsFilePath } )
 	end
 end
 

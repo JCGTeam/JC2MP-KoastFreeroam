@@ -26,7 +26,6 @@ function News:__init()
 	self.window = Window.Create()
 	self.window:SetSizeRel( Vector2( 0.57, 0.86 ) )
 	self.window:SetPositionRel( Vector2( 0.69, 0.5 ) - self.window:GetSizeRel()/2 )
-	self.window:SetTitle( "ⓘ Новости" )
 	self.window:SetVisible( self.HelpActive )
 	self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
 
@@ -36,15 +35,28 @@ function News:__init()
 
 	self.tabs = {}
 
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
+		self:Lang()
+	else
+		self.window:SetTitle( "ⓘ Новости" )
+
+		Network:Send( "GetRUSNews" )
+	end
+
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "OpenNewsMenu", self, self.OpenNewsMenu )
 	Events:Subscribe( "CloseNewsMenu", self, self.CloseNewsMenu )
 	Events:Subscribe( "NewsAddItem", self, self.AddItem )
 	Events:Subscribe( "NewsRemoveItem", self, self.RemoveItem )
+
+	Network:Subscribe( "LoadNews", self, self.AddItem )
 end
 
 function News:Lang()
 	self.window:SetTitle( "ⓘ News" )
+
+	Network:Send( "GetENGNews" )
 end
 
 function News:GetActive()

@@ -37,12 +37,14 @@ function Shop:__init()
 	}
 
 	self.permissions = {
-        ["Creator"] = true,
-        ["GlAdmin"] = true,
-        ["Admin"] = true,
-        ["AdminD"] = true,
-        ["ModerD"] = true,
-        ["VIP"] = true
+		["Creator"] = true,
+		["GlAdmin"] = true,
+		["Admin"] = true,
+		["AdminD"] = true,
+		["ModerD"] = true,
+		["Organizer"] = true,
+		["Parther"] = true,
+		["VIP"] = true
     }
 
 	self.map_limit = 16000
@@ -311,10 +313,10 @@ function Shop:ExecuteVehicle( player, item, tone1, tone2 )
         self.vehicles[ pId ]:Remove()
         self.vehicles[ pId ] = nil
     end
-	
+
     local args = {}
     args.model_id           = item:GetModelId()
-	
+
 	if item:GetTemplate() ~= nil then
 		args.template = item:GetTemplate()
 	end

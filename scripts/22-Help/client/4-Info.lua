@@ -13,15 +13,15 @@ function HInfo:EngHelp()
 		name = "Information",
 		text =
 			"> Main:\n" ..
-			"    Telegram Channel     [empty_link]\n" ..
-			"    We're in Discord        [empty_link]\n" ..
-			"    Group in Steam         [empty_link]\n" ..
-			"    Group in VK               [empty_link]\n \n" ..
+			"    Telegram      [empty_link]\n" ..
+			"    Discord        [empty_link]\n" ..
+			"    Steam           [empty_link]\n" ..
+			"    YouTube      [empty_link]\n \n" ..
 			"> Our servers:\n" ..
 			"    Just Cause 2 Multiplayer Mod:\n" ..
 			"     - Koast Freeroam – [empty_link] (You are here)\n" ..
 			"     - Panau Crisis – [empty_link]\n" ..
-			"         - Group in VK - [empty_link]\n \n" ..
+			"         - VK - [empty_link]\n \n" ..
 			"> Developer:\n" ..
 			"     Hallkezz\n \n" ..
 			"> Help in development:\n" ..
@@ -63,15 +63,16 @@ function HInfo:RusHelp()
 		name = "Информация",
 		text =
 			"> Главное:\n" ..
-			"    Канал в Telegram      [empty_link]\n" ..
-			"    Сервер в Discord      [empty_link]\n" ..
-			"    Группа в Steam         [empty_link]\n" ..
-			"    Группа в VK               [empty_link]\n \n" ..
+			"    Telegram      [empty_link]\n" ..
+			"    Discord        [empty_link]\n" ..
+			"    Steam           [empty_link]\n" ..
+			"    YouTube      [empty_link]\n" ..
+			"    VK                 [empty_link]\n \n" ..
 			"> Наши сервера:\n" ..
 			"    Just Cause 2 Multiplayer Mod:\n" ..
 			"     - Koast Freeroam – [empty_link] (Вы тут)\n" ..
 			"     - Panau Crisis – [empty_link]\n" ..
-			"         - Группа в VK - [empty_link]\n \n" ..
+			"         - VK - [empty_link]\n \n" ..
 			"> Разработчик:\n" ..
 			"     Hallkezz\n \n" ..
 			"> Помощь в разработке:\n" ..
@@ -101,11 +102,7 @@ function HInfo:RusHelp()
 			"     Cavick (Художник-аферист)\n" ..
 			"     Dragonshifter (Исходный код сервера RUSSIAN FREEROAM MAYHEM)\n \n" ..
 			"> Открытый исходный код:\n" ..
-			"     GitHub - github.com/JCGTeam/JC2MP-KoastFreeroam\n \n" ..
-			"> Спонсорство:\n" ..
-			"     В список спонсоров попадают люди, которые поддержали сервер суммой более 500 рублей.\n" ..
-			"     Для попадания в список - уведомите администрацию.\n \n" ..
-			"Никнеймы спонсоров: Oleg, Arko, Cavick"
+			"     GitHub - github.com/JCGTeam/JC2MP-KoastFreeroam"
 	} )
 end
 

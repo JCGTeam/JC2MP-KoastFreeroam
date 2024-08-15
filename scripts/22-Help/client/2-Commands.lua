@@ -16,6 +16,7 @@ function HCommands:EngHelp()
 			"> Basic:\n" ..
 			"    /pos                      Get your coordinates.\n" ..
 			"    /angle                   Get character angle.\n" ..
+			"    /tp                         Teleport to an available location.\n" ..
 			"    /stats                    Show account information on the server.\n" ..
 			"    /bind                     Key binding.\n" ..
 			"    /myhomes            Get home coordinates.\n" ..
@@ -46,6 +47,7 @@ function HCommands:RusHelp()
 			"> Часто используемые:\n" ..
 			"    /pos                      Узнать ваши координаты.\n" ..
 			"    /angle                   Узнать угол персонажа.\n" ..
+			"    /tp                         Телепортироваться в доступное место.\n" ..
 			"    /stats                    Показать данные об аккаунте на сервере.\n" ..
 			"    /bind                    Привязка клавиш.\n" ..
 			"    /myhomes           Получить координаты домов.\n" ..

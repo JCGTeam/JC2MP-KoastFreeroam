@@ -2,12 +2,14 @@ class 'ActionsMenu'
 
 function ActionsMenu:__init()
     self.permissions = {
-        ["Creator"] = true,
-        ["GlAdmin"] = true,
-        ["Admin"] = true,
-        ["AdminD"] = true,
-        ["ModerD"] = true,
-        ["VIP"] = true
+		["Creator"] = true,
+		["GlAdmin"] = true,
+		["Admin"] = true,
+		["AdminD"] = true,
+		["ModerD"] = true,
+		["Organizer"] = true,
+		["Parther"] = true,
+		["VIP"] = true
     }
 
 	Network:Subscribe( "HealMe", self, self.HealMe )

@@ -47,18 +47,21 @@ function ActionsMenu:__init()
 	}
 
 	self.permissions = {
-        ["Creator"] = true,
-        ["GlAdmin"] = true,
-        ["Admin"] = true,
-        ["AdminD"] = true,
-        ["ModerD"] = true,
-        ["VIP"] = true
+		["Creator"] = true,
+		["GlAdmin"] = true,
+		["Admin"] = true,
+		["AdminD"] = true,
+		["ModerD"] = true,
+		["Organizer"] = true,
+		["Parther"] = true,
+		["VIP"] = true
     }
 
 	self.textSize = 15
 
     Events:Subscribe( "Lang", self, self.Lang )
     Events:Subscribe( "KeyUp", self, self.KeyUp )
+	Events:Subscribe( "LocalPlayerWorldChange", self, self.LocalPlayerWorldChange )
 end
 
 function ActionsMenu:Lang()
@@ -110,6 +113,12 @@ function ActionsMenu:KeyUp( args )
             })
         end
     end
+end
+
+function ActionsMenu:LocalPlayerWorldChange()
+	if self.window and self.window:GetVisible() then
+		self:WindowClosed()
+	end
 end
 
 function ActionsMenu:CreateActionButton( title, event, color )

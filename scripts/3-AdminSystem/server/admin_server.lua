@@ -324,12 +324,14 @@ function Admin:executeAction ( args, player )
 				if IsValid ( args [ 2 ], false ) then
 					local reason = tostring ( args [ 3 ] or "No reason defined" )
 					Chat:Broadcast( ChatTag, Color.White, args [ 2 ]:GetName() .." был кикнут ".. player:GetName() .." ( ".. reason .." )", Color ( 255, 0, 0 ) )
-					print( args [ 2 ]:GetName() .." was kicked ".. player:GetName() .. " ( ".. reason .." )" )
-					Events:Fire( "ToDiscordConsole", { text = args [ 2 ]:GetName() .. " was kicked ".. player:GetName() .." ( ".. reason .." )" } )
 --					for _, thePlayer in pairs ( self.canChat ) do
 --						Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." кикнул " .. args [ 2 ]:GetName() .. " | Причина: " .. reason } )
 --					end
 					args [ 2 ]:Kick ( reason )
+
+					local console_text = args [ 2 ]:GetName() .. " was kicked " .. player:GetName() .. " ( ".. reason .." )"
+					print( console_text )
+					Events:Fire( "ToDiscordConsole", { text = console_text } )
 				else
 					player:Message ( noonline, "err" )
 				end
@@ -337,11 +339,13 @@ function Admin:executeAction ( args, player )
 				if IsValid ( args [ 2 ], false ) then
 					local reason = tostring ( args [ 3 ] or "No reason defined" )
 					Chat:Broadcast( ChatTag, Color.White, args [ 2 ]:GetName() .." получил предупреждение! ( ".. reason .." )", Color ( 255, 0, 0 ) )
-					print( args [ 2 ]:GetName() .." has been warned by ".. player:GetName() .. " ( ".. reason .." )" )
-					Events:Fire( "ToDiscordConsole", { text = args [ 2 ]:GetName() .. " has been warned by ".. player:GetName() .." ( ".. reason .." )" } )
 --					for _, thePlayer in pairs ( self.canChat ) do
 --						Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." выдал предупреждение " .. args [ 2 ]:GetName() .. " | Причина: " .. reason } )
 --					end
+
+					local console_text = args [ 2 ]:GetName() .. " has been warned by " .. player:GetName() .. " ( ".. reason .." )"
+					print( console_text )
+					Events:Fire( "ToDiscordConsole", { text = console_text } )
 				else
 					player:Message ( noonline, "err" )
 				end
@@ -349,13 +353,15 @@ function Admin:executeAction ( args, player )
 				if IsValid ( args [ 2 ], false ) then
 					if mute:isPlayerMuted ( args [ 2 ] ) then
 						if mute:setPlayerMuted ( { steamID = tostring ( args [ 2 ]:GetSteamId() ), player = args [ 2 ] }, false ) then
+							self:requestInformation ( args [ 2 ], player )
 							Chat:Broadcast( ChatTag, Color.White, args [ 2 ]:GetName() .." научился разговаривать благодаря ".. player:GetName(), Color ( 0, 255, 0 ) )
-							print( args [ 2 ]:GetName() .. " was unmuted by " .. player:GetName() )
-							Events:Fire( "ToDiscordConsole", { text = args [ 2 ]:GetName() .. " was unmuted by " .. player:GetName() } )
 --							for _, thePlayer in pairs ( self.canChat ) do
 --								Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." убрал мут " .. args [ 2 ]:GetName() } )
 --							end
-							self:requestInformation ( args [ 2 ], player )
+
+							local console_text = args [ 2 ]:GetName() .. " was unmuted by " .. player:GetName()
+							print( console_text )
+							Events:Fire( "ToDiscordConsole", { text = console_text } )
 						else
 							player:Message ( "Невозможно открыть рот игрока!", "err" )
 						end
@@ -371,13 +377,15 @@ function Admin:executeAction ( args, player )
 							responsibleSteamID = tostring ( player:GetSteamId ( ) )
 						}
 						if mute:setPlayerMuted ( muteArgs, true ) then
+							self:requestInformation ( args [ 2 ], player )
 							Chat:Broadcast( ChatTag, Color.White, args [ 2 ]:GetName() .." получил бан чата от ".. player:GetName() .." на ".. tostring ( muteArgs.duration / 60 ) .." минут ( ".. tostring ( muteArgs.reason ) .." )", Color ( 255, 0, 0 ) )
 --							for _, thePlayer in pairs ( self.canChat ) do
 --								Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." выдал мут " .. args [ 2 ]:GetName() .. " | Причина: " .. tostring ( muteArgs.reason ) } )
 --							end
-							print( args [ 2 ]:GetName() .. " was muted by " .. player:GetName() .. " for ".. tostring ( muteArgs.duration / 60 ) .." minutes ( ".. tostring ( muteArgs.reason ) .." )" )
-							Events:Fire( "ToDiscordConsole", { text = args [ 2 ]:GetName() .. " was muted by " .. player:GetName() .. " for ".. tostring ( muteArgs.duration / 60 ) .." minutes ( ".. tostring ( muteArgs.reason ) .." )" } )
-							self:requestInformation ( args [ 2 ], player )
+
+							local console_text = args [ 2 ]:GetName() .. " was muted by " .. player:GetName() .. " for ".. tostring ( muteArgs.duration / 60 ) .." minutes ( ".. tostring ( muteArgs.reason ) .." )"
+							print( console_text )
+							Events:Fire( "ToDiscordConsole", { text = console_text } )
 						else
 							player:Message( "Невозможно дать кляп игроку!", "err" )
 						end
@@ -394,8 +402,10 @@ function Admin:executeAction ( args, player )
 --						for _, thePlayer in pairs ( self.canChat ) do
 --							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." отморозил " .. tostring ( args [ 2 ] ) } )
 --						end
-						print( player:GetName() .. " unfreeze " .. args [ 2 ]:GetName() )
-						Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " unfreeze ".. args [ 2 ]:GetName() } )
+
+						local console_text = player:GetName() .. " unfreeze " .. args [ 2 ]:GetName()
+						print( console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else
 						setPlayerFrozen ( args [ 2 ], true )
 						player:Message( "Вы заморозили ".. args [ 2 ]:GetName(), "err" )
@@ -403,8 +413,10 @@ function Admin:executeAction ( args, player )
 --						for _, thePlayer in pairs ( self.canChat ) do
 --							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." заморозили " .. tostring ( args [ 2 ] ) } )
 --						end
-						print( player:GetName() .. " freeze ".. args [ 2 ]:GetName() )
-						Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " freeze ".. args [ 2 ]:GetName() } )
+
+						local console_text = player:GetName() .. " freeze ".. args [ 2 ]:GetName()
+						print( console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					end
 					self:requestInformation ( args [ 2 ], player )
 				else
@@ -418,8 +430,10 @@ function Admin:executeAction ( args, player )
 --					for _, thePlayer in pairs ( self.canChat ) do
 --						Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." убил " .. args [ 2 ]:GetName() } )
 --					end
-					print( player:GetName() .. " killed ".. args [ 2 ]:GetName() )
-					Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " killed ".. args [ 2 ]:GetName() } )
+
+					local console_text = player:GetName() .. " killed ".. args [ 2 ]:GetName()
+					print( console_text )
+					Events:Fire( "ToDiscordConsole", { text = console_text } )
 				else
 					player:Message ( noonline, "err" )
 				end
@@ -432,8 +446,10 @@ function Admin:executeAction ( args, player )
 --					for _, thePlayer in pairs ( self.canChat ) do
 --						Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." установил здоровье на " .. tostring ( value ) .. " для " .. args [ 2 ]:GetName() } )
 --					end
-					print( player:GetName() .. " set health " .. args [ 2 ]:GetName() .. " by " .. tostring ( value ) .. "%" )
-					Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " set health ".. args [ 2 ]:GetName() .. " by " .. tostring ( value ) .."%" } )
+
+					local console_text = player:GetName() .. " set health " .. args [ 2 ]:GetName() .. " by " .. tostring ( value ) .. "%"
+					print( console_text )
+					Events:Fire( "ToDiscordConsole", { text = console_text } )
 				else
 					player:Message ( noonline, "err" )
 				end
@@ -446,8 +462,10 @@ function Admin:executeAction ( args, player )
 --						for _, thePlayer in pairs ( self.canChat ) do
 --							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." установил персонажа на " .. tostring ( args [ 3 ] ) .. " для " .. args [ 2 ]:GetName() } )
 --						end
-						print( player:GetName() .. " set model ".. args [ 2 ]:GetName() .. " by " .. tostring ( args [ 3 ] ) )
-						Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " set model ".. args [ 2 ]:GetName() .. " by " .. tostring ( args [ 3 ] ) } )
+
+						local console_text = player:GetName() .. " set model ".. args [ 2 ]:GetName() .. " by " .. tostring ( args [ 3 ] )
+						print( console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else
 						player:Message ( "Неверный ID модели.", "err" )
 					end
@@ -463,8 +481,10 @@ function Admin:executeAction ( args, player )
 --						for _, thePlayer in pairs ( self.canChat ) do
 --							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." установил опыт на " .. tostring ( convertNumber ( args [ 3 ] ) ) .. " для " .. args [ 2 ]:GetName() } )
 --						end
-						print( player:GetName() .. " set money ".. args [ 2 ]:GetName() .. " by $" .. tostring ( convertNumber ( args [ 3 ] ) ) )
-						Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " set money ".. args [ 2 ]:GetName() .. " by $" .. tostring ( convertNumber ( args [ 3 ] ) ) } )
+
+						local console_text = player:GetName() .. " set money ".. args [ 2 ]:GetName() .. " by $" .. tostring ( convertNumber ( args [ 3 ] ) )
+						print( console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else
 						player:Message ( "Неверное значение.", "err" )
 					end
@@ -480,8 +500,10 @@ function Admin:executeAction ( args, player )
 --						for _, thePlayer in pairs ( self.canChat ) do
 --							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." добавил " .. tostring ( convertNumber ( args [ 3 ] ) ) .. " ОП для " .. args [ 2 ]:GetName() } )
 --						end
-						print( player:GetName() .. " give money ".. args [ 2 ]:GetName() .. " by $" .. tostring ( convertNumber ( args [ 3 ] ) ) )
-						Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " give money ".. args [ 2 ]:GetName() .. " by $" .. tostring ( convertNumber ( args [ 3 ] ) ) } )
+
+						local console_text = player:GetName() .. " give money ".. args [ 2 ]:GetName() .. " by $" .. tostring ( convertNumber ( args [ 3 ] ) )
+						print( console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else
 						player:Message ( "Неверное значение.", "err" )
 					end
@@ -501,8 +523,10 @@ function Admin:executeAction ( args, player )
 --					for _, thePlayer in pairs ( self.canChat ) do
 --						Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." телепортировался к " .. args [ 2 ]:GetName() } )
 --					end
-					print( player:GetName() .. " warped to " .. args [ 2 ]:GetName() )
-					Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " warped to " .. args [ 2 ]:GetName() } )
+
+					local console_text = player:GetName() .. " warped to " .. args [ 2 ]:GetName()
+					print( console_text )
+					Events:Fire( "ToDiscordConsole", { text = console_text } )
 				else
 					player:Message ( noonline, "err" )
 				end
@@ -577,12 +601,14 @@ function Admin:executeAction ( args, player )
 							args [ 2 ]:EnterVehicle ( vehicle, VehicleSeat.Driver )
 							self.vehicles [ args [ 2 ]:GetId() ] = vehicle
 							player:Message( "Вы дали ".. args [ 2 ]:GetName() .." транспорт ".. tostring ( Vehicle.GetNameByModelId ( args [ 3 ] ) ), "info" )
-							print( player:GetName() .. " give ".. args [ 2 ]:GetName() .. " vehicle ".. tostring ( Vehicle.GetNameByModelId ( args [ 3 ] ) ) )
-							Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " give ".. args [ 2 ]:GetName() .. " vehicle ".. tostring ( Vehicle.GetNameByModelId ( args [ 3 ] ) ) } )
 							args [ 2 ]:Message( player:GetName() .." дал тебе ".. tostring ( Vehicle.GetNameByModelId ( args [ 3 ] ) ), "info" )
 --							for _, thePlayer in pairs ( self.canChat ) do
 --								Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." выдал тс " .. tostring ( Vehicle.GetNameByModelId ( args [ 3 ] ) ) .. " для " .. args [ 2 ]:GetName() } )
 --							end
+
+							local console_text = player:GetName() .. " give ".. args [ 2 ]:GetName() .. " vehicle ".. tostring ( Vehicle.GetNameByModelId ( args [ 3 ] ) )
+							print( console_text )
+							Events:Fire( "ToDiscordConsole", { text = console_text } )
 						else
 							player:Message( "Не удалось предоставить ".. args [ 2 ]:GetName ( ) .."!", "err" )
 						end
@@ -597,12 +623,14 @@ function Admin:executeAction ( args, player )
 					if args [ 2 ]:InVehicle() then
 						args [ 2 ]:GetVehicle():SetHealth( 1 )
 						player:Message( "Вы отремонтировали ".. args [ 2 ]:GetName() .." транспорт.", "info" )
-						print( player:GetName() .. " repaired vehicle " .. args [ 2 ]:GetName() )
-						Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " repaired vehicle ".. args [ 2 ]:GetName() } )
 						args [ 2 ]:Message( player:GetName() .. " отремонтировал ваш транспорт.", "info" )
 --						for _, thePlayer in pairs ( self.canChat ) do
 --							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." отремонтировал тс " .. args [ 2 ]:GetName() } )
 --						end
+
+						local console_text = player:GetName() .. " repaired vehicle " .. args [ 2 ]:GetName()
+						print( console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else
 						player:Message( args [ 2 ]:GetName() .." не находится в транспорте.", "err" )
 					end
@@ -638,12 +666,14 @@ function Admin:executeAction ( args, player )
 								veh:SetColors ( color1, args [ 4 ] )
 							end
 							player:Message( "Вы изменили ".. args [ 2 ]:GetName() .." цвет транспорта!", "info" )
-							print( player:GetName() .. " change color vehicle " .. args [ 2 ]:GetName() )
-							Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " change color vehicle " .. args [ 2 ]:GetName() } )
 --							for _, thePlayer in pairs ( self.canChat ) do
 --								Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." изменил цвет тс для " .. args [ 2 ]:GetName() } )
 --							end
 							player:Message( player:GetName() .." изменил цвет вашего транспорта!", "info" )
+
+							local console_text = player:GetName() .. " change color vehicle " .. args [ 2 ]:GetName()
+							print( console_text )
+							Events:Fire( "ToDiscordConsole", { text = console_text } )
 						end
 					else
 						player:Message( args [ 2 ]:GetName() .." не находится в транспорте.", "err" )
@@ -666,13 +696,15 @@ function Admin:executeAction ( args, player )
 				if IsValid ( args [ 2 ], false ) then
 					if ACL:groupAddObject( "Глава", tostring ( args [ 2 ]:GetSteamId() ) ) then
 						player:Message( "Вы дали доступ к панели ".. args [ 2 ]:GetName() .."!", "info" )
-						print( player:GetName() .. " give access to admin panel " .. args [ 2 ]:GetName() .."!" )
-						Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " give access to admin panel " .. args [ 2 ]:GetName() .."!" } )
 --						for _, thePlayer in pairs ( self.canChat ) do
 --							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." дал доступ к админ панели " .. args [ 2 ]:GetName() } )
 --						end
 						args [ 2 ]:Message( player:GetName() .." дал вам доступ к админ панели!", "info" )
 						self:requestInformation( args [ 2 ], player )
+
+						local console_text = player:GetName() .. " give access to admin panel " .. args [ 2 ]:GetName() .."!"
+						print( console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else
 						player:Message( "Не удалось предоставить доступ к панели ".. args [ 2 ]:GetName() .."!", "err" )
 					end
@@ -683,13 +715,15 @@ function Admin:executeAction ( args, player )
 				if IsValid ( args [ 2 ], false ) then
 					if ACL:groupRemoveObject( "Глава", tostring ( args [ 2 ]:GetSteamId() ) ) then
 						player:Message( "Вы запретили доступ ".. args [ 2 ]:GetName() .." к панели!", "err" )
-						print( player:GetName() .. " block access to admin panel " .. args [ 2 ]:GetName() .."!" )
-						Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " block access to admin panel " .. args [ 2 ]:GetName() .."!" } )
 --						for _, thePlayer in pairs ( self.canChat ) do
 --							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .. " запретил доступ к админ панели " .. args [ 2 ]:GetName() } )
 --						end
 						args [ 2 ]:Message( player:GetName() .." запретил вам доступ к панели!", "err" )
 						self:requestInformation ( args [ 2 ], player )
+
+						local console_text = player:GetName() .. " block access to admin panel " .. args [ 2 ]:GetName() .."!"
+						print( console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else
 						player:Message( "Не удалось запретить доступ к панели ".. args [ 2 ]:GetName() .."!", "err" )
 					end
@@ -700,11 +734,13 @@ function Admin:executeAction ( args, player )
 				if IsValid ( args [ 2 ], false ) then
 					Network:Send( args [ 2 ], "admin.shout", { name = "(".. player:GetName() ..")", msg = tostring ( args [ 3 ] or "" ) } )
 					player:Message( "Вы отправили сообщение '".. args [ 3 ] .."' игроку " .. args [ 2 ]:GetName(), "info" )
-					print( player:GetName() .." send screen message to " .. args [ 2 ]:GetName() .. ". ( Message: " .. args[ 3 ] .. " )" )
-					Events:Fire( "ToDiscordConsole", { text = player:GetName() .." send screen message to " .. args [ 2 ]:GetName() .. ". ( Message: " .. args[ 3 ] .. " )" } )
 --					for _, thePlayer in pairs ( self.canChat ) do
 --						Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." вывел сообщение на экран игрока " .. args [ 2 ]:GetName() } )
 --					end
+
+					local console_text = player:GetName() .." send screen message to " .. args [ 2 ]:GetName() .. " ( Message: " .. args[ 3 ] .. " )"
+					print( console_text )
+					Events:Fire( "ToDiscordConsole", { text = console_text } )
 				else
 					player:Message( noonline, "err" )
 				end
@@ -733,8 +769,10 @@ function Admin:executeAction ( args, player )
 					if banSystem:removeBan ( args [ 2 ] ) then
 						player:Message( "Вы успешно разбанили ".. tostring ( args [ 2 ] ) .."!", "info" )
 						self:getBans( _, player )
-						Events:Fire( "ToDiscordConsole", { text = tostring ( args [ 2 ] ) .." was unbanned by ".. player:GetName() } )
-						print( tostring ( args [ 2 ] ) .." was unbanned by ".. player:GetName() )
+
+						local console_text = tostring ( args [ 2 ] ) .." was unbanned by ".. player:GetName()
+						print( console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else
 						player:Message( "Не удалось удалить бан!", "err" )
 					end
@@ -748,20 +786,24 @@ function Admin:executeAction ( args, player )
 --					for _, thePlayer in pairs ( self.canChat ) do
 --						Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .. " изменил время на " .. tostring ( args [ 2 ] ) } )
 --					end
-					print( player:GetName() .. " change game time." )
-					Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " change game time." } )
+
+					local console_text = player:GetName() .. " change game time."
+					print( console_text )
+					Events:Fire( "ToDiscordConsole", { text = console_text } )
 				else
 					player:Message( "Неверное значение.", "err" )
 				end
 			elseif ( args [ 1 ] == "general.settimestep" ) then
 				if tonumber ( args [ 2 ] ) then
+					DefaultWorld:SetTimeStep( tonumber ( args [ 2 ] ) )
 					player:Message( "Скорость игрового времени успешно изменилась.", "info" )
 --					for _, thePlayer in pairs ( self.canChat ) do
 --						Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." изменил скорость игрового времени на " .. tostring ( args [ 2 ] ) } )
 --					end
-					print( player:GetName() .. " changed the speed of the game time." )
-					Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " changed the speed of the game time." } )
-					DefaultWorld:SetTimeStep( tonumber ( args [ 2 ] ) )
+
+					local console_text = player:GetName() .. " changed the speed of the game time"
+					print( console_text )
+					Events:Fire( "ToDiscordConsole", { text = console_text } )
 				else
 					player:Message( "Неверное значение.", "err" )
 				end
@@ -772,8 +814,10 @@ function Admin:executeAction ( args, player )
 --					for _, thePlayer in pairs ( self.canChat ) do
 --						Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." изменил погоду на " .. tostring ( args [ 2 ] ) } )
 --					end
-					print( player:GetName() .. " changed weather." )
-					Events:Fire( "ToDiscordConsole", { text = player:GetName() .. " changed weather." } )
+
+					local console_text = player:GetName() .. " changed weather"
+					print( console_text )
+					Events:Fire( "ToDiscordConsole", { text = console_text } )
 				else
 					player:Message( "Неверное значение.", "err" )
 				end
@@ -782,8 +826,10 @@ function Admin:executeAction ( args, player )
 					Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() ..": ".. args [ 2 ] } )
 					thePlayer:SendChatMessage( "[Админ-чат] ", Color.White, player:GetName(), player:GetColor(), ": ".. args [ 2 ], Color.Yellow )
 				end
-				print( "[Admin Chat] " .. player:GetName() .. ": ".. args [ 2 ] )
-				Events:Fire( "ToDiscordConsole", { text = "[Admin Chat] " .. player:GetName() .. ": ".. args [ 2 ] } )
+
+				local console_text = "[Admin Chat] " .. player:GetName() .. ": ".. args [ 2 ]
+				print( console_text )
+				Events:Fire( "ToDiscordConsole", { text = console_text } )
 			elseif ( args [ 1 ] == "acl.modifypermission" ) then
 				if ( args [ 2 ] ) then
 					if ( args [ 3 ] and args [ 4 ] ) then
@@ -863,6 +909,10 @@ function Admin:executeAction ( args, player )
 --						end
 						self:updateModuleLog ( args [ 3 ], player, "reloaded" )
 						self:getModules ( nil, player )
+
+						local console_text = player:GetName() .. " reloaded " .. tostring ( args [ 3 ] ) .. " module"
+						print( console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else
 						player:Message ( "Модуль с таким названием не найден.", "err" )
 					end
@@ -875,6 +925,10 @@ function Admin:executeAction ( args, player )
 --						end
 						self:updateModuleLog ( args [ 2 ], player, "loaded" )
 						self:getModules ( nil, player )
+
+						local console_text = player:GetName() .. " loaded " .. tostring ( args [ 2 ] ) .. " module"
+						print( console_text )
+						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else
 						player:Message ( "Модуль с таким названием не найден.", "err" )
 					end
@@ -888,6 +942,10 @@ function Admin:executeAction ( args, player )
 --					end
 					self:updateModuleLog ( args [ 2 ], player, "unloaded" )
 					self:getModules ( nil, player )
+
+					local console_text = player:GetName() .. " unloaded " .. tostring ( args [ 2 ] ) .. " module"
+					print( console_text )
+					Events:Fire( "ToDiscordConsole", { text = console_text } )
 				else
 					player:Message ( "Модуль с таким названием не найден.", "err" )
 				end
@@ -910,7 +968,7 @@ end
 
 function Admin:getModules ( _, player )
 	if IsValid ( player, false ) then
-		Network:Send ( player, "admin.displayModules", { Server:GetModules ( ), self.moduleLog } )
+		Network:Send ( player, "admin.displayModules", { Server:GetModules(), self.moduleLog } )
 	end
 end
 

@@ -100,7 +100,7 @@ function BetterChat:Chat( args )
 				local pColor = args.player:GetColor()
 
 				for p in Server:GetPlayers() do
-					p:SendChatMessage( p:GetValue( "Lang" ) == "EN" and "[Global] " or "[Общий] ", tagColor, pName, pColor, ": "..args.text, self.msgColor )
+					p:SendChatMessage( p:GetValue( "Lang" ) == "EN" and "[Global] " or "[Общий] ", tagColor, pName, pColor, ": " .. args.text, self.msgColor )
 				end
 				Events:Fire( "ToDiscordConsole", { text = "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] [Global] " .. pName .. ": "..args.text } )
 				print( "(" .. args.player:GetId() .. ") " .. "[" .. tostring( args.player:GetValue( "Country" ) ) .. "] " .. "[Global] " .. pName .. ": " .. args.text )

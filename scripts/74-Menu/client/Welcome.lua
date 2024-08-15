@@ -13,10 +13,10 @@ end
 function WelcomeScreen:Open()
 	self.title = "Добро пожаловать на Koast Freeroam!"
 	self.text = "Мы рады, что вы зашли на наш проект, пожалуйста, прочитайте правила и FAQ перед началом игры.\n\n" ..
-	"> Наша группа в VK - [empty_link]\n" ..
-	"> Наша группа в Steam - [empty_link]\n" ..
+	"> Наш Telegram канал - [empty_link]\n" ..
 	"> Наш Discord сервер - [empty_link]\n" ..
-	"> Наш Telegram канал - [empty_link]\n\n" ..
+	"> Наша группа в Steam - [empty_link]\n" ..
+	"> Наш YouTube канал - [empty_link]\n\n" ..
 	"Желаем вам приятной игры, наслаждайтесь :)"
 
 	self.copyright_txt = "© JCGTeam 2024"
