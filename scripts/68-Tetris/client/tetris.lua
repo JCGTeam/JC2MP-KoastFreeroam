@@ -481,6 +481,22 @@ function Tetris:Rotate()
 	self.currentRot = newRot
 end
 
+function Tetris:FindMaxDropDistance()
+	local distance = 20
+	
+	for _,v in pairs(self.current[self.currentRot]) do
+		for y = 1, 20 do
+			if (v.y+self.currentLoc.y+y)>20 or self.gridNotCurrent[v.x+self.currentLoc.x][v.y+self.currentLoc.y+y] then
+				if y < distance then
+					distance = y
+				end
+			end
+		end
+	end
+	
+	return distance
+end
+
 function Tetris:CheckTiles()
 	for y = 1, 20 do
 		local full = true
@@ -578,6 +594,10 @@ function Tetris:KeyDown( args )
 			self:MoveCurrent(0,1)
 		elseif args.key == VirtualKey.Up then
 			self:Rotate()
+		elseif args.key == VirtualKey.End then
+			for i = 1, self:FindMaxDropDistance() do
+				self:MoveCurrent(0,1)
+			end
 		end
 	elseif self.inTetrisMode and (args.key == VirtualKey.Space) and not self.inGame then
 		self:PopulateGrid()
