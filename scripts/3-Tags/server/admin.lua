@@ -593,12 +593,6 @@ function Admin:PlayerJoin( args )
 			break
 		end
 	end
-
-	-- VIP for all players 01.04.2024
-	if not args.player:GetValue( "Tag" ) then
-		vips[1] = tostring( args.player:GetSteamId() )
-		args.player:SetNetworkValue( "Tag", tagTable[isVip] )
-	end
 end
 
 function Admin:PlayerChat( args )
