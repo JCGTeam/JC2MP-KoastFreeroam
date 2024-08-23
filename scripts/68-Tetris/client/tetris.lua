@@ -328,7 +328,7 @@ function Tetris:Render()
 				local record = object:GetValue("S")
 
 				if record then
-					text = tostring(record) .. " - " .. object:GetValue("N")
+					text = tostring( record ) .. " - " .. object:GetValue("N")
 					Render:DrawText( position + Vector2.One, text, colorShadow, textSize )
 					text = tostring( record )
 					Render:DrawText( position, text, Color( 0, 150, 255, sett_alpha ), textSize )
@@ -401,7 +401,7 @@ function Tetris:RenderTiles()
 	end
 
 	if self.current[self.currentRot] then
-		for _,v in pairs(self.current[self.currentRot]) do
+		for _, v in pairs(self.current[self.currentRot]) do
 			local tilePos = self.offset + self.tileWidthV * (v.x+self.currentLoc.x-1) + self.tileHeightV * (v.y+self.currentLoc.y-1)
 			Render:FillArea(tilePos, self.tileSize, v.c + self.tileOpacity)
 		end
@@ -429,7 +429,7 @@ end
 
 function Tetris:NewBlock()
 	if self.inGame and self.current[self.currentRot] then
-		for _,v in pairs(self.current[self.currentRot]) do
+		for _, v in pairs(self.current[self.currentRot]) do
 			self.gridNotCurrent[v.x+self.currentLoc.x][v.y+self.currentLoc.y] = v.c
 		end
 	end
@@ -439,7 +439,7 @@ function Tetris:NewBlock()
 	self.currentPiece = math.random(1,#self.pieces)
 	self.current = {}
 	self.current = self.pieces[self.currentPiece]
-	for _,v in pairs(self.current[self.currentRot]) do
+	for _, v in pairs(self.current[self.currentRot]) do
 		if self.gridNotCurrent[v.x+self.currentLoc.x][v.y+self.currentLoc.y] then
 			self:GameOver()
 			return
@@ -450,7 +450,8 @@ end
 
 function Tetris:MoveCurrent( x, y )
 	local canMove = true
-	for _,v in pairs(self.current[self.currentRot]) do
+
+	for _, v in pairs(self.current[self.currentRot]) do
 		if (v.x+self.currentLoc.x+x)<1 or (v.x+self.currentLoc.x+x)>10 then
 			self.moving = false
 			return
@@ -471,7 +472,8 @@ end
 
 function Tetris:Rotate()
 	local newRot = self.currentRot % 4 + 1
-	for _,v in pairs(self.current[newRot]) do
+
+	for _, v in pairs(self.current[newRot]) do
 		if (v.x+self.currentLoc.x)<1 or (v.x+self.currentLoc.x)>10 then
 			return
 		elseif (v.y+self.currentLoc.y)>20 or self.gridNotCurrent[v.x+self.currentLoc.x][v.y+self.currentLoc.y] then
@@ -483,8 +485,8 @@ end
 
 function Tetris:FindMaxDropDistance()
 	local distance = 20
-	
-	for _,v in pairs(self.current[self.currentRot]) do
+
+	for _, v in pairs(self.current[self.currentRot]) do
 		for y = 1, 20 do
 			if (v.y+self.currentLoc.y+y)>20 or self.gridNotCurrent[v.x+self.currentLoc.x][v.y+self.currentLoc.y+y] then
 				if y < distance then
@@ -493,18 +495,20 @@ function Tetris:FindMaxDropDistance()
 			end
 		end
 	end
-	
+
 	return distance
 end
 
 function Tetris:CheckTiles()
 	for y = 1, 20 do
 		local full = true
+
 		for x = 1, 10 do
 			if not self.gridNotCurrent[x][y] then
 				full = false
 			end
 		end
+
 		if full then
 			for x = 1, 10 do
 				for y2 = y, 2, -1 do
@@ -562,7 +566,7 @@ end
 
 function Tetris:GameOver()
 	self.inGame = false
-	for _,v in pairs(self.current[self.currentRot]) do
+	for _, v in pairs(self.current[self.currentRot]) do
 		self.gridNotCurrent[v.x+self.currentLoc.x][v.y+self.currentLoc.y] = v.c
 	end
 
@@ -636,7 +640,7 @@ function Tetris:NewLeaderboard( tData )
 
 	self.currentLeaderboard = tData
 
-	for _,v in pairs(self.currentLeaderboard) do
+	for _, v in pairs(self.currentLeaderboard) do
 		self.list:AddItem( v.name ):SetCellText( 1, tostring(v.score) )
 	end
 end

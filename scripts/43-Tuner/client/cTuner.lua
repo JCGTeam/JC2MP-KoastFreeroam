@@ -28,6 +28,21 @@ function Tuner:__init()
 
 	self:InitGUI()
 
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
+		self:Lang()
+	else
+		self.gear_txt = "Передача: "
+		self.kmh_txt = "км/ч"
+		self.ms_txt = "м/с"
+		self.mph_txt = "миль/ч"
+		self.kg_txt = "кг"
+		self.in_txt = "за"
+		self.seconds_txt = "секунд"
+
+		self.gui.window:SetTitle( "▧ Тюнинг" )
+	end
+
 	self.SyncTimer = Timer()
 
 	self.neons = {}
@@ -41,15 +56,6 @@ function Tuner:__init()
 	if vehicle and vehicle:GetDriver() == LocalPlayer then
 		self:InitVehicle(vehicle)
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	end
-
-	local lang = LocalPlayer:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		self:Lang()
-	else
-		self.gear = "Передача: "
-
-		self.gui.window:SetTitle( "▧ Тюнинг" )
 	end
 
 	Network:Subscribe( "ToggleNeonLight", self, self.ToggleNeonLight )
@@ -66,7 +72,13 @@ function Tuner:__init()
 end
 
 function Tuner:Lang()
-	self.gear = "Gear: "
+	self.gear_txt = "Gear: "
+	self.kmh_txt = "km/h"
+	self.ms_txt = "m/s"
+	self.mph_txt = "mph"
+	self.kg_txt = "kg"
+	self.in_txt = "in"
+	self.seconds_txt = "seconds"
 
 	self.gui.window:SetTitle( "▧ Tuning" )
 
@@ -171,6 +183,10 @@ function Tuner:Lang()
 
 	if self.gui.aero.flyT then
 		self.gui.aero.flyT:SetText( "Vertical takeoff (Z button)" )
+	end
+
+	if self.neontoggle then
+		self.neontoggle:SetText( "Toggle Neon" )
 	end
 end
 
@@ -399,12 +415,12 @@ function Tuner:InitGUI()
 	neoncolor:SetColor( vehicle:GetValue( "NeonColor" ) or vehicle:GetColors() )
 	neoncolor:SetDock( GwenPosition.Fill )
 
-	local neontoggle = Button.Create( self.gui.neon.window )
-	neontoggle:SetText( "Включить/отключить неон" )
-	neontoggle:SetTextSize( 15 )
-	neontoggle:SetHeight( 30 )
-	neontoggle:SetDock( GwenPosition.Bottom )
-	neontoggle:Subscribe( "Up", function() Network:Send( "UpdateNeonColor", { neoncolor = neoncolor:GetColor() } ) Network:Send( "ToggleSyncNeon" ) end )
+	self.neontoggle = Button.Create( self.gui.neon.window )
+	self.neontoggle:SetText( "Включить/отключить неон" )
+	self.neontoggle:SetTextSize( 15 )
+	self.neontoggle:SetHeight( 30 )
+	self.neontoggle:SetDock( GwenPosition.Bottom )
+	self.neontoggle:Subscribe( "Up", function() Network:Send( "UpdateNeonColor", { neoncolor = neoncolor:GetColor() } ) Network:Send( "ToggleSyncNeon" ) end )
 	self.gui.neon.button:Subscribe( "Press", function()
 		self.gui.window:SetSize( Vector2( 460, 350 ) )
 	end )
@@ -1095,7 +1111,7 @@ function Tuner:InitVehicle( vehicle )
 	end
 	self.gui.veh.getters[9]:SetText( f("%i", vehicle:GetWheelCount()) )
 	self.gui.veh.getters[10]:SetText( f("%i", vehicle:GetMaxRPM()) )
-	self.gui.veh.getters[15]:SetText( f("%i м/с", vehicle:GetTopSpeed()) )
+	self.gui.veh.getters[15]:SetText( f("%i " .. self.ms_txt, vehicle:GetTopSpeed()) )
 end
 
 function Tuner:VehicleUpdate()
@@ -1108,7 +1124,7 @@ function Tuner:VehicleUpdate()
 	local wt = t * self.trans:GetPrimaryTransmissionRatio() * ratios[self.trans:GetGear()]
 
 	self.gui.veh.getters[7]:SetText( f("%i%s", self.veh:GetHealth() * 100, "%") )
-	self.gui.veh.getters[8]:SetText( f("%s кг", self.veh:GetMass()) )
+	self.gui.veh.getters[8]:SetText( f("%s " .. self.kg_txt, self.veh:GetMass()) )
 	self.gui.veh.getters[11]:SetText( f("%i", self.veh:GetRPM()) )
 	self.gui.veh.getters[12]:SetText( f("%.f N", t) )
 
@@ -1119,12 +1135,12 @@ function Tuner:VehicleUpdate()
 	end
 
 	self.gui.veh.getters[14]:SetText( f("%.f N", wt ) )
-	self.gui.veh.getters[16]:SetText( f("%i м/с, %i км/ч, %i миль/ч", s, s * 3.6, s * 2.234) )
+	self.gui.veh.getters[16]:SetText( f("%i " .. self.ms_txt .. ", %i " .. self.kmh_txt .. ", %i " .. self.mph_txt, s, s * 3.6, s * 2.234) )
 
 	self.peak_s = self.peak_s or 0
 	if s > self.peak_s then
 		self.peak_s = s
-		self.gui.veh.getters[17]:SetText( f("%i м/с, %i км/ч, %i миль/ч", self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234) )
+		self.gui.veh.getters[17]:SetText( f("%i " .. self.ms_txt .. ", %i " .. self.kmh_txt .. ", %i " .. self.mph_txt, self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234) )
 	end
 
 	if s < 0.1 then 
@@ -1132,7 +1148,7 @@ function Tuner:VehicleUpdate()
 		self.gui.veh.getters[18]:SetText("")
 	elseif self.timer and s > 100 / 3.6 then
 		self.time = self.timer:GetSeconds()
-		self.gui.veh.getters[18]:SetText( f("за %.3f секунд", self.time) )
+		self.gui.veh.getters[18]:SetText( f(self.in_txt .. " %.3f " .. self.seconds_txt, self.time) )
 		self.timer = nil
 	end
 end
@@ -1145,7 +1161,7 @@ function Tuner:OtherVehicleUpdate()
 	local s = self.veh:GetLinearVelocity():Length()
 
 	self.gui.veh.getters[7]:SetText( f("%i%s", self.veh:GetHealth() * 100, "%") )
-	self.gui.veh.getters[8]:SetText( f("%s кг", self.veh:GetMass()) )
+	self.gui.veh.getters[8]:SetText( f("%s " .. self.kg_txt, self.veh:GetMass()) )
 	self.gui.veh.getters[11]:SetText( f("%i", self.veh:GetRPM()) )
 	self.gui.veh.getters[12]:SetText( f("%i N", t) )
 
@@ -1155,12 +1171,12 @@ function Tuner:OtherVehicleUpdate()
 		self.gui.veh.getters[13]:SetText( f("%i N", self.peak_t) )
 	end
 
-	self.gui.veh.getters[16]:SetText( f("%i м/с, %i км/ч, %i миль/ч", s, s * 3.6, s * 2.234) )
+	self.gui.veh.getters[16]:SetText( f("%i " .. self.ms_txt .. ", %i " .. self.kmh_txt .. ", %i " .. self.mph_txt, s, s * 3.6, s * 2.234) )
 
 	self.peak_s = self.peak_s or 0
 	if s > self.peak_s then
 		self.peak_s = s
-		self.gui.veh.getters[17]:SetText( f("%i м/с, %i км/ч, %i миль/ч", self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234) )
+		self.gui.veh.getters[17]:SetText( f("%i " .. self.ms_txt .. ", %i " .. self.kmh_txt .. ", %i " .. self.mph_txt, self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234) )
 	end
 
 	if s < 0.1 then 
@@ -1168,7 +1184,7 @@ function Tuner:OtherVehicleUpdate()
 		self.gui.veh.getters[18]:SetText("")
 	elseif self.timer and s > 100 / 3.6 then
 		self.time = self.timer:GetSeconds()
-		self.gui.veh.getters[18]:SetText( f("за %.3f секунд", self.time) )
+		self.gui.veh.getters[18]:SetText( f(self.in_txt .. " %.3f " .. self.seconds_txt, self.time) )
 		self.timer = nil
 	end
 end
@@ -1267,13 +1283,13 @@ function Tuner:KeyUp( args )
 				if self.peredacha < self.trans:GetMaxGear() then
 					self.peredacha = self.peredacha + 1
 					self.trans:SetGear( self.peredacha )
-					Game:ShowPopup( self.gear .. self.peredacha, false )
+					Game:ShowPopup( self.gear_txt .. self.peredacha, false )
 				end
 			elseif args.key == VirtualKey.Numpad2 then
 				if self.peredacha > 1 then
 					self.peredacha = self.peredacha - 1
 					self.trans:SetGear( self.peredacha )
-					Game:ShowPopup( self.gear .. self.peredacha, false )
+					Game:ShowPopup( self.gear_txt .. self.peredacha, false )
 				end
 			end
 		end

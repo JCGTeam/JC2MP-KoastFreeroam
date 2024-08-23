@@ -1,7 +1,7 @@
 class "ResourceItems"
 
 function ResourceItems:__init()
-	self.resptime = 30
+	self.resptime = 24
 
 	self.timer = Timer()
 
@@ -54,7 +54,7 @@ function ResourceItems:CreateCrates()
 						ent:SetStreamDistance( 200 )
 						ent:SetNetworkValue( "Cash", true )
 
-						local checkpoint = Checkpoint.Create( ent:GetPosition() )
+						local checkpoint = Checkpoint.Create( ent:GetPosition() + Vector3( 0, 0.75, 0  ))
 						checkpoint:SetWorld( DefaultWorld )
 						checkpoint:SetCreateIndicator( false )
 						checkpoint:SetCreateCheckpoint( false )

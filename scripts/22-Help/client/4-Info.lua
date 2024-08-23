@@ -12,20 +12,19 @@ function HInfo:EngHelp()
 	{
 		name = "Information",
 		text =
-			"> Main:\n" ..
+			"> Links:\n" ..
 			"    Telegram      [empty_link]\n" ..
 			"    Discord        [empty_link]\n" ..
 			"    Steam           [empty_link]\n" ..
 			"    YouTube      [empty_link]\n \n" ..
-			"> Our servers:\n" ..
-			"    Just Cause 2 Multiplayer Mod:\n" ..
-			"     - Koast Freeroam – [empty_link] (You are here)\n" ..
-			"     - Panau Crisis – [empty_link]\n" ..
-			"         - VK - [empty_link]\n \n" ..
+			"> Official JCGTeam servers:\n" ..
+			"    Just Cause 2: Multiplayer Mod:\n" ..
+			"     - Koast Freeroam | IP: [empty_link]\n \n" ..
 			"> Developer:\n" ..
 			"     Hallkezz\n \n" ..
-			"> Help in development:\n" ..
-			"     Neon\n \n" ..
+			"> Development help (Contributors):\n" ..
+			"     Neon\n" ..
+			"     haker2377\n \n" ..
 			"> Also thanks for scripts:\n" ..
 			"     Proxwian\n" ..
 			"     JasonMRC\n" ..
@@ -51,7 +50,8 @@ function HInfo:EngHelp()
 			"     Cavick (Artist)\n" ..
 			"     Dragonshifter (RUSSIAN FREEROAM MAYHEM server source code)\n \n" ..
 			"> Open source:\n" ..
-			"     GitHub - github.com/JCGTeam/JC2MP-KoastFreeroam"
+			"     GitHub - github.com/JCGTeam/JC2MP-KoastFreeroam\n \n" ..
+			"© JCGTeam, Hallkezz 2017-2024"
 	} )
 end
 
@@ -62,21 +62,20 @@ function HInfo:RusHelp()
 	{
 		name = "Информация",
 		text =
-			"> Главное:\n" ..
+			"> Ссылки:\n" ..
 			"    Telegram      [empty_link]\n" ..
 			"    Discord        [empty_link]\n" ..
 			"    Steam           [empty_link]\n" ..
 			"    YouTube      [empty_link]\n" ..
 			"    VK                 [empty_link]\n \n" ..
-			"> Наши сервера:\n" ..
-			"    Just Cause 2 Multiplayer Mod:\n" ..
-			"     - Koast Freeroam – [empty_link] (Вы тут)\n" ..
-			"     - Panau Crisis – [empty_link]\n" ..
-			"         - VK - [empty_link]\n \n" ..
+			"> Официальные сервера JCGTeam:\n" ..
+			"    Just Cause 2: Multiplayer Mod:\n" ..
+			"     - Koast Freeroam | IP: [empty_link]\n \n" ..
 			"> Разработчик:\n" ..
 			"     Hallkezz\n \n" ..
 			"> Помощь в разработке:\n" ..
-			"     Neon\n \n" ..
+			"     Neon\n" ..
+			"     haker2377\n \n" ..
 			"> Заимствованный код:\n" ..
 			"     Proxwian\n" ..
 			"     JasonMRC\n" ..
@@ -102,7 +101,8 @@ function HInfo:RusHelp()
 			"     Cavick (Художник-аферист)\n" ..
 			"     Dragonshifter (Исходный код сервера RUSSIAN FREEROAM MAYHEM)\n \n" ..
 			"> Открытый исходный код:\n" ..
-			"     GitHub - github.com/JCGTeam/JC2MP-KoastFreeroam"
+			"     GitHub - github.com/JCGTeam/JC2MP-KoastFreeroam\n \n" ..
+			"© JCGTeam, Hallkezz 2017-2024"
 	} )
 end
 

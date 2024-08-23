@@ -17,8 +17,6 @@ function Autopilot:__init()
 	self.panel_toggle_button = "R"
 	self.mouse_toggle_button = "M"
 
-	self.namept = "Нажмите R чтобы включить автопилот."
-
 	local vehicle = LocalPlayer:GetVehicle()
 	if IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
 		local model = vehicle:GetModelId()
@@ -29,6 +27,13 @@ function Autopilot:__init()
 	end
 
 	self:InitGUI()
+
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
+		self:Lang()
+	else
+		self.namept = "Нажмите R чтобы включить автопилот."
+	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "ModuleLoad", self, self.WindowResize )

@@ -6,7 +6,6 @@ function Drift:__init()
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "Render", self, self.Render )
 
-	--Automass (Drifting is better, but the cars become unmanageable)
 	Events:Subscribe( "NetworkObjectValueChange", self, self.NetworkObjectValueChange )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
 	Events:Subscribe( "LocalPlayerDeath", self, self.LocalPlayerDeath )
@@ -51,7 +50,7 @@ end
 function Drift:ResetMass()
 	if self.mass then 
 		self.mass = false
-		Network:Send( "SetMas", { veh = LocalPlayer:GetVehicle(), bool = self.mass } )
+		Network:Send( "ChangeMass", { veh = LocalPlayer:GetVehicle(), bool = self.mass } )
 	end
 end
 
@@ -116,7 +115,7 @@ function Drift:Render()
 				local record = object:GetValue("S")
 
 				if record then
-					text = tostring(record) .. " - " .. object:GetValue("N")
+					text = tostring( record ) .. " - " .. object:GetValue("N")
 					Render:DrawText( position + Vector2.One, text, colorShadow, textSize )
 					text = tostring( record )
 					Render:DrawText( position, text, Color( 0, 150, 255, sett_alpha ), textSize )
@@ -159,7 +158,7 @@ function Drift:Render()
 			if self.slide == 0 then
 				if not self.mass then
 					self.mass = true
-					Network:Send( "SetMas", { veh = LocalPlayer:GetVehicle(), bool = self.mass } )
+					Network:Send( "ChangeMass", { veh = LocalPlayer:GetVehicle(), bool = self.mass } )
 				end
 			else
 				self:ResetMass()

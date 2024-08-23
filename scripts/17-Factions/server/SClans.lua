@@ -240,7 +240,7 @@ function ClanSystem:AddClan( args, player )
 
 	if ( not self:Exists ( args.name ) ) then
 		local steamId = player:GetSteamId().id
-		local theDate = os.date ( "%d/%m/%y %X" )
+		local theDate = os.date( "%d/%m/%y %X" )
 		local newsdefault = "Поздравляем, клан успешно создан! Здесь будут отображаться новости для всех участников клана. Зайдите в настройки клана, чтобы изменить это сообщение."
 	
 		local cmd = SQL:Command ( "INSERT INTO clans ( name, steamID, creator, description, colour, creationDate, type, clannews ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )" )

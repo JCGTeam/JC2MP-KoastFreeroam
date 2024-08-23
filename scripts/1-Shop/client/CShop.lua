@@ -100,18 +100,18 @@ function Shop:__init()
 	self.sort_dir = false
 	self.last_column = -1
 
-	player_hats = {}
-	player_coverings = {}
-	player_hairs = {}
-	player_faces = {}
-	player_necks = {}
-	player_backs = {}
-	player_torso = {}
-	player_righthand = {}
-	player_lefthand = {}
-	player_legs = {}
-	player_rightfoot = {}
-	player_leftfoot = {}
+	self.player_hats = {}
+	self.player_coverings = {}
+	self.player_hairs = {}
+	self.player_faces = {}
+	self.player_necks = {}
+	self.player_backs = {}
+	self.player_torso = {}
+	self.player_righthand = {}
+	self.player_lefthand = {}
+	self.player_legs = {}
+	self.player_rightfoot = {}
+	self.player_leftfoot = {}
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "Render", self, self.Render )
@@ -176,171 +176,171 @@ function Shop:CreateAppearance( player )
 	local leftfootModel = player:GetValue("AppearanceLeftFoot")
 
 	if hatModel ~= nil and string.len(hatModel) >= 10 then
-			player_hats[pId] = ClientStaticObject.Create({
+			self.player_hats[pId] = ClientStaticObject.Create({
 			position = player:GetBonePosition("ragdoll_Head"),
 			angle = player:GetBoneAngle("ragdoll_Head"),
 			model = hatModel
 			})
 	else
-		if player_hats[pId] ~= nil then
-			if IsValid( player_hats[pId] ) then
-				player_hats[pId]:Remove()
+		if self.player_hats[pId] ~= nil then
+			if IsValid( self.player_hats[pId] ) then
+				self.player_hats[pId]:Remove()
 			end
-			player_hats[pId] = nil
+			self.player_hats[pId] = nil
 		end
 	end
 	if coveringModel ~= nil and string.len(coveringModel) >= 10 then
-			player_coverings[pId] = ClientStaticObject.Create({
+			self.player_coverings[pId] = ClientStaticObject.Create({
 			position = player:GetBonePosition("ragdoll_Head"),
 			angle = player:GetBoneAngle("ragdoll_Head"),
 			model = coveringModel
 			})
 	else
-		if player_coverings[pId] ~= nil then
-			if IsValid( player_coverings[pId] ) then
-				player_coverings[pId]:Remove()
+		if self.player_coverings[pId] ~= nil then
+			if IsValid( self.player_coverings[pId] ) then
+				self.player_coverings[pId]:Remove()
 			end
-			player_coverings[pId] = nil
+			self.player_coverings[pId] = nil
 		end
 	end
 	if hairModel ~= nil and string.len(hairModel) >= 10 then
-		player_hairs[pId] = ClientStaticObject.Create({
+		self.player_hairs[pId] = ClientStaticObject.Create({
 		position = player:GetBonePosition("ragdoll_Head"),
 		angle = player:GetBoneAngle("ragdoll_Head"),
 		model = hairModel
 		})
 	else
-		if player_hairs[pId] ~= nil then
-			if IsValid( player_hairs[pId] ) then
-				player_hairs[pId]:Remove()
+		if self.player_hairs[pId] ~= nil then
+			if IsValid( self.player_hairs[pId] ) then
+				self.player_hairs[pId]:Remove()
 			end
-			player_hairs[pId] = nil
+			self.player_hairs[pId] = nil
 		end
 	end
 	if faceModel ~= nil and string.len(faceModel) >= 10 then
-			player_faces[pId] = ClientStaticObject.Create({
+			self.player_faces[pId] = ClientStaticObject.Create({
 			position = player:GetBonePosition("ragdoll_Head"),
 			angle = player:GetBoneAngle("ragdoll_Head"),
 			model = faceModel
 			})
 	else
-		if player_faces[pId] ~= nil then
-			if IsValid( player_faces[pId] ) then
-				player_faces[pId]:Remove()
+		if self.player_faces[pId] ~= nil then
+			if IsValid( self.player_faces[pId] ) then
+				self.player_faces[pId]:Remove()
 			end
-			player_faces[pId] = nil
+			self.player_faces[pId] = nil
 		end
 	end
 	if neckModel ~= nil and string.len(neckModel) >= 10 then
-			player_necks[pId] = ClientStaticObject.Create({
+			self.player_necks[pId] = ClientStaticObject.Create({
 			position = player:GetBonePosition("ragdoll_Head"),
 			angle = player:GetBoneAngle("ragdoll_Head"),
 			model = neckModel
 			})
 	else
-		if player_necks[pId] ~= nil then
-			if IsValid( player_necks[pId] ) then
-				player_necks[pId]:Remove()
+		if self.player_necks[pId] ~= nil then
+			if IsValid( self.player_necks[pId] ) then
+				self.player_necks[pId]:Remove()
 			end
-			player_necks[pId] = nil
+			self.player_necks[pId] = nil
 		end
 	end
 	if backModel ~= nil and string.len(backModel) >= 10 then
-			player_backs[pId] = ClientStaticObject.Create({
+			self.player_backs[pId] = ClientStaticObject.Create({
 			position = player:GetBonePosition("ragdoll_Spine1"),
 			angle = player:GetBoneAngle("ragdoll_Spine1"),
 			model = backModel
 			})
 	else
-		if player_backs[pId] ~= nil then
-			if IsValid( player_backs[pId] ) then
-				player_backs[pId]:Remove()
+		if self.player_backs[pId] ~= nil then
+			if IsValid( self.player_backs[pId] ) then
+				self.player_backs[pId]:Remove()
 			end
-			player_backs[pId] = nil
+			self.player_backs[pId] = nil
 		end
 	end
 	if torsoModel ~= nil and string.len(torsoModel) >= 10 then
-			player_torso[pId] = ClientStaticObject.Create({
+			self.player_torso[pId] = ClientStaticObject.Create({
 			position = player:GetBonePosition("ragdoll_Spine1"),
 			angle = player:GetBoneAngle("ragdoll_Spine1"),
 			model = torsoModel
 			})
 	else
-		if player_torso[pId] ~= nil then
-			if IsValid( player_torso[pId] ) then
-				player_torso[pId]:Remove()
+		if self.player_torso[pId] ~= nil then
+			if IsValid( self.player_torso[pId] ) then
+				self.player_torso[pId]:Remove()
 			end
-			player_torso[pId] = nil
+			self.player_torso[pId] = nil
 		end
 	end
 	if righthandModel ~= nil and string.len(righthandModel) >= 10 then
-			player_righthand[pId] = ClientStaticObject.Create({
+			self.player_righthand[pId] = ClientStaticObject.Create({
 			position = player:GetBonePosition("ragdoll_RightForeArm"),
 			angle = player:GetBoneAngle("ragdoll_RightForeArm"),
 			model = righthandModel
 			})
 	else
-		if player_righthand[pId] ~= nil then
-			if IsValid( player_righthand[pId] ) then
-				player_righthand[pId]:Remove()
+		if self.player_righthand[pId] ~= nil then
+			if IsValid( self.player_righthand[pId] ) then
+				self.player_righthand[pId]:Remove()
 			end
-			player_righthand[pId] = nil
+			self.player_righthand[pId] = nil
 		end
 	end
 	if lefthandModel ~= nil and string.len(lefthandModel) >= 10 then
-		player_lefthand[pId] = ClientStaticObject.Create({
+		self.player_lefthand[pId] = ClientStaticObject.Create({
 		position = player:GetBonePosition("ragdoll_LeftForeArm"),
 		angle = player:GetBoneAngle("ragdoll_LeftForeArm"),
 		model = lefthandModel
 		})
 	else
-		if player_lefthand[pId] ~= nil then
-			if IsValid( player_lefthand[pId] ) then
-				player_lefthand[pId]:Remove()
+		if self.player_lefthand[pId] ~= nil then
+			if IsValid( self.player_lefthand[pId] ) then
+				self.player_lefthand[pId]:Remove()
 			end
-			player_lefthand[pId] = nil
+			self.player_lefthand[pId] = nil
 		end
 	end
 	if legsModel ~= nil and string.len(legsModel) >= 10 then
-			player_legs[pId] = ClientStaticObject.Create({
+			self.player_legs[pId] = ClientStaticObject.Create({
 			position = player:GetBonePosition("ragdoll_Hips"),
 			angle = player:GetBoneAngle("ragdoll_Hips"),
 			model = legsModel
 			})
 	else
-		if player_legs[pId] ~= nil then
-			if IsValid( player_legs[pId] ) then
-				player_legs[pId]:Remove()
+		if self.player_legs[pId] ~= nil then
+			if IsValid( self.player_legs[pId] ) then
+				self.player_legs[pId]:Remove()
 			end
-			player_legs[pId] = nil
+			self.player_legs[pId] = nil
 		end
 	end
 	if rightfootModel ~= nil and string.len(rightfootModel) >= 10 then
-			player_rightfoot[pId] = ClientStaticObject.Create({
+			self.player_rightfoot[pId] = ClientStaticObject.Create({
 			position = player:GetBonePosition("ragdoll_RightFoot"),
 			angle = player:GetBoneAngle("ragdoll_RightFoot"),
 			model = rightfootModel
 			})
 	else
-		if player_rightfoot[pId] ~= nil then
-			if IsValid( player_rightfoot[pId] ) then
-				player_rightfoot[pId]:Remove()
+		if self.player_rightfoot[pId] ~= nil then
+			if IsValid( self.player_rightfoot[pId] ) then
+				self.player_rightfoot[pId]:Remove()
 			end
-			player_rightfoot[pId] = nil
+			self.player_rightfoot[pId] = nil
 		end
 	end
 	if leftfootModel ~= nil and string.len(leftfootModel) >= 10 then
-			player_leftfoot[pId] = ClientStaticObject.Create({
+			self.player_leftfoot[pId] = ClientStaticObject.Create({
 			position = player:GetBonePosition("ragdoll_LeftFoot"),
 			angle = player:GetBoneAngle("ragdoll_LeftFoot"),
 			model = leftfootModel
 			})
 	else
-		if player_leftfoot[pId] ~= nil then
-			if IsValid( player_leftfoot[pId] ) then
-				player_leftfoot[pId]:Remove()
+		if self.player_leftfoot[pId] ~= nil then
+			if IsValid( self.player_leftfoot[pId] ) then
+				self.player_leftfoot[pId]:Remove()
 			end
-			player_leftfoot[pId] = nil
+			self.player_leftfoot[pId] = nil
 		end
 	end
 end
@@ -348,78 +348,78 @@ end
 function Shop:RemoveAppearance( player )
 	local pId = player:GetId()
 
-	if player_hats[pId] ~= nil then
-		if IsValid( player_hats[pId] ) then
-			player_hats[pId]:Remove()
+	if self.player_hats[pId] ~= nil then
+		if IsValid( self.player_hats[pId] ) then
+			self.player_hats[pId]:Remove()
 		end
-		player_hats[pId] = nil
+		self.player_hats[pId] = nil
 	end
-	if player_coverings[pId] ~= nil then
-		if IsValid( player_coverings[pId] ) then
-			player_coverings[pId]:Remove()
+	if self.player_coverings[pId] ~= nil then
+		if IsValid( self.player_coverings[pId] ) then
+			self.player_coverings[pId]:Remove()
 		end
-		player_coverings[pId] = nil
+		self.player_coverings[pId] = nil
 	end
-	if player_hairs[pId] ~= nil then
-		if IsValid( player_hairs[pId] ) then
-			player_hairs[pId]:Remove()
+	if self.player_hairs[pId] ~= nil then
+		if IsValid( self.player_hairs[pId] ) then
+			self.player_hairs[pId]:Remove()
 		end
-		player_hairs[pId] = nil
+		self.player_hairs[pId] = nil
 	end
-	if player_faces[pId] ~= nil then
-		if IsValid( player_faces[pId] ) then
-			player_faces[pId]:Remove()
+	if self.player_faces[pId] ~= nil then
+		if IsValid( self.player_faces[pId] ) then
+			self.player_faces[pId]:Remove()
 		end
-		player_faces[pId] = nil
+		self.player_faces[pId] = nil
 	end
-	if player_necks[pId] ~= nil then
-		if IsValid( player_necks[pId] ) then
-			player_necks[pId]:Remove()
+	if self.player_necks[pId] ~= nil then
+		if IsValid( self.player_necks[pId] ) then
+			self.player_necks[pId]:Remove()
 		end
-		player_necks[pId] = nil
+		self.player_necks[pId] = nil
 	end
-	if player_backs[pId] ~= nil then
-		if IsValid( player_backs[pId] ) then
-			player_backs[pId]:Remove()
+	if self.player_backs[pId] ~= nil then
+		if IsValid( self.player_backs[pId] ) then
+			self.player_backs[pId]:Remove()
 		end
-		player_backs[pId] = nil
+		self.player_backs[pId] = nil
 	end
 	
-	if player_torso[pId] ~= nil then
-		if IsValid( player_torso[pId] ) then
-			player_torso[pId]:Remove()
+	if self.player_torso[pId] ~= nil then
+		if IsValid( self.player_torso[pId] ) then
+			self.player_torso[pId]:Remove()
 		end
-		player_torso[pId] = nil
+		self.player_torso[pId] = nil
 	end
-	if player_righthand[pId] ~= nil then
-		if IsValid( player_righthand[pId] ) then
-			player_righthand[pId]:Remove()
+	if self.player_righthand[pId] ~= nil then
+		if IsValid( self.player_righthand[pId] ) then
+			self.player_righthand[pId]:Remove()
 		end
-		player_righthand[pId] = nil
+		self.player_righthand[pId] = nil
 	end
-	if player_lefthand[pId] ~= nil then
-		if IsValid( player_lefthand[pId] ) then
-			player_lefthand[pId]:Remove()
+	if self.player_lefthand[pId] ~= nil then
+		if IsValid( self.player_lefthand[pId] ) then
+			self.player_lefthand[pId]:Remove()
 		end
-		player_lefthand[pId] = nil
+		self.player_lefthand[pId] = nil
 	end
-	if player_legs[pId] ~= nil then
-		if IsValid( player_legs[pId] ) then
-			player_legs[pId]:Remove()
+	if self.player_legs[pId] ~= nil then
+		if IsValid( self.player_legs[pId] ) then
+			self.player_legs[pId]:Remove()
 		end
-		player_legs[pId] = nil
+		self.player_legs[pId] = nil
 	end
-	if player_rightfoot[pId] ~= nil then
-		if IsValid( player_rightfoot[pId] ) then
-			player_rightfoot[pId]:Remove()
+	if self.player_rightfoot[pId] ~= nil then
+		if IsValid( self.player_rightfoot[pId] ) then
+			self.player_rightfoot[pId]:Remove()
 		end
-		player_rightfoot[pId] = nil
+		self.player_rightfoot[pId] = nil
 	end
-	if player_leftfoot[pId] ~= nil then
-		if IsValid( player_leftfoot[pId] ) then
-			player_leftfoot[pId]:Remove()
+	if self.player_leftfoot[pId] ~= nil then
+		if IsValid( self.player_leftfoot[pId] ) then
+			self.player_leftfoot[pId]:Remove()
 		end
-		player_leftfoot[pId] = nil
+		self.player_leftfoot[pId] = nil
 	end
 end
 
@@ -427,18 +427,18 @@ function Shop:MoveAppearance( player )
 	if IsValid( player ) then
 		local pId = player:GetId()
 
-		local hat = player_hats[pId]
-		local covering = player_coverings[pId]
-		local hair = player_hairs[pId]
-		local face = player_faces[pId]
-		local neck = player_necks[pId]
-		local back = player_backs[pId]
-		local torso = player_torso[pId]
-		local righthand = player_righthand[pId]
-		local lefthand = player_lefthand[pId]
-		local legs = player_legs[pId]
-		local rightfoot = player_rightfoot[pId]
-		local leftfoot = player_leftfoot[pId]
+		local hat = self.player_hats[pId]
+		local covering = self.player_coverings[pId]
+		local hair = self.player_hairs[pId]
+		local face = self.player_faces[pId]
+		local neck = self.player_necks[pId]
+		local back = self.player_backs[pId]
+		local torso = self.player_torso[pId]
+		local righthand = self.player_righthand[pId]
+		local lefthand = self.player_lefthand[pId]
+		local legs = self.player_legs[pId]
+		local rightfoot = self.player_rightfoot[pId]
+		local leftfoot = self.player_leftfoot[pId]
 
 		if hat ~= nil and IsValid(hat) then
 			hat:SetAngle( player:GetBoneAngle( "ragdoll_Head" ) )
@@ -541,62 +541,62 @@ function Shop:ModuleLoadAppearance()
 end
 
 function Shop:ModuleUnloadAppearance()
-	for k, v in pairs(player_hats) do
+	for k, v in pairs(self.player_hats) do
 		if IsValid(v) then
 			v:Remove()
 		end
 	end
-	for k, v in pairs(player_coverings) do
+	for k, v in pairs(self.player_coverings) do
 		if IsValid(v) then
 			v:Remove()
 		end
 	end
-	for k, v in pairs(player_hairs) do
+	for k, v in pairs(self.player_hairs) do
 		if IsValid(v) then
 			v:Remove()
 		end
 	end
-	for k, v in pairs(player_faces) do
+	for k, v in pairs(self.player_faces) do
 		if IsValid(v) then
 			v:Remove()
 		end
 	end
-	for k, v in pairs(player_necks) do
+	for k, v in pairs(self.player_necks) do
 		if IsValid(v) then
 			v:Remove()
 		end
 	end
-	for k, v in pairs(player_backs) do
+	for k, v in pairs(self.player_backs) do
 		if IsValid(v) then
 			v:Remove()
 		end
 	end
-	for k, v in pairs(player_torso) do
+	for k, v in pairs(self.player_torso) do
 		if IsValid(v) then
 			v:Remove()
 		end
 	end
-	for k, v in pairs(player_righthand) do
+	for k, v in pairs(self.player_righthand) do
 		if IsValid(v) then
 			v:Remove()
 		end
 	end
-	for k, v in pairs(player_lefthand) do
+	for k, v in pairs(self.player_lefthand) do
 		if IsValid(v) then
 			v:Remove()
 		end
 	end
-	for k, v in pairs(player_legs) do
+	for k, v in pairs(self.player_legs) do
 		if IsValid(v) then
 			v:Remove()
 		end
 	end
-	for k, v in pairs(player_rightfoot) do
+	for k, v in pairs(self.player_rightfoot) do
 		if IsValid(v) then
 			v:Remove()
 		end
 	end
-	for k, v in pairs(player_leftfoot) do
+	for k, v in pairs(self.player_leftfoot) do
 		if IsValid(v) then
 			v:Remove()
 		end
@@ -670,7 +670,6 @@ function Shop:CreateSubCategory( category, subcategory_name )
 	t.listbox:SetDock( GwenPosition.Fill )
 	t.listbox:AddColumn( subcategory_name .. ":" )
 	t.listbox:SetSort( self, self.SortFunction )
-
 	t.listbox:Subscribe( "SortPress",
 		function( button )
 			self.sort_dir = not self.sort_dir

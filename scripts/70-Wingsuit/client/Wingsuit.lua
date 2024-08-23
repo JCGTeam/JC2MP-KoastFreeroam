@@ -147,7 +147,7 @@ function Pigeon:Render()
 				local record = object:GetValue("S")
 
 				if record then
-					text = tostring(record) .. " - " .. object:GetValue("N")
+					text = tostring( record ) .. " - " .. object:GetValue("N")
 					Render:DrawText( position + Vector2.One, text, colorShadow, textSize )
 					text = tostring( record )
 					Render:DrawText( position, text, Color( 0, 150, 255, sett_alpha ), textSize )

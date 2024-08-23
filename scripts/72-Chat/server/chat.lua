@@ -25,7 +25,7 @@ function BetterChat:__init()
 end
 
 function BetterChat:SaveChatPos( args, sender )
-	local cmd = SQL:Command( "insert or replace into settings_chatpos (steamid, positionX, positionY) values (?, ?, ?)" )
+	local cmd = SQL:Command( "INSERT OR REPLACE INTO settings_chatpos (steamid, positionX, positionY) values (?, ?, ?)" )
     cmd:Bind( 1, sender:GetSteamId().id )
 	cmd:Bind( 2, args.chatpos.x )
 	cmd:Bind( 3, args.chatpos.y )

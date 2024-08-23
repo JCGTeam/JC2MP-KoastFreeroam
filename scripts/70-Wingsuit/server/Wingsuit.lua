@@ -113,6 +113,7 @@ function Pigeon:onFlyingRecord( score, player )
 	object:SetNetworkValue("E", 10)
 	object:SetNetworkValue("C", player:GetColor())
 	object:SetNetworkValue("I", player:GetSteamId())
+
 	self.timer:Restart()
 end
 

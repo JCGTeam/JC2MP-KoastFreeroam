@@ -33,7 +33,6 @@ function Admin:__init()
 	}
 
 	self.cooldown = 5
-	timer = Timer()
 	self.cooltime = 0
 
 	self.permissions = {}
@@ -440,10 +439,6 @@ function Admin:LoadPanel()
 	self.panel.vehColor.tone2Set:Subscribe( "Press", self, self.setVehicleTone2Colour )
 end
 
-function Admin:isActive()
-	return self.active
-end
-
 function Admin:setActive( state )
 	if ( state == true ) then
 		Network:Send( "admin.isAdmin" )
@@ -464,7 +459,7 @@ end
 
 function Admin:KeyUp( args )
 	if args.key == string.byte('P') then
-		self:setActive( not self:isActive() )
+		self:setActive( not self.active )
 	end
 end
 
@@ -505,7 +500,7 @@ function Admin:LocalPlayerInput( args )
 		self.spec.angle.pitch = math.clamp(self.spec.angle.pitch, -1.5, -0.4)
 	end
 
-	if self:isActive() then
+	if self.active then
 		if args.input == Action.GuiPause then
 			self:setActive( false )
 		end
@@ -648,7 +643,7 @@ function Admin:displayServerInfo( info )
 end
 
 function Admin:updateData()
-	if self:isActive() then
+	if self.active then
 		if ( self.serverUpdateTimer:GetSeconds() >= 10 ) then
 			Network:Send ( "admin.getServerInfo" )
 			self.serverUpdateTimer:Restart()

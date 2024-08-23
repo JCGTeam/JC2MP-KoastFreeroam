@@ -33,9 +33,9 @@ function Speedometer:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.name = "м/с"
-		self.nameTw = "км/ч"
-		self.nameTh = "миль"
+		self.ms_txt = "м/с"
+		self.kmh_txt = "км/ч"
+		self.mph = "миль"
 	end
 
 	self.speedScale = 120
@@ -75,9 +75,9 @@ function Speedometer:LocalPlayerExitVehicle()
 end
 
 function Speedometer:Lang()
-	self.name = "m/s"
-	self.nameTw = "km/h"
-	self.nameTh = "mph"
+	self.ms_txt = "m/s"
+	self.kmh_txt = "km/h"
+	self.mph = "mph"
 end
 
 function Speedometer:CreateSettings()
@@ -152,7 +152,7 @@ function Speedometer:CreateSettings()
 	rbc:SetSize( Vector2( 300, 20 ) )
 	rbc:SetDock( GwenPosition.Top )
 
-	local units = { self.name, self.nameTw, self.nameTh }
+	local units = { self.ms_txt, self.kmh_txt, self.mph }
 	for i, v in ipairs( units ) do
 		local option = rbc:AddOption( v )
 		option:SetSize( Vector2( 100, 20 ) )
@@ -193,11 +193,11 @@ end
 
 function Speedometer:GetUnitString()
 	if self.unit == 0 then
-		return self.name
+		return self.ms_txt
 	elseif self.unit == 1 then
-		return self.nameTw
+		return self.kmh_txt
 	elseif self.unit == 2 then
-		return self.nameTh
+		return self.mph
 	end
 end
 

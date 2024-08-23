@@ -32,7 +32,7 @@ function Help:Save( args, sender )
 
     sender:SetNetworkValue( "HelpMenuReaded", 1 )
 
-    local cmd = SQL:Command( "insert or replace into players_helpmenureaded (steamid, readed) values (?, ?)" )
+    local cmd = SQL:Command( "INSERT OR REPLACE INTO players_helpmenureaded (steamid, readed) values (?, ?)" )
     cmd:Bind( 1, sender:GetSteamId().id )
     cmd:Bind( 2, sender:GetValue( "HelpMenuReaded" ) )
     cmd:Execute()

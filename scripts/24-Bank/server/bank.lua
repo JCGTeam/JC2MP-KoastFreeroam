@@ -136,7 +136,7 @@ function Bank:CommitChanges()
         local transaction = SQL:Transaction()
         do
             for k, v in pairs(self.money_queue) do
-                local cmd = SQL:Command( "insert or replace into bank_players (steamid, money) values (?, ?)" )
+                local cmd = SQL:Command( "INSERT OR REPLACE INTO bank_players (steamid, money) values (?, ?)" )
                 cmd:Bind( 1, k )
                 cmd:Bind( 2, v )
                 cmd:Execute()

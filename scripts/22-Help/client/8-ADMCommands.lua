@@ -46,7 +46,17 @@ function HADMCommands:LoadAdminsTab()
 				"    /derbyjoinall       Добавить всех игроков в очередь на дерби.\n" ..
 				"    /cleardrift            Сбросить хорошечный дрифтер.\n" ..
 				"    /cleartetris          Сбросить хорошечный тетрис.\n" ..
-				"    /clearpigeon       Сбросить хорошечный голубь."
+				"    /clearpigeon       Сбросить хорошечный голубь.\n \n" ..
+				"> Организаторам:\n" ..
+				"    /warn                  Дать проста варн.\n" ..
+				"    /kick                   Кикнуть игрока.\n" ..
+				"    /boton                Включить бота-чистильщика.\n" ..
+				"    /botoff                Выключить бота-чистильщика.\n" ..
+				"    /notice                Сообщение на экраны игроков.\n" ..
+				"    /joinnotice         Установить сообщение при подключении игроков на сервер.\n" ..
+				"    /clearjoinnotice Удалить сообщение при подключении игроков на сервер.\n" ..
+				"    /addcustomtp   Добавить точку для телепортации.\n" ..
+				"    /clearallcustomtp   Очистить все созданные точки для телепортации."
 		} )
 	elseif LocalPlayer:GetValue( "Tag" ) == "AdminD" or LocalPlayer:GetValue( "Tag" ) == "ModerD" then
 		Events:Fire( "HelpAddItem",

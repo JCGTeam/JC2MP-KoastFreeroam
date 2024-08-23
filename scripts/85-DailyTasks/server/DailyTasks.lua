@@ -34,6 +34,7 @@ end
 function DailyTasks:GetPrize( args, sender )
     sender:SetMoney( sender:GetMoney() + 10000 )
     sender:SetNetworkValue( "Prize", 0 )
+
     print( sender:GetName() .. " get $10.000" )
     Events:Fire( "ToDiscordConsole", { text = "[Daily Tasks] " .. sender:GetName() .. " get $10.000" } )
 end
@@ -77,7 +78,7 @@ function DailyTasks:PlayerJoin( args )
 end
 
 function DailyTasks:PlayerQuit( args )
-    local cmd = SQL:Command( "insert or replace into dedmoroz_tasks (steamid, huntkills, tronwins, tetrisrecord, driftrecord, flyingrecord, bloozing, fireworkstossed, prize) values (?, ?, ?, ?, ?, ?, ?, ?, ?)" )
+    local cmd = SQL:Command( "INSERT OR REPLACE INTO dedmoroz_tasks (steamid, huntkills, tronwins, tetrisrecord, driftrecord, flyingrecord, bloozing, fireworkstossed, prize) values (?, ?, ?, ?, ?, ?, ?, ?, ?)" )
     cmd:Bind( 1, args.player:GetSteamId().id )
     if args.player:GetValue( "HuntKills" ) then
         cmd:Bind( 2, args.player:GetValue( "HuntKills" ) )

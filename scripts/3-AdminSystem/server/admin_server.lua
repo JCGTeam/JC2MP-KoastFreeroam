@@ -644,9 +644,15 @@ function Admin:executeAction ( args, player )
 						if ( veh ) then
 							veh:Remove()
 							self.vehicles [ veh ] = nil
+							player:Message( "Вы удалили транспорт игрока " .. args [ 2 ]:GetName() .. ".", "info" )
+							args [ 2 ]:Message( player:GetName() .. " удалил ваш транспорт.", "info" )
 --							for _, thePlayer in pairs ( self.canChat ) do
 --								Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." удалил тс " .. args [ 2 ]:GetName() } )
 --							end
+
+							local console_text = player:GetName() .. " destroyed vehicle " .. args [ 2 ]:GetName()
+							print( console_text )
+							Events:Fire( "ToDiscordConsole", { text = console_text } )
 						end
 					else
 						player:Message( args [ 2 ]:GetName() .." не находится в транспорте.", "err" )

@@ -571,7 +571,7 @@ end
 function Shop:ExecuteParachutes( player, item )
 	Network:Send( player, "Parachute", item:GetModelId() )
 
-    local cmd = SQL:Command( "insert or replace into buymenu_parachutes (steamid, model_id) values (?, ?)" )
+    local cmd = SQL:Command( "INSERT OR REPLACE INTO buymenu_parachutes (steamid, model_id) values (?, ?)" )
     cmd:Bind( 1, player:GetSteamId().id )
     cmd:Bind( 2, item:GetModelId() )
     cmd:Execute()

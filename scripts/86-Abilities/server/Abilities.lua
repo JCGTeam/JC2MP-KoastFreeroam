@@ -204,7 +204,7 @@ function Abilities:SaveToDB( args, sender )
         sender:SetNetworkValue( "PlayerLevel", playerLevel + 1 )
     end
 
-    local cmd = SQL:Command( "insert or replace into players_abilities (steamid, wings, boost, moneybonus, morec4, supernuclearbomb, longergrapple, jesusmode) values (?, ?, ?, ?, ?, ?, ?, ?)" )
+    local cmd = SQL:Command( "INSERT OR REPLACE INTO players_abilities (steamid, wings, boost, moneybonus, morec4, supernuclearbomb, longergrapple, jesusmode) values (?, ?, ?, ?, ?, ?, ?, ?)" )
     cmd:Bind( 1, sender:GetSteamId().id )
 
     if sender:GetValue( "Wingsuit" ) then

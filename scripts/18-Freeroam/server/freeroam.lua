@@ -242,7 +242,7 @@ function Freeroam:ToggleSpawnInHome( args )
     else
         args.player:SetNetworkValue( "SpawnInHome", 1 )
 
-        local cmd = SQL:Command( "insert or replace into players_spawinhome (steamid, home) values (?, ?)" )
+        local cmd = SQL:Command( "INSERT OR REPLACE INTO players_spawinhome (steamid, home) values (?, ?)" )
         cmd:Bind( 1, steamID )
         cmd:Bind( 2, args.player:GetValue( "SpawnInHome" ) )
         cmd:Execute()
@@ -365,7 +365,7 @@ function Freeroam:PlayerQuit( args )
     self.kills[ args.player:GetId() ] = nil
 
     if args.player:GetValue( "Kills" ) then
-        local cmd = SQL:Command( "insert or replace into players_kills (steamid, kills) values (?, ?)" )
+        local cmd = SQL:Command( "INSERT OR REPLACE INTO players_kills (steamid, kills) values (?, ?)" )
         cmd:Bind( 1, steamID )
         cmd:Bind( 2, args.player:GetValue( "Kills" ) )
         cmd:Execute()

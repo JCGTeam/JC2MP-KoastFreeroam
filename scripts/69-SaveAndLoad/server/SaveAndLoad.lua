@@ -76,7 +76,7 @@ function SaveAndLoad:SaveModel( args )
 	local steamId = args.player:GetSteamId().id
 
     if args.player:GetModelId() ~= 51 then
-        local cmd = SQL:Command( "insert or replace into players_models (steamid, model_id) values (?, ?)" )
+        local cmd = SQL:Command( "INSERT OR REPLACE INTO players_models (steamid, model_id) values (?, ?)" )
         cmd:Bind( 1, steamId )
         cmd:Bind( 2, args.player:GetModelId() )
         cmd:Execute()
@@ -88,7 +88,7 @@ function SaveAndLoad:SaveModel( args )
 
     --TipEnabler
     if args.player:GetValue( "Warned" ) then
-        local cmd = SQL:Command( "insert or replace into players_warnings (steamid, warned) values (?, ?)" )
+        local cmd = SQL:Command( "INSERT OR REPLACE INTO players_warnings (steamid, warned) values (?, ?)" )
         cmd:Bind( 1, steamId )
         cmd:Bind( 2, args.player:GetValue( "Warned" ) )
         cmd:Execute()

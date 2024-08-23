@@ -134,8 +134,9 @@ function Boost:LocalPlayerInput( args )
 
 	if self.padEnabled and args.input == self.controllerAction and LocalPlayer:GetWorld() == DefaultWorld and Game:GetSetting(GameSetting.GamepadInUse) == 1 then
 		local vehicle = LocalPlayer:GetVehicle()
-		if IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer and (self:LandCheck(vehicle) or self:BoatCheck(vehicle) or self:HeliCheck(vehicle) or self:PlaneCheck(vehicle)) then
-			self:Boost(vehicle)
+
+		if vehicle and vehicle:GetDriver() == LocalPlayer and ( self:LandCheck( vehicle ) or self:BoatCheck( vehicle ) or self:HeliCheck( vehicle ) or self:PlaneCheck( vehicle ) ) then
+			self:Boost( vehicle )
 		end
 	end
 end

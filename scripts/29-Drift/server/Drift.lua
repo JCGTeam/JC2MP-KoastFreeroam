@@ -9,7 +9,7 @@ function Drift:__init()
 	Network:Subscribe( "01", self, self.onDriftRecord )
 	Network:Subscribe( "02", self, self.onDriftAttempt )
 	Network:Subscribe( "03", self, self.DriftRecordTask )
-	Network:Subscribe( "SetMas", self, self.SetMas )
+	Network:Subscribe( "ChangeMass", self, self.ChangeMass )
 
 	self.tag_clr = Color.White
 	self.text_clr = Color( 255, 150, 0 )
@@ -20,7 +20,7 @@ function Drift:initVars()
 	self.delay = 240
 end
 
-function Drift:SetMas( args, sender )
+function Drift:ChangeMass( args, sender )
 	if IsValid(args.veh) then
 		if args.bool then
 			args.veh:SetMass( args.veh:GetMass()/2 )
@@ -124,11 +124,12 @@ function Drift:onDriftRecord( score, player )
 	object:SetNetworkValue("E", 10)
 	object:SetNetworkValue("C", player:GetColor())
 	object:SetNetworkValue("I", player:GetSteamId())
+
 	self.timer:Restart()
 end
 
 function Drift:onDriftAttempt( score, player )
-	Network:Broadcast( "03", {score, player:GetId() + 1} )
+	Network:Broadcast( "03", { score, player:GetId() + 1 } )
 end
 
 function Drift:DriftRecordTask( score, player )

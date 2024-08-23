@@ -90,7 +90,7 @@ BindMenu.SaveSettings = function(newSettings , player)
 	end
 	
 	local command = SQL:Command(
-		"insert or replace into BindMenuClientSettings(SteamId , Settings) values(?,?)"
+		"INSERT OR REPLACE INTO BindMenuClientSettings(SteamId , Settings) values(?,?)"
 	)
 	command:Bind(1 , player:GetSteamId().string)
 	command:Bind(2 , settingsString)
