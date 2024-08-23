@@ -207,7 +207,7 @@ function Menu:Render()
 		local links_size = 25
 
 		Render:DrawText( links_pos, linkstitle_txt, self.text_clr, links_size )
-		Render:DrawText( Vector2( links_pos.x, links_pos.y + Render:GetTextHeight( linkstitle_txt, links_size ) + 10 ), "- TELEGRAM | [empty_link]\n- DISCORD | [empty_link]\n- STEAM | [empty_link]\n- YouTube | [empty_link]", Color( 180, 180, 180 ), links_size - 5 )
+		Render:DrawText( Vector2( links_pos.x, links_pos.y + Render:GetTextHeight( linkstitle_txt, links_size ) + 10 ), "- TELEGRAM | t.me/koastfreeroam\n- DISCORD | clck.ru/37FZrU\n- STEAM | steamcommunity.com/groups/koastfreeroam\n- YouTube | www.youtube.com/@jcgteam", Color( 180, 180, 180 ), links_size - 5 )
 
 		local tSize = 30
 		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tName, tSize ) / 2, Render.Size.y / 2.5 ), self.tName, self.text_clr, tSize )

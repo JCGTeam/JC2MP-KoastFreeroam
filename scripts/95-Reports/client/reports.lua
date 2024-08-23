@@ -124,7 +124,7 @@ function Reports:CreateWindow()
     self.sendButton:Subscribe( "Press", self, self.ReportSend )
 
 	self.infoLabel = Label.Create( self.scroll )
-    self.infoLabel:SetText( "Пожалуйста, не спамьте и не флудите сообщениями, а также не оскорбляйте администрацию. В случае нарушения, вы можете получить блокировку аккаунта на сервере!\n\nАльтернативные способы связи:\nDiscord - [empty_link]\nTelegram - t.me/koastreport_bot\nSteam - [empty_link]\nVK - [empty_link]" )
+    self.infoLabel:SetText( "Пожалуйста, не спамьте и не флудите сообщениями, а также не оскорбляйте администрацию. В случае нарушения, вы можете получить блокировку аккаунта на сервере!\n\nАльтернативные способы связи:\nDiscord - clck.ru/37FZrU\nTelegram - t.me/koastreport_bot\nSteam - steamcommunity.com/groups/koastfreeroam\nVK - vk.com/koastfreeroam" )
     self.infoLabel:SetDock( GwenPosition.Fill )
 	self.infoLabel:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
 	self.infoLabel:SetWrap( true )
@@ -148,7 +148,7 @@ function Reports:Lang()
 		self.categoryComboBox:AddItem( "Report a bug" )
 		self.categoryComboBox:AddItem( "Offtopic" )
 		self.sendButton:SetText( self.sendbutton_txt )
-		self.infoLabel:SetText( "Please do not spam or flood messages, and do not insult the administration. In case of violation, you can get your account blocked on the server!\n\nAlternative contact methods:\nDiscord - [empty_link]\nTelegram - t.me/koastreport_bot\nSteam - [empty_link]\nVK - [empty_link]" )
+		self.infoLabel:SetText( "Please do not spam or flood messages, and do not insult the administration. In case of violation, you can get your account blocked on the server!\n\nAlternative contact methods:\nDiscord - clck.ru/37FZrU\nTelegram - t.me/koastreport_bot\nSteam - steamcommunity.com/groups/koastfreeroam\nVK - vk.com/koastfreeroam" )
 	end
 end
 

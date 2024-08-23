@@ -13,13 +13,13 @@ function HInfo:EngHelp()
 		name = "Information",
 		text =
 			"> Links:\n" ..
-			"    Telegram      [empty_link]\n" ..
-			"    Discord        [empty_link]\n" ..
-			"    Steam           [empty_link]\n" ..
-			"    YouTube      [empty_link]\n \n" ..
+			"    Telegram      t.me/koastfreeroam\n" ..
+			"    Discord        clck.ru/37FZrU\n" ..
+			"    Steam           steamcommunity.com/groups/koastfreeroam\n" ..
+			"    YouTube      www.youtube.com/@jcgteam\n \n" ..
 			"> Official JCGTeam servers:\n" ..
 			"    Just Cause 2: Multiplayer Mod:\n" ..
-			"     - Koast Freeroam | IP: [empty_link]\n \n" ..
+			"     - Koast Freeroam | IP: 62.122.214.141:7777\n \n" ..
 			"> Developer:\n" ..
 			"     Hallkezz\n \n" ..
 			"> Development help (Contributors):\n" ..
@@ -63,14 +63,14 @@ function HInfo:RusHelp()
 		name = "Информация",
 		text =
 			"> Ссылки:\n" ..
-			"    Telegram      [empty_link]\n" ..
-			"    Discord        [empty_link]\n" ..
-			"    Steam           [empty_link]\n" ..
-			"    YouTube      [empty_link]\n" ..
-			"    VK                 [empty_link]\n \n" ..
+			"    Telegram      t.me/koastfreeroam\n" ..
+			"    Discord        clck.ru/37FZrU\n" ..
+			"    Steam           steamcommunity.com/groups/koastfreeroam\n" ..
+			"    YouTube      www.youtube.com/@jcgteam\n" ..
+			"    VK                 vk.com/koastfreeroam\n \n" ..
 			"> Официальные сервера JCGTeam:\n" ..
 			"    Just Cause 2: Multiplayer Mod:\n" ..
-			"     - Koast Freeroam | IP: [empty_link]\n \n" ..
+			"     - Koast Freeroam | IP: 62.122.214.141:7777\n \n" ..
 			"> Разработчик:\n" ..
 			"     Hallkezz\n \n" ..
 			"> Помощь в разработке:\n" ..

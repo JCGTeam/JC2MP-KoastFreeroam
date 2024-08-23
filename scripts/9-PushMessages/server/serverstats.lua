@@ -18,9 +18,9 @@ function Messages:ModuleError( e )
 	local errColor = Color.Red
 
 	Chat:Broadcast( self.err_prefix, tagColor, "Произошла критическая ошибка сервера, сообщите администрации!", errColor )
-	Chat:Broadcast( self.err_prefix, tagColor, "Discord: [empty_link]", errColor )
-	Chat:Broadcast( self.err_prefix, tagColor, "Steam: [empty_link]", errColor )
-	Chat:Broadcast( self.err_prefix, tagColor, "VK: [empty_link]", errColor )
+	Chat:Broadcast( self.err_prefix, tagColor, "Discord: clck.ru/37FZrU", errColor )
+	Chat:Broadcast( self.err_prefix, tagColor, "Steam: steamcommunity.com/groups/koastfreeroam", errColor )
+	Chat:Broadcast( self.err_prefix, tagColor, "VK: vk.com/koastfreeroam", errColor )
 
 	Events:Fire( "ToDiscord", { text = "**[Error] Critical server error has occurred! Module: " .. e.module .. "**" })
 	Events:Fire( "ToDiscordConsole", { text = "**[Error] Critical server error has occurred! Module: " .. e.module .. "**" .. "\nERROR CODE:\n```" .. e.error .. "```" } )
