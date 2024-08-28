@@ -129,12 +129,8 @@ function GameModesMenu:OpenGameModesMenu()
 			end
 		end
 
-		if not self.RenderEvent then
-            self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-        end
-        if not self.LocalPlayerInputEvent then
-            self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-        end
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+        if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
     end
 end
 

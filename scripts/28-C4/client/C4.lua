@@ -21,7 +21,6 @@ function C4Controller:__init()
 	Events:Subscribe( "InputPoll", self, self.InputPoll )
 	Events:Subscribe( "FireC4", self, self.FireC4 )
 	Events:Subscribe( "PreTick", self, self.PreTick )
-	Events:Subscribe( "Render", self, self.Render )
 end
 
 function C4Controller:ModuleUnload()
@@ -55,7 +54,8 @@ function C4Controller:InputPoll()
 			Input:SetValue(Action.Crouch, 1)
 		end
 
-		LocalPlayer:SetAngle(Angle(Camera:GetAngle().yaw, LocalPlayer:GetAngle().pitch, LocalPlayer:GetAngle().roll))
+		local pAngle = LocalPlayer:GetAngle()
+		LocalPlayer:SetAngle(Angle(Camera:GetAngle().yaw, pAngle.pitch, pAngle.roll))
 
 		if self.tossed then
 			LocalPlayer:SetLeftArmState(AnimationState.LaSThrowTriggeredExplosive)
@@ -116,6 +116,12 @@ function C4Controller:MouseUp( args )
 end
 
 function C4Controller:PreTick()
+	for player in Client:GetStreamedPlayers() do
+		self:ApplyDummy(player)
+	end
+
+	self:ApplyDummy(LocalPlayer)
+
 	if not self.planted and self.plantedTimer:GetSeconds() > C4Controller.AnimationTimeout then
 		local args = {}
 		local position = LocalPlayer:GetBonePosition("ragdoll_LeftForeArm") + LocalPlayer:GetBoneAngle("ragdoll_LeftForeArm") * C4Controller.PlantingOffset
@@ -160,14 +166,6 @@ function C4Controller:PreTick()
 	end
 end
 
-function C4Controller:Render()
-	for player in Client:GetStreamedPlayers() do
-		self:ApplyDummy(player)
-	end
-
-	self:ApplyDummy(LocalPlayer)
-end
-
 function C4Controller:ApplyDummy( player )
 	local state = player:GetLeftArmState()
 	local dummy = self.dummies[player:GetId()]
@@ -198,8 +196,9 @@ function C4Controller:ApplyDummy( player )
 			self.dummies[player:GetId()] = dummy
 		end
 
-		dummy:SetAngle(player:GetBoneAngle("ragdoll_LeftForeArm") * Angle(0, (math.pi - (math.pi / 8)) -(math.pi * 0.45 * math.min(self.detonationTimer:GetSeconds(), 0.5)), math.pi * 1.2))
-		dummy:SetPosition(player:GetBonePosition("ragdoll_LeftForeArm") + player:GetBoneAngle("ragdoll_LeftForeArm") * C4Controller.DetonationOffset)
+		local boneAngle = player:GetBoneAngle("ragdoll_LeftForeArm")
+		dummy:SetAngle(boneAngle * Angle(0, (math.pi - (math.pi / 8)) -(math.pi * 0.45 * math.min(self.detonationTimer:GetSeconds(), 0.5)), math.pi * 1.2))
+		dummy:SetPosition(player:GetBonePosition("ragdoll_LeftForeArm") + boneAngle * C4Controller.DetonationOffset)
 	elseif dummy then
 		self.dummies[player:GetId()] = nil
 		dummy:Remove()

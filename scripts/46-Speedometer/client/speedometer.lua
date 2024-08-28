@@ -51,12 +51,12 @@ function Speedometer:__init()
 	self.text_shadow = Color( 0, 0, 0, 100 )
 
 	if LocalPlayer:InVehicle() then
+		self.PreTickEvent = Events:Subscribe( "PreTick", self, self.PreTick )
 		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
 		self.GameRenderEvent = Events:Subscribe( "Render", self, self.GameRender )
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "PreTick", self, self.PreTick )
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
@@ -65,11 +65,13 @@ function Speedometer:__init()
 end
 
 function Speedometer:LocalPlayerEnterVehicle()
+	if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe( "PreTick", self, self.PreTick ) end
 	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "Render", self, self.GameRender ) end
 end
 
 function Speedometer:LocalPlayerExitVehicle()
+	if self.PreTickEvent then Events:Unsubscribe( self.PreTickEvent ) self.PreTickEvent = nil end
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
 end

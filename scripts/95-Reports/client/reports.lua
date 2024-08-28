@@ -236,17 +236,10 @@ function Reports:OpenReportMenu()
         self.window:SetVisible( true )
         Mouse:SetVisible( true )
 
-		if LocalPlayer:GetValue( "SystemFonts" ) then
-			self.titleLabel:SetFont( AssetLocation.SystemFont, "Impact" )
-		end
+		if LocalPlayer:GetValue( "SystemFonts" ) then self.titleLabel:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
-        if not self.LocalPlayerInputEvent then
-            self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-        end
-
-		if not self.RenderEvent then
-			self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-		end
+        if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
     end
 end
 

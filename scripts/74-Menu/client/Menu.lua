@@ -102,6 +102,11 @@ function Menu:GameLoad()
 	Mouse:SetPosition( Vector2( Render.Width / 2, Render.Height / 2 ) )
 	Mouse:SetVisible( true )
 
+	if LocalPlayer:GetValue( "SystemFonts" ) then
+		self.rus_button:SetFont( AssetLocation.SystemFont, "Impact" )
+		self.eng_button:SetFont( AssetLocation.SystemFont, "Impact" )
+	end
+
 	if self.GameLoadEvent then Events:Unsubscribe( self.GameLoadEvent ) self.GameLoadEvent = nil end
 
 	local tag = LocalPlayer:GetValue( "Tag" )
@@ -191,31 +196,34 @@ function Menu:Render()
 			self.ambsound:SetParameter( 0, Game:GetSetting(GameSetting.MusicVolume) / 100 )
 		end
 
-		local version_txt = "KMod Version: " .. tostring( LocalPlayer:GetValue( "KoastBuild" ) )
+		local versionTxt = "KMod Version: " .. tostring( LocalPlayer:GetValue( "KoastBuild" ) )
 
 		if LocalPlayer:GetValue( "KoastBuild" ) then
-			Render:DrawText( Vector2( (Render.Width - Render:GetTextWidth( version_txt, 15 ) - 30 ), Render.Size.y - 45 ), version_txt, Color( 255, 255, 255, 100 ), 15 )
+			Render:DrawText( Vector2( ( Render.Width - Render:GetTextWidth( versionTxt, 15 ) - 30 ), Render.Size.y - 45 ), versionTxt, Color( 255, 255, 255, 100 ), 15 )
 		end
 
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			Render:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
 
-		local playername_pos = Vector2( 20, Render.Size.y - 60 )
-		local linkstitle_txt = "ССЫЛКИ / LINKS:"
-		local links_pos = Vector2( 40, 50 )
-		local links_size = 25
+		local pNameTxt = LocalPlayer:GetName()
+		local pNameSize = 17
+		local pNamePos = Vector2( 20, Render.Size.y - 60 )
+		local linksTitleTxt = "ССЫЛКИ / LINKS:"
+		local linksSize = 25
+		local linksPos = Vector2( 40, 50 )
 
-		Render:DrawText( links_pos, linkstitle_txt, self.text_clr, links_size )
-		Render:DrawText( Vector2( links_pos.x, links_pos.y + Render:GetTextHeight( linkstitle_txt, links_size ) + 10 ), "- TELEGRAM | t.me/koastfreeroam\n- DISCORD | clck.ru/37FZrU\n- STEAM | steamcommunity.com/groups/koastfreeroam\n- YouTube | www.youtube.com/@jcgteam", Color( 180, 180, 180 ), links_size - 5 )
+		Render:DrawText( linksPos, linksTitleTxt, self.text_clr, linksSize )
+		Render:DrawText( Vector2( linksPos.x, linksPos.y + Render:GetTextHeight( linksTitleTxt, linksSize ) + 10 ), "- TELEGRAM | t.me/koastfreeroam\n- DISCORD | clck.ru/37FZrU\n- STEAM | steamcommunity.com/groups/koastfreeroam\n- YouTube | www.youtube.com/@jcgteam", Color( 180, 180, 180 ), linksSize - 5 )
 
 		local tSize = 30
 		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tName, tSize ) / 2, Render.Size.y / 2.5 ), self.tName, self.text_clr, tSize )
 
-		LocalPlayer:GetAvatar():Draw( playername_pos, Vector2( 40, 40 ), Vector2.Zero, Vector2.One )
-		Render:DrawText( playername_pos + Vector2( 50, 15 ), LocalPlayer:GetName(), self.text_clr, 17 )
+		LocalPlayer:GetAvatar():Draw( pNamePos, Vector2( 40, 40 ), Vector2.Zero, Vector2.One )
+
+		Render:DrawText( pNamePos + Vector2( 50, 15 ), pNameTxt, self.text_clr, pNameSize )
 		if self.status then
-			Render:DrawText( playername_pos + Vector2( 50, 15 ) + Vector2( Render:GetTextWidth( LocalPlayer:GetName(), 17 ), 0 ), self.status, Color.DarkGray, 17 )
+			Render:DrawText( pNamePos + Vector2( 50, 15 ) + Vector2( Render:GetTextWidth( pNameTxt, pNameSize ), 0 ), self.status, Color.DarkGray, pNameSize )
 		end
 	end
 
@@ -226,11 +234,6 @@ function Menu:Render()
 		self.rus_button:SetVisible( visiblity )
 		self.eng_image:SetVisible( visiblity )
 		self.eng_button:SetVisible( visiblity )
-
-		if visiblity and LocalPlayer:GetValue( "SystemFonts" ) then
-			self.rus_button:SetFont( AssetLocation.SystemFont, "Impact" )
-			self.eng_button:SetFont( AssetLocation.SystemFont, "Impact" )
-		end
 	end
 end
 
@@ -262,6 +265,9 @@ function Menu:CleanUp()
 
 	self.tofreeroamtext = nil
 	self.tName = nil
+
+	self.rusflag = nil
+	self.engflag = nil
 end
 
 function Menu:ModuleUnload()

@@ -18,10 +18,6 @@ function Pong:__init()
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "MouseMove", self, self.MouseMove )
-	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	Events:Subscribe( "Render", self, self.Render )
-	Events:Subscribe( "PreTick", self, self.ClientTick )
 
 	Network:Subscribe( "StartUp", self, self.StartUp )
 end
@@ -67,9 +63,8 @@ end
 
 function Pong:Render()
 	if active then
-		if LocalPlayer:GetValue( "SystemFonts" ) then
-			Render:SetFont( AssetLocation.SystemFont, "Impact" )
-		end
+		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
+
 		Render:FillArea( pong_draw_start, Vector2( pong_table_width, pong_table_height ), self.board_clr )	
 		Render:FillArea( pong_draw_start + Vector2( 10, ping_pos ), Vector2( ping_width, ping_height ), self.text_clr )
 		Render:FillArea( pong_draw_start + Vector2( pong_table_width - ping_width - 10, ping_pos_opp ), Vector2( ping_width, ping_height ), self.text_clr )
@@ -92,6 +87,11 @@ function Pong:StartUp( args )
 		active = false
 		Mouse:SetVisible( active )
 		LocalPlayer:SetValue( "InPong", active )
+
+		if self.MouseMoveEvent then Events:Unsubscribe( self.MouseMoveEvent ) self.MouseMoveEvent = nil end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+		if self.PreTickEvent then Events:Unsubscribe( self.PreTickEvent ) self.PreTickEvent = nil end
 	elseif args.value == 2 then
 		if not difficulty_level[args.cparams[2]] then Chat:Print( "Неверная сложность!", Color( 255, 0, 0 ) ) return false end
 
@@ -99,6 +99,11 @@ function Pong:StartUp( args )
 		angle_modifier = difficulty_level[args.cparams[2]][3]
 		ball_speed_limit.upper = difficulty_level[args.cparams[2]][2]
 		ball_speed_limit.lower = -ball_speed_limit.upper
+
+		if not self.MouseMoveEvent then self.MouseMoveEvent = Events:Subscribe( "MouseMove", self, self.MouseMove ) end
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+		if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe( "PreTick", self, self.ClientTick ) end
 
 		active = true
 		Mouse:SetVisible( active )
@@ -153,6 +158,11 @@ function Pong:HandleBallData()
 			active = false
 			Mouse:SetVisible( active )
 			LocalPlayer:SetValue( "InPong", active )
+
+			if self.MouseMoveEvent then Events:Unsubscribe( self.MouseMoveEvent ) self.MouseMoveEvent = nil end
+			if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+			if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+			if self.PreTickEvent then Events:Unsubscribe( self.PreTickEvent ) self.PreTickEvent = nil end
 		end
 	elseif ball_pos.x + ball_width >= pong_table_width then
 		ball_speed.x = -2
@@ -167,6 +177,11 @@ function Pong:HandleBallData()
 			active = false
 			Mouse:SetVisible( active )
 			LocalPlayer:SetValue( "InPong", active )
+
+			if self.MouseMoveEvent then Events:Unsubscribe( self.MouseMoveEvent ) self.MouseMoveEvent = nil end
+			if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+			if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+			if self.PreTickEvent then Events:Unsubscribe( self.PreTickEvent ) self.PreTickEvent = nil end
 		end
 	end
 end
