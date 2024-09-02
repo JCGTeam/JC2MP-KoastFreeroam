@@ -40,11 +40,10 @@ function Tips:Render()
 
 		if LocalPlayer:GetValue( "ChatTipsVisible" ) then
 			local color = Color( 215, 215, 215 )
-			local linepoint1 = chatPos + Vector2( 0, 3 )
-			local linepoint2 = chatPos +  Vector2( 500, 3 )
+			local linepoint = chatPos + Vector2( 0, 3 )
 
-			Render:DrawLine( linepoint1 + Vector2.One, linepoint2 + Vector2.One, Color( 25, 25, 25, 100 ) )
-			Render:DrawLine( linepoint1, linepoint2, color )
+			Render:FillArea( linepoint + Vector2.One, Vector2( 500, 1 ), Color( 25, 25, 25, 100 ) )
+			Render:FillArea( linepoint, Vector2( 500, 1 ), color )
 
 			if LocalPlayer:GetValue( "SystemFonts" ) then
 				Render:SetFont( AssetLocation.SystemFont, "Impact" )
