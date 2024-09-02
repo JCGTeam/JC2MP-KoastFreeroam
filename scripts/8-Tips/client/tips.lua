@@ -40,14 +40,13 @@ function Tips:Render()
 
 		if LocalPlayer:GetValue( "ChatTipsVisible" ) then
 			local color = Color( 215, 215, 215 )
-			local linepoint = chatPos + Vector2( 0, 3 )
+			local lineSize = Vector2( 500, 1 )
+			local linePos = chatPos + Vector2( 0, 3 )
 
-			Render:FillArea( linepoint + Vector2.One, Vector2( 500, 1 ), Color( 25, 25, 25, 100 ) )
-			Render:FillArea( linepoint, Vector2( 500, 1 ), color )
+			Render:FillArea( linePos + Vector2.One, lineSize, Color( 25, 25, 25, 100 ) )
+			Render:FillArea( linePos, lineSize, color )
 
-			if LocalPlayer:GetValue( "SystemFonts" ) then
-				Render:SetFont( AssetLocation.SystemFont, "Impact" )
-			end
+			if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 			local textpos = chatPos + Vector2( 1, 11 )
 			Render:DrawShadowedText( textpos, self.text, color, Color( 25, 25, 25, 150 ), 14 )
