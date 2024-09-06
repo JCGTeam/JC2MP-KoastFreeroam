@@ -250,9 +250,6 @@ function Tetris:__init()
 		self:Lang()
 	else
 		self.window:SetTitle( "▧ Тетрис - Список лидеров" )
-		self.tWidg = "Хорошечный Тетрис:"
-		self.tWidgTw = "Хорошечный "
-		self.tTetris = "Тетрис: "
 		self.tRecord = "Личный рекорд по тетрису: "
 		self.tDied = "ПОТРАЧЕНО!\n\n\n"
 		self.tScores = "Счёт: "
@@ -274,9 +271,6 @@ end
 
 function Tetris:Lang()
 	self.window:SetTitle( "▧ Tetris - Leaderboard" )
-	self.tWidg = "Fantastic Tetris:"
-	self.tWidgTw = "Fantastic "
-	self.tTetris = "Tetris: "
 	self.tRecord = "Personal tetris record: "
 	self.tDied = "GAME OVER\n\n\n"
 	self.tScores = "Score: "
@@ -304,67 +298,6 @@ end
 
 function Tetris:Render()
 	if Game:GetState() ~= GUIState.Game then return end
-
-	local object = NetworkObject.GetByName("Tetris")
-
-	if LocalPlayer:GetValue( "BestRecordVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) then
-		if Game:GetSetting(4) >= 1 then
-			local sett_alpha = Game:GetSetting(4) * 2.25
-
-			if object and LocalPlayer:GetValue("GetWidget") == 1 then
-				if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
-
-				local record = object:GetValue("S")
-				local text = self.tWidg
-				local textSize = 16
-				local color = Color( 255, 255, 255, sett_alpha )
-				local colorShadow = Color( 25, 25, 25, sett_alpha )
-				local position = Vector2( 20, Render.Height * 0.4 )
-
-				Render:DrawShadowedText( position, text, color, colorShadow, textSize - 1 )
-				Render:DrawText( position + Vector2( Render:GetTextWidth( self.tWidgTw, textSize - 1 ), 0 ), self.tTetris, Color( 255, 165, 0, sett_alpha ), textSize - 1 )
-				local height = Render:GetTextHeight("A") * 1.2
-				position.y = position.y + height
-				local record = object:GetValue("S")
-
-				if record then
-					text = tostring( record ) .. " - " .. object:GetValue("N")
-					Render:DrawText( position + Vector2.One, text, colorShadow, textSize )
-					text = tostring( record )
-					Render:DrawText( position, text, Color( 0, 150, 255, sett_alpha ), textSize )
-					text = tostring( record )
-					Render:DrawText( position + Vector2 (Render:GetTextWidth( text, textSize ), 0 ), " - ", color, textSize )
-					text = tostring( record ) .. " - "
-					if object:GetValue("C") then
-						Render:DrawText( position + Vector2 (Render:GetTextWidth( text, textSize ), 0 ), object:GetValue("N"), object:GetValue("C") + Color( 0, 0, 0, sett_alpha ), textSize )
-					end
-					text = ""
-					for i = 1, object:GetValue("E") do text = text .. ">" end
-
-					position.y = position.y + height * 0.95
-					Render:SetFont( AssetLocation.Disk, "LeagueGothic.ttf" )
-					Render:DrawShadowedText( position, text, color, colorShadow, textSize - 3 )
-					if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
-					if self.attempt then
-						local player = Player.GetById(self.attempt[2] - 1)
-						if player then
-							position.y = position.y + height * 0.6
-							local alpha = math.min(self.attempt[3], 1)
-							text = tostring( self.attempt[1] ) .. " - " .. player:GetName()
-							Render:DrawShadowedText(position, text, Color( 255, 255, 255, 255 * alpha ), Color( 0, 0, 0, 100 * alpha ), textSize )
-							text = tostring( self.attempt[1] )
-							Render:DrawShadowedText( position, text, Color( 240, 220, 70, 255 * alpha ), Color( 0, 0, 0, 100 * alpha ), textSize )
-							self.attempt[3] = self.attempt[3] - 0.02
-							if self.attempt[3] < 0.02 then self.attempt = nil end
-						end
-					end
-				else
-					text = "–"
-					Render:DrawShadowedText( position, text, Color( 200, 200, 200, sett_alpha ), colorShadow, textSize )
-				end
-			end
-		end
-	end
 
 	if self.inTetrisMode then
 		Render:FillArea( self.offset - self.tileWidthV, Vector2(self.tileWidthV.x * (10+2), self.tileHeightV.y * 20), self.backgroundCol ) --background

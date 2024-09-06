@@ -17,9 +17,6 @@ function Drift:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.tWidg = "Хорошечный Дрифтер:"
-		self.tWidgTw = "Хорошечный "
-		self.tDrift = "Дрифтер: "
 		self.tDriftTw = "Дрифт: "
 		self.tDrift3 = "Продолжай! "
 		self.tDrift4 = "Малаца! "
@@ -33,9 +30,6 @@ function Drift:__init()
 end
 
 function Drift:Lang()
-	self.tWidg = "Fantastic Drift:"
-	self.tWidgTw = "Fantastic "
-	self.tDrift = "Drift: "
 	self.tDriftTw = "Drift: "
 	self.tDrift3 = "Well done! "
 	self.tDrift4 = "Do not stop! "
@@ -91,68 +85,6 @@ end
 function Drift:Render()
 	local object = NetworkObject.GetByName("Drift")
 
-	if LocalPlayer:GetValue( "BestRecordVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) and Game:GetState() == GUIState.Game then
-		if Game:GetSetting(4) >= 1 then
-			if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
-
-			local sett_alpha = Game:GetSetting(4) * 2.25
-
-			if object and LocalPlayer:GetValue("GetWidget") == 2 then
-				local record = object:GetValue("S")
-				local text = self.tWidg
-				local textSize = 16
-				local color = Color( 255, 255, 255, sett_alpha )
-				local colorShadow = Color( 25, 25, 25, sett_alpha )
-				local position = Vector2( 20, Render.Height * 0.4 )
-
-				Render:DrawShadowedText( position, text, color, colorShadow, textSize - 1 )
-				Render:DrawText( position + Vector2( Render:GetTextWidth( self.tWidgTw, textSize - 1 ), 0 ), self.tDrift, Color( 255, 165, 0, sett_alpha ), textSize - 1 )
-
-				local bar_pos = position
-
-				local height = Render:GetTextHeight("A") * 1.2
-				position.y = position.y + height
-				local record = object:GetValue("S")
-
-				if record then
-					text = tostring( record ) .. " - " .. object:GetValue("N")
-					Render:DrawText( position + Vector2.One, text, colorShadow, textSize )
-					text = tostring( record )
-					Render:DrawText( position, text, Color( 0, 150, 255, sett_alpha ), textSize )
-					text = tostring( record )
-					Render:DrawText( position + Vector2( Render:GetTextWidth( text, textSize ), 0 ), " - ", color, textSize )
-					text = tostring( record ) .. " - "
-					if object:GetValue("C") then
-						Render:DrawText( position + Vector2( Render:GetTextWidth( text, textSize ), 0 ), object:GetValue("N"), object:GetValue("C") + Color( 0, 0, 0, sett_alpha ), textSize )
-					end
-					text = ""
-					for i = 1, object:GetValue("E") do text = text .. ">" end
-					position.y = position.y + height * 0.95
-					Render:SetFont( AssetLocation.Disk, "LeagueGothic.ttf" )
-					Render:DrawShadowedText( position, text, color, colorShadow, textSize - 3 )
-					Render:ResetFont()
-					if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
-					if self.attempt then
-						local player = Player.GetById( self.attempt[2] - 1 )
-						if player then
-							position.y = position.y + height * 0.6
-							local alpha = math.min(self.attempt[3], 1)
-							text = tostring( self.attempt[1] ) .. " - " .. player:GetName()
-							Render:DrawShadowedText( position, text, Color( 255, 255, 255, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), textSize )
-							text = tostring( self.attempt[1] )
-							Render:DrawShadowedText( position, text, Color( 240, 220, 70, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), textSize )
-							self.attempt[3] = self.attempt[3] - 0.02
-							if self.attempt[3] < 0.02 then self.attempt = nil end
-						end
-					end
-				else
-					text = "–"
-					Render:DrawShadowedText( position, text, Color( 200, 200, 200, sett_alpha ), colorShadow, textSize )
-				end
-			end
-		end
-	end
-
 	if LocalPlayer:GetValue( "DriftPhysics" ) then
 		if self.slide then
 			if self.slide == 0 then
@@ -167,6 +99,8 @@ function Drift:Render()
 			self:ResetMass()
 		end
 	end
+
+	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 	if self.score and not self.timer and self.score >= 100 then
 		self.slide = self.slide + (1 * self.multipler)
@@ -217,13 +151,14 @@ function Drift:Render()
 			local textSize = Render:GetTextSize(text, self.textSize)
 			local textSize_mult = Render:GetTextSize(text_mult, self.textSize)
 			local alpha = 1 - self.slide / 265
+			local shadowColor = Color( 25, 25, 25, 150 * alpha )
 
 			local position = Vector2(Render.Width / 2, Render.Height * 0.3 * alpha) - textSize / 2
 			local position_mult = position + Vector2(textSize.x / 2,textSize.y*1.6) - textSize_mult/2
 
-			Render:DrawShadowedText( position, text, ( object and ( scoreMult > ( object:GetValue("S") or 0 ) ) ) and Color( 255, 0, 0, 255 * alpha ) or Color( 255, 150, 0, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), self.textSize )
+			Render:DrawShadowedText( position, text, ( object and ( scoreMult > ( object:GetValue("S") or 0 ) ) ) and Color( 255, 0, 0, 255 * alpha ) or Color( 255, 150, 0, 255 * alpha ), shadowColor, self.textSize )
 
-			Render:DrawShadowedText( position_mult, text_mult, Color( 255, 150, 0, 255 * alpha ), Color( 25, 25, 25, 150 * alpha), self.textSize )
+			Render:DrawShadowedText( position_mult, text_mult, Color( 255, 150, 0, 255 * alpha ), shadowColor, self.textSize )
 
 			Render:DrawText( position + Vector2( Render:GetTextWidth( btext, self.textSize ), 0 ), tostring( scoreMult ), Color( 255, 255, 255, 255 * alpha ), self.textSize )
 		end
@@ -337,13 +272,14 @@ function Drift:Render()
 	if LocalPlayer:GetValue( "BestRecordVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) and Game:GetState() == GUIState.Game then
 		local textSize = Render:GetTextSize( text, self.textSize )
 		local textSize_mult = Render:GetTextSize( text_mult, self.textSize )
+		local shadowColor = Color( 25, 25, 25, 150 )
 
 		local position = Vector2( Render.Width / 2, Render.Height * 0.3 ) - textSize / 2
 		local position_mult = position + Vector2( textSize.x / 2, textSize.y * self.size ) - textSize_mult / 2
 
-		Render:DrawShadowedText( position, text, ( IsValid( object ) and ( scoreMult > ( object:GetValue("S") or 0 ) ) ) and Color( 255, 0, 0 ) or Color( 255, 150, 0 ), Color( 25, 25, 25, 150 ), self.textSize )
+		Render:DrawShadowedText( position, text, ( IsValid( object ) and ( scoreMult > ( object:GetValue("S") or 0 ) ) ) and Color( 255, 0, 0 ) or Color( 255, 150, 0 ), shadowColor, self.textSize )
 		Render:DrawText( position + Vector2( Render:GetTextWidth( btext, self.textSize ), 0 ), tostring( scoreMult ), Color( 255, 255, 255 ), self.textSize )
-		Render:DrawShadowedText( position_mult, text_mult, Color( 255, 150, 0, 255 ), Color( 25, 25, 25, 150 ), self.textSize )
+		Render:DrawShadowedText( position_mult, text_mult, Color( 255, 150, 0, 255 ), shadowColor, self.textSize )
 	end
 end
 
