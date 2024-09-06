@@ -22,18 +22,18 @@ function CameraView:__init()
 		self.s[j] = 0
 	end
 
-	self.names = {[0] = "front", [1] = "cockpit", [2] = "chase", [3] = "top", [4] = "standard"}
+	self.names = { [0] = "front", [1] = "chase", [2] = "top", [3] = "standard" }
 
 	if LocalPlayer:InVehicle() then
 		self.CalcViewEvent = Events:Subscribe( "CalcView", self, self.CalcView )
 		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
 		self.MouseScrollEvent = Events:Subscribe( "MouseScroll", self, self.MouseScroll )
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+		self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll )
 	end
 
 	Events:Subscribe( "ToggleCamZoom", self, self.ToggleCamZoom )
 	Events:Subscribe( "ZoomReset", self, self.ZoomReset )
-	Events:Subscribe( "InputPoll", self, self.InputPoll )
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.EnterVehicle )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
 
@@ -176,7 +176,7 @@ function CameraView:CalcView()
 					altview = self.reverse
 				} )
 			end
-		elseif self.reverse and self.camera ~= 4 then
+		elseif self.reverse and self.camera ~= 3 then
 			self.reverse = false
 			Events:Fire( "CameraState",
 			{
@@ -187,7 +187,7 @@ function CameraView:CalcView()
 		end
 	end
 
-	if self.reverse and ( self.camera ~= 4 ) then
+	if self.reverse and ( self.camera ~= 3 ) then
 		local pos_3d = vehicle:GetPosition()
 		t = Vector3( (self.vehicles[vid][9]), (self.vehicles[vid][7]), (self.vehicles[vid][8]) )
 		angle = angle * Angle(math.pi,0,0)
@@ -274,6 +274,7 @@ function CameraView:EnterVehicle()
 	if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
 	if not self.MouseScrollEvent then self.MouseScrollEvent = Events:Subscribe( "MouseScroll", self, self.MouseScroll ) end
 	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+	if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll ) end
 end
 
 function CameraView:LocalPlayerExitVehicle()
@@ -281,6 +282,7 @@ function CameraView:LocalPlayerExitVehicle()
 	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
 	if self.MouseScrollEvent then Events:Unsubscribe( self.MouseScrollEvent ) self.MouseScrollEvent = nil end
 	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
 end
 
 function CameraView:LocalPlayerInput( args )
@@ -317,7 +319,7 @@ end
 
 function CameraView:CycleViews()
 	local all_disabled = true
-	for k = 0, 4 do
+	for k = 0, 3 do
 		if self.selectedViews[k] then
 			all_disabled = false
 		end

@@ -13,12 +13,7 @@ function Pigeon:__init()
 		self.name = "Нажмите Shift или RB чтобы ускориться. Нажмите Ctrl чтобы сбавить скорость."
 		self.nameTh = "%i км/ч %i метров\n"
 		self.tip = "Нажмите Q, чтобы раскрыть вингсьют."
-	
-		self.tWidg = "Хорошечный Голубь:"
-		self.tWidgTw = "Хорошечный "
-		self.tDrift = "Голубь: "
 		self.tRecord = "Личный рекорд полета на вингсьюте: "
-
 		self.pvpblock = "Вы не можете использовать это во время боя!"
 	end
 
@@ -79,7 +74,6 @@ function Pigeon:__init()
 	self.subs = {}
 
 	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "Render", self, self.Render )
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	Events:Subscribe( "KeyUp", self, self.Activate )
 	Events:Subscribe( "AbortWingsuit", self, self.Abort )
@@ -100,89 +94,8 @@ function Pigeon:Lang()
 	self.name = "Press Shift or RB to boost. Press Ctrl to slow down."
 	self.nameTh = "%i km/h %i m\n"
 	self.tip = "Press Q to use wingsuit."
-
-	self.tWidg = "Fantastic Pigeon:"
-	self.tWidgTw = "Fantastic "
-	self.tDrift = "Pigeon: "
 	self.tRecord = "Personal flying record: "
-
 	self.pvpblock = "You cannot use this during combat!"
-end
-
-function Pigeon:Render()
-	local alpha = 255
-
-	if self.hinttimer then
-		local hinttimerSeconds = self.hinttimer:GetSeconds()
-
-		if hinttimerSeconds > 4 then
-			alpha = math.clamp( 255 - ( ( hinttimerSeconds - 4 ) * 500 ), 0, 255 )
-
-			if hinttimerSeconds > 6 then
-				self.hinttimer = nil
-			end
-		end
-	end
-
-	local object = NetworkObject.GetByName( "Flying" )
-
-	if LocalPlayer:GetValue( "BestRecordVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) and Game:GetState() == GUIState.Game then
-		if Game:GetSetting(4) >= 1 then
-			if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
-
-			local sett_alpha = Game:GetSetting(4) * 2.25
-
-			if object and LocalPlayer:GetValue("GetWidget") == 3 then
-				local record = object:GetValue("S")
-				local text = self.tWidg
-				local color = Color( 255, 255, 255, sett_alpha )
-				local colorShadow = Color( 25, 25, 25, sett_alpha )
-				local textSize = 16
-				local position = Vector2( 20, Render.Height * 0.4 )
-
-				Render:DrawShadowedText( position, text, color, colorShadow, textSize - 1 )
-				Render:DrawText( position + Vector2( Render:GetTextWidth( self.tWidgTw, 15 ), 0 ), self.tDrift, Color( 255, 165, 0, sett_alpha ), textSize - 1 )
-				local height = Render:GetTextHeight("A") * 1.2
-				position.y = position.y + height
-				local record = object:GetValue("S")
-
-				if record then
-					text = tostring( record ) .. " - " .. object:GetValue("N")
-					Render:DrawText( position + Vector2.One, text, colorShadow, textSize )
-					text = tostring( record )
-					Render:DrawText( position, text, Color( 0, 150, 255, sett_alpha ), textSize )
-					text = tostring( record )
-					Render:DrawText( position + Vector2( Render:GetTextWidth( text, textSize ), 0 ), " - ", color, textSize )
-					text = tostring( record ) .. " - "
-					if object:GetValue("C") then
-						Render:DrawText( position + Vector2( Render:GetTextWidth( text, textSize ), 0 ), object:GetValue("N"), object:GetValue("C") + Color( 0, 0, 0, sett_alpha ), textSize )
-					end
-					text = ""
-					for i = 1, object:GetValue("E") do text = text .. ">" end
-					position.y = position.y + height * 0.95
-					Render:SetFont( AssetLocation.Disk, "LeagueGothic.ttf" )
-					Render:DrawShadowedText( position, text, color, colorShadow, textSize - 3 )
-					if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
-					if self.attempt then
-						local player = Player.GetById( self.attempt[2] - 1 )
-						if player then
-							position.y = position.y + height * 0.6
-							local alpha = math.min(self.attempt[3], 1)
-							text = tostring( self.attempt[1] ) .. " - " .. player:GetName()
-							Render:DrawShadowedText( position, text, Color( 255, 255, 255, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), textSize )
-							text = tostring( self.attempt[1] )
-							Render:DrawShadowedText( position, text, Color( 240, 220, 70, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), textSize )
-							self.attempt[3] = self.attempt[3] - 0.02
-							if self.attempt[3] < 0.02 then self.attempt = nil end
-						end
-					end
-				else
-					text = "–"
-					Render:DrawShadowedText( position, text, Color( 200, 200, 200, sett_alpha ), colorShadow, textSize )
-				end
-			end
-		end
-	end
 end
 
 function Pigeon:LocalPlayerInput()
