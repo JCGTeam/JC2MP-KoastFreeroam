@@ -126,7 +126,7 @@ function BetterChat:Chat( args )
 			end
 		end
 	else
-		local cmd_args = string.split( args.text," ",true )
+		local cmd_args = string.split( args.text, " ", true )
 	end
 
     local msg = args.text

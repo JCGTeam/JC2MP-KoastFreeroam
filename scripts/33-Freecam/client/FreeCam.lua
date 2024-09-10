@@ -34,10 +34,6 @@ function FreeCam:__init()
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "KeyUp", self, self.KeyUp )
-	Events:Subscribe( "MouseDown", self, self.MouseDown )
-	Events:Subscribe( "LocalPlayerInput", self, self.PlayerInput )
-	Events:Subscribe( "InputPoll", self, self.ResetPressed )
-	Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
 
 	-- Change permission/force activate
 	Network:Subscribe( "FreeCam", function( args )
@@ -94,7 +90,6 @@ function FreeCam:Render()
 end
 
 function FreeCam:UpdateCamera()
-	if not self.active then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
 	if Game:GetState() ~= 0 then
@@ -151,7 +146,6 @@ function FreeCam:UpdateCamera()
 end
 
 function FreeCam:CalcView()
-	if not self.active then return end
 	Camera:SetAngle( self.angle )
 	Camera:SetPosition( self.position )
 	return false
@@ -161,6 +155,10 @@ function FreeCam:Activate()
 	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	if not self.CalcViewEvent then self.CalcViewEvent = Events:Subscribe( "CalcView", self, self.CalcView ) end
 	if not self.PostTickEvent then self.PostTickEvent = Events:Subscribe( "PostTick", self, self.UpdateCamera ) end
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.PlayerInput ) end
+	if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.ResetPressed ) end
+	if not self.MouseDownEvent then self.MouseDownEvent = Events:Subscribe( "MouseDown", self, self.MouseDown ) end
+	if not self.ModuleUnloadEvent then self.ModuleUnloadEvent = Events:Subscribe( "ModuleUnload", self, self.ModuleUnload ) end
 
 	self.active = true
 	self.RamaType = 0
@@ -178,6 +176,10 @@ function FreeCam:Deactivate()
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	if self.CalcViewEvent then Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil end
 	if self.PostTickEvent then Events:Unsubscribe( self.PostTickEvent ) self.PostTickEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
+	if self.MouseDownEvent then Events:Unsubscribe( self.MouseDownEvent ) self.MouseDownEvent = nil end
+	if self.ModuleUnloadEvent then Events:Unsubscribe( self.ModuleUnloadEvent ) self.ModuleUnloadEvent = nil end
 
 	self.active = false
 
@@ -210,6 +212,7 @@ function FreeCam:KeyUp( args )
 		Network:Send( "FreeCamChange", {["active"] = self.active} )
 		Events:Fire( "FreeCamChange", {["active"] = self.active} )
 	end
+
 	if self.active then
 		if args.key == 101 then
 			self.pause = not self.pause
@@ -231,14 +234,12 @@ function FreeCam:KeyUp( args )
 end
 
 function FreeCam:MouseDown( args )
-	if self.active and args.button == 2 then
+	if args.button == 2 then
 		self.pause = not self.pause
 	end
 end
 
 function FreeCam:PlayerInput( args )
-	if not self.active then return end
-
 	if Game:GetState() ~= 0 then
 		if Game:GetState() ~= GUIState.Game then return end
 	end
@@ -261,7 +262,6 @@ function FreeCam:PlayerInput( args )
 end
 
 function FreeCam:ResetPressed()
-	if not self.active then return end
 	if Input:GetValue(Action.SequenceButton1) == 0 then
 		self.gamepadPressed[1] = false
 	end

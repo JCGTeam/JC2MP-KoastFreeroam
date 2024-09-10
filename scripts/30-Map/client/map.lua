@@ -561,7 +561,8 @@ function Map:Draw()
 	end
 
 	if Map.Ramka then
-		Render:FillArea( Map.Image:GetPosition() - Vector2( 4, 4 ), Map.Image:GetSize() + Vector2( 4, 4 ) * 2, Color( 173, 216, 230, 100 * Map.RamkaAlpha ) )
+		local ramkaSize = Vector2( 4, 4 )
+		Render:FillArea( Map.Image:GetPosition() - ramkaSize, Map.Image:GetSize() + ramkaSize * 2, Color( 173, 216, 230, 100 * Map.RamkaAlpha ) )
 	end
 
 	Map.Image:Draw()

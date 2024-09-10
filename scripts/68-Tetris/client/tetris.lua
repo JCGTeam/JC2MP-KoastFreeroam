@@ -264,7 +264,6 @@ function Tetris:__init()
 	Network:Subscribe( "NewLeaderboard", self, self.NewLeaderboard )
 
 	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "Render", self, self.Render )
 
 	Network:Subscribe( "003", self, self.onTetrisAttempt )
 end
@@ -285,35 +284,35 @@ function Tetris:Toggle()
 	self.firstGo = true
 	self:PopulateGrid()
 	self.inTetrisMode = not self.inTetrisMode
+
 	if self.inTetrisMode then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-		self.KeyDownEvent = Events:Subscribe( "KeyDown", self, self.KeyDown )
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if not self.KeyDownEvent then self.KeyDownEvent = Events:Subscribe( "KeyDown", self, self.KeyDown ) end
 	else
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		Events:Unsubscribe( self.KeyDownEvent )
-		self.LocalPlayerInputEvent = nil
-		self.KeyDownEvent = nil
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.KeyDownEvent then Events:Unsubscribe( self.KeyDownEvent ) self.KeyDownEvent = nil end
 	end
 end
 
 function Tetris:Render()
 	if Game:GetState() ~= GUIState.Game then return end
 
-	if self.inTetrisMode then
-		Render:FillArea( self.offset - self.tileWidthV, Vector2(self.tileWidthV.x * (10+2), self.tileHeightV.y * 20), self.backgroundCol ) --background
-		if self.inGame then
-			if (Client:GetElapsedSeconds() - self.moveDownTimer) > self.dropTime then
-				self.moveDownTimer = Client:GetElapsedSeconds()
-				self:MoveCurrent(0,1)
-			end
+	Render:FillArea( self.offset - self.tileWidthV, Vector2(self.tileWidthV.x * (10+2), self.tileHeightV.y * 20), self.backgroundCol ) --background
 
-			self:CheckTiles()
+	if self.inGame then
+		if (Client:GetElapsedSeconds() - self.moveDownTimer) > self.dropTime then
+			self.moveDownTimer = Client:GetElapsedSeconds()
+			self:MoveCurrent(0,1)
 		end
-		self:RenderTiles()
-		self:ShowScore()
 
-		self.window:SetVisible( self.settingsVisible )
+		self:CheckTiles()
 	end
+	self:RenderTiles()
+	self:ShowScore()
+
+	self.window:SetVisible( self.settingsVisible )
 end
 
 function Tetris:onTetrisAttempt( data )
@@ -579,15 +578,8 @@ function Tetris:NewLeaderboard( tData )
 end
 
 function Tetris:LocalPlayerInput( args )
-	if self.inTetrisMode and args.input == Action.GuiPause then
-		self.firstGo = true
-		self:PopulateGrid()
-		self.inTetrisMode = not self.inTetrisMode
-	
-		Events:Unsubscribe( self.LocalPlayerInputEvent )
-		Events:Unsubscribe( self.KeyDownEvent )
-		self.LocalPlayerInputEvent = nil
-		self.KeyDownEvent = nil
+	if args.input == Action.GuiPause then
+		self:Toggle()
 	end
 	if self.settingsVisible then
 		return false

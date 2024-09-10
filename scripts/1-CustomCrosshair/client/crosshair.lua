@@ -1,8 +1,8 @@
 class 'Crosshair'
 
-local blacklist = { 64, 24, 53, 20, 75, 30, 47, 83, 32, 90, 61, 89, 43, 74, 21, 11 }
-
 function Crosshair:__init()
+	self.vehicleslist = { 3, 7, 11, 18, 20, 21, 24, 30, 32, 34, 35, 36, 37, 43, 47, 53, 56, 57, 61, 62, 64, 74, 75, 77, 83, 88, 89, 90 }
+
 	if not LocalPlayer:GetValue( "CustomCrosshairVisible" ) then
 		LocalPlayer:SetValue( "CustomCrosshairVisible", 1 )
 	end
@@ -138,11 +138,12 @@ function Crosshair:Render()
 
 	local bs = LocalPlayer:GetBaseState()
 	local las = LocalPlayer:GetLeftArmState()
+	local inVehicle = LocalPlayer:InVehicle()
 
 	if self.blacklist.animations[bs] then return end
 	--self.size = Render.Height / 400
 	local pos_2d = Vector2( Render.Size.x / 2, Render.Size.y / 2 )
-	--[[if not LocalPlayer:InVehicle() and not self.blacklist.animations2[bs] and LocalPlayer:GetEquippedSlot() <= 3 and not self.blacklist.animations3[bs] and not LocalPlayer:GetValue( "Passive" ) then
+	--[[if not inVehicle and not self.blacklist.animations2[bs] and LocalPlayer:GetEquippedSlot() <= 3 and not self.blacklist.animations3[bs] and not LocalPlayer:GetValue( "Passive" ) then
 		--Тут хуйня для рисовки перекрестья
 	end]]--
 
@@ -161,26 +162,29 @@ function Crosshair:Render()
 		self.distance = 0
 	end
 
-	if LocalPlayer:GetVehicle() and LocalPlayer:InVehicle() then
+	if inVehicle then
 		local vehicle = LocalPlayer:GetVehicle()
 		local vehicleModel = vehicle:GetModelId()
 		local seat = LocalPlayer:GetSeat()
 
-		if seat ~= 6 and seat ~= 7 and not self:CheckList( blacklist, vehicleModel ) then
-			local vehicleTemplate = vehicle:GetTemplate()
-			if vehicleModel == 88 then
-				if vehicleTemplate == "Default" then return end
-			elseif vehicleModel == 36 or vehicleModel == 77 or vehicleModel == 56 or vehicleModel == 18 then
-				if vehicleTemplate == "Gimp" then return end
-			elseif vehicleModel == 7 or vehicleModel == 77 or vehicleModel == 56 or vehicleModel == 18 then
-				if vehicleTemplate ~= "Armed" and vehicleTemplate ~= "FullyUpgraded" and vehicleTemplate ~= "" and vehicleTemplate ~= "Cannon" then return end
+		if seat ~= 6 and seat ~= 7 then
+			if self:CheckList( self.vehicleslist, vehicleModel ) then
+				local vehicleTemplate = vehicle:GetTemplate()
+
+				if vehicleModel == 3 or vehicleModel == 18 or vehicleModel == 35 or vehicleModel == 36 or vehicleModel == 62 then
+					if vehicleTemplate == "" or vehicleTemplate == "UnArmed" or vehicleTemplate == "Gimp" or vehicleTemplate == "Russian" then return end
+				elseif vehicleModel == 7 or vehicleModel == 77 or vehicleModel == 88 then
+					if vehicleTemplate == "Default" then return end
+				elseif vehicleModel == 56 then
+					if vehicleTemplate == "Armed" or vehicleTemplate == "Cab" then return end
+				end
 			else
-				if vehicleTemplate ~= "Armed" and vehicleTemplate ~= "FullyUpgraded" and vvehicleTemplate ~= "Dome" and vehicleTemplate ~= "Cutscene" and vehicleTemplate ~= "Mission" then return end
+				return
 			end
 		end
 	end
 
-	if self.distance > 1 and not LocalPlayer:InVehicle() and not self.blacklist.animations2[bs] and not self.blacklist.animations2[las] and not self.blacklist.animations4[bs] then
+	if self.distance > 1 and not inVehicle and not self.blacklist.animations2[bs] and not self.blacklist.animations2[las] and not self.blacklist.animations4[bs] then
 		if LocalPlayer:GetValue( "GameMode" ) ~= "Охота" then
 			local crossColor = Color( 255, 255, 255, self.alpha )
 			local crossColorShadow = Color( 0, 0, 0, self.alpha )

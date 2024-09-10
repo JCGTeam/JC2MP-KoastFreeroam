@@ -16,7 +16,6 @@ function Hydraulics:ModuleLoad()
 		})
 	end
 
-	Events:Subscribe( "InputPoll", self, self.InputPoll )
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
 	Events:Subscribe( "PreTick", self, self.PreTick )
@@ -92,7 +91,9 @@ function Hydraulics:LocalPlayerEnterVehicle( args )
 		self.defaultLengths[wheelIndex] = suspension:GetLength(wheelIndex)
 	end
 
-	self.targetLengths = Copy( self.defaultLengths)
+	self.targetLengths = Copy( self.defaultLengths )
+
+	if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll ) end
 end
 
 function Hydraulics:LocalPlayerExitVehicle( args )
@@ -107,6 +108,8 @@ function Hydraulics:LocalPlayerExitVehicle( args )
 
 	self.defaultLengths = {}
 	self.targetLengths = {}
+
+	if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
 end
 
 function Hydraulics:PreTick( args )

@@ -1,7 +1,7 @@
 class 'FontCheck'
 
 function FontCheck:__init()
-	Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
+	self.ModuleLoadEvent = Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
 	Console:Subscribe( "font", self, self.FontToggle )
 end
 
@@ -15,10 +15,8 @@ function FontCheck:ModuleLoad()
 end
 
 function FontCheck:LoadFonts()
-	if self.checkFont then
-		self.checkFont:Remove()
-		self.checkFont = nil
-	end
+	if self.checkFont then self.checkFont:Remove() self.checkFont = nil end
+	if self.ModuleLoadEvent then Events:Unsubscribe( self.ModuleLoadEvent ) self.ModuleLoadEvent = nil end
 
 	Network:Send( "ToggleSystemFonts", { enabled = true } )
 end

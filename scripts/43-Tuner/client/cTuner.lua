@@ -54,15 +54,15 @@ function Tuner:__init()
 	end
 
 	if vehicle and vehicle:GetDriver() == LocalPlayer then
-		self:InitVehicle(vehicle)
+		self:InitVehicle( vehicle )
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
 	end
 
 	Network:Subscribe( "ToggleNeonLight", self, self.ToggleNeonLight )
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "Render", self, self.Render )
-	Events:Subscribe( "KeyUp", self, self.KeyUp )
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.EnterVehicle )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.ExitVehicle )
 	Events:Subscribe( "EntitySpawn", self, self.EntitySpawn )
@@ -1367,6 +1367,7 @@ function Tuner:EnterVehicle( args )
 	end
 
 	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+	if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
 
 	if args.is_driver then
 		self:InitVehicle(args.vehicle)
@@ -1378,6 +1379,7 @@ end
 
 function Tuner:ExitVehicle( args )
 	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
 
 	if self.veh and args.vehicle == self.veh then
 		self:Disable()

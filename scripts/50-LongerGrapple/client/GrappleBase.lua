@@ -6,9 +6,14 @@ function SuperGrapple:__init()
 	self.destroyTimer = Timer()
 	self.disttext = "%i м"
 
+	if not LocalPlayer:InVehicle() then
+		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
+        self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+    end
+
 	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "Render", self, self.Render )
-	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
+	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
 	Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
 end
 
@@ -16,14 +21,26 @@ function SuperGrapple:Lang()
 	self.disttext = "%i m"
 end
 
+function SuperGrapple:LocalPlayerEnterVehicle()
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+end
+
+function SuperGrapple:LocalPlayerExitVehicle()
+	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+end
+
 function SuperGrapple:Render()
-	if LocalPlayer:GetValue( "LongerGrappleEnabled" ) and LocalPlayer:GetValue( "LongerGrapple" ) then
+	local longerGrapple = LocalPlayer:GetValue( "LongerGrapple" )
+
+	if LocalPlayer:GetValue( "LongerGrappleEnabled" ) and longerGrapple then
 		if LocalPlayer:InVehicle() or Game:GetState() ~= GUIState.Game or LocalPlayer:GetWorld() ~= DefaultWorld then return end
 		local velocity = -LocalPlayer:GetAngle() * LocalPlayer:GetLinearVelocity()
 		self.velocity = -velocity.z
 		if not self.object then
-			local ray = Physics:Raycast(Camera:GetPosition(), Camera:GetAngle() * Vector3.Forward, 0, LocalPlayer:GetValue( "LongerGrapple" ) )
-			if ray.distance < LocalPlayer:GetValue( "LongerGrapple" ) and ray.distance > 1 then
+			local ray = Physics:Raycast(Camera:GetPosition(), Camera:GetAngle() * Vector3.Forward, 0, longerGrapple )
+			if ray.distance < longerGrapple and ray.distance > 1 then
 				self.distance = ray.distance
 				self.position = ray.position
 				self.normal = ray.normal
@@ -48,14 +65,15 @@ function SuperGrapple:Render()
 			end
 		end
 		if self.fire and not self.object and self.distance > 80 then
+			local cameraAngle = Camera:GetAngle()
 			local args = {
 				collision = "km02.towercomplex.flz/key013_01_lod1-g_col.pfx",
 				model = "",
-				position = Camera:GetPosition() + (Camera:GetAngle() * (Vector3.Forward * 30)),
-				angle = Camera:GetAngle()
+				position = Camera:GetPosition() + (cameraAngle * (Vector3.Forward * 30)),
+				angle = cameraAngle
 			}
 			self.object = ClientStaticObject.Create(args)
-			self.endposition = self.position + Camera:GetAngle() * Vector3.Forward * 1.5
+			self.endposition = self.position + cameraAngle * Vector3.Forward * 1.5
 			self.startposition = args.position
 			self.fire = nil
 		elseif self.object and self.endposition then

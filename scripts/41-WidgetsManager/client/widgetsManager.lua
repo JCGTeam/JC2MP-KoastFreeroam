@@ -94,8 +94,10 @@ function WidgetsManager:Render()
 					Render:DrawShadowedText( position, text, color, colorShadow, textSize - 3 )
 					Render:ResetFont()
 					if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
+
 					if self.attempt then
 						local player = Player.GetById( self.attempt[2] - 1 )
+
 						if player then
 							position.y = position.y + height * 0.6
 							local alpha = math.min(self.attempt[3], 1)
@@ -103,6 +105,7 @@ function WidgetsManager:Render()
 							Render:DrawShadowedText( position, text, Color( 255, 255, 255, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), textSize )
 							text = tostring( self.attempt[1] )
 							Render:DrawShadowedText( position, text, Color( 240, 220, 70, 255 * alpha ), Color( 25, 25, 25, 150 * alpha ), textSize )
+
 							self.attempt[3] = self.attempt[3] - 0.02
 							if self.attempt[3] < 0.02 then self.attempt = nil end
 						end

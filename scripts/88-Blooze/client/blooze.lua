@@ -4,9 +4,6 @@ function BloozeMod:__init()
     self.default_fov = Camera:GetFOV()
 
     Events:Subscribe( "BloozingStart", self, self.BloozingStart )
-    Events:Subscribe( "LocalPlayerDeath", function() self:BloozingStop() end )
-    Events:Subscribe( "LocalPlayerWorldChange", function() self:BloozingStop() end )
-    Events:Subscribe( "ModuleUnload", function() self:BloozingStop() end )
 end
 
 function BloozeMod:InputPoll()
@@ -93,6 +90,9 @@ function BloozeMod:BloozingStart()
 
         self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll )
         self.CalcViewEvent = Events:Subscribe( "CalcView", self, self.CalcView )
+        self.LocalPlayerDeathEvent = Events:Subscribe( "LocalPlayerDeath", function() self:BloozingStop() end )
+        self.LocalPlayerWorldChangeEvent = Events:Subscribe( "LocalPlayerWorldChange", function() self:BloozingStop() end )
+        self.ModuleUnloadEvent = Events:Subscribe( "ModuleUnload", function() self:BloozingStop() end )
     else
         self.bloozingtimer:Restart()
     end
@@ -115,6 +115,9 @@ function BloozeMod:BloozingStop()
 
         if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
         if self.CalcViewEvent then Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil end
+        if self.LocalPlayerDeathEvent then Events:Unsubscribe( self.LocalPlayerDeathEvent ) self.LocalPlayerDeathEvent = nil end
+        if self.LocalPlayerWorldChangeEvent then Events:Unsubscribe( self.LocalPlayerWorldChangeEvent ) self.LocalPlayerWorldChangeEvent = nil end
+        if self.ModuleUnloadEvent then Events:Unsubscribe( self.ModuleUnloadEvent ) self.ModuleUnloadEvent = nil end
     end
 end
 

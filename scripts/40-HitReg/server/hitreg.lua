@@ -37,6 +37,8 @@ function HitReg:Shoot( args, player )
     local distance = Vector3.Distance( args.target:GetPosition(), player:GetPosition() ) * 0.01
     local myWeapon = args.weapon
 
+    if args.target:GetModelId() == 82 and ( myWeapon == 6 or myWeapon == 13 ) then return end
+
     if not self.damage[myWeapon] then
         self.damage[myWeapon] = 0
     end

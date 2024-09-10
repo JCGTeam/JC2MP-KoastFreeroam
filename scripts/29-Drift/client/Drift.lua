@@ -148,8 +148,8 @@ function Drift:Render()
 		end
 
 		if LocalPlayer:GetValue( "BestRecordVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) and Game:GetState() == GUIState.Game then
-			local textSize = Render:GetTextSize(text, self.textSize)
-			local textSize_mult = Render:GetTextSize(text_mult, self.textSize)
+			local textSize = Render:GetTextSize( text, self.textSize )
+			local textSize_mult = Render:GetTextSize( text_mult, self.textSize )
 			local alpha = 1 - self.slide / 265
 			local shadowColor = Color( 25, 25, 25, 150 * alpha )
 
@@ -171,12 +171,14 @@ function Drift:Render()
 			elseif scoreMult > ((object:GetValue("S") or 0) * 0.6) and (object:GetValue("N") or "None") ~= LocalPlayer:GetName() then
 				Network:Send( "02", scoreMult )
 			end
+
 			local shared = SharedObject.Create("Drift")
 			if scoreMult > (shared:GetValue("Record") or 0) then
 				shared:SetValue( "Record", scoreMult )
 				Network:Send( "03", scoreMult )
 				Game:ShowPopup( self.tRecord .. scoreMult, true )
 			end
+
 			self.slide = nil
 			self.score = nil
 			self.sscore = nil

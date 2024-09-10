@@ -1,8 +1,6 @@
 class 'CarBattles'
 
 function CarBattles:__init()
-	self.check = true
-
 	self.pts = 0
 	self.scores = {}
 
@@ -17,9 +15,6 @@ function CarBattles:__init()
 		self.yourscorestxt = "Ваши очки: "
 		self.leaderboardtxt = "[Лидеры]"
 	end
-
-	self.cooldown = 20
-	self.cooltime = 0
 
 	--Network:Subscribe( "GetTime", self, self.GetTime )
 	Network:Subscribe( "RespawnTimer", self, self.RespawnTimer )
@@ -122,17 +117,21 @@ function CarBattles:HealSound()
 end
 
 function CarBattles:Enter()
+	self.check = true
+	self.antifly = true
+
+	self.cooldown = 20
+	self.cooltime = 0
+
 	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 	if not self.LocalPlayerExitVehicleEvent then self.LocalPlayerExitVehicleEvent = Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle ) end
-	if not self.LocalPlayerEjectVehicleEvent then self.LocalPlayerExitVehicleEvent = Events:Subscribe( "LocalPlayerEjectVehicle", self, self.LocalPlayerEjectVehicle ) end
+	if not self.LocalPlayerEjectVehicleEvent then self.LocalPlayerEjectVehicleEvent = Events:Subscribe( "LocalPlayerEjectVehicle", self, self.LocalPlayerEjectVehicle ) end
 	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.GameRender ) end
 	if not self.LocalPlayerDeathEvent then self.LocalPlayerDeathEvent = Events:Subscribe( "LocalPlayerDeath", self, self.LocalPlayerDeath ) end
 	if not self.GameLoadEvent then self.GameLoadEvent = Events:Subscribe( "GameLoad", self, self.GameLoad ) end
 	if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
 	if not self.RespawnEvent then self.RespawnEvent = Events:Subscribe( "LocalPlayerInput", self, self.Respawn ) end
-
-	self.antifly = true
 end
 
 function CarBattles:Exit()
@@ -145,6 +144,12 @@ function CarBattles:Exit()
 	if self.GameLoadEvent then Events:Unsubscribe( self.GameLoadEvent ) self.GameLoadEvent = nil end
 	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
 	if self.RespawnEvent then Events:Unsubscribe( self.RespawnEvent ) self.RespawnEvent = nil end
+
+	self.cooldown = nil
+	self.cooltime = nil
+
+	self.check = nil
+	self.antifly = nil
 
 	if LocalPlayer:GetOutlineEnabled() == true then
 		Network:Send( "EnableCollision" )
