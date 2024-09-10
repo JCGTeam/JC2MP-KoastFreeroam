@@ -21,44 +21,16 @@ function DailyTasks:__init()
 		[16] = true
 	}
 
-    --self.dedmimage = Image.Create( AssetLocation.Resource, "DedMImage" )
-
     self.active = false
 
-    self.huntkillsneeded = 666
-    self.fireworksneeded = 666
-    self.flyingrecordneeded = 666
-    self.tetrisrecordneeded = 666
-    self.driftrecordneeded = 666
-    self.tronwinsneeded = 666
+    self.huntKillsNeeded = 666
+    self.fireworksNeeded = 666
+    self.flyingRecordNeeded = 666
+    self.tetrisRecordNeeded = 666
+    self.driftRecordNeeded = 666
+    self.tronWinsNeeded = 666
 
     Network:Send( "GetNeededs" )
-
-    local lockColor = Color.Silver
-    local lockSymbol = "x"
-
-    self.unlock = "√"
-
-    self.huntkills = lockSymbol
-    self.huntkillsC = lockColor
-
-    self.tronwins = lockSymbol
-    self.tronwinsC = lockColor
-
-    self.tetrisrecord = lockSymbol
-    self.tetrisrecordC = lockColor
-
-    self.driftrecord = lockSymbol
-    self.driftrecordC = lockColor
-
-    self.flyingrecord = lockSymbol
-    self.flyingrecordC = lockColor
-
-    self.fireworkstossed = lockSymbol
-    self.fireworkstossedC = lockColor
-
-    self.bloozing = lockSymbol
-    self.bloozingC = lockColor
 
     self.window = Window.Create()
     self.window:SetSizeRel( Vector2( 0.5, 0.5 ) )
@@ -148,12 +120,12 @@ function DailyTasks:Lang()
 end
 
 function DailyTasks:NewNeededs( args )
-    self.huntkillsneeded = args.huntkillsneeded
-    self.fireworksneeded = args.fireworksneeded
-    self.flyingrecordneeded = args.flyingrecordneeded
-    self.tetrisrecordneeded = args.tetrisrecordneeded
-    self.driftrecordneeded = args.driftrecordneeded
-    self.tronwinsneeded = args.tronwinsneeded
+    self.huntKillsNeeded = args.huntkillsneeded
+    self.fireworksNeeded = args.fireworksneeded
+    self.flyingRecordNeeded = args.flyingrecordneeded
+    self.tetrisRecordNeeded = args.tetrisrecordneeded
+    self.driftRecordNeeded = args.driftrecordneeded
+    self.tronWinsNeeded = args.tronwinsneeded
 end
 
 function DailyTasks:OpenDedMorozMenu()
@@ -176,94 +148,37 @@ function DailyTasks:Open()
     self:SetWindowVisible( not self.active )
 
     if self.active then
-        local unlockColor = Color.Chartreuse
+        local huntKills = LocalPlayer:GetValue( "HuntKills" )
+        local tronWins = LocalPlayer:GetValue( "TronWins" )
+        local tetrisRecord = LocalPlayer:GetValue( "TetrisRecord" )
+        local driftRecord = LocalPlayer:GetValue( "DriftRecord" )
+        local flyingRecord = LocalPlayer:GetValue( "FlyingRecord" )
+        local fireworksTossed = LocalPlayer:GetValue( "FireworksTossed" )
+        local bloozing = LocalPlayer:GetValue( "Bloozing" )
 
-        if LocalPlayer:GetValue( "HuntKills" ) then
-            if LocalPlayer:GetValue( "HuntKills" ) >= self.huntkillsneeded then
-                self.huntkills = self.unlock
-                self.huntkillsC = unlockColor
-            end
-        end
+        self.huntKills = ( huntKills and huntKills or 0 ) >= self.huntKillsNeeded
+        self.tronWins = ( tronWins and tronWins or 0 ) >= self.tronWinsNeeded
+        self.tetrisRecord = ( tetrisRecord and tetrisRecord or 0 ) >= self.tetrisRecordNeeded
+        self.driftRecord = ( driftRecord and driftRecord or 0 ) >= self.driftRecordNeeded
+        self.flyingRecord = ( flyingRecord and flyingRecord or 0 ) >= self.flyingRecordNeeded
+        self.fireworksTossed = ( fireworksTossed and fireworksTossed or 0 ) >= self.fireworksNeeded
+        self.bloozing = ( bloozing and bloozing or 0 ) >= 1
 
-        if LocalPlayer:GetValue( "TronWins" ) then
-            if LocalPlayer:GetValue( "TronWins" ) >= self.tronwinsneeded then
-                self.tronwins = self.unlock
-                self.tronwinsC = unlockColor
-            end
-        end
-    
-        if LocalPlayer:GetValue( "TetrisRecord" ) then
-            if LocalPlayer:GetValue( "TetrisRecord" ) >= self.tetrisrecordneeded then
-                self.tetrisrecord = self.unlock
-                self.tetrisrecordC = unlockColor
-            end
-        end
-
-        if LocalPlayer:GetValue( "DriftRecord" ) then
-            if LocalPlayer:GetValue( "DriftRecord" ) >= self.driftrecordneeded then
-                self.driftrecord = self.unlock
-                self.driftrecordC = unlockColor
-            end
-        end
-
-        if LocalPlayer:GetValue( "FlyingRecord" ) then
-            if LocalPlayer:GetValue( "FlyingRecord" ) >= self.flyingrecordneeded then
-                self.flyingrecord = self.unlock
-                self.flyingrecordC = unlockColor
-            end
-        end
-
-        if LocalPlayer:GetValue( "FireworksTossed" ) then
-            if LocalPlayer:GetValue( "FireworksTossed" ) >= self.fireworksneeded then
-                self.fireworkstossed = self.unlock
-                self.fireworkstossedC = unlockColor
-            end
-        end
-
-        if LocalPlayer:GetValue( "Bloozing" ) then
-            if LocalPlayer:GetValue( "Bloozing" ) >= 1 then
-                self.bloozing = self.unlock
-                self.bloozingC = unlockColor
-            end
-        end
-
-        if LocalPlayer:GetValue( "Prize" ) and LocalPlayer:GetValue( "Prize" ) ~= 0 then
-            if LocalPlayer:GetValue( "HuntKills" ) >= self.huntkillsneeded and LocalPlayer:GetValue( "TronWins" ) >= self.tronwinsneeded and LocalPlayer:GetValue( "TetrisRecord" ) >= self.tetrisrecordneeded and LocalPlayer:GetValue( "DriftRecord" ) >= self.driftrecordneeded and LocalPlayer:GetValue( "FlyingRecord" ) >= self.flyingrecordneeded and LocalPlayer:GetValue( "FireworksTossed" ) >= self.fireworksneeded and LocalPlayer:GetValue( "Bloozing" ) >= 1 then
-                self.prize_btn:SetEnabled( true )
-            else
-                self.prize_btn:SetEnabled( false )
-            end
+        local prize = LocalPlayer:GetValue( "Prize" )
+        if prize and prize ~= 0 then
+            local tasksCompleted = huntKills >= self.huntKillsNeeded and tronWins >= self.tronWinsNeeded and tetrisRecord >= self.tetrisRecordNeeded and driftRecord >= self.driftRecordNeeded and flyingRecord >= self.flyingRecordNeeded and fireworksTossed >= self.fireworksNeeded and bloozing >= 1
+            self.prize_btn:SetEnabled( tasksCompleted and true or false )
         else
             self.prize_btn:SetEnabled( false )
         end
 
-        local item = self.list:AddItem( self.hunttask_txt .. self.huntkillsneeded .. self.hunttask2_txt )
-        item:SetCellText( 1,self.huntkills )
-        item:SetTextColor( self.huntkillsC )
-        item:SetToolTip( self.hunttip_txt )
-        local item = self.list:AddItem( self.trontask_txt .. self.tronwinsneeded .. self.trontask2_txt )
-        item:SetCellText( 1, self.tronwins )
-        item:SetTextColor( self.tronwinsC )
-        item:SetToolTip( self.trontip_txt )
-        local item = self.list:AddItem( self.earn_txt .. self.tetrisrecordneeded .. self.tetristask_txt )
-        item:SetCellText( 1, self.tetrisrecord )
-        item:SetTextColor( self.tetrisrecordC )
-        item:SetToolTip( self.tetristip_txt )
-        local item = self.list:AddItem( self.earn_txt .. self.driftrecordneeded .. self.drifttask_txt )
-        item:SetCellText( 1, self.driftrecord )
-        item:SetTextColor( self.driftrecordC )
-        local item = self.list:AddItem( self.earn_txt .. self.flyingrecordneeded .. self.wingtask_txt )
-        item:SetCellText( 1, self.flyingrecord )
-        item:SetTextColor( self.flyingrecordC )
-        item:SetToolTip( self.wingtip_txt )
-        local item = self.list:AddItem( self.bloozingtask_txt )
-        item:SetCellText( 1, self.bloozing )
-        item:SetTextColor( self.bloozingC )
-        item:SetToolTip( self.bloozingtip_txt )
-        local item = self.list:AddItem( self.fireworkstask_txt .. self.fireworksneeded .. self.fireworkstask2_txt )
-        item:SetCellText( 1, self.fireworkstossed )
-        item:SetTextColor( self.fireworkstossedC )
-        item:SetToolTip( self.fireworkstip_txt )
+        self:Task( self.hunttask_txt .. self.huntKillsNeeded .. self.hunttask2_txt, self.huntKills, self.hunttip_txt )
+        self:Task( self.trontask_txt .. self.tronWinsNeeded .. self.trontask2_txt, self.tronWins, self.trontip_txt )
+        self:Task( self.earn_txt .. self.tetrisRecordNeeded .. self.tetristask_txt, self.tetrisRecord, self.tetristip_txt )
+        self:Task( self.earn_txt .. self.driftRecordNeeded .. self.drifttask_txt, self.driftRecord )
+        self:Task( self.earn_txt .. self.flyingRecordNeeded .. self.wingtask_txt, self.flyingRecord, self.wingtip_txt )
+        self:Task( self.bloozingtask_txt, self.bloozing, self.bloozingtip_txt )
+        self:Task( self.fireworkstask_txt .. self.fireworksNeeded .. self.fireworkstask2_txt, self.fireworksTossed, self.fireworkstip_txt )
 
 		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
         if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
@@ -282,8 +197,27 @@ function DailyTasks:Open()
     })
 end
 
+function DailyTasks:Task( text, completed, tip )
+    local item = self.list:AddItem( text )
+    item:SetCellText( 1, completed and "√" or "x" )
+    item:SetTextColor( completed and Color.Chartreuse or Color.Silver )
+    if tip then
+        item:SetToolTip( tip )
+    end
+end
+
 function DailyTasks:GetPrize()
     self.prize_btn:SetEnabled( false )
+
+    local sound = ClientSound.Create(AssetLocation.Game, {
+		bank_id = 20,
+		sound_id = 20,
+		position = LocalPlayer:GetPosition(),
+		angle = Angle()
+	})
+
+	sound:SetParameter(0,1)
+
     Network:Send( "GetPrize" )
 end
 

@@ -34,9 +34,7 @@ function CenterText:Render()
             return
         end
 
-        if LocalPlayer:GetValue( "SystemFonts" ) then
-            Render:SetFont( AssetLocation.SystemFont, "Impact" )
-        end
+        if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
         local pos = Vector2( Render.Width / 2, Render.Height * 0.42 ) - Render:GetTextSize( self.textF, self.size ) / 2
         col = Copy( self.color )

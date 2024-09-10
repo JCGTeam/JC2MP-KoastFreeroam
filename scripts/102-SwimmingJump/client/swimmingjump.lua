@@ -6,7 +6,20 @@ function SwimmingJump:__init()
     self.cooldown = 1
 	self.cooltime = 0
 
-    Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+    if not LocalPlayer:InVehicle() then
+        self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+    end
+
+    Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
+	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
+end
+
+function SwimmingJump:LocalPlayerEnterVehicle()
+	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+end
+
+function SwimmingJump:LocalPlayerExitVehicle()
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 end
 
 function SwimmingJump:LocalPlayerInput( args )

@@ -38,17 +38,20 @@ function Autopilot:__init()
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "ModuleLoad", self, self.WindowResize )
 	Events:Subscribe( "ResolutionChange", self, self.ResolutionChange )
-	Events:Subscribe( "KeyDown", self, self.KeyDown )
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.EnterPlane )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.ExitPlane )
 	Events:Subscribe( "EntityDespawn", self, self.PlaneDespawn )
-	Events:Subscribe( "InputPoll", self, self.Input )
 
 	if LocalPlayer:InVehicle() then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.InputBlock )
-		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.PanelOpen )
-		self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.DrawApproach )
-		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
+		local vehicle = LocalPlayer:GetVehicle()
+
+		if vehicle:GetClass() == VehicleClass.Air then
+			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.InputBlock )
+			self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.Input )
+			self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.PanelOpen )
+			self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.DrawApproach )
+			self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
+		end
 	end
 end
 
@@ -604,33 +607,42 @@ end
 
 function Autopilot:EnterPlane( args )
 	if args.is_driver then
-		local model = args.vehicle:GetModelId()
+		if args.vehicle:GetClass() == VehicleClass.Air then
+			local model = args.vehicle:GetModelId()
 
-		if planes[model] and planes[model].available then
-			self:AutopilotOff()
-			self.vehicle = args.vehicle
-			self.model = model
+			if planes[model] and planes[model].available then
+				self:AutopilotOff()
+				self.vehicle = args.vehicle
+				self.model = model
 
-			if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.InputBlock ) end
-			if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.PanelOpen ) end
-			if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.DrawApproach ) end
-			if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
-		end
+				if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.InputBlock ) end
+				if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.Input ) end
+				if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.PanelOpen ) end
+				if not self.KeyDownEvent then self.KeyDownEvent = Events:Subscribe( "KeyDown", self, self.KeyDown ) end
+				if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.DrawApproach ) end
+				if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 
-		if not self.hinttimer then
-			self.hinttimer = Timer()
-		else
-			self.hinttimer:Restart()
+				if not self.hinttimer then
+					self.hinttimer = Timer()
+				else
+					self.hinttimer:Restart()
+				end
+			end
 		end
 	end
 end
 
 function Autopilot:ExitPlane()
-	if self.vehicle then self:Disable() end
-	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
-	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
-	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.vehicle then
+		self:Disable()
+
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
+		if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
+		if self.KeyDownEvent then Events:Unsubscribe( self.KeyDownEvent ) self.KeyDownEvent = nil end
+		if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	end
 end
 
 function Autopilot:PlaneDespawn( args )
@@ -927,24 +939,15 @@ function Autopilot:Render()
 
 	if LocalPlayer:GetValue( "HiddenHUD" ) then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
-	if not LocalPlayer:GetVehicle() then return end
 	if not self.hinttimer then return end
 
-	local vehicle = LocalPlayer:GetVehicle()
+	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
-	if vehicle and vehicle:GetDriver() == LocalPlayer and LocalPlayer:GetState() == PlayerState.InVehicle then
-		local model = vehicle:GetModelId()
+	local textSize = 14
+	local size = Render:GetTextSize( self.namept, textSize )
+	local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - ( LocalPlayer:GetValue( "Boost" ) and 30 or 10 ) )
 
-		if planes[model] and planes[model].available then
-			if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
-
-			local textSize = 14
-			local size = Render:GetTextSize( self.namept, textSize )
-			local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - ( LocalPlayer:GetValue( "Boost" ) and 30 or 10 ) )
-
-			Render:DrawShadowedText( pos, self.namept, Color( 255, 255, 255, alpha ), Color( 0, 0, 0, alpha ), textSize )
-		end
-	end
+	Render:DrawShadowedText( pos, self.namept, Color( 255, 255, 255, alpha ), Color( 0, 0, 0, alpha ), textSize )
 end
 
 function Autopilot:FollowTargetXZ( target_position ) -- Heading-hold must be on

@@ -4,7 +4,20 @@ function Woet:__init()
 	self.cooldown = 2
 	self.cooltime = 0
 
-	Events:Subscribe( "KeyUp", self, self.KeyUp )
+	if LocalPlayer:InVehicle() then
+        self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
+    end
+
+	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
+	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
+end
+
+function Woet:LocalPlayerEnterVehicle()
+	if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
+end
+
+function Woet:LocalPlayerExitVehicle()
+	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
 end
 
 function Woet:KeyUp( args )

@@ -36,7 +36,6 @@ function Casino:__init()
 	Events:Subscribe( "Lang", self, self.Lang )
     Events:Subscribe( "OpenCasinoMenu", self, self.OpenCasinoMenu )
 	Events:Subscribe( "CasinoMenuClosed", self, self.WindowClosed )
-	Events:Subscribe( "LocalPlayerMoneyChange", self, self.LocalPlayerMoneyChange )
 end
 
 function Casino:Lang()
@@ -103,6 +102,7 @@ function Casino:OpenCasinoMenu()
 		end
 
         if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if not self.LocalPlayerMoneyChangeEvent then self.LLocalPlayerMoneyChangeEvent = Events:Subscribe( "LocalPlayerMoneyChange", self, self.LocalPlayerMoneyChange ) end
     end
 end
 
@@ -256,6 +256,7 @@ function Casino:WindowClosed()
     Mouse:SetVisible( false )
 
     if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.LocalPlayerMoneyChangeEvent then Events:Unsubscribe( self.LocalPlayerMoneyChangeEvent ) self.LocalPlayerMoneyChangeEvent = nil end
 end
 
 function Casino:CasinoMenuClosed()

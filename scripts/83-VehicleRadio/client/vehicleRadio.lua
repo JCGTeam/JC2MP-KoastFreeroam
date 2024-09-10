@@ -18,12 +18,12 @@ function VehicleRadio:__init()
 		self.PreTickEvent = Events:Subscribe( "PreTick", self, self.PreTick )
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
+		self.ModuleUnloadEvent = Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
-	Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
 end
 
 function VehicleRadio:Lang()
@@ -131,11 +131,9 @@ function VehicleRadio:LocalPlayerEnterVehicle()
 	self.check = 0
 
 	if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe( "PreTick", self, self.PreTick ) end
-
-	if not self.KeyUpEvent then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
-	end
+	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+	if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
+	if not self.ModuleUnloadEvent then self.ModuleUnloadEvent = Events:Subscribe( "ModuleUnload", self, self.ModuleUnload ) end
 end
 
 function VehicleRadio:LocalPlayerExitVehicle()
@@ -147,6 +145,7 @@ function VehicleRadio:LocalPlayerExitVehicle()
 	if self.PreTickEvent then Events:Unsubscribe( self.PreTickEvent ) self.PreTickEvent = nil end
 	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
+	if self.ModuleUnloadEvent then Events:Unsubscribe( self.ModuleUnloadEvent ) self.ModuleUnloadEvent = nil end
 end
 
 function VehicleRadio:ModuleUnload()

@@ -11,16 +11,29 @@ function Jetpack:__init()
 		self.disable_txt = "Реактивный ранец отключён"
 	end
 
+	if not LocalPlayer:InVehicle() then
+		self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.onInputPoll )
+    end
+
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "UseJetpack", self, self.UseJetpack )
 	Events:Subscribe( "Render", self, self.onRender )
-	Events:Subscribe( "InputPoll", self, self.onInputPoll )
+	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
+	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
 	Events:Subscribe( "ModuleUnload", self, self.onModuleUnload )
 end
 
 function Jetpack:Lang()
 	self.enable_txt = "Jetpack enabled"
 	self.disable_txt = "Jetpack disabled"
+end
+
+function Jetpack:LocalPlayerEnterVehicle()
+	if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
+end
+
+function Jetpack:LocalPlayerExitVehicle()
+	if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.onInputPoll ) end
 end
 
 function Jetpack:UseJetpack()

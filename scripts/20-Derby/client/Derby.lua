@@ -16,7 +16,7 @@ function Derby:__init()
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "Render", self, self.Render )
 
-	Events:Subscribe( "LocalPlayerInput" , self , self.LocalPlayerInput )
+	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 
 	self.handbrake = nil
 
@@ -69,10 +69,9 @@ end
 
 function Derby:SetState( newstate )
 	self.state = newstate
+
 	if newstate == "Inactive" then
-		if (IsValid(self.handbrake)) then
-			Events:Unsubscribe(self.handbrake)
-		end
+		if self.handbrake then Events:Unsubscribe( self.handbrake ) self.handbrake = nil end
 		self:BackInArena()
 	end
 
@@ -81,14 +80,14 @@ function Derby:SetState( newstate )
 		self:BackInArena()
 	elseif newstate == "Setup" then
 		self.state = "Setup"
-		self.handbrake = Events:Subscribe("InputPoll", function() Input:SetValue(Action.Handbrake, 1) end)
+		if not self.handbrake then self.handbrake = Events:Subscribe( "InputPoll", function() Input:SetValue(Action.Handbrake, 1) end ) end
 	elseif newstate == "Countdown" then
 		self.state = "Countdown"
 		self.countdownTimer = Timer()
 	elseif newstate == "Running" then
 		self.state = "Running"
 		self.countdownTimer = nil
-		Events:Unsubscribe(self.handbrake)
+		if self.handbrake then Events:Unsubscribe( self.handbrake ) self.handbrake = nil end
 	end
 end
 
@@ -148,9 +147,7 @@ function Derby:Render()
 	if self.state == "Inactive" then return end
 	if Game:GetState() ~= GUIState.Game then return end
 
-	if LocalPlayer:GetValue( "SystemFonts" ) then
-		Render:SetFont( AssetLocation.SystemFont, "Impact" )
-	end
+	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 	local players = { LocalPlayer }
 	local color = Color.White

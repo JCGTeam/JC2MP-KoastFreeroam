@@ -1,13 +1,12 @@
 class 'Jesus'
 
 function Jesus:__init()
-	self.name = "Иисус"
-	self.nameSizer = "Мирный"
-
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
 		self:Lang()
 	else
+		self.name = "Иисус"
+		self.nameSizer = "Мирный"
 		self.disabletxt = " отключён"
 		self.enabletxt = " включён"
 		self.notusable = "Невозможно использовать это здесь!"
@@ -20,7 +19,6 @@ function Jesus:__init()
 	self.Model = ""
 	self.Collision = "areaset01.blz/gb245_lod1-d_col.pfx"
 
-	self.NoSurfaceVehicles = { 80, 88, 16, 5, 27, 38, 6, 19, 45, 28, 53, 25, 69, 5, 50 }
 	self.Surfaces = {}
 
 	Events:Subscribe( "Render", self, self.Render )
@@ -45,14 +43,13 @@ end
 
 function Jesus:Master( player )
 	if player:GetValue( "WaterWalk" ) then
-		local PlayerVehicle	 = player:GetVehicle()
-		if IsValid(PlayerVehicle) then
-			local PlayerVehicleID = PlayerVehicle:GetModelId()
-			if self:CheckList(self.NoSurfaceVehicles, PlayerVehicleID) then
-				self:Remove(player)
-				return
-			end
+		local vehicle = player:GetVehicle()
+
+		if vehicle and vehicle:GetClass() == VehicleClass.Sea then
+			self:Remove(player)
+			return
 		end
+
 		self:Move(player)
 	else
 		self:Remove(player)
@@ -93,10 +90,11 @@ function Jesus:Position( player )
 	local Anchor = self:Anchor(player)
 	local PlayerPosition = Anchor:GetPosition()
 	local PlayerAngle = Anchor:GetAngle()
-	local EffectiveAngle = Angle( 0, 0, 0 )
+	local EffectiveAngle = Angle.Zero
 	local EffectiveHeight = self.SurfaceHeight
 
-	if player:GetState() == 1 or player:GetState() == 2 or player:GetState() == 3 or player:GetState() == 5 then
+	local pState = player:GetState()
+	if pState == 1 or pState == 2 or pState == 3 or pState == 5 then
 		EffectiveAngle = Angle( PlayerAngle.yaw, 0, 0 ) * Angle( math.pi * 1.5, 0, 0 )
 	end
 
@@ -128,7 +126,7 @@ end
 function Jesus:Anchor( player )
 	local vehicle = player:GetVehicle()
 
-	if IsValid(vehicle) and player:InVehicle() then
+	if vehicle and player:InVehicle() then
 		if Vector3.Distance(vehicle:GetPosition(), player:GetPosition()) < self.MaxDistance / 2 then
 			return vehicle
 		end
@@ -177,13 +175,6 @@ function Jesus:Render()
 	end
 
 	Render:DrawText( text_pos, self.name, waterwalk_enabled and Color( 173, 216, 230, sett_alpha ) or Color( 255, 255, 255, sett_alpha / 4 ), text_size )
-end
-
-function Jesus:CheckList( tableList, modelID )
-	for k,v in ipairs( tableList ) do
-		if v == modelID then return true end
-	end
-	return false
 end
 
 function Jesus:ToggleJesus()

@@ -11,7 +11,11 @@ function VTOL:__init()
 	self.ThrustIncreaseFactor	=	1.05	--	How quickly thrust is increased.				Default: 1.05
 
 	if LocalPlayer:InVehicle() then
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+		local vehicle = LocalPlayer:GetVehicle()
+
+		if vehicle:GetClass() == VehicleClass.Air then
+			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+		end
 	end
 
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
@@ -20,10 +24,12 @@ end
 
 function VTOL:LocalPlayerEnterVehicle( args )
 	if args.is_driver then
-		if self:CheckList( self.PlaneVehicles, args.vehicle:GetModelId() ) then
-			if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if args.vehicle:GetClass() == VehicleClass.Air then
+			if self:CheckList( self.PlaneVehicles, args.vehicle:GetModelId() ) then
+				if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 
-			self.CurrentThrust = 0
+				self.CurrentThrust = 0
+			end
 		end
 	end
 end

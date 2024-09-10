@@ -6,8 +6,7 @@ function Load:__init()
 		Image.Create( AssetLocation.Resource, "BackgroundImageTw" ),
 		Image.Create( AssetLocation.Resource, "BackgroundImageTh" ),
 		Image.Create( AssetLocation.Resource, "BackgroundImageFo" ) ,
-		Image.Create( AssetLocation.Resource, "BackgroundImageFi" ),
-		Image.Create( AssetLocation.Resource, "BackgroundImageSi" )
+		Image.Create( AssetLocation.Resource, "BackgroundImageFi" )
 	}
 
 	self.BackgroundImage = self.BackgroundImages[math.random(#self.BackgroundImages)]

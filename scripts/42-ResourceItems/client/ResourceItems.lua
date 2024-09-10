@@ -60,7 +60,7 @@ function ResourceItems:CrateTaken()
 	sound:SetParameter(0,1)
 
 	local lang = LocalPlayer:GetValue( "Lang" )
-	Game:ShowPopup( ( ( lang and lang == "RU" ) and "Ящики: " or "Resource items: " ) .. self.numcrates .. "/3754", true )
+	Game:ShowPopup( ( ( lang and lang == "RU" ) and "Ящики: " or "Resource items: " ) .. self.numcrates .. "/" .. #self.crates, true )
 end
 
 function ResourceItems:SyncTriggers( args )
@@ -72,7 +72,7 @@ end
 function ResourceItems:SyncTriggersRemove( args )
 	for i = 1, #self.crates do
 		if self.crates[i] and self.crates[i].id == args.id then
-			self.crates[i] = nil
+			table.remove( self.crates, i )
 			break
 		end
 	end
