@@ -150,10 +150,10 @@ function PM:__init( player )
 		end
 	end
 
+	--self:addPlayerToList( LocalPlayer )
 	for player in Client:GetPlayers() do
 		self:addPlayerToList ( player )
 	end
-	--self:addPlayerToList( LocalPlayer )
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "PlayerJoin", self, self.playerJoin )
@@ -185,12 +185,13 @@ function PM:Lang()
 end
 
 function PM:ChangelLText()
-	self.GUI.labelL:SetText( self.GUI.message:GetText():len() .. "/" .. self.maxmessagesymbols )
-	if self.GUI.message:GetText():len() >= self.maxmessagesymbols then
-		self.GUI.labelL:SetTextColor( Color.Red )
-	else
-		self.GUI.labelL:SetTextColor( Color.White )
-	end
+	local len = self.GUI.message:GetText():len()
+
+	self.GUI.labelL:SetText( len .. "/" .. self.maxmessagesymbols )
+
+	local limit = len <= self.maxmessagesymbols
+	self.GUI.labelL:SetTextColor( limit and Color.White or Color.Red )
+	self.GUI.send:SetEnabled( limit )
 end
 
 function PM:CloseWindow()
@@ -215,7 +216,10 @@ function PM:OpenGuiPm()
 
 	self.GUI.window:SetVisible( not self.GUI.window:GetVisible() )
 	if self.GUI.window:GetVisible() == true then
-		self:refreshList()
+		for p in Client:GetPlayers() do
+			local playerColor = p:GetColor()
+			self.playerToRow[ p:GetId() ]:SetTextColor( playerColor )
+		end
 	end
 	Mouse:SetVisible( self.GUI.window:GetVisible() )
 end
@@ -288,7 +292,7 @@ function PM:EscPressed()
 end
 
 function PM:addPlayerToList( player )
-	local item = self.GUI.list:AddItem( tostring ( player:GetName() ) )
+	local item = self.GUI.list:AddItem( player:GetName() )
 	local color = player:GetColor()
 
 	if LocalPlayer:IsFriend( player ) then
@@ -298,7 +302,7 @@ function PM:addPlayerToList( player )
 	item:SetTextColor( color )
 	item:SetVisible( true )
 	item:SetDataObject( "id", player )
-	self.playerToRow [ player ] = item
+	self.playerToRow [ player:GetId() ] = item
 end
 
 function PM:playerJoin( args )
@@ -306,21 +310,23 @@ function PM:playerJoin( args )
 end
 
 function PM:playerQuit( args )
-	if ( self.playerToRow [ args.player ] ) then
-		self.GUI.list:RemoveItem( self.playerToRow [ args.player ] )
-		self.playerToRow [ args.player ] = nil
+	local pId = args.player:GetId()
+
+	if ( self.playerToRow [ pId ] ) then
+		self.GUI.list:RemoveItem( self.playerToRow [ pId ] )
+		self.playerToRow [ pId ] = nil
 	end
 end
 
 function PM:loadMessages()
 	local row = self.GUI.list:GetSelectedRow()
-	if ( row ~= nil ) then
+	if row then
 		local player = row:GetDataObject( "id" )
-		local steamId = player:GetSteamId()
+		local pId = player:GetId()
 
 		self.GUI.messagesLabel:SetText( "" )
-		if ( self.messages [ tostring( steamId ) ] ) then
-			for index, msg in ipairs( self.messages [ tostring ( steamId ) ] ) do
+		if ( self.messages [ tostring( pId ) ] ) then
+			for index, msg in ipairs( self.messages [ tostring ( pId ) ] ) do
 				if IsValid( msg ) then
 					if ( index > 1 ) then
 						self.GUI.messagesLabel:SetText( self.GUI.messagesLabel:GetText() .."\n".. tostring ( msg ) )
@@ -340,19 +346,19 @@ end
 
 function PM:addMessage( data )
 	if ( data.player ) then
-		local steamId = data.player:GetSteamId()
+		local pId = data.player:GetId()
 
-		if ( not self.messages [ tostring ( steamId ) ] ) then
-			self.messages [ tostring ( steamId ) ] = {}
+		if ( not self.messages [ tostring ( pId ) ] ) then
+			self.messages [ tostring ( pId ) ] = {}
 		end
 
 		local row = self.GUI.list:GetSelectedRow()
 
-		if ( row ~= nil ) then
+		if row then
 			local player = row:GetDataObject( "id" )
 
-			if IsValid( player ) and data.player == player then
-				if ( #self.messages [ tostring( steamId ) ] > 0 ) then
+			if player and data.player == player then
+				if ( #self.messages [ tostring( pId ) ] > 0 ) then
 					self.GUI.messagesLabel:SetText( self.GUI.messagesLabel:GetText() .."\n".. tostring ( data.text ) )
 				else
 					self.GUI.messagesLabel:SetText( tostring ( data.text ) )
@@ -361,13 +367,13 @@ function PM:addMessage( data )
 			end
 		end
 
-		table.insert ( self.messages [ tostring ( steamId ) ], data.text )
+		table.insert ( self.messages [ tostring ( pId ) ], data.text )
 	end
 end
 
 function PM:sendMessage()
 	local row = self.GUI.list:GetSelectedRow()
-	if ( row ~= nil ) then
+	if row then
 		local player = row:GetDataObject( "id" )
 		if ( player ) then
 			local text = self.GUI.message:GetText()
@@ -390,15 +396,6 @@ end
 
 function PM:clearMessage()
 	self.GUI.messagesLabel:SetText( self.clearmessages_txt )
-end
-
-function PM:refreshList()
-	self.GUI.list:Clear()
-	self.playerToRow = {}
-	--self:addPlayerToList ( LocalPlayer )
-	for player in Client:GetPlayers() do
-		self:addPlayerToList( player )
-	end
 end
 
 Events:Subscribe( "ModuleLoad",

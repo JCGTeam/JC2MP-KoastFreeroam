@@ -3,6 +3,7 @@ class 'HijackBlocker'
 function HijackBlocker:__init()
 	self.actions = { 37, 38, 45, 82, 121, 147, 148, 150 }
 	self.always_drop_states = { 207, 208, 324, 221, 222, 270, 272, 273, 440, 50 }
+	self.vehicleslist = { 1, 3, 5, 9, 14, 16, 18, 19, 22, 25, 28, 36, 38, 39, 45, 50, 56, 62, 64, 69, 85, 88 }
 
 	self.invalidVehicles = {
 		[1] = true,
@@ -47,8 +48,11 @@ function HijackBlocker:__init()
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 end
 
-function HijackBlocker:CheckVehicle( target )
-	return target == nil or not IsValid( target ) or not IsValid( target:GetDriver() )
+function HijackBlocker:CheckList( tableList, modelID )
+	for k,v in ipairs(tableList) do
+		if v == modelID then return true end
+	end
+	return false
 end
 
 function HijackBlocker:LocalPlayerInput( args )
@@ -58,12 +62,13 @@ function HijackBlocker:LocalPlayerInput( args )
 
 	if table.find( self.always_drop_states, bs ) ~= nil then return false end
 
-	local state = LocalPlayer:GetState()
-
 	local vehicle = LocalPlayer:GetVehicle()
-	local target = LocalPlayer:GetAimTarget().vehicle
 
-	if self:CheckVehicle( vehicle ) and self:CheckVehicle( target ) then return true end
+	if not ( vehicle and vehicle:GetDriver() ) then return end
+
+	local vehicleModel = vehicle:GetModelId()
+
+	if self:CheckList( self.vehicleslist, vehicleModel ) then return end
 
 	if LocalPlayer:GetState() == PlayerState.StuntPos or
 		(bs >= 84 and bs <= 110) or
@@ -74,13 +79,15 @@ function HijackBlocker:LocalPlayerInput( args )
 		(bs == 272 or bs == 222) or 
 		(bs == 273 or bs == 221) then
 
-		if vehicle and ( not self.invalidVehicles[vehicle:GetModelId()] and #vehicle:GetOccupants() == 1 ) then
+		if not self.invalidVehicles[vehicleModel] and #vehicle:GetOccupants() == 1 then
 			local time = Client:GetElapsedSeconds()
+
 			if time > self.cooltime then
 				local args = {}
 				args.vehicle = vehicle
 				Network:Send( "EnterPassenger", args )
 			end
+
 			self.cooltime = time + self.cooldown
 		else
 			return false

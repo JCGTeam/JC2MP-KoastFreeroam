@@ -27,27 +27,31 @@ function JoinLeave:Lang()
 end
 
 function JoinLeave:PlayerJoin( args )
-	--if not LocalPlayer:GetValue( "VisibleJoinMessages" ) then return end
+	local visibleJoinMessages = LocalPlayer:GetValue( "VisibleJoinMessages" )
+
+	--if not visibleJoinMessages then return end
 	if LocalPlayer:GetName() == args.player:GetName() then return end
 
-	if LocalPlayer:GetValue( "VisibleJoinMessages" ) and LocalPlayer:GetValue( "VisibleJoinMessages" ) == 1 then
+	if visibleJoinMessages and visibleJoinMessages == 1 then
 		if LocalPlayer:IsFriend( args.player ) then
-			Chat:Print( self.tag, self.tag_clr, args.player:GetName(), args.player:GetColor(), self.join_txt, self.join_clr)
+			Chat:Print( self.tag, self.tag_clr, args.player:GetName(), args.player:GetColor(), self.join_txt, self.join_clr )
 		end
-	elseif not LocalPlayer:GetValue( "VisibleJoinMessages" ) then
+	elseif not visibleJoinMessages then
 		Chat:Print( self.tag, self.tag_clr, args.player:GetName(), args.player:GetColor(), self.join_txt, self.join_clr )
 	end
 end
 
 function JoinLeave:PlayerQuit( args )
-	--if not LocalPlayer:GetValue( "VisibleJoinMessages" ) then return end
+	local visibleJoinMessages = LocalPlayer:GetValue( "VisibleJoinMessages" )
+
+	--if not visibleJoinMessages then return end
 	if LocalPlayer:GetName() == args.player:GetName() then return end
 
-	if LocalPlayer:GetValue( "VisibleJoinMessages" ) and LocalPlayer:GetValue( "VisibleJoinMessages" ) == 1 then
+	if visibleJoinMessages and visibleJoinMessages == 1 then
 		if LocalPlayer:IsFriend( args.player ) then
 			Chat:Print( self.tag, self.tag_clr, args.player:GetName() .. self.left_txt, self.left_clr )
 		end
-	elseif not LocalPlayer:GetValue( "VisibleJoinMessages" ) then
+	elseif not visibleJoinMessages then
 		Chat:Print( self.tag, self.tag_clr, args.player:GetName() .. self.left_txt, self.left_clr )
 	end
 end

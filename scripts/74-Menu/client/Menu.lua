@@ -10,7 +10,6 @@ function Menu:__init()
 	self.text_clr = Color.White
 	self.background_clr = Color( 10, 10, 10, 200 )
 
-	self.tofreeroamtext = "Добро пожаловать в свободный режим!"
 	self.tName = "ВЫБЕРИТЕ ЯЗЫК / LANGUAGE SELECT"
 
 	local sizeX = Render.Size.x / 5.5
@@ -32,10 +31,11 @@ function Menu:__init()
 	self.rus_button:SetText( "Русский [RU]" )
 	self.rus_button:SetTextPadding( tPV1, tPV2 )
 	self.rus_button:SetTextSize( textSize )
+	local lang = "RU"
 	if LocalPlayer:GetMoney() <= 0.5 then
-		self.rus_button:Subscribe( "Press", self, self.Welcome )
+		self.rus_button:Subscribe( "Press", function() self:Welcome( lang ) end )
 	else
-		self.rus_button:Subscribe( "Press", self, self.Rus )
+		self.rus_button:Subscribe( "Press", function() self:Selected( lang ) end )
 	end
 
 	self.eng_image = ImagePanel.Create()
@@ -54,7 +54,12 @@ function Menu:__init()
 	self.eng_button:SetText( "English [EN]" )
 	self.eng_button:SetTextPadding( tPV1, tPV2 )
 	self.eng_button:SetTextSize( textSize )
-	self.eng_button:Subscribe( "Press", self, self.Eng )
+	local lang = "EN"
+	if LocalPlayer:GetMoney() <= 0.5 then
+		self.eng_button:Subscribe( "Press", function() self:Welcome( lang ) end )
+	else
+		self.eng_button:Subscribe( "Press", function() self:Selected( lang ) end )
+	end
 
 	Console:Subscribe( "misload", self, self.Mission )
 
@@ -245,7 +250,6 @@ function Menu:Freeroam()
 		Game:FireEvent( "ply.invulnerable" )
 	end
 	Network:Send( "SetFreeroam" )
-	Events:Fire( "CastCenterText", { text = self.tofreeroamtext, time = 2, color = self.text_clr } )
 end
 
 function Menu:CleanUp()
@@ -263,7 +267,6 @@ function Menu:CleanUp()
 	self.text_clr = nil
 	self.background_clr = nil
 
-	self.tofreeroamtext = nil
 	self.tName = nil
 
 	self.rusflag = nil
@@ -274,9 +277,18 @@ function Menu:ModuleUnload()
 	self:CleanUp()
 end
 
-function Menu:Welcome()
-    Network:Send( "SetRus" )
-	WelcomeScreen:Open()
+function Menu:Welcome( lang )
+	if lang then
+		if lang == "RU" then
+    		Network:Send( "SetRus" )
+		elseif lang == "EN" then
+			Network:Send( "SetEng" )
+
+			Events:Fire( "Lang" )
+		end
+	end
+
+	WelcomeScreen:Open( lang )
 
 	self.hider = false
 	self:SetActive( false )
@@ -291,7 +303,29 @@ function Menu:Welcome()
 	sound:SetParameter(0,1)
 end
 
-function Menu:Selected()
+function Menu:Selected( lang )
+	if lang then
+		if lang == "RU" then
+			Network:Send( "SetRus" )
+
+			local type = 0
+
+			if type == 0 then
+				Events:Fire( "OpenWhatsNew", { titletext = "Внимание!", text = "Данный сервер основан на открытом исходном коде и не является официальным.", usepause = true } )
+			end
+		elseif lang == "EN" then
+			Network:Send( "SetEng" )
+
+			Events:Fire( "Lang" )
+
+			local type = 0
+
+			if type == 0 then
+				Events:Fire( "OpenWhatsNew", { titletext = "Warning!", text = "This server is based on open source code and is not official.", usepause = true } )
+			end
+		end
+	end
+
 	self.hider = false
 
 	self:Freeroam()
@@ -304,35 +338,6 @@ function Menu:Selected()
 	})
 
 	sound:SetParameter(0,1)
-end
-
-function Menu:Rus()
-	Network:Send( "SetRus" )
-
-	local type = 0
-
-	if type == 0 then
-		Events:Fire( "OpenWhatsNew", { titletext = "Внимание!", text = "Данный сервер основан на открытом исходном коде и не является официальным.", usepause = true } )
-	end
-
-	self:Selected()
-end
-
-function Menu:Eng()
-	Events:Fire( "SetEng" )
-	Network:Send( "SetEng" )
-
-	self.tofreeroamtext = "Welcome to freeroam mode!"
-
-	Events:Fire( "Lang" )
-
-	local type = 0
-
-	if type == 0 then
-		Events:Fire( "OpenWhatsNew", { titletext = "Warning!", text = "This server is based on open source code and is not official.", usepause = true } )
-	end
-
-	self:Selected()
 end
 
 menu = Menu()

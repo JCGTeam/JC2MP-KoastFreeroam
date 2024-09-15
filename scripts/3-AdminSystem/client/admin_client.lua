@@ -437,6 +437,11 @@ function Admin:LoadPanel()
 	self.panel.vehColor.tone2 = GUI:ColorPicker( true, Vector2.Zero, Vector2 ( 0.3, 0.23 ), self.vehColorTabs [ "тон 2" ].base )
 	self.panel.vehColor.tone2Set = GUI:Button( "Установить цвет", Vector2 ( 0.0, 0.24 ), Vector2 ( 0.282, 0.03 ), self.vehColorTabs [ "тон 2" ].base )
 	self.panel.vehColor.tone2Set:Subscribe( "Press", self, self.setVehicleTone2Colour )
+
+	self:addPlayerToList( LocalPlayer )
+	for player in Client:GetPlayers() do
+		self:addPlayerToList( player )
+	end
 end
 
 function Admin:setActive( state )
@@ -523,7 +528,12 @@ function Admin:showPanel( data )
 	self.panel.main.window:SetVisible( true )
 	Mouse:SetVisible( true )
 	self.active = true
-	self:loadPlayersToList()
+
+	self.players[ LocalPlayer:GetId() ]:SetTextColor( LocalPlayer:GetColor() )
+	for p in Client:GetPlayers() do
+		self.players[ p:GetId() ]:SetTextColor( p:GetColor() )
+	end
+
 	if not self.updateDataEvent then self.updateDataEvent = Events:Subscribe ( "PostTick", self, self.updateData ) end
 	Network:Send( "admin.getServerInfo" )
 	self.panel.main.chatMessages:SetText( "" )
@@ -561,15 +571,7 @@ function Admin:addPlayerToList( player )
 
 	item:SetTextColor ( tcolor )
 	item:SetDataObject ( "id", player )
-	self.players [ tostring ( player:GetSteamId() ) ] = item
-end
-
-function Admin:loadPlayersToList()
-	self.panel.main.playersList:Clear()
-	self:addPlayerToList( LocalPlayer )
-	for player in Client:GetPlayers() do
-		self:addPlayerToList( player )
-	end
+	self.players [ player:GetId() ] = item
 end
 
 function Admin:getInformation()
@@ -610,10 +612,10 @@ function Admin:PlayerJoin( args )
 end
 
 function Admin:PlayerQuit( args )
-	local steamID = tostring ( args.player:GetSteamId() )
-	if ( self.players [ steamID ] ) then
-		self.panel.main.playersList:RemoveItem ( self.players [ steamID ] )
-		self.players [ steamID ] = nil
+	local pId = args.player:GetId()
+	if ( self.players [ pId ] ) then
+		self.panel.main.playersList:RemoveItem ( self.players [ pId ] )
+		self.players [ pId ] = nil
 	end
 end
 
@@ -865,11 +867,11 @@ function Admin:showWarpWindow()
 		self.panel.warp.list:Clear()
 		local item = self.panel.warp.list:AddItem( LocalPlayer:GetName() )
 		item:SetDataObject( "id", LocalPlayer )
-		self.warpPlayers [ LocalPlayer:GetSteamId() ] = item
+		self.warpPlayers [ LocalPlayer:GetId() ] = item
 		for player in Client:GetPlayers() do
 			local item = self.panel.warp.list:AddItem( player:GetName() )
 			item:SetDataObject( "id", player )
-			self.warpPlayers [ player:GetSteamId() ] = item
+			self.warpPlayers [ player:GetId() ] = item
 		end
 	else
 		Chat:Print( ChatTag, Color.White, NoSelected, err )

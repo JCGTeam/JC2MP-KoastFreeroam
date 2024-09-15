@@ -608,10 +608,10 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.subcategory2:SizeToContents()
 	self.manageClan.clanColorPreview:SizeToContents()
 
+	--self:addPlayerToList( LocalPlayer )
 	for player in Client:GetPlayers() do
 		self:addPlayerToList( player )
 	end
-	self:addPlayerToList( LocalPlayer )
 end
 
 function ClanSystem:Lang()
@@ -675,12 +675,12 @@ end
 
 function ClanSystem:GetClanInfo()
 	local row = self.clanMenu.list:GetSelectedRow()
-	if ( row ~= nil ) then
+	if row then
 		local lang = LocalPlayer:GetValue( "Lang" )
 		if lang and lang == "EN" then
-			self.clanMenu.bkpanelsLabel:SetText( "Name: " .. row:GetCellText( 0 ) .. "\nCreation date: " .. row:GetName():sub( 0, 17 ) .. "\nFounder: " .. row:GetCellText( 1 ) .. "\nType: " .. row:GetCellText( 2 ) .. "\nMembers: " .. row:GetCellText( 3 ) .. "\nDescription: " .. row:GetName():sub( 18 ) )
+			self.clanMenu.bkpanelsLabel:SetText( "Name: " .. row:GetCellText( 0 ) .. "\nCreation date: " .. row:GetDataObject( "creationDate" ) .. "\nFounder: " .. row:GetCellText( 1 ) .. "\nType: " .. row:GetCellText( 2 ) .. "\nMembers: " .. row:GetCellText( 3 ) .. "\nDescription: " .. row:GetDataObject( "description" ) )
 		else
-			self.clanMenu.bkpanelsLabel:SetText( "Название: " .. row:GetCellText( 0 ) .. "\nДата создания: " .. row:GetName():sub( 0, 17 ) .. "\nОснователь: " .. row:GetCellText( 1 ) .. "\nТип: " .. row:GetCellText( 2 ) .. "\nУчастников: " .. row:GetCellText( 3 ) .. "\nОписание: " .. row:GetName():sub( 18 ) )
+			self.clanMenu.bkpanelsLabel:SetText( "Название: " .. row:GetCellText( 0 ) .. "\nДата создания: " .. row:GetDataObject( "creationDate" ) .. "\nОснователь: " .. row:GetCellText( 1 ) .. "\nТип: " .. row:GetCellText( 2 ) .. "\nУчастников: " .. row:GetCellText( 3 ) .. "\nОписание: " .. row:GetDataObject( "description" ) )
 		end
 		self.clanMenu.bkpanelsLabel:SizeToContents()
 		self.clanMenu.iLabel:SetVisible( true )
@@ -814,6 +814,10 @@ end
 
 function ClanSystem:ClanList()
 	self.clanList.window:SetVisible( not self.clanList.window:GetVisible() )
+
+	for p in Client:GetPlayers() do
+		self.playerToRow[ p:GetId() ]:SetTextColor( p:GetColor() )
+	end
 end
 
 function ClanSystem:Invitations()
@@ -852,7 +856,8 @@ function ClanSystem:ReceiveClans( args )
 		item:SetCellText( 1, data.creator )
 		item:SetCellText( 2, ( data.type == "Открытый" and "Публичный" or "По приглашению" ) )
 		item:SetCellText( 3, tostring( membersCount ) )
-		item:SetName( tostring( data.creationDate ) .. tostring( data.description ) )
+		item:SetDataObject( "creationDate", tostring( data.creationDate ) )
+		item:SetDataObject( "description", tostring( data.description ) )
 		item:SetTextColor( Color( tonumber( r ), tonumber( g ), tonumber( b ) ) )
 		table.insert( self.clanList.rows, item )
 		self.clansRow[ tostring( name ) ] = item
@@ -1000,17 +1005,18 @@ function ClanSystem:Confirm()
 end
 
 function ClanSystem:addPlayerToList( player )
-	local item = self.clanList.playersList:AddItem( tostring ( player:GetName() ) )
+	local item = self.clanList.playersList:AddItem( player:GetName() )
+	local playerId = player:GetId()
 	local playerColor = player:GetColor()
-	
+
 	if LocalPlayer:IsFriend( player ) then
 		item:SetToolTip( self.friend_txt )
 	end
-	
+
 	item:SetVisible( true )
-	item:SetDataObject( "id", player )
+	item:SetDataObject( "id", playerId )
 	item:SetTextColor( playerColor )
-	self.playerToRow[ player:GetId() ] = item
+	self.playerToRow[ playerId ] = item
 end
 
 function ClanSystem:PlayerJoin( args )
@@ -1046,7 +1052,7 @@ function ClanSystem:SearchClans()
 end
 
 function ClanSystem:SearchPlayer()
-	local text = self.clanMenu.searchEdit:GetText():lower()
+	local text = self.clanList.searchEdit:GetText():lower()
 	if ( text ~= "" and text:len() > 0 ) then
 		for _, item in pairs ( self.playerToRow ) do
 			if item and ( type ( item ) == "userdata" ) then

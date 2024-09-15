@@ -41,7 +41,7 @@ function News:__init()
 	else
 		self.window:SetTitle( "ⓘ Новости" )
 
-		Network:Send( "GetRUSNews" )
+		Network:Send( "GetNews", { file =  "newsRU.txt" } )
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
@@ -56,7 +56,7 @@ end
 function News:Lang()
 	self.window:SetTitle( "ⓘ News" )
 
-	Network:Send( "GetENGNews" )
+	Network:Send( "GetNews", { file = "newsEN.txt" } )
 end
 
 function News:GetActive()

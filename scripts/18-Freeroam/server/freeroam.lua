@@ -1,8 +1,8 @@
 class 'Freeroam'
 
-local WeaponsBlackList = { [66] = true, [116] = true }
-
 function Freeroam:__init()
+    self.weaponsBlackList = { [66] = true, [116] = true }
+
     SQL:Execute( "CREATE TABLE IF NOT EXISTS players_lastpos (steamid VARCHAR UNIQUE, pos VARCHAR, angle VARCHAR)" )
     SQL:Execute( "CREATE TABLE IF NOT EXISTS players_spawinhome (steamid VARCHAR UNIQUE, home INTEGER)" )
     SQL:Execute( "CREATE TABLE IF NOT EXISTS players_kills (steamid VARCHAR UNIQUE, kills INTEGER)")
@@ -415,11 +415,11 @@ function Freeroam:PlayerDeath( args )
                 local noreward_txt = "Без награды :c, используйте обычное оружие!"
 
                 if player_kills == 0 then
-                    if WeaponsBlackList[args.killer:GetEquippedWeapon().id] == true and not args.killer:InVehicle() then
+                    if self.weaponsBlackList[args.killer:GetEquippedWeapon().id] == true and not args.killer:InVehicle() then
                         Network:Send( args.killer, "KillerStats", { text = noreward_txt } )
                     end
                 elseif player_kills >= 0 then
-                    if WeaponsBlackList[args.killer:GetEquippedWeapon().id] == true and not args.killer:InVehicle() then
+                    if self.weaponsBlackList[args.killer:GetEquippedWeapon().id] == true and not args.killer:InVehicle() then
                         Network:Send( args.killer, "KillerStats", { text = noreward_txt } )
                     else
                         args.killer:SetMoney( args.killer:GetMoney() + player_kills * 10 )

@@ -6,8 +6,9 @@ function Logo:__init()
 
 	Events:Subscribe( "Render", self, self.Render )
 
-	if LocalPlayer:GetValue( "KoastBuild" ) then
-		print( "KMod ( Version: " .. LocalPlayer:GetValue( "KoastBuild" ) .. " ) loaded." )
+	local build = LocalPlayer:GetValue( "KoastBuild" )
+	if build then
+		print( "KMod ( Version: " .. build .. " ) loaded." )
 	else
 		print( "KMod loaded." )
 	end

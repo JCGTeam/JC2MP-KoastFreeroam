@@ -12,6 +12,8 @@ function Load:__init()
 	self.BackgroundImage = self.BackgroundImages[math.random(#self.BackgroundImages)]
 	self.LoadingCircle_Outer = Image.Create( AssetLocation.Game, "fe_initial_load_icon_dif.dds" )
 
+	self.BackgroundImage:SetSize( Render.Size )
+
 	self.text_clr = Color.White
 	self.text_shadow = Color( 0, 0, 0 )
 	self.background_clr = Color( 0, 0, 0, 150 )
@@ -28,13 +30,14 @@ function Load:__init()
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
+	Events:Subscribe( "ResolutionChange", self, self.ResolutionChange )
 	Events:Subscribe( "GameLoad", self, self.GameLoad )
 	Events:Subscribe( "LocalPlayerDeath", self, self.LocalPlayerDeath )
 	self.PostRenderEvent = Events:Subscribe( "PostRender", self, self.PostRender )
 
 	self.IsJoining = false
 
-	self.border_width = Vector2( Render.Width, 25 )
+	self.border_width = Vector2( Render.Size.x, 25 )
 end
 
 function Load:Lang()
@@ -51,6 +54,10 @@ function Load:ModuleLoad()
 		self.IsJoining = true
 		self.FadeInTimer = Timer()
 	end
+end
+
+function Load:ResolutionChange( args )
+	self.BackgroundImage:SetSize( args.size )
 end
 
 function Load:GameLoad()
@@ -72,30 +79,27 @@ function Load:PostRender()
 		local TxtPos = Vector2( ( Render.Size.x / 2 ) - ( TxtSize.x / 2 ), Render.Size.y / 1.100 )
 		local Rotation = self:GetRotation()
 		local Pos = Vector2( 40, Render.Size.y / 1.075 )
-		local PosTw = Vector2( Render.Width - 60, 60 )
+		local PosTw = Vector2( Render.Size.x - 60, 60 )
 
-		self.BackgroundImage:SetSize( Vector2( Render.Width, Render.Height ) )
 		self.BackgroundImage:Draw()
 
-		Render:FillArea( TxtPos - self.border_width, Vector2( Render.Width, 100 ) + self.border_width * 2, self.background_clr )
+		Render:FillArea( TxtPos - self.border_width, Vector2( Render.Size.x, 100 ) + self.border_width * 2, self.background_clr )
 
 		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 		Render:DrawShadowedText( Pos, self.name, self.text_clr, self.text_shadow, TxtSizePos )
 
-		if self.FadeInTimer then
-			local TransformOuter = Transform2()
-			TransformOuter:Translate( PosTw )
-			TransformOuter:Rotate( math.pi * Rotation )
+		local TransformOuter = Transform2()
+		TransformOuter:Translate( PosTw )
+		TransformOuter:Rotate( math.pi * Rotation )
 
-			Render:SetTransform( TransformOuter )
-			self.LoadingCircle_Outer:Draw( -( CircleSize / 2 ), CircleSize, Vector2.Zero, Vector2.One )
-			Render:ResetTransform()
+		Render:SetTransform( TransformOuter )
+		self.LoadingCircle_Outer:Draw( -( CircleSize / 2 ), CircleSize, Vector2.Zero, Vector2.One )
+		Render:ResetTransform()
 
-			if self.FadeInTimer:GetMinutes() >= 1 then
-				if self.PostRenderEvent then Events:Unsubscribe( self.PostRenderEvent ) self.PostRenderEvent = nil end
-				self:ExitWindow()
-			end
+		if self.FadeInTimer and self.FadeInTimer:GetMinutes() >= 1 then
+			if self.PostRenderEvent then Events:Unsubscribe( self.PostRenderEvent ) self.PostRenderEvent = nil end
+			self:ExitWindow()
 		end
 	end
 end
@@ -103,6 +107,8 @@ end
 function Load:ExitWindow()
 	self.FadeInTimer = nil
 	Mouse:SetVisible( true )
+
+	if self.window then return end
 
 	self.window = Window.Create()
 	self.window:SetSizeRel( Vector2( 0.2, 0.2 ) )
@@ -139,10 +145,8 @@ function Load:Exit()
 end
 
 function Load:GetRotation()
-	if self.FadeInTimer then
-		local RotationValue = self.FadeInTimer:GetSeconds() * 3
-		return RotationValue
-	end
+	local RotationValue = Client:GetElapsedSeconds() * 3
+	return RotationValue
 end
 
 load = Load()

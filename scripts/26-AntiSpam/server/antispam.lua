@@ -4,7 +4,7 @@ function AntiSpam:__init()
 	self.kickMessage = "был автоматически кикнут за флуд :("
 	self.kickReason = "\n\nВы были отключены системой Анти-Флуд.\n\n" .. 
 					"Кикнуло просто так? - Возможо у вас привязаны команды к клавишам. Ипользуйте /unbindall, чтобы отвязать их.\n\n" ..
-					"Поддержка в VK - vk.com/koastfreeroam\nПоддержка в Steam - steamcommunity.com/groups/koastfreeroam\nПоддержка в Дисководе - clck.ru/37FZrU"
+					"Поддержка в VK - vk.com/koastfreeroam\nПоддержка в Steam - steamcommunity.com/groups/koastfreeroam\nПоддержка в Discord - clck.ru/37FZrU"
 	self.messageColor = Color( 255, 0, 0 )
 	self.maxWarnings = 2
 	self.messagesResetInterval = 5
@@ -50,14 +50,16 @@ function AntiSpam:PlayerChat( args )
 end
 
 function AntiSpam:ResetTable()
-	if ( Server:GetElapsedSeconds() - self.resetTableTick >= self.messagesResetInterval ) then
+	local elapsedSeconds = Server:GetElapsedSeconds()
+
+	if ( elapsedSeconds - self.resetTableTick >= self.messagesResetInterval ) then
 		self.messagesSent = {}
-		self.resetTableTick = Server:GetElapsedSeconds()
+		self.resetTableTick = elapsedSeconds
 	end
 
-	if ( Server:GetElapsedSeconds() - self.resetWarningsTick >= self.warningsResetInterval ) then
+	if ( elapsedSeconds - self.resetWarningsTick >= self.warningsResetInterval ) then
 		self.playerWarnings = {}
-		self.resetWarningsTick = Server:GetElapsedSeconds()
+		self.resetWarningsTick = elapsedSeconds
 	end
 end
 
