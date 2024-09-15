@@ -95,6 +95,16 @@ function Casino:OpenCasinoMenu()
         self.window:SetVisible( true )
         Mouse:SetVisible( true )
 
+		local lang = LocalPlayer:GetValue( "Lang" )
+		if lang then
+			if lang == "RU" then
+				self.coinflip.balance_txt:SetText( "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
+			else
+				self.coinflip.balance_txt:SetText( "Balance: $" .. formatNumber( LocalPlayer:GetMoney() ) )
+			end
+		end
+		self.coinflip.balance_txt:SizeToContents()
+
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			self.coinflip.balance_txt:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.coinflip.stavka_txt:SetFont( AssetLocation.SystemFont, "Impact" )
@@ -147,9 +157,7 @@ function Casino:CreateWindow()
 	self.coinflip.balance_txt = Label.Create( self.coinflip.scroll_control )
 	self.coinflip.balance_txt:SetTextColor( Color( 251, 184, 41 ) )
 	self.coinflip.balance_txt:SetDock( GwenPosition.Top )
-	self.coinflip.balance_txt:SetText( "Баланс: $" .. LocalPlayer:GetMoney() )
 	self.coinflip.balance_txt:SetTextSize( 20 )
-	self.coinflip.balance_txt:SizeToContents()
 
 	self.coinflip.stavka_txt = Label.Create( self.coinflip.scroll_control )
 	self.coinflip.stavka_txt:SetDock( GwenPosition.Top )

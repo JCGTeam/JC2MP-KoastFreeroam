@@ -194,8 +194,9 @@ function KingHil:Render()
 	if self.state >= GamemodeState.PREPARING and self.state <= GamemodeState.ENDING then
 		local players = {LocalPlayer}
 
+		local lpWorld = LocalPlayer:GetWorld()
 		for player in Client:GetPlayers() do
-			if player:GetWorld() == LocalPlayer:GetWorld() then
+			if player:GetWorld() == lpWorld then
 				table.insert(players, player)
 			end
 		end

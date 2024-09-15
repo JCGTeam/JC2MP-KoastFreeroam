@@ -9,7 +9,7 @@ function CenterText:CastCenterText( args )
     self.timerF = Timer()
     self.textF = args.text
 	self.timeF = args.time
-    self.color = args.color
+    self.color = args.color or Color.White
     self.size = 30
 
     if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
@@ -28,7 +28,7 @@ function CenterText:Render()
             self.timerF = nil
             self.textF = nil
             self.timeF = nil
-            self.color= nil
+            self.color = nil
 
             Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil
             return

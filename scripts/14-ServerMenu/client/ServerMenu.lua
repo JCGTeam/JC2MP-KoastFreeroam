@@ -122,6 +122,7 @@ function ServerMenu:LoadCategories()
 	self.window:SetPositionRel( Vector2( 0.7, 0.5 ) - self.window:GetSizeRel()/2 )
 	self.window:SetVisible( self.active )
 	self.window:SetTitle( "▧ Меню сервера" )
+	self.window:Subscribe( "Render", self, self.UpdateGameInfo )
 	self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
 
 	self.top_label = Label.Create( self.window )
@@ -374,6 +375,18 @@ function ServerMenu:WindowClosed()
 	})
 end
 
+function ServerMenu:UpdateGameInfo()
+    local gettime = Game:GetTime()
+    local hh, timedec = math.modf( gettime )
+    local mm = math.floor( 60 * timedec )
+
+	if LocalPlayer:GetValue( "Lang" ) == "RU" then
+		self.gametime:SetText( "Игровое время: " .. string.format("%d:%02d", hh, mm) )
+	else
+		self.gametime:SetText( "Game Time: " .. string.format("%d:%02d", hh, mm) )
+	end
+end
+
 function ServerMenu:Render()
 	local is_visible = self.active and (Game:GetState() == GUIState.Game)
 
@@ -382,16 +395,6 @@ function ServerMenu:Render()
 		local alpha = math.lerp( Color.LightGreen, Color.White, frac )
 
 		self.help_button:SetTextColor( alpha )
-	end
-
-    local gettime = Game:GetTime()
-    local hh, timedec = math.modf( gettime )
-    local mm, _ = math.modf( 59 * timedec )
-
-	if LocalPlayer:GetValue( "Lang" ) == "RU" then
-		self.gametime:SetText( "Игровое время: " .. string.format("%d:%02d", hh, mm) )
-	else
-		self.gametime:SetText( "Game Time: " .. string.format("%d:%02d", hh, mm) )
 	end
 
 	if self.window:GetVisible() ~= is_visible then

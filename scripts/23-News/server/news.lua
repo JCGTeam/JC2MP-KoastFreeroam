@@ -1,38 +1,23 @@
 class 'LoadNews'
 
 function LoadNews:__init()
-	self.ENGNewsFilePath = "newsENG.txt"
-	self.RUSNewsFilePath = "newsRUS.txt"
-
-	Network:Subscribe( "GetENGNews", self, self.GetENGNews )
-	Network:Subscribe( "GetRUSNews", self, self.GetRUSNews )
+	Network:Subscribe( "GetNews", self, self.GetNews )
 end
 
-function LoadNews:GetENGNews( args, sender )
-	local getnewsfile = io.open( self.ENGNewsFilePath, "r" )
-	if getnewsfile then
-		s = getnewsfile:read( "*a" )
+function LoadNews:GetNews( args, sender )
+	local file = io.open( args.file, "r" )
+
+	if file then
+		local s = file:read( "*a" )
 
 		if s then
 			Network:Send( sender, "LoadNews", { text = s } )
 		end
-		getnewsfile:close()
-	else
-		Network:Send( sender, "LoadNews", { text = "LOAD ERROR\nNews file not found. Path: " .. self.ENGNewsFilePath } )
-	end
-end
 
-function LoadNews:GetRUSNews( args, sender )
-	local getnewsfile = io.open( self.RUSNewsFilePath, "r" )
-	if getnewsfile then
-		s = getnewsfile:read( "*a" )
-
-		if s then
-			Network:Send( sender, "LoadNews", { text = s } )
-		end
-		getnewsfile:close()
+		file:close()
+		file = nil
 	else
-		Network:Send( sender, "LoadNews", { text = "ОШИБКА ЗАГРУЗКИ\nФайл новостей не найден. Путь: " .. self.RUSNewsFilePath } )
+		Network:Send( sender, "LoadNews", { text = "LOAD ERROR\nNews file not found. Path: " .. args.file } )
 	end
 end
 

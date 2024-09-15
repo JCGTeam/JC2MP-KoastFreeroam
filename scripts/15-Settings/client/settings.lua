@@ -89,7 +89,7 @@ function Settings:__init()
 		self.setweather_txt = "Установлена погода: "
 		self.subcategory2:SetText( "Погода:" )
 		self.button:SetText( "Ясно" )
-		self.buttonTw:SetText( "Пасмурно" )
+		self.buttonTw:SetText( "Облачно" )
 		self.buttonTh:SetText( "Гроза" )
 
 		self.rollbutton:GetLabel():SetText( "Бочка" )
@@ -722,7 +722,7 @@ function Settings:GameRender()
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
 	if self.skyFi then
-		self.SkyImage5:SetSize( Vector2( Render.Width, Render.Height ) )
+		self.SkyImage5:SetSize( Render.Size )
 		self.SkyImage5:Draw()
 	end
 
@@ -737,17 +737,17 @@ function Settings:GameRender()
 	end
 
 	if self.skyTw then
-		self.SkyImage2:SetSize( Vector2( Render.Width, Render.Height ) )
+		self.SkyImage2:SetSize( Render.Size )
 		self.SkyImage2:Draw()
 	end
 
 	if self.skySi then
-		self.SkyImage6:SetSize( Vector2( Render.Width, Render.Height ) )
+		self.SkyImage6:SetSize( Render.Size )
 		self.SkyImage6:Draw()
 	end
 
 	if self.skySe then
-		self.SkyImage7:SetSize( Vector2( Render.Width, Render.Height ) )
+		self.SkyImage7:SetSize( Render.Size )
 		self.SkyImage7:Draw()
 
 		local speed = 1
@@ -768,7 +768,7 @@ function Settings:GameRender()
 	end
 
 	if self.skyTh then
-		self.SkyImage3:SetSize( Vector2( Render.Width, Render.Height ) )
+		self.SkyImage3:SetSize( Render.Size )
 		self.SkyImage3:Draw()
 	end
 end

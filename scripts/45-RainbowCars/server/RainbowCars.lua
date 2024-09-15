@@ -1,8 +1,18 @@
 class "RainbowCars"
 
 function RainbowCars:__init()
-    self.prefix = "[ЛГБТ] "
+    self.prefix = "[Радуга] "
     self.plrs = {}
+
+    self.permissions = {
+        ["Creator"] = true,
+        ["GlAdmin"] = true,
+        ["Admin"] = true,
+        ["AdminD"] = true,
+        ["ModerD"] = true,
+        ["Organizer"] = true,
+		["Parther"] = true
+    }
 
     Events:Subscribe( "PlayerChat", self, self.PlayerChat )
 
@@ -19,7 +29,9 @@ function RainbowCars:__init()
 end
 
 function RainbowCars:PlayerChat( args )
-    if args.player:GetValue( "Tag" ) == "Creator" or args.player:GetValue( "Tag" ) == "GlAdmin" or args.player:GetValue( "Tag" ) == "Admin" or args.player:GetValue( "Tag" ) == "AdminD" then
+    local gettag = args.player:GetValue( "Tag" )
+
+    if self.permissions[gettag] then
         if args.text == "/rnb" then
             if args.player:GetValue( "RainbowCar" ) then
                 args.player:SetNetworkValue( "RainbowCar", nil )
@@ -49,13 +61,14 @@ function RainbowCars:PlayerChat( args )
 end
 
 function RainbowCars:PreTick()
+    local ms = self.rTimer:GetMilliseconds()
+
     for p in Server:GetPlayers() do
-        if p:GetValue( "RainbowCar" ) then
-            if p:InVehicle() then
-                local h = ( 0.01 * self.rTimer:GetMilliseconds() - string.len( p:GetName() ) ) * 10
-                local color = Color.FromHSV( h % 360, 1, 1 )
-                p:GetVehicle():SetColors( color, color )
-            end
+        if p:InVehicle() and p:GetValue( "RainbowCar" ) then
+            local h = ( 0.01 * ms - string.len( p:GetName() ) ) * 10
+            local color = Color.FromHSV( h % 360, 1, 1 )
+
+            p:GetVehicle():SetColors( color, color )
         end
     end 
 end

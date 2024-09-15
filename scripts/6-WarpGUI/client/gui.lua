@@ -104,10 +104,10 @@ function WarpGui:__init()
 	end
 
 	-- Add players
+	--self:AddPlayer( LocalPlayer )
 	for player in Client:GetPlayers() do
 		self:AddPlayer( player )
 	end
-	--self:AddPlayer(LocalPlayer)
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
@@ -468,6 +468,11 @@ function WarpGui:SetWindowVisible( visible )
 		self.windowShown = visible
 		self.window:SetVisible( visible )
 		Mouse:SetVisible( visible )
+
+		for p in Client:GetPlayers() do
+			self.rows[ tostring( p:GetSteamId().id ) ]:SetTextColor( p:GetColor() )
+		end
+
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			self.whitelistAllCheckbox:GetLabel():SetFont( AssetLocation.SystemFont, "Impact" )
 			self.blacklistAllCheckbox:GetLabel():SetFont( AssetLocation.SystemFont, "Impact" )

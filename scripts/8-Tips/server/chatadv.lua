@@ -1,57 +1,38 @@
 class 'ChatAdv'
 
 function ChatAdv:__init()
-	self.ads = {}
-	self.adCount = 0
-	self.currentAd = 0
 	self.timer = Timer()
+	self.delay = 15
 
-	self:loadAds( "ads.txt" )
+	Network:Subscribe( "GetAds", self, self.GetAds )
 
-	Events:Subscribe( "PostTick", self, self.PostTick )	
+	Events:Subscribe( "PostTick", self, self.PostTick )
 end
 
-function ChatAdv:loadAds( filename )
-	local file = io.open( filename, "r" )
-	local i = 0
+function ChatAdv:GetAds( args, sender )
+	local file = io.open( args.file, "r" )
 
-	if file == nil then
-		print( "no ads.txt!" )
-		return
-	end
+    if file then
+        local lines = {}
 
-	for line in file:lines() do
-		i = i + 1
-		self.adCount = i
-		self.ads[i] = line
-	end
+        for line in file:lines() do
+            table.insert( lines, line )
+        end
 
-	if self.adCount > 0 then
-		self.currentAd = 1
-	end
+        Network:Send( sender, "LoadAds", lines )
 
-	print( "Loaded " .. self.adCount .. " ads" )
-	file:close()
+        file:close()
+		file = nil
+
+		lines = nil
+    end
 end
 
 function ChatAdv:PostTick()
-	if self.adCount > 0 then
-		if self.timer:GetMinutes() > 15 then
-			if self.currentAd > self.adCount then
-				self.currentAd = 1
-			end
+	if self.timer:GetMinutes() > self.delay then
+		Network:Broadcast( "SendMessage" )
 
-			local tagColor = Color.White
-			local textColor = Color.DarkGray
-
-			for p in Server:GetPlayers() do
-				if p:GetValue( "Lang" ) == "RU" then
-					p:SendChatMessage( "[Реклама] ", tagColor, self.ads[self.currentAd], textColor )
-				end
-			end
-			self.currentAd = self.currentAd + 1
-			self.timer:Restart()
-		end
+		self.timer:Restart()
 	end
 end
 

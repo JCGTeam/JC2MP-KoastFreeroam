@@ -94,8 +94,9 @@ function ServerHealth:GetOnline( args )
     local players = {}
     local temp = ""
 
-    Events:Fire( "ToDiscordConsole", { text = "Online: " .. Server:GetPlayerCount() })
-    print( "Online: " .. Server:GetPlayerCount())
+    local msg = "Online: " .. Server:GetPlayerCount()
+    Events:Fire( "ToDiscordConsole", { text = msg } )
+    print( msg )
 
     if args.text == "full" then
         for p in Server:GetPlayers() do

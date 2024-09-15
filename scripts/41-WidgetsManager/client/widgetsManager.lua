@@ -20,9 +20,22 @@ end
 
 function WidgetsManager:Lang()
 	self.text1 = "Fantastic"
+
+	if not self.NetworkObjectValueChangeEvent then self.NetworkObjectValueChangeEvent = Events:Subscribe( "NetworkObjectValueChange", self, self.NetworkObjectValueChange ) end
+end
+
+function WidgetsManager:NetworkObjectValueChange( args )
+    if args.key == "Lang" then
+        self:UpdateBestScoreWidget( self.currentWidget )
+
+		Events:Unsubscribe( self.NetworkObjectValueChangeEvent )
+		self.NetworkObjectValueChangeEvent = nil
+    end
 end
 
 function WidgetsManager:UpdateBestScoreWidget( widget )
+	self.currentWidget = widget
+
 	local lang = LocalPlayer:GetValue( "Lang" )
 
 	if widget == 0 then

@@ -1,35 +1,47 @@
 class 'WelcomeScreen'
 
-function WelcomeScreen:__init()
-	Events:Subscribe( "Lang", self, self.Lang )
-end
-
 function WelcomeScreen:Lang()
-	if self.Menu_button then
-		self.Menu_button:SetText( "Continue ( ͡° ͜ʖ ͡°)" )
-	end
+	self.continue = "Continue ( ͡° ͜ʖ ͡°)"
+	self.helpRules = "Help/Rules"
+	self.title = "Welcome to Koast Freeroam!"
+	self.text = "We are glad to see you here, please read the rules and FAQ before starting the game.\n\n\n" ..
+	"> Telegram channel - t.me/koastfreeroam\n" ..
+	"> Discord server - clck.ru/37FZrU\n" ..
+	"> Steam group - steamcommunity.com/groups/koastfreeroam\n" ..
+	"> YouTube channel - www.youtube.com/@jcgteam\n\n\n" ..
+	"Have a nice game, enjoy :)"
 end
 
-function WelcomeScreen:Open()
-	self.title = "Добро пожаловать на Koast Freeroam!"
-	self.text = "Мы рады, что вы зашли на наш проект, пожалуйста, прочитайте правила и FAQ перед началом игры.\n\n" ..
-	"> Наш Telegram канал - t.me/koastfreeroam\n" ..
-	"> Наш Discord сервер - clck.ru/37FZrU\n" ..
-	"> Наша группа в Steam - steamcommunity.com/groups/koastfreeroam\n" ..
-	"> Наш YouTube канал - www.youtube.com/@jcgteam\n\n" ..
-	"Желаем вам приятной игры, наслаждайтесь :)"
+function WelcomeScreen:Open( lang )
+	if self.isOpened then return end
+
+	self.isOpened = true
+
+	if lang and lang == "EN" then
+		self:Lang()
+	else
+		self.continue = "Продолжить ( ͡° ͜ʖ ͡°)"
+		self.title = "Добро пожаловать на Koast Freeroam!"
+		self.helpRules = "Помощь/правила"
+		self.text = "Мы рады, что вы зашли на наш проект, пожалуйста, прочитайте правила и FAQ перед началом игры.\n\n" ..
+		"> Наш Telegram канал - t.me/koastfreeroam\n" ..
+		"> Наш Discord сервер - clck.ru/37FZrU\n" ..
+		"> Наша группа в Steam - steamcommunity.com/groups/koastfreeroam\n" ..
+		"> Наш YouTube канал - www.youtube.com/@jcgteam\n\n" ..
+		"Желаем вам приятной игры, наслаждайтесь :)"
+	end
 
 	self.copyright_txt = "© JCGTeam 2024"
 	self.text_clr = Color.White
 	self.background_clr = Color( 10, 10, 10, 200 )
 
+	self.rico = Image.Create( AssetLocation.Resource, "Rico" )
+	self.rico:SetSize( Vector2( Render.Size.x / 4, Render.Size.x / 2 ) )
+	self.rico:SetPosition( Vector2( Render.Size.x - self.rico:GetSize().x + 10, Render.Size.y - self.rico:GetSize().y / 1.35 ) )
+
 	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	if not self.ResolutionChangeEvent then self.ResolutionChangeEvent = Events:Subscribe( "ResolutionChange", self, self.ResolutionChange ) end
 	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
-
-	self.rico = Image.Create( AssetLocation.Resource, "Rico" )
-	self.rico:SetSize( Vector2( 350, 700 ) )
-	self.rico:SetPosition( Vector2( Render.Size.x - 350, Render.Size.y - 520 ) )
 
 	if not self.Menu_background then
 		self.Menu_background = Rectangle.Create()
@@ -42,7 +54,7 @@ function WelcomeScreen:Open()
 	if not self.Menu_button then
 		self.Menu_button = MenuItem.Create( self.Menu_background )
 		self.Menu_button:SetDock( GwenPosition.Fill )
-		self.Menu_button:SetText( "Продолжить ( ͡° ͜ʖ ͡°)" )
+		self.Menu_button:SetText( self.continue )
 		self.Menu_button:SetTextSize( 15 )
 		self.Menu_button:Subscribe( "Press", self, self.Close )
 	end
@@ -58,7 +70,7 @@ function WelcomeScreen:Open()
 	if not self.Help_button then
 		self.Help_button = MenuItem.Create( self.Help_background )
 		self.Help_button:SetDock( GwenPosition.Fill )
-		self.Help_button:SetText( "Помощь/правила" )
+		self.Help_button:SetText( self.helpRules )
 		self.Help_button:SetTextSize( 15 )
 		self.Help_button:Subscribe( "Press", function() Events:Fire( "OpenHelpMenu" ) end )
 	end
@@ -87,7 +99,8 @@ function WelcomeScreen:Render()
 end
 
 function WelcomeScreen:ResolutionChange( args )
-	self.rico:SetPosition( Vector2( args.size.x - 350, args.size.y - 520 ) )
+	self.rico:SetSize( Vector2( args.size.x / 4, args.size.x / 2 ) )
+	self.rico:SetPosition( Vector2( args.size.x - self.rico:GetSize().x + 10, args.size.y - self.rico:GetSize().y / 1.35 ) )
 end
 
 function WelcomeScreen:Close()
@@ -100,6 +113,7 @@ function WelcomeScreen:Close()
 	if self.Help_background then self.Help_background:Remove() self.Help_background = nil end
 	if self.rico then self.rico = nil end
 
+	self.isOpened = nil
 	self.copyright_txt = nil
 	self.text_clr = nil
 	self.background_clr = nil
@@ -115,5 +129,3 @@ function WelcomeScreen:Close()
 
 	sound:SetParameter(0,1)
 end
-
-welcomescreen = WelcomeScreen()

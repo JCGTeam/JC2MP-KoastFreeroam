@@ -47,10 +47,10 @@ function Bank:__init()
 	self.message_size = TextSize.VeryLarge
 	self.submessage_size = 25
 
+	--self:AddPlayer( LocalPlayer )
 	for player in Client:GetPlayers() do
 		self:AddPlayer( player )
 	end
-	--self:AddPlayer(LocalPlayer)
 end
 
 function Bank:Lang()
@@ -80,6 +80,10 @@ function Bank:SetActive( state )
 	if self.MenuActive then
 		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 		if not self.WindowRenderEvent then self.WindowRenderEvent = Events:Subscribe( "Render", self, self.WindowRender ) end
+
+		for p in Client:GetPlayers() do
+			self.rows[ p:GetId() ]:SetTextColor( p:GetColor() )
+		end
 
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			if self.plist.balance then
@@ -171,7 +175,7 @@ end
 
 function Bank:PlayerQuit( args )
 	local player = args.player
-	local playerId = tostring(player:GetSteamId().id)
+	local playerId = player:GetId()
 
 	if not self.rows[playerId] then return end
 
@@ -180,27 +184,26 @@ function Bank:PlayerQuit( args )
 end
 
 function Bank:AddPlayer( player )
-	local playerSteamId = tostring(player:GetSteamId().id)
 	local playerName = player:GetName()
 	local playerColor = player:GetColor()
-	local playerId = tostring( player:GetId() )
+	local playerId = player:GetId()
 
-	local item = self.plist.playerList:AddItem( playerSteamId )
+	local item = self.plist.playerList:AddItem( playerName )
 
 	if LocalPlayer:IsFriend( player ) then
 		item:SetToolTip( self.friend_txt )
 	end
 
-	item:SetCellText( 0, playerName )
 	item:SetTextColor( playerColor )
-	item:SetName( playerId )
+	item:SetDataObject( "id", playerId )
 
-	self.rows[playerSteamId] = item
+	self.rows[playerId] = item
 end
 
 function Bank:SendToPlayer()
-	if self.plist.playerList:GetSelectedRow() then
-		Network:Send( "SendMoney", { selectedplayer = tonumber( self.plist.playerList:GetSelectedRow():GetName() ), money = self.plist.moneytosend:GetValue() } )
+	local row = self.plist.playerList:GetSelectedRow()
+	if row then
+		Network:Send( "SendMoney", { selectedplayer = row:GetDataObject( "id" ), money = self.plist.moneytosend:GetValue() } )
 	else
 		Events:Fire( "CastCenterText", { text = self.playernotselected_txt, time = 2, color = Color( 255, 0, 0 ) } )
 	end
@@ -271,10 +274,8 @@ function Bank:Render()
 			self.message = nil
 			self.submessage = nil
 
-			if self.RenderEvent then
-				Events:Unsubscribe( self.RenderEvent )
-				self.RenderEvent = nil
-			end
+			if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+
 			return
 		end
 
