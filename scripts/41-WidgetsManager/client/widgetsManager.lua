@@ -25,7 +25,7 @@ function WidgetsManager:Lang()
 end
 
 function WidgetsManager:NetworkObjectValueChange( args )
-    if args.key == "Lang" then
+    if args.key == "Lang" and args.object.__type == "LocalPlayer" then
         self:UpdateBestScoreWidget( self.currentWidget )
 
 		Events:Unsubscribe( self.NetworkObjectValueChangeEvent )
