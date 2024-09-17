@@ -86,295 +86,67 @@ function Abilities:__init()
         self.airvehboosttutorial_txt = "Используйте клавишу 'Q', чтобы воспользоваться супер-пупер ускорением."
 	end
 
-    self.toplabel = Label.Create( self.window )
-    self.toplabel:SetHeight( Render:GetTextHeight( "A", 18 ) + 10 )
-    self.toplabel:SetMargin( Vector2( 0, 0 ), Vector2( 0, 0 ) )
-    self.toplabel:SetDock( GwenPosition.Top )
+    local topcontainer = BaseWindow.Create( self.window )
+    topcontainer:SetHeight( Render:GetTextHeight( "A", 18 ) + 10 )
+    topcontainer:SetMargin( Vector2( 0, 0 ), Vector2( 0, 0 ) )
+    topcontainer:SetDock( GwenPosition.Top )
 
-    self.toplabelbk = Label.Create( self.toplabel )
-    self.toplabelbk:SetDock( GwenPosition.Fill )
+    local topcontainerbk = BaseWindow.Create( topcontainer )
+    topcontainerbk:SetDock( GwenPosition.Fill )
 
-    self.money_text = Label.Create( self.toplabelbk )
+    self.money_text = Label.Create( topcontainerbk )
     self.money_text:SetDock( GwenPosition.Left )
     self.money_text:SetMargin( Vector2( 10, 5 ), Vector2( 0, 0 ) )
-    self.money_text:SetText( "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
     self.money_text:SetTextColor( Color( 251, 184, 41 ) )
     self.money_text:SetTextSize( 18 )
-    self.money_text:SizeToContents()
 
-    self.mainlabel = Label.Create( self.window )
-    self.mainlabel:SetDock( GwenPosition.Fill )
+    self.maincontainer = BaseWindow.Create( self.window )
+    self.maincontainer:SetDock( GwenPosition.Fill )
 
     local btnSize = Vector2( 50, 50 )
     if Debug.ShowResetButton then
-        self.resetbutton = Button.Create( self.mainlabel )
+        self.resetbutton = Button.Create( self.maincontainer )
         self.resetbutton:SetSize( btnSize )
         self.resetbutton:SetDock( GwenPosition.Bottom )
         self.resetbutton:SetText( "RESET ACHIEVEMENTS" )
         self.resetbutton:Subscribe( "Press", self, self.Clear )
     end
 
-    self.wingsuitbutton = Button.Create( self.mainlabel )
-    self.wingsuitbutton:SetSize( btnSize )
-    self.wingsuitbutton:SetPosition( Vector2( 10, 5 ) )
-    self.wingsuitbutton:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.wingsuit_txt ) self.tip_descrition:SetText( self.wingsuit_description ) self.tip_descrition:SizeToContents() end )
-    self.wingsuitbutton:Subscribe( "Press", self, self.WingsuitUnlocker )
+    self.buttonsSize = 50
 
-    self.wingsuitbutton.unlockstats = Rectangle.Create( self.wingsuitbutton )
-    self.wingsuitbutton.unlockstats:SetDock( GwenPosition.Fill )
-    self.wingsuitbutton.unlockstats:SetColor( self.unlocked_clr )
-    self.wingsuitbutton.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.wingsuit_txt ) self.tip_descrition:SetText( self.wingsuit_description ) self.tip_descrition:SizeToContents() end )
+    local spaceX, spaceY = 60, 5
+    self.wingsuitbutton = self:AbilityButton( Vector2( 10, spaceY ), self.wingsuit_txt, self.wingsuit_description, self.WingsuitUnlocker, self.wingsuitIMG )
+    local posX = self.wingsuitbutton:GetPosition().x + spaceX
+    self.boost_1button = self:AbilityButton( Vector2( posX, spaceY ), self.landvehicleboost_txt, self.boost_description, self.BoostUnlocker, self.boostIMG )
+    self.boost_2button = self:AbilityButton( Vector2( posX, self.boost_1button:GetPosition().y + self.buttonsSize + spaceY ), self.watervehicleboost_txt, self.boost_description, self.BoostUnlocker, self.boostIMG )
+    self.boost_3button = self:AbilityButton( Vector2( posX, self.boost_2button:GetPosition().y + self.buttonsSize + spaceY ), self.airvehicleboost_txt, self.boost_description, self.BoostUnlocker, self.boostIMG )
+    self.bonusmoneybutton = self:AbilityButton( Vector2( self.boost_1button:GetPosition().x + spaceX, spaceY ), self.bonusmoney_txt, self.bonusmoney_description, self.MoneyBonusUnlocker, self.moneyBonusIMG )
+    posX = self.bonusmoneybutton:GetPosition().x + spaceX
+    self.moreC4_5button = self:AbilityButton( Vector2( posX, spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
+    self.moreC4_8button = self:AbilityButton( Vector2( posX, self.moreC4_5button:GetPosition().y + self.buttonsSize + spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
+    self.moreC4_10button = self:AbilityButton( Vector2( posX, self.moreC4_8button:GetPosition().y + self.buttonsSize + spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
+    self.moreC4_15button = self:AbilityButton( Vector2( posX, self.moreC4_10button:GetPosition().y + self.buttonsSize + spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
+    self.supernuclearbombbutton = self:AbilityButton( Vector2( self.moreC4_5button:GetPosition().x + spaceX, spaceY ), self.supernuclearbomb_txt, self.supernuclearbomb_description, self.SuperNuclearBombUnlocker, self.superNuclearBombIMG )
+    posX = self.supernuclearbombbutton:GetPosition().x + spaceX
+    self.longergrapple_150button = self:AbilityButton( Vector2( posX, spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
+    self.longergrapple_200button = self:AbilityButton( Vector2( posX, self.longergrapple_150button:GetPosition().y + self.buttonsSize + spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
+    self.longergrapple_350button = self:AbilityButton( Vector2( posX, self.longergrapple_200button:GetPosition().y + self.buttonsSize + spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
+    self.longergrapple_500button = self:AbilityButton( Vector2( posX, self.longergrapple_350button:GetPosition().y + self.buttonsSize + spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
+    self.jesusmode_button = self:AbilityButton( Vector2( self.longergrapple_150button:GetPosition().x + spaceX, spaceY ), self.jesusmode_txt, self.jesusmode_description, self.JesusModeUnlocker, self.jesusModeIMG )
 
-    self.wingsuitbutton.image = ImagePanel.Create( self.wingsuitbutton )
-    self.wingsuitbutton.image:SetDock( GwenPosition.Fill )
-    self.wingsuitbutton.image:SetImage( self.wingsuitIMG )
+    local tip_container = BaseWindow.Create( self.window )
+    tip_container:SetDock( GwenPosition.Bottom )
+    tip_container:SetHeight( Render:GetTextHeight( "A", 18 ) + 60 )
+    tip_container:SetMargin( Vector2( 10, 10 ), Vector2( 10, 10 ) )
 
-
-    self.boost_1button = Button.Create( self.mainlabel )
-    self.boost_1button:SetSize( btnSize )
-    self.boost_1button:SetPosition( Vector2( self.wingsuitbutton:GetPosition().x + 60 , 5 ) )
-    self.boost_1button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.landvehicleboost_txt ) self.tip_descrition:SetText( self.boost_description ) self.tip_descrition:SizeToContents() end )
-    self.boost_1button:Subscribe( "Press", self, self.BoostUnlocker )
-
-    self.boost_1button.unlockstats = Rectangle.Create( self.boost_1button )
-    self.boost_1button.unlockstats:SetDock( GwenPosition.Fill )
-    self.boost_1button.unlockstats:SetColor( self.unlocked_clr )
-    self.boost_1button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.landvehicleboost_txt ) self.tip_descrition:SetText( self.boost_description ) self.tip_descrition:SizeToContents() end )
-
-    self.boost_1button.image = ImagePanel.Create( self.boost_1button )
-    self.boost_1button.image:SetDock( GwenPosition.Fill )
-    self.boost_1button.image:SetImage( self.boostIMG )
-
-    self.boost_2button = Button.Create( self.mainlabel )
-    self.boost_2button:SetSize( btnSize )
-    self.boost_2button:SetPosition( Vector2( self.wingsuitbutton:GetPosition().x + 60 , self.boost_1button:GetPosition().y + 55 ) )
-    self.boost_2button:SetVisible( false )
-    self.boost_2button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.watervehicleboost_txt ) self.tip_descrition:SetText( self.boost_description ) self.tip_descrition:SizeToContents() end )
-    self.boost_2button:Subscribe( "Press", self, self.BoostUnlocker )
-
-    self.boost_2button.unlockstats = Rectangle.Create( self.boost_2button )
-    self.boost_2button.unlockstats:SetDock( GwenPosition.Fill )
-    self.boost_2button.unlockstats:SetColor( self.unlocked_clr )
-    self.boost_2button.unlockstats:SetVisible( false )
-    self.boost_2button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.watervehicleboost_txt ) self.tip_descrition:SetText( self.boost_description ) self.tip_descrition:SizeToContents() end )
-
-    self.boost_2button.image = ImagePanel.Create( self.boost_2button )
-    self.boost_2button.image:SetDock( GwenPosition.Fill )
-    self.boost_2button.image:SetImage( self.boostIMG )
-
-    self.boost_3button = Button.Create( self.mainlabel )
-    self.boost_3button:SetSize( btnSize )
-    self.boost_3button:SetPosition( Vector2( self.wingsuitbutton:GetPosition().x + 60 , self.boost_2button:GetPosition().y + 55 ) )
-    self.boost_3button:SetVisible( false )
-    self.boost_3button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.airvehicleboost_txt ) self.tip_descrition:SetText( self.boost_description ) self.tip_descrition:SizeToContents() end )
-    self.boost_3button:Subscribe( "Press", self, self.BoostUnlocker )
-
-    self.boost_3button.unlockstats = Rectangle.Create( self.boost_3button )
-    self.boost_3button.unlockstats:SetDock( GwenPosition.Fill )
-    self.boost_3button.unlockstats:SetColor( self.unlocked_clr )
-    self.boost_3button.unlockstats:SetVisible( false )
-    self.boost_3button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.airvehicleboost_txt ) self.tip_descrition:SetText( self.boost_description ) self.tip_descrition:SizeToContents() end )
-
-    self.boost_3button.image = ImagePanel.Create( self.boost_3button )
-    self.boost_3button.image:SetDock( GwenPosition.Fill )
-    self.boost_3button.image:SetImage( self.boostIMG )
-
-
-    self.bonusmoneybutton = Button.Create( self.mainlabel )
-    self.bonusmoneybutton:SetSize( btnSize )
-    self.bonusmoneybutton:SetPosition( Vector2( self.boost_1button:GetPosition().x + 60 , 5 ) )
-    self.bonusmoneybutton:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.bonusmoney_txt ) self.tip_descrition:SetText( self.bonusmoney_description ) self.tip_descrition:SizeToContents() end )
-    self.bonusmoneybutton:Subscribe( "Press", self, self.MoneyBonusUnlocker )
-
-    self.bonusmoneybutton.unlockstats = Rectangle.Create( self.bonusmoneybutton )
-    self.bonusmoneybutton.unlockstats:SetDock( GwenPosition.Fill )
-    self.bonusmoneybutton.unlockstats:SetColor( self.unlocked_clr )
-    self.bonusmoneybutton.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.bonusmoney_txt ) self.tip_descrition:SetText( self.bonusmoney_description ) self.tip_descrition:SizeToContents() end )
-
-    self.bonusmoneybutton.image = ImagePanel.Create( self.bonusmoneybutton )
-    self.bonusmoneybutton.image:SetDock( GwenPosition.Fill )
-    self.bonusmoneybutton.image:SetImage( self.moneyBonusIMG )
-
-
-    self.moreC4_5button = Button.Create( self.mainlabel )
-    self.moreC4_5button:SetSize( btnSize )
-    self.moreC4_5button:SetPosition( Vector2( self.bonusmoneybutton:GetPosition().x + 60 , 5 ) )
-    self.moreC4_5button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
-    self.moreC4_5button:Subscribe( "Press", self, self.MoreC4Unlocker )
-
-    self.moreC4_5button.unlockstats = Rectangle.Create( self.moreC4_5button )
-    self.moreC4_5button.unlockstats:SetDock( GwenPosition.Fill )
-    self.moreC4_5button.unlockstats:SetColor( self.unlocked_clr )
-    self.moreC4_5button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
-
-    self.moreC4_5button.image = ImagePanel.Create( self.moreC4_5button )
-    self.moreC4_5button.image:SetDock( GwenPosition.Fill )
-    self.moreC4_5button.image:SetImage( self.moreC4IMG )
-
-    self.moreC4_8button = Button.Create( self.mainlabel )
-    self.moreC4_8button:SetSize( btnSize )
-    self.moreC4_8button:SetPosition( Vector2( self.bonusmoneybutton:GetPosition().x + 60 , self.moreC4_5button:GetPosition().y + 55 ) )
-    self.moreC4_8button:SetVisible( false )
-    self.moreC4_8button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
-    self.moreC4_8button:Subscribe( "Press", self, self.MoreC4Unlocker )
-
-    self.moreC4_8button.unlockstats = Rectangle.Create( self.moreC4_8button )
-    self.moreC4_8button.unlockstats:SetDock( GwenPosition.Fill )
-    self.moreC4_8button.unlockstats:SetColor( self.unlocked_clr )
-    self.moreC4_8button.unlockstats:SetVisible( false )
-    self.moreC4_8button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
-
-    self.moreC4_8button.image = ImagePanel.Create( self.moreC4_8button )
-    self.moreC4_8button.image:SetDock( GwenPosition.Fill )
-    self.moreC4_8button.image:SetImage( self.moreC4IMG )
-
-    self.moreC4_10button = Button.Create( self.mainlabel )
-    self.moreC4_10button:SetSize( btnSize )
-    self.moreC4_10button:SetPosition( Vector2( self.bonusmoneybutton:GetPosition().x + 60 , self.moreC4_8button:GetPosition().y + 55 ) )
-    self.moreC4_10button:SetVisible( false )
-    self.moreC4_10button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
-    self.moreC4_10button:Subscribe( "Press", self, self.MoreC4Unlocker )
-
-    self.moreC4_10button.unlockstats = Rectangle.Create( self.moreC4_10button )
-    self.moreC4_10button.unlockstats:SetDock( GwenPosition.Fill )
-    self.moreC4_10button.unlockstats:SetColor( self.unlocked_clr )
-    self.moreC4_10button.unlockstats:SetVisible( false )
-    self.moreC4_10button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
-
-    self.moreC4_10button.image = ImagePanel.Create( self.moreC4_10button )
-    self.moreC4_10button.image:SetDock( GwenPosition.Fill )
-    self.moreC4_10button.image:SetImage( self.moreC4IMG )
-
-
-    self.moreC4_15button = Button.Create( self.mainlabel )
-    self.moreC4_15button:SetSize( btnSize )
-    self.moreC4_15button:SetPosition( Vector2( self.bonusmoneybutton:GetPosition().x + 60 , self.moreC4_10button:GetPosition().y + 55 ) )
-    self.moreC4_15button:SetVisible( false )
-    self.moreC4_15button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
-    self.moreC4_15button:Subscribe( "Press", self, self.MoreC4Unlocker )
-
-    self.moreC4_15button.unlockstats = Rectangle.Create( self.moreC4_15button )
-    self.moreC4_15button.unlockstats:SetDock( GwenPosition.Fill )
-    self.moreC4_15button.unlockstats:SetColor( self.unlocked_clr )
-    self.moreC4_15button.unlockstats:SetVisible( false )
-    self.moreC4_15button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.morec4_txt ) self.tip_descrition:SetText( self.moreC4_description ) self.tip_descrition:SizeToContents() end )
-
-    self.moreC4_15button.image = ImagePanel.Create( self.moreC4_15button )
-    self.moreC4_15button.image:SetDock( GwenPosition.Fill )
-    self.moreC4_15button.image:SetImage( self.moreC4IMG )
-
-
-    self.supernuclearbombbutton = Button.Create( self.mainlabel )
-    self.supernuclearbombbutton:SetSize( btnSize )
-    self.supernuclearbombbutton:SetPosition( Vector2( self.moreC4_5button:GetPosition().x + 60 , 5 ) )
-    self.supernuclearbombbutton:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.supernuclearbomb_txt ) self.tip_descrition:SetText( self.supernuclearbomb_description ) self.tip_descrition:SizeToContents() end )
-    self.supernuclearbombbutton:Subscribe( "Press", self, self.SuperNuclearBombUnlocker )
-
-    self.supernuclearbombbutton.unlockstats = Rectangle.Create( self.supernuclearbombbutton )
-    self.supernuclearbombbutton.unlockstats:SetDock( GwenPosition.Fill )
-    self.supernuclearbombbutton.unlockstats:SetColor( self.unlocked_clr )
-    self.supernuclearbombbutton.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.supernuclearbomb_txt ) self.tip_descrition:SetText( self.supernuclearbomb_description ) self.tip_descrition:SizeToContents() end )
-
-    self.supernuclearbombbutton.image = ImagePanel.Create( self.supernuclearbombbutton )
-    self.supernuclearbombbutton.image:SetDock( GwenPosition.Fill )
-    self.supernuclearbombbutton.image:SetImage( self.superNuclearBombIMG )
-
-
-    self.longergrapple_150button = Button.Create( self.mainlabel )
-    self.longergrapple_150button:SetSize( btnSize )
-    self.longergrapple_150button:SetPosition( Vector2( self.supernuclearbombbutton:GetPosition().x + 60 , 5 ) )
-    self.longergrapple_150button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
-    self.longergrapple_150button:Subscribe( "Press", self, self.LongerGrappleUnlocker )
-
-    self.longergrapple_150button.unlockstats = Rectangle.Create( self.longergrapple_150button )
-    self.longergrapple_150button.unlockstats:SetDock( GwenPosition.Fill )
-    self.longergrapple_150button.unlockstats:SetColor( self.unlocked_clr )
-    self.longergrapple_150button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
-
-    self.longergrapple_150button.image = ImagePanel.Create( self.longergrapple_150button )
-    self.longergrapple_150button.image:SetDock( GwenPosition.Fill )
-    self.longergrapple_150button.image:SetImage( self.longerGrappleIMG )
-
-    self.longergrapple_200button = Button.Create( self.mainlabel )
-    self.longergrapple_200button:SetSize( btnSize )
-    self.longergrapple_200button:SetPosition( Vector2( self.supernuclearbombbutton:GetPosition().x + 60 , self.longergrapple_150button:GetPosition().y + 55 ) )
-    self.longergrapple_200button:SetVisible( false )
-    self.longergrapple_200button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
-    self.longergrapple_200button:Subscribe( "Press", self, self.LongerGrappleUnlocker )
-
-    self.longergrapple_200button.unlockstats = Rectangle.Create( self.longergrapple_200button )
-    self.longergrapple_200button.unlockstats:SetDock( GwenPosition.Fill )
-    self.longergrapple_200button.unlockstats:SetColor( self.unlocked_clr )
-    self.longergrapple_200button.unlockstats:SetVisible( false )
-    self.longergrapple_200button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
-
-    self.longergrapple_200button.image = ImagePanel.Create( self.longergrapple_200button )
-    self.longergrapple_200button.image:SetDock( GwenPosition.Fill )
-    self.longergrapple_200button.image:SetImage( self.longerGrappleIMG )
-
-    self.longergrapple_350button = Button.Create( self.mainlabel )
-    self.longergrapple_350button:SetSize( btnSize )
-    self.longergrapple_350button:SetPosition( Vector2( self.supernuclearbombbutton:GetPosition().x + 60 , self.longergrapple_200button:GetPosition().y + 55 ) )
-    self.longergrapple_350button:SetVisible( false )
-    self.longergrapple_350button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
-    self.longergrapple_350button:Subscribe( "Press", self, self.LongerGrappleUnlocker )
-
-    self.longergrapple_350button.unlockstats = Rectangle.Create( self.longergrapple_350button )
-    self.longergrapple_350button.unlockstats:SetDock( GwenPosition.Fill )
-    self.longergrapple_350button.unlockstats:SetColor( self.unlocked_clr )
-    self.longergrapple_350button.unlockstats:SetVisible( false )
-    self.longergrapple_350button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
-
-    self.longergrapple_350button.image = ImagePanel.Create( self.longergrapple_350button )
-    self.longergrapple_350button.image:SetDock( GwenPosition.Fill )
-    self.longergrapple_350button.image:SetImage( self.longerGrappleIMG )
-
-    self.longergrapple_500button = Button.Create( self.mainlabel )
-    self.longergrapple_500button:SetSize( btnSize )
-    self.longergrapple_500button:SetPosition( Vector2( self.supernuclearbombbutton:GetPosition().x + 60 , self.longergrapple_350button:GetPosition().y + 55 ) )
-    self.longergrapple_500button:SetVisible( false )
-    self.longergrapple_500button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
-    self.longergrapple_500button:Subscribe( "Press", self, self.LongerGrappleUnlocker )
-
-    self.longergrapple_500button.unlockstats = Rectangle.Create( self.longergrapple_500button )
-    self.longergrapple_500button.unlockstats:SetDock( GwenPosition.Fill )
-    self.longergrapple_500button.unlockstats:SetColor( self.unlocked_clr )
-    self.longergrapple_500button.unlockstats:SetVisible( false )
-    self.longergrapple_500button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.longergrapple_txt ) self.tip_descrition:SetText( self.longergrapple_description ) self.tip_descrition:SizeToContents() end )
-
-    self.longergrapple_500button.image = ImagePanel.Create( self.longergrapple_500button )
-    self.longergrapple_500button.image:SetDock( GwenPosition.Fill )
-    self.longergrapple_500button.image:SetImage( self.longerGrappleIMG )
-
-
-    self.jesusmode_button = Button.Create( self.mainlabel )
-    self.jesusmode_button:SetSize( btnSize )
-    self.jesusmode_button:SetPosition( Vector2( self.longergrapple_150button:GetPosition().x + 60 , 5 ) )
-    self.jesusmode_button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.jesusmode_txt ) self.tip_descrition:SetText( self.jesusmode_description ) self.tip_descrition:SizeToContents() end )
-    self.jesusmode_button:Subscribe( "Press", self, self.JesusModeUnlocker )
-
-    self.jesusmode_button.unlockstats = Rectangle.Create( self.jesusmode_button )
-    self.jesusmode_button.unlockstats:SetDock( GwenPosition.Fill )
-    self.jesusmode_button.unlockstats:SetColor( self.unlocked_clr )
-    self.jesusmode_button.unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( self.jesusmode_txt ) self.tip_descrition:SetText( self.jesusmode_description ) self.tip_descrition:SizeToContents() end )
-
-    self.jesusmode_button.image = ImagePanel.Create( self.jesusmode_button )
-    self.jesusmode_button.image:SetDock( GwenPosition.Fill )
-    self.jesusmode_button.image:SetImage( self.jesusModeIMG )
-
-    self.tip_label = Label.Create( self.window )
-    self.tip_label:SetDock( GwenPosition.Bottom )
-    self.tip_label:SetHeight( Render:GetTextHeight( "A", 18 ) + 60 )
-    self.tip_label:SetMargin( Vector2( 10, 10 ), Vector2( 10, 10 ) )
-
-    self.tip_descrition = Label.Create( self.tip_label )
+    self.tip_descrition = Label.Create( tip_container )
     self.tip_descrition:SetText( self.noselected_description )
     self.tip_descrition:SetTextColor( Color( 220, 220, 220 ) )
     self.tip_descrition:SetTextSize( 12 )
     self.tip_descrition:SetDock( GwenPosition.Bottom )
     self.tip_descrition:SizeToContents()
 
-    self.tip_title = Label.Create( self.tip_label )
+    self.tip_title = Label.Create( tip_container )
     self.tip_title:SetDock( GwenPosition.Bottom )
     self.tip_title:SetText( self.abilities_txt )
     self.tip_title:SetTextSize( 20 )
@@ -419,6 +191,46 @@ end
 function Abilities:Clear()
     Network:Send( "Clear" )
     self:WindowClosed()
+end
+
+function Abilities:AbilityButton( pos, title, description, event, image )
+    local btnSize = Vector2( self.buttonsSize, self.buttonsSize )
+
+    local button = Button.Create( self.maincontainer )
+    button:SetSize( btnSize )
+    button:SetPosition( pos )
+    button:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( title ) self.tip_descrition:SetText( description ) self.tip_descrition:SizeToContents() end )
+    button:Subscribe( "Press", self, event )
+
+    local unlockstats = Rectangle.Create( button )
+    unlockstats:SetDock( GwenPosition.Fill )
+    unlockstats:SetColor( self.unlocked_clr )
+    unlockstats:Subscribe( "HoverEnter", self, function() self.tip_title:SetText( title ) self.tip_descrition:SetText( description ) self.tip_descrition:SizeToContents() end )
+
+    local buttonImage = ImagePanel.Create( button )
+    buttonImage:SetDock( GwenPosition.Fill )
+    buttonImage:SetImage( image )
+
+    local result = { button = button, unlockstats = unlockstats }
+
+    function result:GetPosition()
+        if result.button then return result.button:GetPosition() end
+    end
+
+    function result:SetEnabled( enabled )
+        if result.button then return result.button:SetEnabled( enabled ) end
+    end
+
+    function result:SetVisible( visible )
+        if result.button then return result.button:SetVisible( visible ) end
+    end
+
+    function result:SetToolTip( text )
+        if result.button then return result.button:SetToolTip( text ) end
+        if result.unlockstats then return result.unlockstats:SetToolTip( text ) end
+    end
+
+    return result
 end
 
 function Abilities:WingsuitUnlocker()
