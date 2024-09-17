@@ -13,7 +13,8 @@ function HDonate:EngHelp()
 		name = "Donate",
 		text =
 			"> Links:\n" ..
-			"    Buy - clck.ru/37FZkT\n \n" ..
+			"    Prices and payment methods - clck.ru/37FZkT\n" ..
+			"    Sponsorship support - boosty.to/jcgteam/donate\n \n" ..
 			"> VIP:\n" ..
 			"    - Prefix VIP.\n" ..
 			"    - Access to *VIP* tabs in the black market.\n" ..
@@ -58,8 +59,7 @@ function HDonate:EngHelp()
 			"> Other:\n" ..
 			"    Game currency\n" ..
 			"    Unban\n" ..
-			"    Advertising in game chat\n \n" ..
-			"Prices and other details - clck.ru/37FZkT"
+			"    Advertising in game chat"
 	} )
 end
 
@@ -71,7 +71,8 @@ function HDonate:RusHelp()
 		name = "Донат",
 		text =
 			"> Ссылки:\n" ..
-			"    Купить - clck.ru/37FZkT\n \n" ..
+			"    Цены и способы оплаты - clck.ru/37FZkT\n" ..
+			"    Спонсорская поддержка - boosty.to/jcgteam/donate\n \n" ..
 			"> VIP:\n" ..
 			"    - Префикс VIP.\n" ..
 			"    - Доступ ко вкладкам *VIP* в чёрном рынке.\n" ..
@@ -116,8 +117,7 @@ function HDonate:RusHelp()
 			"> Прочее:\n" ..
 			"    Игровая валюта\n" ..
 			"    Разблокировка\n" ..
-			"    Реклама в игровом чате\n \n" ..
-			"Цены и остальные подробности - clck.ru/37FZkT"
+			"    Реклама в игровом чате"
 	} )
 end
 

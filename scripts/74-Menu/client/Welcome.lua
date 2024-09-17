@@ -6,7 +6,7 @@ function WelcomeScreen:Lang()
 	self.title = "Welcome to Koast Freeroam!"
 	self.text = "We are glad to see you here, please read the rules and FAQ before starting the game.\n\n\n" ..
 	"> Telegram channel - t.me/koastfreeroam\n" ..
-	"> Discord server - clck.ru/37FZrU\n" ..
+	"> Discord server - discord.me/koastfreeroam\n" ..
 	"> Steam group - steamcommunity.com/groups/koastfreeroam\n" ..
 	"> YouTube channel - www.youtube.com/@jcgteam\n\n\n" ..
 	"Have a nice game, enjoy :)"

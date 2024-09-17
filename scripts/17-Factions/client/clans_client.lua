@@ -317,19 +317,19 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.leaveClan:SetTextPressedColor( btnColor )
 	self.manageClan.leaveClan:Subscribe( "Press", self, self.LeaveClan )
 
-	self.manageClan.mDownpanelsLabel = Label.Create( hometab )
-	self.manageClan.mDownpanelsLabel:SetDock( GwenPosition.Bottom )
-	self.manageClan.mDownpanelsLabel:SetMargin( Vector2( 0, 10 ), Vector2( 0, 0 ) )
-	self.manageClan.mDownpanelsLabel:SetHeight( 110 )
+	self.manageClan.mDownpanelsContainer = BaseWindow.Create( hometab )
+	self.manageClan.mDownpanelsContainer:SetDock( GwenPosition.Bottom )
+	self.manageClan.mDownpanelsContainer:SetMargin( Vector2( 0, 10 ), Vector2( 0, 0 ) )
+	self.manageClan.mDownpanelsContainer:SetHeight( 110 )
 
-	self.manageClan.cInfoLabel = GroupBox.Create( self.manageClan.mDownpanelsLabel )
+	self.manageClan.cInfoLabel = GroupBox.Create( self.manageClan.mDownpanelsContainer )
 	self.manageClan.cInfoLabel:SetDock( GwenPosition.Left )
 	self.manageClan.cInfoLabel:SetWidth( 280 )
 
 	self.manageClan.ciLabel = Label.Create( self.manageClan.cInfoLabel )
 	self.manageClan.ciLabel:SetDock( GwenPosition.Bottom )
 
-	self.manageClan.psettLabel = GroupBox.Create( self.manageClan.mDownpanelsLabel )
+	self.manageClan.psettLabel = GroupBox.Create( self.manageClan.mDownpanelsContainer )
 	self.manageClan.psettLabel:SetDock( GwenPosition.Fill )
 	self.manageClan.psettLabel:SetMargin( Vector2( 5, 0 ), Vector2( 0, 0 ) )
 

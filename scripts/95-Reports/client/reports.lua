@@ -148,7 +148,7 @@ function Reports:Lang()
 		self.categoryComboBox:AddItem( "Report a bug" )
 		self.categoryComboBox:AddItem( "Offtopic" )
 		self.sendButton:SetText( self.sendbutton_txt )
-		self.infoLabel:SetText( "Please do not spam or flood messages, and do not insult the administration. In case of violation, you can get your account blocked on the server!\n\nAlternative contact methods:\nDiscord - clck.ru/37FZrU\nTelegram - t.me/koastreport_bot\nSteam - steamcommunity.com/groups/koastfreeroam" )
+		self.infoLabel:SetText( "Please do not spam or flood messages, and do not insult the administration. In case of violation, you can get your account blocked on the server!\n\nAlternative contact methods:\nDiscord - discord.me/koastfreeroam\nTelegram - t.me/koastreport_bot\nSteam - steamcommunity.com/groups/koastfreeroam" )
 	end
 end
 

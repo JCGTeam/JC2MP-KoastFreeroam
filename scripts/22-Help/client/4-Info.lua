@@ -14,7 +14,7 @@ function HInfo:EngHelp()
 		text =
 			"> Links:\n" ..
 			"    Telegram      t.me/koastfreeroam\n" ..
-			"    Discord        clck.ru/37FZrU\n" ..
+			"    Discord        discord.me/koastfreeroam\n" ..
 			"    Steam           steamcommunity.com/groups/koastfreeroam\n" ..
 			"    YouTube      www.youtube.com/@jcgteam\n \n" ..
 			"> Official JCGTeam servers:\n" ..
