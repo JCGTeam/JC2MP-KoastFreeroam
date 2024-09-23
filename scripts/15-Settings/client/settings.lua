@@ -700,7 +700,7 @@ function Settings:EscPressed()
 end
 
 function Settings:ChangeWeather( value, name )
-	Events:Fire( "CastCenterText", { text = self.setweather_txt .. name, time = 2, color = Color.White } )
+	Events:Fire( "CastCenterText", { text = self.setweather_txt .. name, time = 2 } )
 	Network:Send( "SetWeather", { severity = value } )
 	self:Open()
 end

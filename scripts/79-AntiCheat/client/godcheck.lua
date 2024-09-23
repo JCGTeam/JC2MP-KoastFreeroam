@@ -10,8 +10,8 @@ function GodCheck:__init()
 	self.phealth = 1
 end
 
-function GodCheck:AntiCheat( args )
-	self.active = args.acActive
+function GodCheck:AntiCheat( active )
+	self.active = active
 end
 
 function GodCheck:LocalPlayerBulletHit( args )

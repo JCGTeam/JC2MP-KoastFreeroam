@@ -573,7 +573,7 @@ end
 function ServerMenu:CastHideMe()
 	self:SetWindowVisible( not self.active )
 	Network:Send( "ToggleHideMe" )
-	Events:Fire( "CastCenterText", { text = self.hidemetxt .. ( LocalPlayer:GetValue( "HideMe" ) and self.disabletxt or self.enabletxt ), time = 2, color = Color.White } )
+	Events:Fire( "CastCenterText", { text = self.hidemetxt .. ( LocalPlayer:GetValue( "HideMe" ) and self.disabletxt or self.enabletxt ), time = 2 } )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
@@ -582,7 +582,7 @@ function ServerMenu:CastPigeonMod()
 	self:SetWindowVisible( not self.active )
 
 	LocalPlayer:SetValue( "PigeonMod", not LocalPlayer:GetValue( "PigeonMod" ) )
-	Events:Fire( "CastCenterText", { text = self.pigeonmodtxt ..  ( LocalPlayer:GetValue( "PigeonMod" ) and self.enabletxt_2 or self.disabletxt_2 ), time = 2, color = Color.White } )
+	Events:Fire( "CastCenterText", { text = self.pigeonmodtxt ..  ( LocalPlayer:GetValue( "PigeonMod" ) and self.enabletxt_2 or self.disabletxt_2 ), time = 2 } )
 
 	local bs = LocalPlayer:GetBaseState()
 
