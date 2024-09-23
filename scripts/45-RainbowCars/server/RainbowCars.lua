@@ -17,7 +17,7 @@ function RainbowCars:__init()
     Events:Subscribe( "PlayerChat", self, self.PlayerChat )
 
     for p in Server:GetPlayers() do
-        if p:GetValue( "RainbowCar" ) == 1 then
+        if p:GetValue( "RainbowCar" ) then
             self.plrs[#self.plrs+1] = true
             if not self.PreTickEvent then
                 self.rTimer = Timer()

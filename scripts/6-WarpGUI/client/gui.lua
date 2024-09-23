@@ -280,7 +280,7 @@ function WarpGui:AcceptWarpClick( player )
 end
 
 function WarpGui:CenterText( args )
-	Events:Fire( "CastCenterText", { text = args.text, time = args.time, color = Color.White } )
+	Events:Fire( "CastCenterText", { text = args.text, time = args.time } )
 end
 
 --  Warp request

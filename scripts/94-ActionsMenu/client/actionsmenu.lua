@@ -192,7 +192,7 @@ function ActionsMenu:Heal()
 		Events:Fire( "CastCenterText", { text = self.pvpblock, time = 6, color = Color.Red } )
 	else
 		if LocalPlayer:GetHealth() >= 1 then
-			Events:Fire( "CastCenterText", { text = self.healnotneededtxt, time = 0.6, color = Color.White } )
+			Events:Fire( "CastCenterText", { text = self.healnotneededtxt, time = 0.6 } )
 		else
 			Network:Send( "HealMe" )
 			local sound = ClientSound.Create(AssetLocation.Game, {
@@ -275,7 +275,7 @@ function ActionsMenu:VehicleRepair()
 			Events:Fire( "CastCenterText", { text = self.pvpblock, time = 6, color = Color.Red } )
 		else
 			if vehicle:GetHealth() >= 1 then
-				Events:Fire( "CastCenterText", { text = self.healnotneededtxt, time = 0.6, color = Color.White } )
+				Events:Fire( "CastCenterText", { text = self.healnotneededtxt, time = 0.6 } )
 			else
 				Network:Send( "VehicleRepair" )
 

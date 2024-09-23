@@ -222,8 +222,10 @@ function Casino:CreateWindow()
 end
 
 function Casino:UpdateStavkaButton()
+	local stavkaValue = self.coinflip.stavka:GetValue()
+
 	if self.coinflip.stavka_ok_btn then
-		if self.coinflip.stavka:GetValue() <= 0 or self.coinflip.stavka:GetValue() > CASINO_CONFIGURATION.COINFLIPLIMIT or LocalPlayer:GetMoney() < self.coinflip.stavka:GetValue() or string.find( self.coinflip.stavka:GetValue(), "%." ) then
+		if stavkaValue <= 0 or stavkaValue > CASINO_CONFIGURATION.COINFLIPLIMIT or LocalPlayer:GetMoney() < stavkaValue or string.find( stavkaValue, "%." ) then
 			self.coinflip.stavka_ok_btn:SetEnabled( false )
 		else
 			self.coinflip.stavka_ok_btn:SetEnabled( true )
@@ -231,10 +233,9 @@ function Casino:UpdateStavkaButton()
 	end
 end
 
-function Casino:StartCoinflip( args )
+function Casino:StartCoinflip()
 	if self.coinflip.stavka then
 		Network:Send( "Coinflip", { stavka = self.coinflip.stavka:GetValue(), money = LocalPlayer:GetMoney() } )
-		self:UpdateMoneyString( args.new_money )
 		self:UpdateStavkaButton()
 	end
 end

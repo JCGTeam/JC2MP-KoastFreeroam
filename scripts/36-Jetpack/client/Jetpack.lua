@@ -39,7 +39,7 @@ end
 function Jetpack:UseJetpack()
 	Network:Send( "EnableJetpack" )
 
-	Events:Fire( "CastCenterText", { text = LocalPlayer:GetValue( "JP" ) and self.disable_txt or self.enable_txt, time = 2, color = Color.White } )
+	Events:Fire( "CastCenterText", { text = LocalPlayer:GetValue( "JP" ) and self.disable_txt or self.enable_txt, time = 2 } )
 end
 
 function Jetpack:initVars()

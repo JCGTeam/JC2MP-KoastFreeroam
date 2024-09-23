@@ -117,12 +117,10 @@ function Passive:NetworkObjectValueChange( args )
 	if args.key == "Passive" and args.object.__type == "LocalPlayer" then
 		if args.value then
 			Game:FireEvent( "ply.invulnerable" )
-			Events:Fire( "GetGod", {godactive = true} )
-			Events:Fire( "AntiCheat", {acActive = false} )
+			Events:Fire( "AntiCheat", false )
 		else
 			Game:FireEvent( "ply.vulnerable" )
-			Events:Fire( "GetGod", {godactive = false} )
-			Events:Fire( "AntiCheat", {acActive = true} )
+			Events:Fire( "AntiCheat", true )
 		end
 	end
 end

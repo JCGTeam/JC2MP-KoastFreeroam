@@ -161,8 +161,7 @@ function Boost:Render( args )
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
 	local vehicle = LocalPlayer:GetVehicle()
-	if not IsValid( vehicle ) then return end
-	if vehicle:GetDriver() ~= LocalPlayer then return end
+	if not vehicle then return end
 
 	self.delta  = args.delta
 	local land  = self:LandCheck(vehicle)
@@ -188,8 +187,9 @@ function Boost:Render( args )
 				LocalPlayer:SetValue( "VehBrake", true )
 			end
 
-			vehicle:SetLinearVelocity( Vector3.Zero )
-			vehicle:SetAngularVelocity( Vector3.Zero )
+			local vectorZero = Vector3.Zero
+			vehicle:SetLinearVelocity( vectorZero )
+			vehicle:SetAngularVelocity( vectorZero )
 
 			self.vpos = self.vpos or vehicle:GetPosition()
 			self.vangle = self.vangle or vehicle:GetAngle()
@@ -295,7 +295,9 @@ function Boost:PlaneCheck( vehicle )
 	end
 end
 
-function Boost:LocalPlayerEnterVehicle()
+function Boost:LocalPlayerEnterVehicle( args )
+	if not args.is_driver then return end
+
 	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 

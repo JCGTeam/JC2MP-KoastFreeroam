@@ -323,9 +323,10 @@ function Grenades:Render()
 		local pos_2d_c4max = Vector2( Render.Size.x / 1.0085 - c4maxwidth / 2 - imgaSize.x / 2, ( Render.Height - Render.Height * 0.22 ) - textbSize.y / 2 )
 		local pos_2d_text = Vector2( Render.Size.x - ( Render:GetTextWidth( text, textbSize.y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) ) ) - Render.Size.x / 40, ( Render.Height - Render.Height * 0.186 ) - textbSize.y / 2 )
 
-		if Game:GetSetting(4) >= 1 then
-			local sett_alpha = Game:GetSetting(4) * 2.25
-			local sett_alpha2 = Game:GetSetting(4) * 2
+		local gameAlpha = Game:GetSetting(4)
+		if gameAlpha >= 1 then
+			local sett_alpha = gameAlpha * 2.25
+			local sett_alpha2 = gameAlpha * 2
 
 			imga:SetPosition( pos_2d )
 			imga:SetAlpha( 201 - sett_alpha2 )
