@@ -680,7 +680,7 @@ function Shop:CreateSubCategory( category, subcategory_name )
 	if (subcategory_name == "Машины" or subcategory_name == "Мотоциклы" or subcategory_name == "Джипы" or subcategory_name == "Пикапы" or subcategory_name == "Автобусы" or subcategory_name == "Тяжи" or 
 	subcategory_name == "Трактора" or subcategory_name == "Вертолёты" or subcategory_name == "Самолёты" or subcategory_name == "Лодки" or subcategory_name == "DLC") then
 		local skin = RadioButtonController.Create( t.window )
-		skin:SetMargin( Vector2( 0, 5 ), Vector2( 0, 0 ) )
+		skin:SetMargin( Vector2( 0, 5 ), Vector2.Zero )
 		skin:SetHeight( 20 )
 		skin:SetDock( GwenPosition.Bottom )
 		local units = { "Декаль Панау", "Декаль Японцев", "Декаль Уларов", "Декаль Жнецов", "Декаль Тараканов"}

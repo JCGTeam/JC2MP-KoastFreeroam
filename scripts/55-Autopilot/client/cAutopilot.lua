@@ -18,7 +18,7 @@ function Autopilot:__init()
 	self.mouse_toggle_button = "M"
 
 	local vehicle = LocalPlayer:GetVehicle()
-	if IsValid(vehicle) and vehicle:GetDriver() == LocalPlayer then
+	if vehicle and vehicle:GetDriver() == LocalPlayer then
 		local model = vehicle:GetModelId()
 		if planes[model] and planes[model].available then
 			self.vehicle = vehicle

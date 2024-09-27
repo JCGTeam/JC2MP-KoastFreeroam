@@ -12,8 +12,8 @@ Controls.controls = {}
 Controls.held = {}
 -- Map of all actions pressed. Resets every frame.
 Controls.actionsBuffer = {}
-Controls.mousePosition = Vector2(0 , 0)
-Controls.mouseDelta = Vector2(0 , 0)
+Controls.mousePosition = Vector2.Zero
+Controls.mouseDelta = Vector2.Zero
 Controls.mouseControls = {}
 
 Controls.GetInputNameByControl = function(controlName)

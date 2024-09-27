@@ -10,12 +10,9 @@ function VTOL:__init()
 	self.MaxReverseThrust		=	1.5		--	The maximum speed a plane can go in reverse.	Default: 1.5
 	self.ThrustIncreaseFactor	=	1.05	--	How quickly thrust is increased.				Default: 1.05
 
-	if LocalPlayer:InVehicle() then
-		local vehicle = LocalPlayer:GetVehicle()
-
-		if vehicle:GetClass() == VehicleClass.Air then
-			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-		end
+	local vehicle = LocalPlayer:GetVehicle()
+	if vehicle and vehicle:GetDriver() == LocalPlayer and vehicle:GetClass() == VehicleClass.Air then
+		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	end
 
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
@@ -55,7 +52,7 @@ function VTOL:LocalPlayerInput( args )
 	if Game:GetState() ~= GUIState.Game then return end
 	local vehicle = LocalPlayer:GetVehicle()
 
-	if LocalPlayer:InVehicle() and IsValid( vehicle ) and vehicle:GetDriver() == LocalPlayer then
+	if vehicle and LocalPlayer:InVehicle() then
 		if self:CheckList( self.PlaneVehicles, vehicle:GetModelId() ) then
 			local vehicleVelocity = vehicle:GetLinearVelocity()
 

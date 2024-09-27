@@ -460,11 +460,11 @@ function Tasks:Render()
 end
 
 function Tasks:GameRender()
-	if not LocalPlayer:GetValue( "JobsVisible" ) or Game:GetState() ~= GUIState.Game or LocalPlayer:GetWorld() ~= DefaultWorld then return end
-
 	if self.window and self.window:GetVisible() == true then
 		self.window:SetVisible( false )
 	end
+
+	if not LocalPlayer:GetValue( "JobsVisible" ) or Game:GetState() ~= GUIState.Game or LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
 	if self.jobsTable then
 		local cameraPos = Camera:GetPosition()

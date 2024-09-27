@@ -83,7 +83,7 @@ function Reports:CreateWindow()
 	self.messageSymbolsLimitLabel:SetText( "0/" .. self.maxmessagesymbols )
 	self.messageSymbolsLimitLabel:SetDock( GwenPosition.Top )
 	self.messageSymbolsLimitLabel:SetAlignment( GwenPosition.Right )
-	self.messageSymbolsLimitLabel:SetMargin( Vector2( 0, 0 ), Vector2( 10, 0 ) )
+	self.messageSymbolsLimitLabel:SetMargin( Vector2.Zero, Vector2( 10, 0 ) )
 	self.messageSymbolsLimitLabel:SizeToContents()
 
 	self.eMailLabel = Label.Create( self.scroll )

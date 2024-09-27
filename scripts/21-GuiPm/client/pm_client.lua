@@ -72,7 +72,7 @@ function PM:__init( player )
 
 	self.GUI.PMDistrub = Button.Create( self.GUI.PMMessagesControlLabel )
 	self.GUI.PMDistrub:SetDock( GwenPosition.Right )
-	self.GUI.PMDistrub:SetMargin( Vector2( 0, 0 ), Vector2( 5, 0 ) )
+	self.GUI.PMDistrub:SetMargin( Vector2.Zero, Vector2( 5, 0 ) )
 	self.GUI.PMDistrub:SetText( "Не беспокоить" )
 	self.GUI.PMDistrub:SetSize( Vector2( Render:GetTextWidth( self.GUI.PMDistrub:GetText() ), 25 ) )
 	if LocalPlayer:GetValue( "PMDistrub" ) then
@@ -126,7 +126,7 @@ function PM:__init( player )
 	self.GUI.labelL = Label.Create( self.GUI.window )
 	self.GUI.labelL:SetText( "0/" .. self.maxmessagesymbols )
 	self.GUI.labelL:SetDock( GwenPosition.Bottom )
-	self.GUI.labelL:SetMargin( Vector2( 10, 0 ), Vector2( 0, 0 ) )
+	self.GUI.labelL:SetMargin( Vector2( 10, 0 ), Vector2.Zero )
 	self.GUI.labelL:SizeToContents()
 
 	self.GUI.window:Subscribe( "WindowClosed", self, self.CloseWindow )

@@ -50,7 +50,8 @@ function Boost:__init()
 		
 	self.settingSub = Network:Subscribe( "UpdateSettings", self, self.UpdateSettings )
 
-	if LocalPlayer:InVehicle() then
+	local vehicle = LocalPlayer:GetVehicle()
+	if vehicle and vehicle:GetDriver() == LocalPlayer then
 		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	end
@@ -135,7 +136,7 @@ function Boost:LocalPlayerInput( args )
 	if self.padEnabled and args.input == self.controllerAction and LocalPlayer:GetWorld() == DefaultWorld and Game:GetSetting(GameSetting.GamepadInUse) == 1 then
 		local vehicle = LocalPlayer:GetVehicle()
 
-		if vehicle and vehicle:GetDriver() == LocalPlayer and ( self:LandCheck( vehicle ) or self:BoatCheck( vehicle ) or self:HeliCheck( vehicle ) or self:PlaneCheck( vehicle ) ) then
+		if vehicle and ( self:LandCheck( vehicle ) or self:BoatCheck( vehicle ) or self:HeliCheck( vehicle ) or self:PlaneCheck( vehicle ) ) then
 			self:Boost( vehicle )
 		end
 	end

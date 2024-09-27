@@ -3,7 +3,7 @@ RaceMenuUtility = {}
 RaceMenuUtility.CreateTable = function(fontSize , rowNames)
 	local returnTable = Table.Create()
 	-- Not sure why this needs negative margin to look good, but it works.
-	returnTable:SetMargin(Vector2(0 , 0) , Vector2(0 , -fontSize))
+	returnTable:SetMargin(Vector2.Zero , Vector2(0 , -fontSize))
 	returnTable:SetColumnCount(2)
 	returnTable:SetColumnWidth(0 , 112)
 	
@@ -58,7 +58,7 @@ RaceMenuUtility.CreateCourseVoteControl = function()
 	local spacing = 4
 	
 	local opinion = Label.Create(subBase)
-	opinion:SetMargin(Vector2(0 , 4) , Vector2(0 , 0))
+	opinion:SetMargin(Vector2(0 , 4) , Vector2.Zero)
 	opinion:SetDock(GwenPosition.Left)
 	opinion:SetTextSize(16)
 	opinion:SetText("Рейтинг: ")
@@ -414,7 +414,7 @@ RaceMenuUtility.CreateLabeledTextBox = function(parent)
 	textBox:SetWidth(180)
 	
 	local label = Label.Create(base)
-	label:SetMargin(Vector2(4 , 3) , Vector2(0 , 0))
+	label:SetMargin(Vector2(4 , 3) , Vector2.Zero)
 	label:SetDock(GwenPosition.Fill)
 	label:SetTextSize(16)
 	

@@ -1,6 +1,6 @@
 characters3D = {
 	["G"] = {
-		{Vector2( 0 , 0 ) , Vector2( 0.45 , 0 )} ,
+		{Vector2.Zero , Vector2( 0.45 , 0 )} ,
 		{Vector2( 0.45 , 0 ) , Vector2( 0.45 , -0.675 )} ,
 		{Vector2( 0.45 , -0.675 ) , Vector2( 0 , -0.75 )} ,
 		{Vector2( 0 , -0.75 ) , Vector2( -0.4 , -0.55 )} ,

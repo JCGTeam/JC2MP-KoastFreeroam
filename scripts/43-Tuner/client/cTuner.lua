@@ -1333,7 +1333,7 @@ function Tuner:LocalPlayerInput( args )
 
 	local vehicle = LocalPlayer:GetVehicle()
 
-	if vehicle and vehicle:GetDriver() == LocalPlayer and LocalPlayer:InVehicle() then
+	if vehicle and LocalPlayer:InVehicle() then
 		if Key:IsDown(90) then
 			local vehicleVelocity = vehicle:GetLinearVelocity()
 

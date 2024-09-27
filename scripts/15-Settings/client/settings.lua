@@ -475,7 +475,7 @@ function Settings:LoadCategories()
 
 	self.subcategory3 = Label.Create( bkpanelsContainer )
 	self.subcategory3:SetDock( GwenPosition.Bottom )
-	self.subcategory3:SetMargin( Vector2( 0, 0 ), Vector2( 0, 5 ) )
+	self.subcategory3:SetMargin( Vector2.Zero, Vector2( 0, 5 ) )
 
 	local bkpanelsContainer = BaseWindow.Create( powers )
 	bkpanelsContainer:SetVisible( true )
@@ -540,7 +540,7 @@ function Settings:LoadCategories()
 
 	self.subcategory4 = Label.Create( nickcolor )
 	self.subcategory4:SetDock( GwenPosition.Top )
-	self.subcategory4:SetMargin( Vector2( 5, 10 ), Vector2( 0, 0 ) )
+	self.subcategory4:SetMargin( Vector2( 5, 10 ), Vector2.Zero )
 
 	self.nicknameColorPreview = Label.Create( nickcolor )
 	self.nicknameColorPreview:SetText( LocalPlayer:GetName() )
@@ -566,7 +566,7 @@ function Settings:LoadCategories()
 	self.setPlayerColorBtn:SetTextSize( self.textSize )
 	self.setPlayerColorBtn:SetHeight( btnHeight )
 	self.setPlayerColorBtn:SetDock( GwenPosition.Bottom )
-	self.setPlayerColorBtn:SetMargin( Vector2( 0, 5 ), Vector2( 0, 0 ) )
+	self.setPlayerColorBtn:SetMargin( Vector2( 0, 5 ), Vector2.Zero )
 	self.setPlayerColorBtn:Subscribe( "Up", function()
 		Network:Send( "SetPlyColor", { pcolor = self.lpColor } )
 		local sound = ClientSound.Create(AssetLocation.Game, {

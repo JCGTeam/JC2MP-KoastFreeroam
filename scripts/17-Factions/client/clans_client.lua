@@ -72,7 +72,7 @@ function ClanSystem:ModuleLoad()
 
 	self.clanMenu.bkpanelsLabel = Label.Create( clanslist )
 	self.clanMenu.bkpanelsLabel:SetDock( GwenPosition.Right )
-	self.clanMenu.bkpanelsLabel:SetMargin( Vector2( 5, 0 ), Vector2( 0, 0 ) )
+	self.clanMenu.bkpanelsLabel:SetMargin( Vector2( 5, 0 ), Vector2.Zero )
 	self.clanMenu.bkpanelsLabel:SetSize( Vector2( 250, 20 ) )
 
 	local groupBoxHeight = 100
@@ -129,7 +129,7 @@ function ClanSystem:ModuleLoad()
 	self.clanMenu.create:Subscribe( "Press", self, self.ShowCreate )
 
 	self.clanMenu.iLabel = GroupBox.Create( self.clanMenu.bkpanelsLabel )
-	self.clanMenu.iLabel:SetMargin( Vector2( 0, 0 ), Vector2( 0, 20 ) )
+	self.clanMenu.iLabel:SetMargin( Vector2.Zero, Vector2( 0, 20 ) )
 	self.clanMenu.iLabel:SetDock( GwenPosition.Bottom )
 	self.clanMenu.iLabel:SetHeight( 160 )
 	self.clanMenu.iLabel:SetVisible( false )
@@ -162,7 +162,7 @@ function ClanSystem:ModuleLoad()
 
 	self.createClan.bkpanelsLabel = Label.Create( clancreate )
 	self.createClan.bkpanelsLabel:SetDock( GwenPosition.Right )
-	self.createClan.bkpanelsLabel:SetMargin( Vector2( 5, 0 ), Vector2( 0, 0 ) )
+	self.createClan.bkpanelsLabel:SetMargin( Vector2( 5, 0 ), Vector2.Zero )
 	self.createClan.bkpanelsLabel:SetSize( Vector2( 250, 20 ) )
 
 	self.createClan.pLabel = GroupBox.Create( self.createClan.bkpanelsLabel )
@@ -226,11 +226,11 @@ function ClanSystem:ModuleLoad()
 
 	self.createClan.subcategory = GroupBox.Create( clancreate )
 	self.createClan.subcategory:SetDock( GwenPosition.Fill )
-	self.createClan.subcategory:SetMargin( Vector2( 5, 10 ), Vector2( 0, 0 ) )
+	self.createClan.subcategory:SetMargin( Vector2( 5, 10 ), Vector2.Zero )
 
 	self.createClan.subcategory2 = Label.Create( self.createClan.subcategory )
 	self.createClan.subcategory2:SetDock( GwenPosition.Top )
-	self.createClan.subcategory2:SetMargin( Vector2( 5, 10 ), Vector2( 0, 0 ) )
+	self.createClan.subcategory2:SetMargin( Vector2( 5, 10 ), Vector2.Zero )
 
 	self.createClan.clanColorPreview = Label.Create( self.createClan.subcategory )
 	self.createClan.clanColorPreview:SetText( "..." )
@@ -262,7 +262,7 @@ function ClanSystem:ModuleLoad()
 
 	self.manageClan.mBkpanelsLabel = Label.Create( hometab )
 	self.manageClan.mBkpanelsLabel:SetDock( GwenPosition.Right )
-	self.manageClan.mBkpanelsLabel:SetMargin( Vector2( 5, 0 ), Vector2( 0, 0 ) )
+	self.manageClan.mBkpanelsLabel:SetMargin( Vector2( 5, 0 ), Vector2.Zero )
 	self.manageClan.mBkpanelsLabel:SetSize( Vector2( 250, 20 ) )
 
 	self.manageClan.mcLabel = GroupBox.Create( self.manageClan.mBkpanelsLabel )
@@ -319,7 +319,7 @@ function ClanSystem:ModuleLoad()
 
 	self.manageClan.mDownpanelsContainer = BaseWindow.Create( hometab )
 	self.manageClan.mDownpanelsContainer:SetDock( GwenPosition.Bottom )
-	self.manageClan.mDownpanelsContainer:SetMargin( Vector2( 0, 10 ), Vector2( 0, 0 ) )
+	self.manageClan.mDownpanelsContainer:SetMargin( Vector2( 0, 10 ), Vector2.Zero )
 	self.manageClan.mDownpanelsContainer:SetHeight( 110 )
 
 	self.manageClan.cInfoLabel = GroupBox.Create( self.manageClan.mDownpanelsContainer )
@@ -331,11 +331,11 @@ function ClanSystem:ModuleLoad()
 
 	self.manageClan.psettLabel = GroupBox.Create( self.manageClan.mDownpanelsContainer )
 	self.manageClan.psettLabel:SetDock( GwenPosition.Fill )
-	self.manageClan.psettLabel:SetMargin( Vector2( 5, 0 ), Vector2( 0, 0 ) )
+	self.manageClan.psettLabel:SetMargin( Vector2( 5, 0 ), Vector2.Zero )
 
 	self.manageClan.ranks = ComboBox.Create( self.manageClan.psettLabel )
 	self.manageClan.ranks:SetDock( GwenPosition.Top )
-	self.manageClan.ranks:SetMargin( Vector2( 0, 5 ), Vector2( 0, 0 ) )
+	self.manageClan.ranks:SetMargin( Vector2( 0, 5 ), Vector2.Zero )
 	self.manageClan.ranks:SetHeight( 20 )
 	self.manageClan.ranks:AddItem( "Главный" )
 	self.manageClan.ranks:AddItem( "Заместитель" )
@@ -378,7 +378,7 @@ function ClanSystem:ModuleLoad()
 
 	self.manageClan.bkpanelsLabel = Label.Create( clansettings )
 	self.manageClan.bkpanelsLabel:SetDock( GwenPosition.Right )
-	self.manageClan.bkpanelsLabel:SetMargin( Vector2( 5, 0 ), Vector2( 0, 0 ) )
+	self.manageClan.bkpanelsLabel:SetMargin( Vector2( 5, 0 ), Vector2.Zero )
 	self.manageClan.bkpanelsLabel:SetSize( Vector2( 250, 20 ) )
 
 	self.manageClan.newsmngLabel = GroupBox.Create( self.manageClan.bkpanelsLabel )
@@ -448,11 +448,11 @@ function ClanSystem:ModuleLoad()
 
 	self.manageClan.subcategory = GroupBox.Create( clansettings )
 	self.manageClan.subcategory:SetDock( GwenPosition.Fill )
-	self.manageClan.subcategory:SetMargin( Vector2( 5, 10 ), Vector2( 0, 0 ) )
+	self.manageClan.subcategory:SetMargin( Vector2( 5, 10 ), Vector2.Zero )
 
 	self.manageClan.subcategory2 = Label.Create( self.manageClan.subcategory )
 	self.manageClan.subcategory2:SetDock( GwenPosition.Top )
-	self.manageClan.subcategory2:SetMargin( Vector2( 5, 10 ), Vector2( 0, 0 ) )
+	self.manageClan.subcategory2:SetMargin( Vector2( 5, 10 ), Vector2.Zero )
 
 	local row = self.clanMenu.list:GetSelectedRow()
 
@@ -494,7 +494,7 @@ function ClanSystem:ModuleLoad()
 
 	self.invitations.join = Button.Create( self.invitations.window )
 	self.invitations.join:SetDock( GwenPosition.Bottom )
-	self.invitations.join:SetMargin( Vector2( 0, 5 ), Vector2( 0, 0 ) )
+	self.invitations.join:SetMargin( Vector2( 0, 5 ), Vector2.Zero )
 	self.invitations.join:SetHeight( 35 )
 	self.invitations.join:SetTextSize( self.textSize )
 	self.invitations.join:SetTextHoveredColor( Color.SpringGreen )
