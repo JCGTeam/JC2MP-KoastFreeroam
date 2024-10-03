@@ -5,7 +5,9 @@ function Clock:__init()
 end
 
 function Clock:Render()
-	if Game:GetState() ~= GUIState.Game or Game:GetSetting(4) <= 1 then return end
+	local gameAlpha = Game:GetSetting(4)
+
+	if Game:GetState() ~= GUIState.Game or gameAlpha <= 1 then return end
 	if not LocalPlayer:GetValue( "ClockVisible" ) or LocalPlayer:GetValue( "HiddenHUD" ) then return end
 
 	local format = LocalPlayer:GetValue( "ClockPendosFormat" ) and "%I:%M:%S %p" or "%X"
@@ -13,7 +15,7 @@ function Clock:Render()
 	local time_txt = os.date( format )
 	local date_txt = os.date( "%d/%m/%Y" )
 
-	local sett_alpha = Game:GetSetting(4) * 2.25
+	local sett_alpha = gameAlpha * 2.25
 	local shadow_clr = Color( 25, 25, 25, sett_alpha )
 	local position = Vector2( 20, Render.Height * 0.31 )
 

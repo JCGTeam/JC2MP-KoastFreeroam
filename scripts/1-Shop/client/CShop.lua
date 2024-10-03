@@ -478,27 +478,27 @@ function Shop:MoveAppearance( player )
 		end
 		if righthand ~= nil and IsValid( righthand ) then
 			righthand:SetAngle( player:GetBoneAngle( "ragdoll_RightForeArm" ) )
-			local AppearanceOffset = righthand:GetAngle() * Vector3( 0, 0, 0 )
+			local AppearanceOffset = righthand:GetAngle() * Vector3.Zero
 			righthand:SetPosition( player:GetBonePosition( "ragdoll_RightForeArm" ) - AppearanceOffset ) 
 		end
 		if lefthand ~= nil and IsValid( lefthand ) then
 			lefthand:SetAngle( player:GetBoneAngle( "ragdoll_LeftForeArm" ) )
-			local AppearanceOffset = lefthand:GetAngle() * Vector3( 0, 0, 0 )
+			local AppearanceOffset = lefthand:GetAngle() * Vector3.Zero
 			lefthand:SetPosition( player:GetBonePosition( "ragdoll_LeftForeArm" ) - AppearanceOffset ) 
 		end
 		if legs ~= nil and IsValid( legs ) then
 			legs:SetAngle( player:GetBoneAngle( "ragdoll_Hips" ) )
-			local AppearanceOffset = legs:GetAngle() * Vector3( 0, 0, 0 )
+			local AppearanceOffset = legs:GetAngle() * Vector3.Zero
 			legs:SetPosition( player:GetBonePosition( "ragdoll_Hips" ) - AppearanceOffset ) 
 		end
 		if rightfoot ~= nil and IsValid( rightfoot ) then
 			rightfoot:SetAngle( player:GetBoneAngle( "ragdoll_RightFoot" ) )
-			local AppearanceOffset = rightfoot:GetAngle() * Vector3( 0, 0, 0 )
+			local AppearanceOffset = rightfoot:GetAngle() * Vector3.Zero
 			rightfoot:SetPosition( player:GetBonePosition( "ragdoll_RightFoot" ) - AppearanceOffset ) 
 		end
 		if leftfoot ~= nil and IsValid( leftfoot ) then
 			leftfoot:SetAngle( player:GetBoneAngle( "ragdoll_LeftFoot" ) )
-			local AppearanceOffset = leftfoot:GetAngle() * Vector3( 0, 0, 0 )
+			local AppearanceOffset = leftfoot:GetAngle() * Vector3.Zero
 			leftfoot:SetPosition( player:GetBonePosition( "ragdoll_LeftFoot" ) - AppearanceOffset ) 
 		end
 	end

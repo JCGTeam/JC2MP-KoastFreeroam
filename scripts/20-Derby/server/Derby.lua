@@ -217,7 +217,7 @@ function Derby:RespawnPlayers()
 			if (p.derbyPosition:Distance(p.player:GetPosition()) > 5) then
 				p.derbyVehicle:SetPosition(p.derbyPosition)
 				p.derbyVehicle:SetAngle(p.derbyAngle)
-				p.derbyVehicle:SetLinearVelocity(Vector3(0,0,0))
+				p.derbyVehicle:SetLinearVelocity(Vector3.Zero)
 			end
 			p.player:GetVehicle():SetHealth(1)
 		end

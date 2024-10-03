@@ -393,7 +393,9 @@ function Tasks:Render()
 		self.sound:SetParameter( 0, Game:GetSetting(GameSetting.MusicVolume) / 100 )
 	end
 
-	if Game:GetState() ~= GUIState.Game or Game:GetSetting(4) <= 1 or LocalPlayer:GetValue( "HiddenHUD" ) then return end
+	local gameAlpha = Game:GetSetting(4)
+
+	if Game:GetState() ~= GUIState.Game or gameAlpha <= 1 or LocalPlayer:GetValue( "HiddenHUD" ) then return end
 
 	if self.jobsTable then
 		local markersIsVisible = LocalPlayer:GetValue( "JobsMarkersVisible" ) and self.markers
@@ -402,7 +404,7 @@ function Tasks:Render()
 			local cameraPos = Camera:GetPosition()
 			local locationsCount = #self.locations
 
-			self.taskminimapblimp:SetAlpha( Game:GetSetting(4) / 100 )
+			self.taskminimapblimp:SetAlpha( gameAlpha / 100 )
 
 			local taskminimapblimpSize = self.taskminimapblimp:GetSize() / 2
 

@@ -38,7 +38,7 @@ end
 function RaceGUI.DrawTargetArrow( args )
 	-- Temporary hack that compensates for the fact that Camera functions return the pos/angle of
 	-- the next frame.
-	lastCameraPosition = cameraPosition or Vector3(0,0,0)
+	lastCameraPosition = cameraPosition or Vector3.Zero
 	cameraPosition = Camera:GetPosition()
 	
 	-- Calculate position.

@@ -26,7 +26,7 @@ function FreeCam:__init()
 	self.controltip_size = 15
 
 	self.active = false
-	self.translation = Vector3( 0, 0, 0 )
+	self.translation = Vector3.Zero
 	self.position = Vector3( 0, 500, 0 )
 	self.angle = Angle( 0, 0, 0 )
 
@@ -124,7 +124,7 @@ function FreeCam:UpdateCamera()
 		self.angle = Angle( Camera:GetAngle().yaw, 0, 0 )
 	end
 	-- Set translation
-	self.translation = Vector3( 0, 0, 0 )
+	self.translation = Vector3.Zero
 	if Input:GetValue(Action.MoveForward) >= 65535 then -- up
 		self.translation = self.translation + Vector3( 0, 0, -1 )
 	end

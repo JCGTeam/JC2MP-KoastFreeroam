@@ -15,9 +15,7 @@ function Tuner:__init()
 
 	local vehicle = LocalPlayer:GetVehicle()
 	if vehicle then
-		self.vehicleFly = self:CheckList( self.planeVehicles, vehicle:GetModelId() ) and true or false
-	else
-		self.vehicleFly = false
+		self.vehicleFly = self:CheckList( self.planeVehicles, vehicle:GetModelId() ) and true
 	end
 
 	self.MaxThrust = 5
@@ -55,14 +53,15 @@ function Tuner:__init()
 
 	if vehicle and vehicle:GetDriver() == LocalPlayer then
 		self:InitVehicle( vehicle )
+
 		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
 		self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp )
 	end
 
 	Network:Subscribe( "ToggleNeonLight", self, self.ToggleNeonLight )
 
 	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "Render", self, self.Render )
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.EnterVehicle )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.ExitVehicle )
 	Events:Subscribe( "EntitySpawn", self, self.EntitySpawn )
@@ -237,16 +236,6 @@ function Tuner:ToggleNeonLight( args )
 end
 
 function Tuner:Render()
-	for v in Client:GetVehicles() do
-		local vId = v:GetId()
-		local neon = self.neons[vId]
-
-		if neon then
-			local neonPos = v:GetPosition() + Vector3.Up
-			neon:SetPosition( neonPos )
-		end
-	end
-
 	local is_visible = self.active and (Game:GetState() == GUIState.Game)
 
     if self.gui.window:GetVisible() ~= is_visible then
@@ -259,6 +248,16 @@ function Tuner:Render()
 end
 
 function Tuner:PostTick()
+	for v in Client:GetVehicles() do
+		local vId = v:GetId()
+		local neon = self.neons[vId]
+
+		if neon then
+			local neonPos = v:GetPosition() + Vector3.Up
+			neon:SetPosition( neonPos )
+		end
+	end
+
 	if self.SyncTimer:GetSeconds() <= 1 then return end
 
 	for v in Client:GetVehicles() do
@@ -341,12 +340,14 @@ function Tuner:InitGUI()
 	local vehicle = LocalPlayer:GetVehicle()
 	if not vehicle then return end
 
-	if vehicle:GetDriver() == LocalPlayer and vehicle:GetClass() == VehicleClass.Land then
+	local vehicleClass = vehicle:GetClass()
+
+	if vehicle:GetDriver() == LocalPlayer and vehicleClass == VehicleClass.Land then
 		self.gui.veh.window:Subscribe( "Render", self, self.VehicleUpdate )
 	else
 		self.gui.veh.window:Subscribe( "Render", self, self.OtherVehicleUpdate )
 	end
-	if vehicle:GetClass() == VehicleClass.Land then
+	if vehicleClass == VehicleClass.Land then
 		self.gui.trans.window:Subscribe( "Render", self, self.TransmissionUpdate )
 		self.gui.susp.window:Subscribe( "Render", self, self.SuspensionUpdate )
 		self.gui.aero.window:Subscribe( "Render", self, self.AerodynamicsUpdate )
@@ -357,7 +358,7 @@ function Tuner:InitGUI()
 		self.gui.window:SetSize( Vector2( 360, 465 ) )
 	end )
 
-	if vehicle:GetClass() == VehicleClass.Land then
+	if vehicleClass == VehicleClass.Land then
 		self.gui.trans.button = self.gui.tabs:AddPage("Трансмиссия", self.gui.trans.window)
 		self.gui.trans.button:Subscribe( "Press", function()
 			local gears = self.trans:GetMaxGear()
@@ -426,7 +427,7 @@ function Tuner:InitGUI()
 	end )
 
 	self:InitVehicleGUI()
-	if vehicle:GetClass() == VehicleClass.Land then
+	if vehicleClass == VehicleClass.Land then
 		self:InitTransmissionGUI()
 		self:InitSuspensionGUI()
 	end
@@ -610,9 +611,11 @@ function Tuner:InitAerodynamicsGUI()
 
 	if not vehicle then return end
 
+	local vehicleClass = vehicle:GetClass()
+
 	self.vehicleFly = self:CheckList( self.planeVehicles, vehicle:GetModelId() ) and true or false
 
-	if vehicle:GetClass() == VehicleClass.Land then
+	if vehicleClass == VehicleClass.Land then
 		self.gui.aero.labels = {}
 		self.gui.aero.getters = {}
 		self.gui.aero.setters = {}
@@ -718,7 +721,7 @@ function Tuner:InitAerodynamicsGUI()
 	end
 
 	self.gui.aero.fly = CheckBox.Create( self.gui.aero.window )
-	if vehicle:GetClass() == VehicleClass.Land then
+	if vehicleClass == VehicleClass.Land then
 		self.gui.aero.fly:SetPosition( Vector2( 5, 160 ))
 	else
 		self.gui.aero.fly:SetPosition( Vector2( 5, 5 ))
@@ -732,7 +735,7 @@ function Tuner:InitAerodynamicsGUI()
 	self.gui.aero.flyT:SetPosition( self.gui.aero.fly:GetPosition() + Vector2( 20, 3 ) )
 	self.gui.aero.flyT:SizeToContents()
 
-	if vehicle:GetClass() == VehicleClass.Land then
+	if vehicleClass == VehicleClass.Land then
 		for i, label in ipairs(self.gui.aero.labels) do
 			label:SetPosition( Vector2( 5, 5 + 22 * (i - 1) )) 
 			label:SizeToContents()
@@ -1367,10 +1370,12 @@ function Tuner:EnterVehicle( args )
 	end
 
 	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe( "KeyUp", self, self.KeyUp ) end
 
 	if args.is_driver then
-		self:InitVehicle(args.vehicle)
+		self:InitVehicle( args.vehicle )
+
 		self.CurrentThrust = 0
 		self.CarFlyLandThrust = 1
 		self.peredacha = 1
@@ -1379,6 +1384,7 @@ end
 
 function Tuner:ExitVehicle( args )
 	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
 
 	if self.veh and args.vehicle == self.veh then
