@@ -67,10 +67,12 @@ end
 
 function WidgetsManager:Render()
 	if LocalPlayer:GetValue( "BestRecordVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) and Game:GetState() == GUIState.Game then
-		if Game:GetSetting(4) >= 1 then
+		local gameAlpha = Game:GetSetting(4)
+
+		if gameAlpha >= 1 then
 			if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
-			local sett_alpha = Game:GetSetting(4) * 2.25
+			local sett_alpha = gameAlpha * 2.25
 
 			if self.object then
 				local record = self.object:GetValue("S")

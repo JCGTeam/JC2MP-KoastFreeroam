@@ -16,7 +16,7 @@ function AdminTab:__init(...) ; TabBase.__init(self , "Админ" , ...)
 	self.motdTextBox = textBox
 	
 	local button = Button.Create(base)
-	button:SetMargin(Vector2(4 , 0) , Vector2(0 , 0))
+	button:SetMargin(Vector2(4 , 0) , Vector2.Zero)
 	button:SetPadding(Vector2(8 , 0) , Vector2(8 , 0))
 	button:SetDock(GwenPosition.Left)
 	button:SetTextSize(16)

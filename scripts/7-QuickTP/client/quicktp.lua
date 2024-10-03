@@ -162,14 +162,14 @@ function QuickTP:PostRender()
 	if self.selection < 0 then self.selection = self.selection + count end
 
 	if self.border then
-		Render:FillArea( Vector2( 0, 0 ), Render.Size, self.backgroundColor )
+		Render:FillArea( Vector2.Zero, Render.Size, self.backgroundColor )
 	end
 
 	if self.sound then
 		self.sound:SetPosition( Camera:GetPosition() )
 	end
 
-	Render:FillArea( Vector2( 0, 0 ), Render.Size, Color( self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b, self.backgroundColor.a * alpha ) )
+	Render:FillArea( Vector2.Zero, Render.Size, Color( self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b, self.backgroundColor.a * alpha ) )
 
 	if animplay then
 		if count < 3 then

@@ -29,6 +29,7 @@ function CenterText:Render()
             self.textF = nil
             self.timeF = nil
             self.color = nil
+            self.size = nil
 
             Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil
             return

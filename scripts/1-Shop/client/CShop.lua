@@ -478,27 +478,27 @@ function Shop:MoveAppearance( player )
 		end
 		if righthand ~= nil and IsValid( righthand ) then
 			righthand:SetAngle( player:GetBoneAngle( "ragdoll_RightForeArm" ) )
-			local AppearanceOffset = righthand:GetAngle() * Vector3( 0, 0, 0 )
+			local AppearanceOffset = righthand:GetAngle() * Vector3.Zero
 			righthand:SetPosition( player:GetBonePosition( "ragdoll_RightForeArm" ) - AppearanceOffset ) 
 		end
 		if lefthand ~= nil and IsValid( lefthand ) then
 			lefthand:SetAngle( player:GetBoneAngle( "ragdoll_LeftForeArm" ) )
-			local AppearanceOffset = lefthand:GetAngle() * Vector3( 0, 0, 0 )
+			local AppearanceOffset = lefthand:GetAngle() * Vector3.Zero
 			lefthand:SetPosition( player:GetBonePosition( "ragdoll_LeftForeArm" ) - AppearanceOffset ) 
 		end
 		if legs ~= nil and IsValid( legs ) then
 			legs:SetAngle( player:GetBoneAngle( "ragdoll_Hips" ) )
-			local AppearanceOffset = legs:GetAngle() * Vector3( 0, 0, 0 )
+			local AppearanceOffset = legs:GetAngle() * Vector3.Zero
 			legs:SetPosition( player:GetBonePosition( "ragdoll_Hips" ) - AppearanceOffset ) 
 		end
 		if rightfoot ~= nil and IsValid( rightfoot ) then
 			rightfoot:SetAngle( player:GetBoneAngle( "ragdoll_RightFoot" ) )
-			local AppearanceOffset = rightfoot:GetAngle() * Vector3( 0, 0, 0 )
+			local AppearanceOffset = rightfoot:GetAngle() * Vector3.Zero
 			rightfoot:SetPosition( player:GetBonePosition( "ragdoll_RightFoot" ) - AppearanceOffset ) 
 		end
 		if leftfoot ~= nil and IsValid( leftfoot ) then
 			leftfoot:SetAngle( player:GetBoneAngle( "ragdoll_LeftFoot" ) )
-			local AppearanceOffset = leftfoot:GetAngle() * Vector3( 0, 0, 0 )
+			local AppearanceOffset = leftfoot:GetAngle() * Vector3.Zero
 			leftfoot:SetPosition( player:GetBonePosition( "ragdoll_LeftFoot" ) - AppearanceOffset ) 
 		end
 	end
@@ -680,7 +680,7 @@ function Shop:CreateSubCategory( category, subcategory_name )
 	if (subcategory_name == "Машины" or subcategory_name == "Мотоциклы" or subcategory_name == "Джипы" or subcategory_name == "Пикапы" or subcategory_name == "Автобусы" or subcategory_name == "Тяжи" or 
 	subcategory_name == "Трактора" or subcategory_name == "Вертолёты" or subcategory_name == "Самолёты" or subcategory_name == "Лодки" or subcategory_name == "DLC") then
 		local skin = RadioButtonController.Create( t.window )
-		skin:SetMargin( Vector2( 0, 5 ), Vector2( 0, 0 ) )
+		skin:SetMargin( Vector2( 0, 5 ), Vector2.Zero )
 		skin:SetHeight( 20 )
 		skin:SetDock( GwenPosition.Bottom )
 		local units = { "Декаль Панау", "Декаль Японцев", "Декаль Уларов", "Декаль Жнецов", "Декаль Тараканов"}

@@ -7,7 +7,7 @@ function HUD:DrawHUD()
 		Vector2( 0.09, 0 )
 	)
 	self:DrawLineHUD(
-		Vector2( 0, 0 ),
+		Vector2.Zero,
 		Vector2( 0, 0.09 )
 	)
 

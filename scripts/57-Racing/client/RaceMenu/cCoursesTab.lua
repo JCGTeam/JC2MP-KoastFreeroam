@@ -71,7 +71,7 @@ function CoursesTab:__init(...) ; TabBase.__init(self , "Карты" , ...)
 	cells[2]:SizeToChildren()
 	
 	self.tabControl = TabControl.Create(self.rightArea)
-	self.tabControl:SetMargin(Vector2(0 , 4) , Vector2(0 , 0))
+	self.tabControl:SetMargin(Vector2(0 , 4) , Vector2.Zero)
 	self.tabControl:SetDock(GwenPosition.Fill)
 	self.tabControl:SetTabStripPosition(GwenPosition.Top)
 	
@@ -85,7 +85,7 @@ function CoursesTab:CreateRecordsTab()
 	self.recordsPage = tabButton:GetPage()
 	
 	self.recordsList = SortedList.Create(self.recordsPage)
-	self.recordsList:SetMargin(Vector2(0 , 0) , Vector2(0 , 4))
+	self.recordsList:SetMargin(Vector2.Zero , Vector2(0 , 4))
 	self.recordsList:SetDock(GwenPosition.Fill)
 	self.recordsList:AddColumn("Ранг" , 40)
 	self.recordsList:AddColumn("Игрок")
@@ -99,7 +99,7 @@ function CoursesTab:CreateRecordsTab()
 	local CreateButton = function(text , dock)
 		local button = Button.Create(buttonsBase)
 		if dock ~= GwenPosition.Right then
-			button:SetMargin(Vector2(0 , 0) , Vector2(40 , 0))
+			button:SetMargin(Vector2.Zero , Vector2(40 , 0))
 		end
 		button:SetPadding(Vector2(2 , 0) , Vector2(2 , 0))
 		button:SetDock(dock)

@@ -53,8 +53,9 @@ end
 
 function Location:IsActive( position, scale )
 	local position0 = PDA:IsUsingGamepad() and (Render.Size / 2) or Mouse:GetPosition()
-	local position1 = position - (Location.Icon.Size * scale / 2)
-	local position2 = position + (Location.Icon.Size * scale / 2)
+	local iconSize = (Location.Icon.Size * scale / 2)
+	local position1 = position - iconSize
+	local position2 = position + iconSize
 
 	if position0.x >= position1.x and position0.y >= position1.y and position0.x <= position2.x and position0.y <= position2.y then
 		return true
@@ -64,7 +65,8 @@ function Location:IsActive( position, scale )
 end
 
 function Location:DrawIcon( position, scale )
-	Location.Icon.Sheet:Draw( position - (Location.Icon.Size * scale / 2), Location.Icon.Size * scale, Location.Icon.UV[self.type], Location.Icon.UV[self.type] + Location.Icon.UVSize )
+	local iconSize = Location.Icon.Size * scale
+	Location.Icon.Sheet:Draw( position - (iconSize / 2), iconSize, Location.Icon.UV[self.type], Location.Icon.UV[self.type] + Location.Icon.UVSize )
 end
 
 function Location:Draw( position, scale )
@@ -73,7 +75,9 @@ end
 
 function Location:DrawTitle(position, scale)
 	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
-	Render:DrawShadowedText( position - (Render:GetTextSize(self.name, 21) / 2) + (Vector2.Down * (Location.Icon.Size.y / 2) * scale) + (Vector2.Down * 21 / 2), self.name, Color.White, Color.Black, 21 )
+
+	local textSize = 21
+	Render:DrawShadowedText( position - (Render:GetTextSize(self.name, textSize) / 2) + (Vector2.Down * (Location.Icon.Size.y / 2) * scale) + (Vector2.Down * textSize / 2), self.name, Color.White, Color.Black, textSize )
 end
 
 Map = {
@@ -570,6 +574,7 @@ function Map:Draw()
 	local scale = Map.IconScale
 	local locations = Map.Locations
 	local isUsingGamepad = PDA:IsUsingGamepad()
+	local scaleFactor = scale * (isUsingGamepad and 2 or 1)
 
 	if Map.LocationsVisible then
 		Map.ActiveLocation = nil
@@ -579,7 +584,7 @@ function Map:Draw()
 			local position = Map:WorldToScreen( location.position )
 
 			if position.x > 0 and position.y > 0 and position.x < Render.Width and position.y < Render.Height then
-				if location:IsActive( position, scale * (isUsingGamepad and 2 or 1) ) then
+				if location:IsActive( position, scaleFactor ) then
 					Map.ActiveLocation = location
 				end
 
@@ -590,12 +595,12 @@ function Map:Draw()
 
 	local text_clr = Color.White
 	local text_shadow = Color.Black
-	local background_clr = Color( 0, 0, 0, 150 )
 
 	if rendermap then
 		local text_size = 14
 		local pId = LocalPlayer:GetId()
 		local pWorldId = LocalPlayer:GetWorld():GetId()
+		local background_clr = Color( 0, 0, 0, 150 )
 
 		for _, player in pairs( Map.Players ) do
 			if player.id ~= pId and player.worldId == pWorldId then

@@ -159,7 +159,7 @@ function GameModesMenu:CreateWindow()
 	self.mainButton.txtlabel_gm = Label.Create( self.scroll_control )
 	self.mainButton.txtlabel_gm:SetText( "Игровые режимы:" )
 	self.mainButton.txtlabel_gm:SetDock( GwenPosition.Top )
-	self.mainButton.txtlabel_gm:SetMargin( Vector2( 5, 10 ), Vector2( 0, 0 ) )
+	self.mainButton.txtlabel_gm:SetMargin( Vector2( 5, 10 ), Vector2.Zero )
 	self.mainButton.txtlabel_gm:SizeToContents()
 
 	self.mainButton.scroll_gm = ScrollControl.Create( self.scroll_control )
@@ -182,7 +182,7 @@ function GameModesMenu:CreateWindow()
 	self.mainButton.txtlabel_mg = Label.Create( self.scroll_control )
 	self.mainButton.txtlabel_mg:SetText( "Прочие:" )
 	self.mainButton.txtlabel_mg:SetDock( GwenPosition.Top )
-	self.mainButton.txtlabel_mg:SetMargin( Vector2( 5, 0 ), Vector2( 0, 0 ) )
+	self.mainButton.txtlabel_mg:SetMargin( Vector2( 5, 0 ), Vector2.Zero )
 	self.mainButton.txtlabel_mg:SizeToContents()
 
 	spacing = textWidth / 1.2 + 15

@@ -35,17 +35,16 @@ function FirstPerson:CalcView()
 	local position = LocalPlayer:GetBonePosition( "ragdoll_Head" )
 	local vehicle = LocalPlayer:GetVehicle()
 
-	if LocalPlayer:InVehicle() then
+	if vehicle and LocalPlayer:InVehicle() then
 		local vehicleModel = vehicle:GetModelId()
 
-		if IsValid(vehicle) and self.bering[vehicleModel] then
+		if self.bering[vehicleModel] then
 			position = vehicle:GetPosition() + ( vehicle:GetAngle() * Vector3( 0, 6.0, -9 ) )
-		end
-		if IsValid(vehicle) and self.aero[vehicleModel] then
+		elseif self.aero[vehicleModel] then
 			position = vehicle:GetPosition() + ( vehicle:GetAngle() * Vector3( 0, 4.4, -10.5 ) )
 		end
 		position = position + ( Camera:GetAngle() * Vector3( 0, 0, 0.3 ) )
-		if IsValid(vehicle) and self.bikes[vehicleModel] then
+		if self.bikes[vehicleModel] then
 			Camera:SetFOV( 0.8 )
 		else
 			Camera:SetFOV( 0.5 )

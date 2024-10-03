@@ -1,7 +1,7 @@
 class 'JoinLeave'
 
 function JoinLeave:__init()
-	self.geoip = require( "GeoIP" )
+	self.geoIP = require( "GeoIP" )
 
 	self.languageslist = { 
         ["RU"] = true,
@@ -18,16 +18,20 @@ function JoinLeave:__init()
 end
 
 function JoinLeave:PlayerJoin( args )
+	local pIP = args.player:GetIP()
+
 	args.player:SetNetworkValue( "GameMode", "FREEROAM" )
-	if self.geoip.Query( args.player:GetIP() )["status"] ~= "fail" then
-		args.player:SetNetworkValue( "Country", self.geoip.Query( args.player:GetIP() )["countryCode"] )
+
+	local geoIPResult = self.geoIP.Query( pIP )
+	if geoIPResult["status"] ~= "fail" then
+		args.player:SetNetworkValue( "Country", geoIPResult["countryCode"] )
 	else
 		args.player:SetNetworkValue( "Country", "N/A" )
 	end
 
 	Network:Broadcast( "PlayerJoin", { player = args.player } )
 
-	Events:Fire( "ToDiscordConsole", { text = ">" .. args.player:GetName() .. " joined to the server. |" .. " SteamID: " .. tostring( args.player:GetSteamId() ) .. " IP: " .. tostring( args.player:GetIP() ) } )
+	Events:Fire( "ToDiscordConsole", { text = ">" .. args.player:GetName() .. " joined to the server. |" .. " SteamID: " .. tostring( args.player:GetSteamId() ) .. " IP: " .. tostring( pIP ) } )
 
 	local pcountry = args.player:GetValue( "Country" )
 

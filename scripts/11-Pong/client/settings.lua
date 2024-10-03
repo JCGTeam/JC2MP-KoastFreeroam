@@ -34,7 +34,7 @@ cpu_difficulty = 1.5
 status_text = ""
 status_colour = Color(0, 0, 0)
 
-mouse_last = Vector2(0, 0)
+mouse_last = Vector2.Zero
 
 difficulty_level = {
 	["noob"] = {1, 4, 2.5},

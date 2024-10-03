@@ -15,7 +15,7 @@ function CameraView:__init()
 
 	self.t = {} -- translation vectors history
 	for j = 0, 10 do
-		self.t[j] = Vector3( 0, 0, 0 )
+		self.t[j] = Vector3.Zero
 	end
 	self.s = {} -- speed history
 	for j = 0, 10 do

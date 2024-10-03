@@ -34,7 +34,7 @@ function M.DrawNextTargetCheckpoint(pos)
 	Render:FillArea(pos + Vector2(-2 , -2) , Vector2(2 , 2) , settings.minimapCheckpointColor2)
 	Render:FillArea(pos + Vector2(1 , -2) , Vector2(2 , 2) , settings.minimapCheckpointColor2)
 	Render:FillArea(pos + Vector2(-2 , 1) , Vector2(2 , 2) , settings.minimapCheckpointColor2)
-	Render:FillArea(pos + Vector2(1 , 1) , Vector2(2 , 2) , settings.minimapCheckpointColor2)
+	Render:FillArea(pos + Vector2.One , Vector2(2 , 2) , settings.minimapCheckpointColor2)
 	
 	Render:FillArea(pos + Vector2(-1 , -2) , Vector2(3 , 1) , settings.minimapCheckpointColor1)
 	Render:FillArea(pos + Vector2(-1 , 2) , Vector2(3 , 1) , settings.minimapCheckpointColor1)

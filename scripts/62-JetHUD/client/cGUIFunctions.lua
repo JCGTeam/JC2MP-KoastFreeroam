@@ -21,7 +21,7 @@ M.DrawLine3D = function( pos1 , pos2 , color  )
 end
 
 M.DrawChar3D = function( char , color , pos , angle , scale )
-	if not pos then pos = Vector3( 0, 0, 0 ) end
+	if not pos then pos = Vector3.Zero end
 	if not scale then scale = 0.05 end
 
 	local lines = characters3D[char]

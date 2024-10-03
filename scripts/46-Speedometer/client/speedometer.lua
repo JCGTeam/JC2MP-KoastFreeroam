@@ -243,7 +243,8 @@ function Speedometer:Render()
 	local speed_text = string.format( "%.f", speed )
 	local speed_size = Render:GetTextSize( speed_text, self.speed_text_size )
 
-	local vehicleVelocity = -vehicle:GetAngle() * vehicle:GetLinearVelocity()
+	local vehicleAngle = vehicle:GetAngle()
+	local vehicleVelocity = -vehicleAngle * vehicle:GetLinearVelocity()
 	local currentGear = vehicle:GetTransmission():GetGear()
 
 	local gearString = "1"
@@ -262,11 +263,12 @@ function Speedometer:Render()
 
 	local unit_text = self:GetUnitString()
 	local unit_size = Render:GetTextSize( unit_text, self.unit_text_size )
-	local angle = vehicle:GetAngle() * Angle( math.pi, 0, math.pi )
+	local angle = vehicleAngle * Angle( math.pi, 0, math.pi )
 
 	local factor = math.clamp( vehicle:GetHealth() - 0.4, 0.0, 0.6 ) * 2.5
 
-	local col = math.lerp( LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.zHealth, LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.fHealth, factor )
+	local vehBrake = LocalPlayer:GetValue( "VehBrake" )
+	local col = math.lerp( vehBrake and self.bHealth or self.zHealth, vehBrake and self.bHealth or self.fHealth, factor )
 	local textcol = col
 
 	local text_col = Color.White
@@ -312,7 +314,8 @@ function Speedometer:GameRender()
 	local speed_text = string.format( "%.f", speed )
 	local speed_size = Render:GetTextSize( speed_text, self.speed_text_size )
 
-	local vehicleVelocity = -vehicle:GetAngle() * vehicle:GetLinearVelocity()
+	local vehicleAngle = vehicle:GetAngle()
+	local vehicleVelocity = -vehicleAngle * vehicle:GetLinearVelocity()
 	local currentGear = vehicle:GetTransmission():GetGear()
 
 	local gearString = "1"
@@ -331,11 +334,12 @@ function Speedometer:GameRender()
 
 	local unit_text = self:GetUnitString()
 	local unit_size = Render:GetTextSize( unit_text, self.unit_text_size )
-	local angle = vehicle:GetAngle() * Angle( math.pi, 0, math.pi )
+	local angle = vehicleAngle * Angle( math.pi, 0, math.pi )
 
 	local factor = math.clamp( vehicle:GetHealth() - 0.4, 0.0, 0.6 ) * 2.5
 
-	local col = math.lerp( LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.zHealth, LocalPlayer:GetValue( "VehBrake" ) and self.bHealth or self.fHealth, factor )
+	local vehBrake = LocalPlayer:GetValue( "VehBrake" )
+	local col = math.lerp( vehBrake and self.bHealth or self.zHealth, vehBrake and self.bHealth or self.fHealth, factor )
 	local textcol = col
 
 	local text_col = Color.White
@@ -370,7 +374,7 @@ function Speedometer:GameRender()
 
 	Render:SetTransform( t )
 
-	self:DrawShadowedText3( Vector3( 0, 0, 0 ), speed_text, textcol, self.speed_text_size )
+	self:DrawShadowedText3( Vector3.Zero, speed_text, textcol, self.speed_text_size )
 	self:DrawShadowedText3( Vector3( speed_size.x + 24, (speed_size.y - unit_size.y)/2, 0), unit_text, text_col, self.unit_text_size )
 
 	local bar_pos = Vector3( 0, text_size.y + 4, 0 )

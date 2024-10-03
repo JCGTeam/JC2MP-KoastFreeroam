@@ -88,7 +88,7 @@ function Abilities:__init()
 
     local topcontainer = BaseWindow.Create( self.window )
     topcontainer:SetHeight( Render:GetTextHeight( "A", 18 ) + 10 )
-    topcontainer:SetMargin( Vector2( 0, 0 ), Vector2( 0, 0 ) )
+    topcontainer:SetMargin( Vector2.Zero, Vector2.Zero )
     topcontainer:SetDock( GwenPosition.Top )
 
     local topcontainerbk = BaseWindow.Create( topcontainer )
@@ -96,7 +96,7 @@ function Abilities:__init()
 
     self.money_text = Label.Create( topcontainerbk )
     self.money_text:SetDock( GwenPosition.Left )
-    self.money_text:SetMargin( Vector2( 10, 5 ), Vector2( 0, 0 ) )
+    self.money_text:SetMargin( Vector2( 10, 5 ), Vector2.Zero )
     self.money_text:SetTextColor( Color( 251, 184, 41 ) )
     self.money_text:SetTextSize( 18 )
 

@@ -86,7 +86,7 @@ function PlayersTab:CreateResultsArea()
 	local CreateButton = function(text , dock)
 		local button = Button.Create(buttonsBase)
 		if dock ~= GwenPosition.Right then
-			button:SetMargin(Vector2(0 , 0) , Vector2(40 , 0))
+			button:SetMargin(Vector2.Zero , Vector2(40 , 0))
 		end
 		button:SetPadding(Vector2(2 , 0) , Vector2(2 , 0))
 		button:SetDock(dock)
