@@ -2,6 +2,7 @@
 ![Koast Freeroam](https://i.imgur.com/Pg5QXZU.jpg)
 
 [![Discord](https://img.shields.io/badge/Discord-Koast_Freeroam-5765ec?logo=discord&logoColor=white)](https://discord.com/invite/vzew9mDpYn)
+[![Telegram Channel](https://img.shields.io/badge/Telegram-Koast_Freeroam_Channel-35ade1?logo=telegram)](https://t.me/koastfreeroam)
 
 **Koast Freeroam** - популярный русскоязычный сервер в игре Just Cause 2: Multiplayer Mod, разрабатываемый JCGTeam с 2017 года.
 
