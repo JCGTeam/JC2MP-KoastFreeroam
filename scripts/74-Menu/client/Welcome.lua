@@ -25,7 +25,7 @@ function WelcomeScreen:Open( lang )
 		self.helpRules = "Помощь/правила"
 		self.text = "Мы рады, что вы зашли на наш проект, пожалуйста, прочитайте правила и FAQ перед началом игры.\n\n" ..
 		"> Наш Telegram канал - t.me/koastfreeroam\n" ..
-		"> Наш Discord сервер - clck.ru/37FZrU\n" ..
+		"> Наш Discord сервер - t.me/koastfreeroam/197 (ссылка+способ восстановления работы Discord)\n" ..
 		"> Наша группа в Steam - steamcommunity.com/groups/koastfreeroam\n" ..
 		"> Наш YouTube канал - www.youtube.com/@jcgteam\n\n" ..
 		"Желаем вам приятной игры, наслаждайтесь :)"

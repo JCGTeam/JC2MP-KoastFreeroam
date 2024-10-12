@@ -64,10 +64,9 @@ function HInfo:RusHelp()
 		text =
 			"> Ссылки:\n" ..
 			"    Telegram      t.me/koastfreeroam\n" ..
-			"    Discord        clck.ru/37FZrU\n" ..
+			"    Discord        t.me/koastfreeroam/197 (ссылка+способ восстановления работы Discord)\n" ..
 			"    Steam           steamcommunity.com/groups/koastfreeroam\n" ..
-			"    YouTube      www.youtube.com/@jcgteam\n" ..
-			"    VK                 vk.com/koastfreeroam\n \n" ..
+			"    YouTube      www.youtube.com/@jcgteam\n \n" ..
 			"> Официальные сервера JCGTeam:\n" ..
 			"    Just Cause 2: Multiplayer Mod:\n" ..
 			"     - Koast Freeroam | IP: 62.122.214.141:7777\n \n" ..

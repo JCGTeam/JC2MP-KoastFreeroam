@@ -16,6 +16,7 @@ function ServerTetris:__init()
 
 	Network:Subscribe( "001", self, self.onTetrisRecord )
 	Network:Subscribe( "002", self, self.onTetrisAttempt )
+	Network:Subscribe( "UpdateTotalScore", self, self.UpdateTotalScore )
 
 	self.tag_clr = Color.White
 	self.text_clr = Color( 255, 150, 0 )
@@ -67,10 +68,11 @@ function ServerTetris:onPostTick()
 	object:SetNetworkValue("E", expire)
 end
 
-function ServerTetris:onTetrisRecord( score, player )
+function ServerTetris:onTetrisRecord( args, player )
 	local object = NetworkObject.GetByName("Tetris") or NetworkObject.Create("Tetris")
 	local pName = player:GetName()
 	local objectN = object:GetValue("N")
+	local score = player:GetValue( "TetrisTotalScore" )
 
 	if score < (object:GetValue("S") or 0) then return end
 	if objectN ~= pName then
@@ -125,8 +127,16 @@ function ServerTetris:onTetrisRecord( score, player )
 	self.timer:Restart()
 end
 
-function ServerTetris:onTetrisAttempt( score, player )
-	Network:Broadcast( "003", {score, player:GetId() + 1} )
+function ServerTetris:onTetrisAttempt( args, player )
+	Network:Broadcast( "003", {player:GetValue( "TetrisTotalScore" ), player:GetId() + 1} )
+end
+
+function ServerTetris:UpdateTotalScore( args, sender )
+	if args and args.score then
+		sender:SetNetworkValue( "TetrisTotalScore", args.score )
+	else
+		sender:SetNetworkValue( "TetrisTotalScore", ( sender:GetValue( "TetrisTotalScore" ) or 0 ) + 10 )
+	end
 end
 
 function ServerTetris:Reward( name, last )
@@ -160,8 +170,9 @@ function ServerTetris:Reward( name, last )
 	end
 end
 
-function ServerTetris:NewScore( score, player )
+function ServerTetris:NewScore( args, player )
 	local steamId = player:GetSteamId().id
+	local score = player:GetValue( "TetrisTotalScore" )
 
 	if self.leaderboard[steamId] and self.leaderboard[steamId] > score then
 	else

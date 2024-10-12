@@ -18,7 +18,7 @@ function Messages:ModuleError( e )
 	local errColor = Color.Red
 
 	Chat:Broadcast( self.err_prefix, tagColor, "Произошла критическая ошибка сервера, сообщите администрации!", errColor )
-	Chat:Broadcast( self.err_prefix, tagColor, "Discord: clck.ru/37FZrU", errColor )
+	Chat:Broadcast( self.err_prefix, tagColor, "Discord: t.me/koastfreeroam/197", errColor )
 	Chat:Broadcast( self.err_prefix, tagColor, "Steam: steamcommunity.com/groups/koastfreeroam", errColor )
 	Chat:Broadcast( self.err_prefix, tagColor, "VK: vk.com/koastfreeroam", errColor )
 
