@@ -124,7 +124,7 @@ function Reports:CreateWindow()
     self.sendButton:Subscribe( "Press", self, self.ReportSend )
 
 	self.infoLabel = Label.Create( self.scroll )
-    self.infoLabel:SetText( "Пожалуйста, не спамьте и не флудите сообщениями, а также не оскорбляйте администрацию. В случае нарушения, вы можете получить блокировку аккаунта на сервере!\n\nАльтернативные способы связи:\nDiscord - clck.ru/37FZrU\nTelegram - t.me/koastreport_bot\nSteam - steamcommunity.com/groups/koastfreeroam\nVK - vk.com/koastfreeroam" )
+    self.infoLabel:SetText( "Пожалуйста, не спамьте и не флудите сообщениями, а также не оскорбляйте администрацию. В случае нарушения, вы можете получить блокировку аккаунта на сервере!\n\nАльтернативные способы связи:\nDiscord - t.me/koastfreeroam/197 (ссылка+способ восстановления работы Discord)\nTelegram - t.me/koastreport_bot\nSteam - steamcommunity.com/groups/koastfreeroam\nVK - vk.com/koastfreeroam" )
     self.infoLabel:SetDock( GwenPosition.Fill )
 	self.infoLabel:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
 	self.infoLabel:SetWrap( true )

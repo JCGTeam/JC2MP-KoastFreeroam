@@ -219,7 +219,7 @@ function Menu:Render()
 		local linksPos = Vector2( 40, 50 )
 
 		Render:DrawText( linksPos, linksTitleTxt, self.text_clr, linksSize )
-		Render:DrawText( Vector2( linksPos.x, linksPos.y + Render:GetTextHeight( linksTitleTxt, linksSize ) + 10 ), "- TELEGRAM | t.me/koastfreeroam\n- DISCORD | clck.ru/37FZrU\n- STEAM | steamcommunity.com/groups/koastfreeroam\n- YouTube | www.youtube.com/@jcgteam", Color( 180, 180, 180 ), linksSize - 5 )
+		Render:DrawText( Vector2( linksPos.x, linksPos.y + Render:GetTextHeight( linksTitleTxt, linksSize ) + 10 ), "- TELEGRAM | t.me/koastfreeroam\n- DISCORD | t.me/koastfreeroam/197\n- STEAM | steamcommunity.com/groups/koastfreeroam\n- YouTube | www.youtube.com/@jcgteam", Color( 180, 180, 180 ), linksSize - 5 )
 
 		local tSize = 30
 		Render:DrawText( Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tName, tSize ) / 2, Render.Size.y / 2.5 ), self.tName, self.text_clr, tSize )

@@ -21,7 +21,6 @@ function Tetris:__init()
 
 	self.firstGo = true
 	self.score = 0
-	self.totalScore = 0
 	self.level = 1
 
 	self.dropTime = self.dropTimeLevel[self.level]
@@ -348,7 +347,7 @@ end
 function Tetris:PopulateGrid()
 	self.inGame = false
 	self.score = 0
-	self.totalScore = 0
+	Network:Send( "UpdateTotalScore", { score = 0 } )
 	self.level = 1
 	self.dropTime = self.dropTimeLevel[self.level]
 
@@ -448,8 +447,11 @@ function Tetris:CheckTiles()
 					self.gridNotCurrent[x][y2-1] = nil
 				end
 			end
+
 			self.score = self.score + 10
-			self.totalScore = self.totalScore + 10
+
+			Network:Send( "UpdateTotalScore" )
+
 			self:CheckTiles()
 		end
 	end
@@ -469,9 +471,10 @@ function Tetris:ShowScore()
 	end
 
 	local shadow_clr = Color( 25, 25, 25, 150 )
+	local totalScore = tostring( LocalPlayer:GetValue( "TetrisTotalScore" ) )
 
-	local pos = Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tScores .. tostring(self.totalScore), 20 ) / 2, 50 )
-	Render:DrawShadowedText( pos, self.tScores .. tostring(self.totalScore), Color( 255, 255, 0 ), shadow_clr, 20 )
+	local pos = Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tScores .. totalScore, 20 ) / 2, 50 )
+	Render:DrawShadowedText( pos, self.tScores .. totalScore, Color( 255, 255, 0 ), shadow_clr, 20 )
 
 	if not self.inGame then
 		local text_clr = Color.White
@@ -485,7 +488,7 @@ function Tetris:ShowScore()
 		else
 			local pos = ( Render.Size - Render:GetTextSize( self.tDied, text_size ) ) / 2
 			Render:DrawShadowedText( pos, self.tDied, Color.Red, shadow_clr, text_size )
-			local msg = self.tSetGOver .. tostring( self.totalScore )
+			local msg = self.tSetGOver .. totalScore
 			pos = ( Render.Size - Render:GetTextSize( msg, text_size ) ) / 2
 			Render:DrawShadowedText( pos, msg, text_clr, shadow_clr, text_size )
 			pos = ( Render.Size - Render:GetTextSize( self.tSetGOver2, text_size ) ) / 2
@@ -503,21 +506,23 @@ function Tetris:GameOver()
 	end
 
 	local object = NetworkObject.GetByName("Tetris")
-	if not object or self.totalScore > (object:GetValue("S") or 0) then
+	local totalScore = LocalPlayer:GetValue( "TetrisTotalScore" )
+
+	if not object or totalScore > (object:GetValue("S") or 0) then
 		if LocalPlayer:GetWorld() == DefaultWorld then
-			Network:Send("001", self.totalScore)
+			Network:Send("001")
 		end
-	elseif self.totalScore > ((object:GetValue("S") or 0) * 0.6) and (object:GetValue("N") or "None") ~= LocalPlayer:GetName() then
-		Network:Send("002", self.totalScore)
+	elseif totalScore > ((object:GetValue("S") or 0) * 0.6) and (object:GetValue("N") or "None") ~= LocalPlayer:GetName() then
+		Network:Send("002")
 	end
 
 	local shared = SharedObject.Create("Tetris")
-	if self.totalScore > (shared:GetValue("Record") or 0) then
-		shared:SetValue( "Record", self.totalScore )
+	if totalScore > (shared:GetValue("Record") or 0) then
+		shared:SetValue( "Record", totalScore )
+		Game:ShowPopup( self.tRecord .. totalScore, true )
 	end
 
-	Network:Send( "NewScore", self.totalScore )
-	Game:ShowPopup( self.tRecord .. self.totalScore, true )
+	Network:Send( "NewScore" )
 end
 
 function Tetris:KeyDown( args )
@@ -542,7 +547,7 @@ function Tetris:KeyDown( args )
 	end
 
 	if self.inTetrisMode and (args.key == VirtualKey.Control) and not self.settingsVisible and not self.inGame then
-		Network:Send( "TopScores", self.totalScore )
+		Network:Send( "TopScores", LocalPlayer:GetValue( "TetrisTotalScore" ) )
 		self.settingsVisible = true
 		Mouse:SetVisible( self.settingsVisible )
 
