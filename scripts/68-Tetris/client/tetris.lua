@@ -298,7 +298,7 @@ end
 function Tetris:Render()
 	if Game:GetState() ~= GUIState.Game then return end
 
-	Render:FillArea( self.offset - self.tileWidthV, Vector2(self.tileWidthV.x * (10+2), self.tileHeightV.y * 20), self.backgroundCol ) --background
+	Render:FillArea( self.offset, Vector2( self.tileWidthV.x * 10, self.tileHeightV.y * 20 ), self.backgroundCol )
 
 	if self.inGame then
 		if (Client:GetElapsedSeconds() - self.moveDownTimer) > self.dropTime then
