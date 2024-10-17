@@ -112,28 +112,6 @@ function Abilities:__init()
         self.resetbutton:Subscribe( "Press", self, self.Clear )
     end
 
-    self.buttonsSize = 50
-
-    local spaceX, spaceY = 60, 5
-    self.wingsuitbutton = self:AbilityButton( Vector2( 10, spaceY ), self.wingsuit_txt, self.wingsuit_description, self.WingsuitUnlocker, self.wingsuitIMG )
-    local posX = self.wingsuitbutton:GetPosition().x + spaceX
-    self.boost_1button = self:AbilityButton( Vector2( posX, spaceY ), self.landvehicleboost_txt, self.boost_description, self.BoostUnlocker, self.boostIMG )
-    self.boost_2button = self:AbilityButton( Vector2( posX, self.boost_1button:GetPosition().y + self.buttonsSize + spaceY ), self.watervehicleboost_txt, self.boost_description, self.BoostUnlocker, self.boostIMG )
-    self.boost_3button = self:AbilityButton( Vector2( posX, self.boost_2button:GetPosition().y + self.buttonsSize + spaceY ), self.airvehicleboost_txt, self.boost_description, self.BoostUnlocker, self.boostIMG )
-    self.bonusmoneybutton = self:AbilityButton( Vector2( self.boost_1button:GetPosition().x + spaceX, spaceY ), self.bonusmoney_txt, self.bonusmoney_description, self.MoneyBonusUnlocker, self.moneyBonusIMG )
-    posX = self.bonusmoneybutton:GetPosition().x + spaceX
-    self.moreC4_5button = self:AbilityButton( Vector2( posX, spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
-    self.moreC4_8button = self:AbilityButton( Vector2( posX, self.moreC4_5button:GetPosition().y + self.buttonsSize + spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
-    self.moreC4_10button = self:AbilityButton( Vector2( posX, self.moreC4_8button:GetPosition().y + self.buttonsSize + spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
-    self.moreC4_15button = self:AbilityButton( Vector2( posX, self.moreC4_10button:GetPosition().y + self.buttonsSize + spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
-    self.supernuclearbombbutton = self:AbilityButton( Vector2( self.moreC4_5button:GetPosition().x + spaceX, spaceY ), self.supernuclearbomb_txt, self.supernuclearbomb_description, self.SuperNuclearBombUnlocker, self.superNuclearBombIMG )
-    posX = self.supernuclearbombbutton:GetPosition().x + spaceX
-    self.longergrapple_150button = self:AbilityButton( Vector2( posX, spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
-    self.longergrapple_200button = self:AbilityButton( Vector2( posX, self.longergrapple_150button:GetPosition().y + self.buttonsSize + spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
-    self.longergrapple_350button = self:AbilityButton( Vector2( posX, self.longergrapple_200button:GetPosition().y + self.buttonsSize + spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
-    self.longergrapple_500button = self:AbilityButton( Vector2( posX, self.longergrapple_350button:GetPosition().y + self.buttonsSize + spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
-    self.jesusmode_button = self:AbilityButton( Vector2( self.longergrapple_150button:GetPosition().x + spaceX, spaceY ), self.jesusmode_txt, self.jesusmode_description, self.JesusModeUnlocker, self.jesusModeIMG )
-
     local tip_container = BaseWindow.Create( self.window )
     tip_container:SetDock( GwenPosition.Bottom )
     tip_container:SetHeight( Render:GetTextHeight( "A", 18 ) + 60 )
@@ -462,6 +440,32 @@ function Abilities:Open()
 			position = Camera:GetPosition(),
 			angle = Angle()
 		})
+
+        if not self.isLoad then
+            self.isLoad = true
+
+            self.buttonsSize = 50
+
+            local spaceX, spaceY = 60, 5
+            self.wingsuitbutton = self:AbilityButton( Vector2( 10, spaceY ), self.wingsuit_txt, self.wingsuit_description, self.WingsuitUnlocker, self.wingsuitIMG )
+            local posX = self.wingsuitbutton:GetPosition().x + spaceX
+            self.boost_1button = self:AbilityButton( Vector2( posX, spaceY ), self.landvehicleboost_txt, self.boost_description, self.BoostUnlocker, self.boostIMG )
+            self.boost_2button = self:AbilityButton( Vector2( posX, self.boost_1button:GetPosition().y + self.buttonsSize + spaceY ), self.watervehicleboost_txt, self.boost_description, self.BoostUnlocker, self.boostIMG )
+            self.boost_3button = self:AbilityButton( Vector2( posX, self.boost_2button:GetPosition().y + self.buttonsSize + spaceY ), self.airvehicleboost_txt, self.boost_description, self.BoostUnlocker, self.boostIMG )
+            self.bonusmoneybutton = self:AbilityButton( Vector2( self.boost_1button:GetPosition().x + spaceX, spaceY ), self.bonusmoney_txt, self.bonusmoney_description, self.MoneyBonusUnlocker, self.moneyBonusIMG )
+            posX = self.bonusmoneybutton:GetPosition().x + spaceX
+            self.moreC4_5button = self:AbilityButton( Vector2( posX, spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
+            self.moreC4_8button = self:AbilityButton( Vector2( posX, self.moreC4_5button:GetPosition().y + self.buttonsSize + spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
+            self.moreC4_10button = self:AbilityButton( Vector2( posX, self.moreC4_8button:GetPosition().y + self.buttonsSize + spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
+            self.moreC4_15button = self:AbilityButton( Vector2( posX, self.moreC4_10button:GetPosition().y + self.buttonsSize + spaceY ), self.morec4_txt, self.moreC4_description, self.MoreC4Unlocker, self.moreC4IMG )
+            self.supernuclearbombbutton = self:AbilityButton( Vector2( self.moreC4_5button:GetPosition().x + spaceX, spaceY ), self.supernuclearbomb_txt, self.supernuclearbomb_description, self.SuperNuclearBombUnlocker, self.superNuclearBombIMG )
+            posX = self.supernuclearbombbutton:GetPosition().x + spaceX
+            self.longergrapple_150button = self:AbilityButton( Vector2( posX, spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
+            self.longergrapple_200button = self:AbilityButton( Vector2( posX, self.longergrapple_150button:GetPosition().y + self.buttonsSize + spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
+            self.longergrapple_350button = self:AbilityButton( Vector2( posX, self.longergrapple_200button:GetPosition().y + self.buttonsSize + spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
+            self.longergrapple_500button = self:AbilityButton( Vector2( posX, self.longergrapple_350button:GetPosition().y + self.buttonsSize + spaceY ), self.longergrapple_txt, self.longergrapple_description, self.LongerGrappleUnlocker, self.longerGrappleIMG )
+            self.jesusmode_button = self:AbilityButton( Vector2( self.longergrapple_150button:GetPosition().x + spaceX, spaceY ), self.jesusmode_txt, self.jesusmode_description, self.JesusModeUnlocker, self.jesusModeIMG )
+        end
 
         if self.window then self:UpdateButtons( LocalPlayer:GetMoney() ) end
 
