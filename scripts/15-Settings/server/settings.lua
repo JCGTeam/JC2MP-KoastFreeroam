@@ -16,11 +16,12 @@ function Settings:__init()
 	Network:Subscribe( "SetPlyColor", self, self.SetPlyColor )
 	Network:Subscribe( "SPOff", self, self.SPOff )
 	Network:Subscribe( "SetWeather", self, self.SetWeather )
+	Network:Subscribe( "RequestStats", self, self.RequestStats )
+	Network:Subscribe( "RequestPromocodes", self, self.RequestPromocodes )
+	Network:Subscribe( "GeneratePromocode", self, self.GeneratePromocode )
+	Network:Subscribe( "GetInvitationPromocodesReward", self, self.GetInvitationPromocodesReward )
+	Network:Subscribe( "ActivateInvitationPromocode", self, self.ActivateInvitationPromocode )
 	Network:Subscribe( "RunConsoleCommand", self, self.RunConsoleCommand )
-end
-
-function Settings:RunConsoleCommand( cmd )
-	Console:Run( cmd )
 end
 
 function Settings:UpdateParameters( args, sender )
@@ -164,15 +165,16 @@ function Settings:GetDBSettings( player )
 end
 
 function Settings:SetPlyColor( args, sender )
-	local colored = args.pcolor
+	local color = args.pcolor
 	local steamId = sender:GetSteamId().id
 
-	local qry = SQL:Query('INSERT OR REPLACE INTO players_color (steamid, r, g, b) VALUES(?, ?, ?, ?)')
-	qry:Bind(1, tostring(steamId))
-	qry:Bind(2, colored.r)
-	qry:Bind(3, colored.g)
-	qry:Bind(4, colored.b)
+	local qry = SQL:Query( 'INSERT OR REPLACE INTO players_color (steamid, r, g, b) VALUES(?, ?, ?, ?)' )
+	qry:Bind( 1, steamId )
+	qry:Bind( 2, color.r )
+	qry:Bind( 3, color.g )
+	qry:Bind( 4, color.b )
 	qry:Execute()
+
 	sender:SetColor( args.pcolor )
 end
 
@@ -198,6 +200,71 @@ end
 function Settings:SetWeather( args, sender )
 	if sender:GetWorld() ~= DefaultWorld then return end
 	sender:SetWeatherSeverity( args.severity )
+end
+
+function Settings:RequestStats( args, sender )
+	local stats = {}
+	stats.modelId = tostring( sender:GetModelId() )
+
+	Network:Send( sender, "UpdateStats", stats )
+end
+
+function Settings:RequestPromocodes( args, sender )
+	Events:Fire( "UpdateInvitationPromocodesInfo", sender )
+
+	Network:Send( sender, "UpdatePromocodes" )
+end
+
+function Settings:GetRandomChar()
+    local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    local index = math.random( 1, #chars )
+
+    return chars:sub( index, index )
+end
+
+function Settings:GeneratePromoCode( steamId )
+    local promoCode = ""
+
+    local steamIdSuffix = string.sub( steamId, -4 )
+
+    for i = 1, 6 do
+        promoCode = promoCode .. self:GetRandomChar()
+    end
+
+    return steamIdSuffix .. promoCode
+end
+
+function Settings:GeneratePromocode( args, sender )
+	local steamId = sender:GetSteamId().id
+	local name = self:GeneratePromoCode( steamId )
+
+	Events:Fire( "AddInvitationPromocode", { text = steamId .. " " .. name .. " " .. InviteBonuses.Bonus1 .. " " .. InviteBonuses.Bonus2 } )
+
+	Events:Fire( "UpdateInvitationPromocodesInfo", sender )
+
+	Network:Send( sender, "UpdatePromocodes", { promocode = name } )
+end
+
+function Settings:GetInvitationPromocodesReward( args, sender )
+	local promocodeRewards = sender:GetValue( "PromoCodeRewards" )
+
+	if promocodeRewards and tonumber( promocodeRewards ) > 0 then
+		sender:SetMoney( sender:GetMoney() + promocodeRewards * InviteBonuses.Bonus1 )
+		Events:Fire( "GetInvitationPromocodesReward", sender )
+	end
+end
+
+function Settings:ActivateInvitationPromocode( args, sender )
+	local activePromocode = sender:GetValue( "ActivePromocode" )
+
+	if activePromocode then
+		sender:SetMoney( sender:GetMoney() + activePromocode )
+		sender:SetNetworkValue( "ActivePromocode", nil )
+	end
+end
+
+function Settings:RunConsoleCommand( cmd )
+	Console:Run( cmd )
 end
 
 settings = Settings()

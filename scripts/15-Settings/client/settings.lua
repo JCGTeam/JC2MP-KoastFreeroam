@@ -109,6 +109,57 @@ function Settings:__init()
 		self.skyOption6:GetLabel():SetText( "Цвет ↓" )
 		self.skyOptionRnb:GetLabel():SetText( "Переливания цветов неба" )
 
+		self.unknown_txt = "Отсутствует"
+		self.onfoot_txt = "Ноги"
+		self.timeFormat = "%02d час(ов), %02d минут(ы), %02d секунд(ы)"
+
+		self.subcategory7:SetText( "Аккаунт" )
+		self.accountInfo1_txt = "\nДата первого подключения: "
+		self.accountInfo2_txt = "\nПроведено времени на сервере: "
+		self.accountInfo3_txt = "\nСтрана: "
+		self.accountInfo4_txt = "\nУровень: "
+		self.accountInfo5_txt = "\nБаланс: $"
+
+		self.subcategory8:SetText( "Другие данные" )
+		self.accountInfo6_txt = "Время текущей сессии: "
+		self.accountInfo7_txt = "\nКлан: "
+		self.accountInfo8_txt = "\nТекущий ID: "
+		self.accountInfo9_txt = "\nЦвет имени: "
+		self.accountInfo10_txt = "\nID персонажа: "
+		self.accountInfo11_txt = "\nТекущий транспорт: "
+
+		self.subcategory9:SetText( "Глобальная статистика" )
+		self.accountInfo12_txt = "Отправленных сообщений в чате: "
+		self.accountInfo13_txt = "\nУбийств: "
+		self.accountInfo14_txt = "\nСобранных ящиков: "
+		self.accountInfo15_txt = "\nВыполненных заданий: "
+		self.accountInfo16_txt = "\nВыполненных ежедневных заданий: "
+		self.accountInfo17_txt = "\nЛучший счет в хорошечном дрифте: "
+		self.accountInfo18_txt = "\nЛучший счет в хорошечном тетрисе: "
+		self.accountInfo19_txt = "\nЛучший счет в хорошечном полете: "
+		self.accountInfo20_txt = "\nПобед в гонках: "
+		self.accountInfo21_txt = "\nПобед в троне: "
+		self.accountInfo22_txt = "\nПобед в царь горы: "
+		self.accountInfo23_txt = "\nПобед в дерби: "
+		self.accountInfo24_txt = "\nПобед в понге: "
+		self.accountInfo25_txt = "\nПравильных ответов в викторинах: "
+
+		self.subcategory10:SetText( "Приглашения" )
+		self.subcategory12:SetText(
+			"За каждую активацию, вы получаете бонус $" .. formatNumber( InviteBonuses.Bonus1 ) .. ", а новый игрок получит дополнительные $" .. formatNumber( InviteBonuses.Bonus2 ) .. "." ..
+			"\nБонус зачисляется после того, как активировавший промокод игрок проведет на сервере более 2-х часов."
+			)
+		self.invitePromocode:SetToolTip( "Выделите и зажмите Ctrl + C, чтобы скопировать промокод" )
+		self.togglePromocodeBtn:SetText( "Сгенерировать промокод" )
+		self.getInviteBonusBtn:SetText( "Получить вознаграждение за активированный промокод ($" .. formatNumber( LocalPlayer:GetValue( "ActivePromocode" ) or InviteBonuses.Bonus2 ) .. ")" )
+		self.subcategory13:SetText( "Активация промокода" )
+		self.uses_txt = "Использований: "
+		self.activations = "Активаций: "
+		self.promocodeGenerationDate_txt = "Дата генерации промокода: "
+		self.getInvitationsBonus_txt = "Получить вознаграждение за приглашения"
+		self.activatePromocode_txt = "Активировать промокод"
+		self.getBonusBtn:SetText( self.activatePromocode_txt )
+
 		--self.subcategory5:SetText( "Выполнить консольную команду на сервере:" )
 	end
 
@@ -122,8 +173,12 @@ function Settings:__init()
 	self.jpviptip:SizeToContents()
 	self.subcategory2:SizeToContents()
 	self.nicknameColorPreview:SizeToContents()
+	self.statsName:SizeToContents()
+	self.subcategory12:SizeToContents()
 
 	Network:Subscribe( "ResetDone", self, self.ResetDone )
+	Network:Subscribe( "UpdateStats", self, self.UpdateStats )
+	Network:Subscribe( "UpdatePromocodes", self, self.UpdatePromocodes )
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "LoadUI", self, self.LoadUI )
@@ -132,6 +187,8 @@ function Settings:__init()
 	Events:Subscribe( "OpenSettingsMenu", self, self.OpenSettingsMenu )
 	Events:Subscribe( "CloseSettingsMenu", self, self.CloseSettingsMenu )
 	Events:Subscribe( "KeyUp", self, self.KeyUp )
+	Events:Subscribe( "PromocodeFound", function() self.promocode:SetTextColor( Color.Green ) self.getBonusBtn:SetText( "Промокод активирован!" ) end )
+	Events:Subscribe( "PromocodeNotFound", function() self.promocode:SetTextColor( Color.Red ) self.getBonusBtn:SetText( self.activatePromocode_txt ) end )
 
 	self:GameLoad()
 end
@@ -169,7 +226,6 @@ function Settings:Lang()
 	self.option14:GetLabel():SetText( "Jet HUD (for aviation)" )
 	self.option15:GetLabel():SetText( "Display tasks" )
 	self.option24:GetLabel():SetText( "Display door opening tips" )
-	self.option16:GetLabel():SetText( "Display snow on the screen" )
 
 	self.posreset_txt = "Position has been reset. Restart the game."
 
@@ -205,6 +261,57 @@ function Settings:Lang()
 	self.skyOption5:GetLabel():SetText( "Anime" )
 	self.skyOption6:GetLabel():SetText( "Color ↓" )
 	self.skyOptionRnb:GetLabel():SetText( "Rainbow sky" )
+
+	self.unknown_txt = "Unknown"
+	self.onfoot_txt = "On foot"
+	self.timeFormat = "%02d hour(s), %02d minute(s), %02d second(s)"
+
+	self.subcategory7:SetText( "Account" )
+	self.accountInfo1_txt = "\nDate of first connection: "
+	self.accountInfo2_txt = "\nTime spent on server: "
+	self.accountInfo3_txt = "\nCountry: "
+	self.accountInfo4_txt = "\nLevel: "
+	self.accountInfo5_txt = "\nBalance: $"
+
+	self.subcategory8:SetText( "Other information" )
+	self.accountInfo6_txt = "Current session time: "
+	self.accountInfo7_txt = "\nClan: "
+	self.accountInfo8_txt = "\nCurrent ID: "
+	self.accountInfo9_txt = "\nNickname color: "
+	self.accountInfo10_txt = "\nCharacter ID "
+	self.accountInfo11_txt = "\nCurrent vehicle: "
+
+	self.subcategory9:SetText( "Global statistics" )
+	self.accountInfo12_txt = "Sent chat messages: "
+	self.accountInfo13_txt = "\nKills: "
+	self.accountInfo14_txt = "\nCrates collected: "
+	self.accountInfo15_txt = "\nCompleted tasks: "
+	self.accountInfo16_txt = "\nCompleted daily tasks: "
+	self.accountInfo17_txt = "\nBest score in fantastic drift: "
+	self.accountInfo18_txt = "\nBest score in fantastic tetris: "
+	self.accountInfo19_txt = "\nBest score in fantastic flight: "
+	self.accountInfo20_txt = "\nRace wins: "
+	self.accountInfo21_txt = "\nTron wins: "
+	self.accountInfo22_txt = "\nKing of the hill wins: "
+	self.accountInfo23_txt = "\nDerby wins: "
+	self.accountInfo24_txt = "\nPong wins: "
+	self.accountInfo25_txt = "\nQuiz answers correct: "
+
+	self.subcategory10:SetText( "Invitations" )
+	self.subcategory12:SetText(
+		"For each activation, you receive a bonus of $" .. formatNumber( InviteBonuses.Bonus1 ) .. ", and the new player will receive an additional $" .. formatNumber( InviteBonuses.Bonus2 ) .. "." ..
+		"\nThe bonus is credited after the player who activated the promo code spends more than 2 hours on the server."
+		)
+	self.invitePromocode:SetToolTip( "Highlight and hold Ctrl + C to copy the promo code" )
+	self.togglePromocodeBtn:SetText( "Generate promo code" )
+	self.getInviteBonusBtn:SetText( "Claim reward for activated promo code ($" .. formatNumber( LocalPlayer:GetValue( "ActivePromocode" ) or InviteBonuses.Bonus2 ) .. ")" )
+	self.subcategory13:SetText( "Promo code activation" )
+	self.uses_txt = "Uses: "
+	self.activations = "Activations: "
+	self.promocodeGenerationDate_txt = "Promo code generation date: "
+	self.getInvitationsBonus_txt = "Get rewarded for invitations"
+	self.activatePromocode_txt = "Activate promo code"
+	self.getBonusBtn:SetText( self.activatePromocode_txt )
 
 	--[[
 	self.option20:GetLabel():SetText( "Display debug messages" )
@@ -296,9 +403,6 @@ function Settings:LoadCategories()
 	self.option14 = self:OptionCheckBox( scroll_control, "Jet HUD (для авиации)", LocalPlayer:GetValue( "JetHUD" ) or false )
 	self.option14:GetCheckBox():Subscribe( "CheckChanged", function() Events:Fire( "JHudActive" ) Network:Send( "UpdateParameters", { parameter = 12 , boolean = not LocalPlayer:GetValue( "JetHUD" ) } ) end )
 	self.option14:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
-
-	self.option16 = self:OptionCheckBox( scroll_control, "Отображать снег на экране", LocalPlayer:GetValue( "SnowVisible" ) or false )
-	self.option16:GetCheckBox():Subscribe( "CheckChanged", function() LocalPlayer:SetValue( "SnowVisible", self.option16:GetCheckBox():GetChecked() ) end )
 
 	local bkpanelsContainer = BaseWindow.Create( widgets )
 	bkpanelsContainer:SetVisible( true )
@@ -639,6 +743,149 @@ function Settings:LoadCategories()
 	self.skyOptionRnb:GetLabel():SetTextSize( 13 )
 	self.skyOptionRnb:GetCheckBox():Subscribe( "CheckChanged", function() self.skyRainbow = self.skyOptionRnb:GetCheckBox():GetChecked() if self.skyRainbow then self.rT = Timer() else self.rT = nil end end )
 
+	local stats = BaseWindow.Create( self.window )
+	local statsText = "Информация и статистика"
+	tab:AddPage( statsText, stats )
+	tab:Subscribe( "TabSwitch", function() if tab:GetCurrentTab():GetText() == statsText then Network:Send( "RequestStats" ) end end )
+
+	local scroll_control = ScrollControl.Create( stats )
+	scroll_control:SetScrollable( false, true )
+	scroll_control:SetDock( GwenPosition.Fill )
+	scroll_control:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
+
+	self.subcategory7 = GroupBox.Create( scroll_control )
+	self.subcategory7:SetDock( GwenPosition.Top )
+	self.subcategory7:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+
+	local accountInfo = BaseWindow.Create( self.subcategory7 )
+	accountInfo:SetDock( GwenPosition.Fill )
+	accountInfo:SetMargin( Vector2( 110, 4 ), Vector2( 0, 4 ) )
+
+	self.statsName = Label.Create( accountInfo )
+	self.statsName:SetDock( GwenPosition.Top )
+	self.statsName:SetText( LocalPlayer:GetName() )
+	self.statsName:SetTextSize( 20 )
+
+	self.accountInfoText = Label.Create( accountInfo )
+	self.accountInfoText:SetDock( GwenPosition.Fill )
+	self.accountInfoText:SetText( "..." )
+
+	local avatar = ImagePanel.Create( self.subcategory7 )
+	avatar:SetSize( Vector2( 100, 100 ) )
+	avatar:SetPosition( Vector2( 0, 4 ) )
+	avatar:SetImage( LocalPlayer:GetAvatar( 2 ) )
+
+	self.statsName:SizeToContents()
+	self.accountInfoText:SizeToContents()
+	self.subcategory7:SetHeight( ( self.statsName:GetSize().y + 4 * 4 ) + ( self.accountInfoText:GetSize().y + 4 * 4 ) )
+
+	self.subcategory8 = GroupBox.Create( scroll_control )
+	self.subcategory8:SetDock( GwenPosition.Top )
+	self.subcategory8:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+
+	self.moreInfoText = Label.Create( self.subcategory8 )
+	self.moreInfoText:SetDock( GwenPosition.Fill )
+	self.moreInfoText:SetText( "..." )
+
+	self.moreInfoText:SizeToContents()
+	self.subcategory8:SetHeight( ( self.moreInfoText:GetSize().y + 4 * 4 ) )
+
+	self.subcategory9 = GroupBox.Create( scroll_control )
+	self.subcategory9:SetDock( GwenPosition.Top )
+	self.subcategory9:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+
+	self.statsText = Label.Create( self.subcategory9 )
+	self.statsText:SetDock( GwenPosition.Fill )
+	self.statsText:SetText( "..." )
+	self.statsText:SizeToContents()
+
+	self.subcategory9:SetHeight( ( self.statsText:GetSize().y + 4 * 4 ) )
+
+	local promocodes = BaseWindow.Create( self.window )
+	local promocodesText = "Промокоды"
+	tab:AddPage( promocodesText, promocodes )
+	tab:Subscribe( "TabSwitch", function() if tab:GetCurrentTab():GetText() == promocodesText then Network:Send( "RequestPromocodes" ) end end )
+
+	local scroll_control = ScrollControl.Create( promocodes )
+	scroll_control:SetScrollable( false, true )
+	scroll_control:SetDock( GwenPosition.Fill )
+	scroll_control:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
+
+	self.subcategory10 = GroupBox.Create( scroll_control )
+	self.subcategory10:SetDock( GwenPosition.Top )
+	self.subcategory10:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+	self.subcategory10:SetHeight( ( Render:GetTextHeight( "", self.textSize - 4 ) + btnHeight ) * 4.75 )
+
+	self.subcategory11 = Label.Create( self.subcategory10 )
+	self.subcategory11:SetDock( GwenPosition.Top )
+	self.subcategory11:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+
+	self.subcategory12 = Label.Create( self.subcategory10 )
+	self.subcategory12:SetDock( GwenPosition.Top )
+	self.subcategory12:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+
+	self.invitePromocode = TextBox.Create( self.subcategory10 )
+	self.invitePromocode:SetDock( GwenPosition.Top )
+	self.invitePromocode:SetMargin( Vector2( 0, 4 ), Vector2( 0, 8 ) )
+	self.invitePromocode:SetHeight( btnHeight )
+	self.invitePromocode:Subscribe( "Focus", self, self.Focus )
+	self.invitePromocode:Subscribe( "Blur", self, self.Blur )
+	self.invitePromocode:Subscribe( "EscPressed", self, self.EscPressed )
+	self.invitePromocode:Subscribe( "TextChanged", function() self.invitePromocode:SetText( self.invitePromocodeText or "" ) end )
+
+	self.togglePromocodeBtn = Button.Create( self.subcategory10 )
+	self.togglePromocodeBtn:SetVisible( false )
+	self.togglePromocodeBtn:SetTextSize( self.textSize )
+	self.togglePromocodeBtn:SetDock( GwenPosition.Top )
+	self.togglePromocodeBtn:SetMargin( Vector2( 0, 4 ), Vector2( 0, 8 ) )
+	self.togglePromocodeBtn:SetHeight( btnHeight )
+	self.togglePromocodeBtn:Subscribe( "Press", function() Network:Send( "GeneratePromocode" ) end )
+
+	self.getInvitationsBonusBtn = Button.Create( self.subcategory10 )
+	self.getInvitationsBonusBtn:SetEnabled( false )
+	self.getInvitationsBonusBtn:SetTextSize( self.textSize )
+	self.getInvitationsBonusBtn:SetDock( GwenPosition.Top )
+	self.getInvitationsBonusBtn:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+	self.getInvitationsBonusBtn:SetHeight( btnHeight )
+	local btnColor = Color.Yellow
+	self.getInvitationsBonusBtn:SetTextHoveredColor( btnColor )
+	self.getInvitationsBonusBtn:SetTextPressedColor( btnColor )
+	self.getInvitationsBonusBtn:SetText( "..." )
+	self.getInvitationsBonusBtn:Subscribe( "Press", function() Network:Send( "GetInvitationPromocodesReward" ) Network:Send( "RequestPromocodes" ) end )
+
+	self.getInviteBonusBtn = Button.Create( self.subcategory10 )
+	self.getInviteBonusBtn:SetEnabled( false )
+	self.getInviteBonusBtn:SetTextSize( self.textSize )
+	self.getInviteBonusBtn:SetDock( GwenPosition.Top )
+	self.getInviteBonusBtn:SetHeight( btnHeight )
+	local btnColor = Color.Yellow
+	self.getInviteBonusBtn:SetTextHoveredColor( btnColor )
+	self.getInviteBonusBtn:SetTextPressedColor( btnColor )
+	self.getInviteBonusBtn:Subscribe( "Press", function() Network:Send( "ActivateInvitationPromocode" ) Network:Send( "RequestPromocodes" ) end )
+
+	self.subcategory13 = GroupBox.Create( scroll_control )
+	self.subcategory13:SetDock( GwenPosition.Top )
+	self.subcategory13:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+	self.subcategory13:SetHeight( ( Render:GetTextHeight( "", self.textSize - 8 ) + 85 ) )
+
+	self.promocode = TextBox.Create( self.subcategory13 )
+	self.promocode:SetDock( GwenPosition.Top )
+	self.promocode:SetMargin( Vector2( 0, 4 ), Vector2( 0, 8 ) )
+	self.promocode:SetHeight( btnHeight )
+	self.promocode:SetText( "" )
+	self.promocode:Subscribe( "Focus", self, self.Focus )
+	self.promocode:Subscribe( "Blur", self, self.Blur )
+	self.promocode:Subscribe( "EscPressed", self, self.EscPressed )
+	self.promocode_color = self.promocode:GetTextColor()
+	self.promocode:Subscribe( "TextChanged", function() self.promocode:SetTextColor( self.promocode_color ) self.getBonusBtn:SetEnabled( self.promocode:GetText() ~= "" and true or false ) end )
+
+	self.getBonusBtn = Button.Create( self.subcategory13 )
+	self.getBonusBtn:SetEnabled( false )
+	self.getBonusBtn:SetTextSize( self.textSize )
+	self.getBonusBtn:SetDock( GwenPosition.Top )
+	self.getBonusBtn:SetHeight( btnHeight )
+	self.getBonusBtn:Subscribe( "Press", function() Events:Fire( "ApplyPromocode", { type = 0, name = self.promocode:GetText() } ) end )
+
 	--[[
 	local gettag = LocalPlayer:GetValue( "Tag" )
 
@@ -777,6 +1024,103 @@ function Settings:GameLoad()
 	Events:Fire( "GetOption", { actCH = self.actvCH } )
 end
 
+function Settings:UpdateStats( args )
+	self.statsName:SetTextColor( LocalPlayer:GetColor() )
+
+	if not self.accountInfoTextRenderEvent then
+		local steamId = LocalPlayer:GetSteamId()
+		local joinDate = tostring( LocalPlayer:GetValue( "JoinDate" ) or "Х/З" )
+		local country = tostring( LocalPlayer:GetValue( "Country" ) )
+
+		self.accountInfoTextRenderEvent = self.accountInfoText:Subscribe( "Render", function()
+			self.accountInfoText:SetText(
+				"Steam ID: " .. tostring( steamId ) .. " / Steam64 ID: " .. tostring( steamId.id ) ..
+				self.accountInfo1_txt .. joinDate ..
+				self.accountInfo2_txt .. self:ConvertSecondsToTimeFormat( LocalPlayer:GetValue( "TotalTime" ) or "0" ) ..
+				self.accountInfo3_txt .. country ..
+				self.accountInfo4_txt .. tostring( LocalPlayer:GetValue( "PlayerLevel" ) ) ..
+				self.accountInfo5_txt .. formatNumber( LocalPlayer:GetMoney() )
+			)
+		end )
+	end
+
+	self.statsName:SizeToContents()
+	self.accountInfoText:SizeToContents()
+	self.subcategory7:SetHeight( ( self.statsName:GetSize().y + 4 * 4 ) + ( self.accountInfoText:GetSize().y + 4 * 4 ) )
+
+	if not self.moreInfoTextRenderEvent then
+		local pId = tostring( LocalPlayer:GetId() )
+
+		self.moreInfoTextRenderEvent = self.moreInfoText:Subscribe( "Render", function()
+			local vehicle = LocalPlayer:GetVehicle()
+
+			self.moreInfoText:SetText(
+				self.accountInfo6_txt .. self:ConvertSecondsToTimeFormat( LocalPlayer:GetValue( "SessionTime" ) or "0" ) ..
+				self.accountInfo7_txt .. tostring( LocalPlayer:GetValue( "ClanTag" ) or self.unknown_txt ) ..
+				self.accountInfo8_txt .. pId ..
+				self.accountInfo9_txt .. "rgba(" .. tostring( LocalPlayer:GetColor() ) .. ")" ..
+				self.accountInfo10_txt .. args.modelId ..
+				self.accountInfo11_txt .. ( vehicle and tostring( vehicle ) .. " (ID: " .. tostring( vehicle:GetModelId() ) .. ")" or self.onfoot_txt )
+			)
+		end )
+	end
+
+	self.moreInfoText:SizeToContents()
+	self.subcategory8:SetHeight( ( self.moreInfoText:GetSize().y + 4 * 4 ) )
+
+	if not self.statsTextRenderEvent then
+		local defaultValue = 0
+
+		self.statsTextRenderEvent = self.statsText:Subscribe( "Render", function()
+			self.statsText:SetText(
+				self.accountInfo12_txt .. tostring( LocalPlayer:GetValue( "ChatMessagesCount" ) or defaultValue ) ..
+				self.accountInfo13_txt .. tostring( LocalPlayer:GetValue( "KillsCount" ) or defaultValue ) ..
+				self.accountInfo14_txt .. tostring( LocalPlayer:GetValue( "CollectedResourceItemsCount" ) or defaultValue ) ..
+				self.accountInfo15_txt .. tostring( LocalPlayer:GetValue( "CompletedTasksCount" ) or defaultValue ) ..
+				self.accountInfo16_txt .. tostring( LocalPlayer:GetValue( "CompletedDailyTasksCount" ) or defaultValue ) ..
+				self.accountInfo17_txt .. tostring( LocalPlayer:GetValue( "MaxRecordInBestDrift" ) or defaultValue ) ..
+				self.accountInfo18_txt .. tostring( LocalPlayer:GetValue( "MaxRecordInBestTetris" ) or defaultValue ) ..
+				self.accountInfo19_txt .. tostring( LocalPlayer:GetValue( "MaxRecordInBestFlight" ) or defaultValue ) ..
+				self.accountInfo20_txt .. tostring( LocalPlayer:GetValue( "RaceWinsCount" ) or defaultValue ) ..
+				self.accountInfo21_txt.. tostring( LocalPlayer:GetValue( "TronWinsCount" ) or defaultValue ) ..
+				self.accountInfo22_txt .. tostring( LocalPlayer:GetValue( "KingHillWinsCount" ) or defaultValue ) ..
+				self.accountInfo23_txt .. tostring( LocalPlayer:GetValue( "DerbyWinsCount" ) or defaultValue ) ..
+				self.accountInfo24_txt .. tostring( LocalPlayer:GetValue( "PongWinsCount" ) or defaultValue ) ..
+				self.accountInfo25_txt .. tostring( LocalPlayer:GetValue( "VictorinsCorrectAnswers" ) or defaultValue )
+			)	
+		end )
+	end
+
+	self.statsText:SizeToContents()
+	self.subcategory9:SetHeight( ( self.statsText:GetSize().y + 4 * 4 ) )
+end
+
+function Settings:UpdatePromocodes( args )
+	self.subcategory11:SetText(
+		self.uses_txt .. tostring( LocalPlayer:GetValue( "PromoCodeUses" ) or 0 ) .. " | " .. self.activations .. tostring( LocalPlayer:GetValue( "PromoCodeActivations" ) or 0 ) ..
+		"\n" .. self.promocodeGenerationDate_txt .. tostring( LocalPlayer:GetValue( "PromoCodeCreationDate" ) or self.unknown_txt )
+	)
+	self.subcategory11:SizeToContents()
+
+	self.invitePromocodeText = LocalPlayer:GetValue( "PromoCodeName" )
+	if self.invitePromocodeText then
+		self.invitePromocode:SetText( self.invitePromocodeText )
+		self.togglePromocodeBtn:SetVisible( false )
+		self.invitePromocode:SetVisible( not self.togglePromocodeBtn:GetVisible() )
+	else
+		self.invitePromocode:SetText( "" )
+		self.togglePromocodeBtn:SetVisible( true )
+		self.invitePromocode:SetVisible( not self.togglePromocodeBtn:GetVisible() )
+	end
+
+	local isActive = LocalPlayer:GetValue( "PromoCodeRewards" ) and tonumber( LocalPlayer:GetValue( "PromoCodeRewards" ) ) >= 1
+	self.getInvitationsBonusBtn:SetEnabled( isActive and true or false )
+
+	self.getInvitationsBonusBtn:SetText( self.getInvitationsBonus_txt .. " ($" .. formatNumber( ( LocalPlayer:GetValue( "PromoCodeRewards" ) or 0 ) * InviteBonuses.Bonus1 ) .. ")" )
+
+	self.getInviteBonusBtn:SetEnabled( LocalPlayer:GetValue( "ActivePromocode" ) and true or false )
+end
+
 function Settings:Open()
 	self:SetWindowVisible( not self.active )
 
@@ -835,6 +1179,8 @@ function Settings:Open()
 			self.buttonTw:SetPosition( Vector2( self.button:GetPosition().x + 105, pos_y ) )
 			self.buttonTh:SetPosition( Vector2( self.buttonTw:GetPosition().x + 105, pos_y ) )
 		end
+
+		Network:Send( "RequestStats" )
 
 		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
         if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
@@ -941,6 +1287,13 @@ function Settings:KeyUp( args )
 
 		self:GameLoad()
 	end
+end
+
+function Settings:ConvertSecondsToTimeFormat( seconds )
+    local hours = math.floor( seconds / 3600 )
+    local minutes = math.floor( ( seconds % 3600 ) / 60 )
+    local seconds = seconds % 60
+    return string.format( self.timeFormat, hours, minutes, seconds )
 end
 
 settings = Settings()

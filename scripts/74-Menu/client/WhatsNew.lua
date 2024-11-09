@@ -57,21 +57,17 @@ function WhatsNew:Open( args )
 	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 
-	if not self.Menu_background then
-		self.Menu_background = Rectangle.Create()
-		self.Menu_background:SetHeight( Render.Size.x / 30 )
-		self.Menu_background:SetWidth( Render.Size.x / 5 )
-		self.Menu_background:SetPosition( Vector2( Render.Size.x / 2 - self.Menu_background:GetWidth() / 2, Render.Size.x / 2.7 ) )
-		self.Menu_background:SetColor( Color( 255, 255, 255, 20 ) )
+	self.continueButton = ModernGUI.Button.Create()
+	self.continueButton:SetSize( Vector2( Render:GetTextWidth( self.continue_txt, self.continueButton:GetTextSize() ) + 30, 40 ) )
+	self.continueButton:SetPosition( Vector2( Render.Size.x / 2 - self.continueButton:GetSize().x / 2, Render.Size.y ) )
+	self.continueButton:SetText( self.continue_txt )
+	if LocalPlayer:GetValue( "SystemFonts" ) then
+		self.continueButton:SetFont( AssetLocation.SystemFont, "Impact" )
 	end
+	self.continueButton:Subscribe( "Press", self, self.Close )
 
-	if not self.Menu_button then
-		self.Menu_button = MenuItem.Create( self.Menu_background )
-		self.Menu_button:SetDock( GwenPosition.Fill )
-		self.Menu_button:SetText( self.continue_txt )
-		self.Menu_button:SetTextSize( 15 )
-		self.Menu_button:Subscribe( "Press", self, self.Close )
-	end
+	local finalPos = Render.Size.x / 2.7
+	Animation:Play( self.continueButton:GetPosition().x, finalPos, 0.25, easeInOut, function( value ) self.continueButton:SetPosition( Vector2( Render.Size.x / 2 - self.continueButton:GetSize().x / 2, value ) ) end )
 end
 
 function WhatsNew:LocalPlayerInput( args )
@@ -95,7 +91,6 @@ function WhatsNew:Render()
 
 	if self.usepause then
 		Game:FireEvent( "ply.pause" )
-		Render:DrawText( Vector2( 20, Render.Height - Render:GetTextHeight( self.copyright_txt ) - 20 ), self.copyright_txt, self.text_clr, 15 )
 	end
 end
 
@@ -119,8 +114,7 @@ function WhatsNew:Close()
 	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 
-	if self.Menu_button then self.Menu_button:Remove() self.Menu_button = nil end
-	if self.Menu_background then self.Menu_background:Remove() self.Menu_background = nil end
+	if self.continueButton then self.continueButton:Remove() self.continueButton = nil end
 
 	if self.usepause then
 		Game:FireEvent( "ply.unpause" )

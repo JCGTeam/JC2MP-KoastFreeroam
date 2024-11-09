@@ -8,6 +8,11 @@
   "resources": {
     "RusFlag": "https://i.ibb.co/GHmVVBm/rusflag.jpg",
     "EngFlag": "https://i.ibb.co/6F7P02Y/engflag.jpg",
-    "Rico": "https://i.ibb.co/y88swxj/Rico.png"
+    "Rico": "https://i.ibb.co/N2SVZzC/rico.png",
+    "QRTelegram": "https://i.ibb.co/FWZfbnX/koastfreeroamqrtelegram.jpg",
+    "QRDiscord": "https://i.ibb.co/qy0Vs4x/koastfreeroamqrdiscord.jpg",
+    "QRSteam": "https://i.ibb.co/wMdv9Sn/koastfreeroamqrsteam.jpg",
+    "QRYouTube": "https://i.ibb.co/YTMY2rq/koastfreeroamquyoutube.jpg",
+    "QRBoosty": "https://i.ibb.co/Sr5z9Kz/adobe-express-qr-code-3-1.jpg"
   }
 }

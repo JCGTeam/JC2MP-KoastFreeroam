@@ -1,7 +1,7 @@
 class 'Logo'
 
 function Logo:__init()
-	self.logo_txt = "Koast Freeroam! [Open Source]"
+	self.logo_txt = "Koast Freeroam!"
 	self.logo_clr = Color( 255, 255, 255, 30 )
 
 	Events:Subscribe( "Render", self, self.Render )

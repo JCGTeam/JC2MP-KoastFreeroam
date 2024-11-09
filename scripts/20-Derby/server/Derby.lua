@@ -129,6 +129,8 @@ function Derby:PlayerDeath(args)
 			self:MessagePlayer(args.player, "Поздравляем вас " ..tostring(self.numPlayers) .. numberEnding)
 			self:RemovePlayer(args.player)
 
+			args.player:SetNetworkValue( "DerbyWinsCount", ( args.player:GetValue( "DerbyWinsCount" ) or 0 ) + 1 )
+
 			local currentMoney = args.player:GetMoney()
 			local addMoney = math.ceil(75 * math.exp(self.scaleFactor * (self.startPlayers - self.numPlayers))) / 2
 			args.player:SetMoney(currentMoney + addMoney)
@@ -442,9 +444,9 @@ function Derby:Cleanup()
 end
 
 function Derby:MessagePlayer(player, message)
-	player:SendChatMessage( "[" ..self.name .. "] ", Color.White, message, Color( 228, 142, 56 ) )
+	player:SendChatMessage( "[" ..self.name .. "] ", Color.White, message, Color( 185, 215, 255 ) )
 end
 
 function Derby:MessageGlobal(message)
-	Chat:Broadcast( "[" ..self.name .. "] ", Color.White, message, Color( 228, 142, 56 ) )
+	Chat:Broadcast( "[" ..self.name .. "] ", Color.White, message, Color( 185, 215, 255 ) )
 end

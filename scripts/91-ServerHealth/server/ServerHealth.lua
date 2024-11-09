@@ -141,7 +141,10 @@ function ServerHealth:GetHelp()
     "> add<rolename> <steamID> - add SteamID to role. \n" ..
     "> getroles <rolename> - get all SteamId in role. \n" ..
     "> addmoney <player> <money> - add money for player. \n" ..
-    "> setpromocode <name> - set promocode. \n" ..
+    "> addglobalpromocode <name> <bonus> - add global promocode. \n" ..
+    "> addinvitationpromocode <steamID> <name> <bonus1> <bonus2> - add invitation promocode. \n" ..
+    "> removeglobalpromocode <name> - remove global promocode. \n" ..
+    "> removeinvitationpromocode <name> - remove invitation promocode. \n" ..
     "Server: \n" ..
     "> getuptime - get server uptime. \n" ..
     "> reload <module> - reload module. \n" ..

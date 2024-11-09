@@ -6,12 +6,15 @@ function Pigeon:__init()
 	Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
 	Events:Subscribe( "PostTick", self, self.PostTick )
 	Events:Subscribe( "PlayerChat", self, self.PlayerChat )
-	Network:Subscribe( "0001", self, self.onFlyingRecord )
-	Network:Subscribe( "0002", self, self.onFlyingAttempt )
-	Network:Subscribe( "0003", self, self.FlyingRecordTask )
+
+	Network:Subscribe( "onFlyingRecord", self, self.onFlyingRecord )
+	Network:Subscribe( "onFlyingAttempt", self, self.onFlyingAttempt )
+	Network:Subscribe( "FlyingRecordTask", self, self.FlyingRecordTask )
+	Network:Subscribe( "UpdateMaxRecord", self, self.UpdateMaxRecord )
 
 	self.tag_clr = Color.White
-	self.text_clr = Color( 255, 150, 0 )
+	self.text_clr = Color( 185, 215, 255 )
+	self.text2_clr = Color( 251, 184, 41 )
 end
 
 function Pigeon:initVars()
@@ -70,9 +73,9 @@ function Pigeon:onFlyingRecord( score, player )
 		if objectN ~= nil then
 			player:SetMoney( player:GetMoney() + 50 )
 			if player:GetValue( "Lang" ) == "EN" then
-				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new pigeon flying record!", self.text_clr )
+				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new wingsuit flying record!", self.text2_clr )
 			else
-				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд по полётам на вингсьюте!", self.text_clr )
+				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд по полётам на вингсьюте!", self.text2_clr )
 			end
 
 			for p in Server:GetPlayers() do
@@ -85,14 +88,14 @@ function Pigeon:onFlyingRecord( score, player )
 		else
 			player:SetMoney( player:GetMoney() + 50 )
 			if player:GetValue( "Lang" ) == "EN" then
-				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new pigeon flying record!", self.text_clr )
+				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new flying record!", self.text2_clr )
 			else
-				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд по полётам!", self.text_clr )
+				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд по полётам!", self.text2_clr )
 			end
 
 			for p in Server:GetPlayers() do
 				if p:GetValue( "Lang" ) == "EN" then
-					p:SendChatMessage( "[Record] ", self.tag_clr, pName .. " set a new pigeon flying record: " .. score .. "!", self.text_clr )
+					p:SendChatMessage( "[Record] ", self.tag_clr, pName .. " set a new wingsuit flying record: " .. score .. "!", self.text_clr )
 				else
 					p:SendChatMessage( "[Рекорд] ", self.tag_clr, pName .. " установил новый рекорд по полётам на вингсьюте: " .. score .. "!", self.text_clr )
 				end
@@ -101,7 +104,7 @@ function Pigeon:onFlyingRecord( score, player )
 	else
 		for p in Server:GetPlayers() do
 			if p:GetValue( "Lang" ) == "EN" then
-				p:SendChatMessage( "[Record] ", self.tag_clr, pName .. " updated a fantastic pigeon record: " .. score .. "!", self.text_clr )
+				p:SendChatMessage( "[Record] ", self.tag_clr, pName .. " updated a fantastic flying record: " .. score .. "!", self.text_clr )
 			else
 				p:SendChatMessage( "[Рекорд] ", self.tag_clr, pName .. " обновил хорошечный рекорд по полётам на вингсьюте: " .. score .. "!", self.text_clr )
 			end
@@ -118,7 +121,7 @@ function Pigeon:onFlyingRecord( score, player )
 end
 
 function Pigeon:onFlyingAttempt( score, player )
-	Network:Broadcast( "0003", {score, player:GetId() + 1} )
+	Network:Broadcast( "onFlyingAttempt", {score, player:GetId() + 1} )
 end
 
 function Pigeon:FlyingRecordTask( score, player )
@@ -128,30 +131,35 @@ function Pigeon:FlyingRecordTask( score, player )
 	end
 end
 
+function Pigeon:UpdateMaxRecord( score, player )
+	if tonumber( player:GetValue( "MaxRecordInBestFlight" ) or 0 ) >= score then return end
+	player:SetNetworkValue( "MaxRecordInBestFlight", score )
+end
+
 function Pigeon:Reward( name, last )
 	for player in Server:GetPlayers() do
 		if player:GetName() == name then
 			if not last then
 				player:SetMoney( player:GetMoney() + 15 )
 				if player:GetValue( "Lang" ) == "EN" then
-					player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $15 for keeping flying record!", self.text_clr )
+					player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $15 for keeping flying record!", self.text2_clr )
 				else
-					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $15 за удержание рекорда по полёту!", self.text_clr )
+					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $15 за удержание рекорда по полёту!", self.text2_clr )
 				end
 			else
 				player:SetMoney( player:GetMoney() + 500 )
 				if player:GetValue( "Lang" ) == "EN" then
-					player:SendChatMessage( "[Record] ", self.tag_clr, "You won a fantastic pigeon! Your reward: $500!", self.text_clr )
+					player:SendChatMessage( "[Record] ", self.tag_clr, "You won a fantastic flying! Your reward: $500!", self.text2_clr )
 				else
-					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Вы победили в хорошечном голубе! Ваша награда: $500!", self.text_clr )
+					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Вы победили в хорошечном полете! Ваша награда: $500!", self.text2_clr )
 				end
 
 				local pName = player:GetName()
 				for p in Server:GetPlayers() do
 					if p:GetValue( "Lang" ) == "EN" then
-						p:SendChatMessage( "[Record] ", self.tag_clr, pName .. " won a fantastic pigeon and won $500!", self.text_clr )
+						p:SendChatMessage( "[Record] ", self.tag_clr, pName .. " won a fantastic flying and won $500!", self.text_clr )
 					else
-						p:SendChatMessage( "[Рекорд] ", self.tag_clr, pName .. " победил в хорошечном голубе и выиграл $500!", self.text_clr )
+						p:SendChatMessage( "[Рекорд] ", self.tag_clr, pName .. " победил в хорошечном полете и выиграл $500!", self.text_clr )
 					end
 				end
 			end

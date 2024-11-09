@@ -6,14 +6,13 @@
     "name": "15-ServerMenu"
   },
   "resources": {
-    "ManhuntICO": "https://i.ibb.co/Rc1B79H/manhunt.jpg",
-    "CarBattlesICO": "https://i.ibb.co/WnbxDGD/carbattles.jpg",
-    "RaceICO": "https://i.ibb.co/frZDR8D/racing.jpg",
-    "TronICO": "https://i.ibb.co/mqjz95t/tron.jpg",
-    "KingHillICO": "https://i.ibb.co/MsQxz5Q/kinghill.jpg",
-    "PongICO": "https://i.ibb.co/47NMMdP/pong.jpg",
-    "TetrisICO": "https://i.ibb.co/pxYdRW3/tetris.jpg",
-    "CasinoICO": "https://i.ibb.co/tznfSHg/casino.jpg",
-    "CustomICO": "https://i.ibb.co/375W62r/custom.jpg"
+    "DerbyICO": "https://i.ibb.co/Y7B0SQk/derby.jpg",
+    "RaceICO": "https://i.ibb.co/6RFwZfr/racing.jpg",
+    "TronICO": "https://i.ibb.co/0G7kGCd/tron.jpg",
+    "KingHillICO": "https://i.ibb.co/W5SH0nn/kinghill.jpg",
+    "PongICO": "https://i.ibb.co/QXcpX6m/pong.jpg",
+    "TetrisICO": "https://i.ibb.co/zb31hzk/tetris.jpg",
+    "CasinoICO": "https://i.ibb.co/8sQsYHm/casino.jpg",
+    "CustomICO": "https://i.ibb.co/Mg7xLsD/custom.jpg"
   }
 }

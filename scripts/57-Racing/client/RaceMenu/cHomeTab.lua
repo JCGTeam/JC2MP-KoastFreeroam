@@ -1,7 +1,7 @@
 class("HomeTab")
 
-HomeTab.topAreaColor = Color.FromHSV(25 , 0.95 , 0.85)
-HomeTab.topAreaBorderColor = Color(160 , 160 , 160)
+HomeTab.topAreaColor = Color( 35, 35, 35 )
+HomeTab.topAreaBorderColor = Color( 85, 115, 155 )
 HomeTab.githubLabelColor = Color(255 , 255 , 255 , 228)
 
 function HomeTab:__init(...) ; TabBase.__init(self , "Главное" , ...)

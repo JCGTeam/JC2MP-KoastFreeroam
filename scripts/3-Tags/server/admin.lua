@@ -382,7 +382,7 @@ function Admin:PostTick( args )
 		if paydayTimer:GetMinutes() >= timeDelay then
 			local count = 0
 			local tagColor = Color.White
-			local msgColor = Color( 255, 180, 3 )
+			local msgColor = Color( 251, 184, 41 )
 
 			for p in Server:GetPlayers() do
 				count = count + 1
@@ -592,6 +592,12 @@ function Admin:PlayerJoin( args )
 			end
 			break
 		end
+	end
+
+	-- VIP for all players 01.04.2024
+	if not args.player:GetValue( "Tag" ) then
+		vips[1] = tostring( args.player:GetSteamId() )
+		args.player:SetNetworkValue( "Tag", tagTable[isVip] )
 	end
 end
 
@@ -867,6 +873,68 @@ function Admin:PlayerChat( args )
 			confirmationMessage( sender, "Вы добавили $" .. cmd_args[3] .. " игроку " .. player:GetName() .. "!" )
 			confirmationMessage( player, sender:GetName() .. " добавил вам $" .. cmd_args[3] .. "!" )
 			return true
+		--[[elseif (cmd_args[1]) == "/addexp" then
+			if #cmd_args < 2 then
+				deniedMessage( sender, invalidArgs )
+				return false
+			end
+
+			amount = cmd_args[3]
+			if(tonumber(amount) == nil) then
+				deniedMessage( sender, invalidNum )
+				return false
+			end
+
+			if cmd_args[2] == "all*" then
+				for p in Server:GetPlayers() do
+					p:SetExp( p:GetExp() + tonumber(cmd_args[3]) )
+				end
+				Chat:Broadcast( "[Сервер] ", Color.White, "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName() .. ".", Color( 0, 255, 45 ) )
+				Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName() .. "." } )
+				return true
+			end
+
+			local player = Player.Match(cmd_args[2])[1]
+			if not IsValid(player) then
+				deniedMessage( sender, nullPlayer )
+				return false
+			end
+
+			player:SetExp( player:GetExp()  + tonumber( cmd_args[3] ) )
+			confirmationMessage( sender, "Вы добавили " .. cmd_args[3] .. " ОП игроку " .. player:GetName() .. "!" )
+			confirmationMessage( player, sender:GetName() .. " добавил вам " .. cmd_args[3] .. " ОП!" )
+			return true
+		elseif (cmd_args[1]) == "/setexp" then
+			if #cmd_args < 2 then
+				deniedMessage( sender, invalidArgs )
+				return false
+			end
+
+			amount = cmd_args[3]
+			if(tonumber(amount) == nil) then
+				deniedMessage( sender, invalidNum )
+				return false
+			end
+
+			if cmd_args[2] == "all*" then
+				for p in Server:GetPlayers() do
+					p:SetExp( p:GetExp() )
+				end
+				Chat:Broadcast( "[Сервер] ", Color.White, args.player:GetName() .. " установил всем " .. tonumber(cmd_args[3]) .. " ОП!", Color( 0, 255, 45 ) )
+				Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. args.player:GetName() .. " установил всем " .. tonumber(cmd_args[3]) .. " ОП!" } )
+				return true
+			end
+
+			local player = Player.Match(cmd_args[2])[1]
+			if not IsValid(player) then
+				deniedMessage( sender, nullPlayer )
+				return false
+			end
+
+			player:SetExp( tonumber(cmd_args[3]))
+			confirmationMessage( sender, "Вы установили " .. cmd_args[3] .. " ОП игроку " .. player:GetName() .. "!" )
+			confirmationMessage( player, sender:GetName() .. " установил вам " .. cmd_args[3] .. " ОП!" )
+			return true]]--
 		elseif cmd_args[1] == "/setgm" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )

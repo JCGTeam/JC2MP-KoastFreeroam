@@ -36,25 +36,12 @@ function JoinLeave:PlayerJoin( args )
 	local pcountry = args.player:GetValue( "Country" )
 
 	local text_clr = Color.White
-	local text2_clr = Color.Yellow
+	local text2_clr = Color.DarkGray
 
 	if self.languageslist[pcountry] then
-		Chat:Send( args.player, "Добро пожаловать на Koast Freeroam! Приятной игры :3", Color( 200, 120, 255 ) )
-
-		Chat:Send( args.player, "==============", text_clr )
-		Chat:Send( args.player, "> Меню сервера: ", text_clr, "B", text2_clr )
-		Chat:Send( args.player, "> Меню действий: ", text_clr, "V", text2_clr )
-		Chat:Send( args.player, "> Серверная карта: ", text_clr, "M", text2_clr, " / ", text_clr, "F2", text2_clr )
-		Chat:Send( args.player, "> Список игроков: ", text_clr, "F5", text2_clr )
-		Chat:Send( args.player, "==============", text_clr )
+		Chat:Send( args.player, "Добро пожаловать на Koast Freeroam! Приятной игры :3", Color( 185, 215, 255 ) )
 	else
-		Chat:Send( args.player, "Welcome to Koast Freeroam! Have a good game :3", Color( 200, 120, 255 ) )
-		Chat:Send( args.player, "==============", text_clr )
-		Chat:Send( args.player, "> Server Menu: ", text_clr, "B", text2_clr )
-		Chat:Send( args.player, "> Actions Menu: ", text_clr, "V", text2_clr )
-		Chat:Send( args.player, "> Server Map: ", text_clr, "M", text2_clr, " / ", text_clr, "F2", text2_clr )
-		Chat:Send( args.player, "> Players List: ", text_clr, "F5", text2_clr )
-		Chat:Send( args.player, "==============", text_clr )
+		Chat:Send( args.player, "Welcome to Koast Freeroam! Have a good game :3", Color( 185, 215, 255 ) )
 	end
 
 	if self.joinNotice then

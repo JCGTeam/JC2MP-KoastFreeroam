@@ -36,11 +36,11 @@ function DerbyManager:GenerateName()
 end
 
 function DerbyManager:MessagePlayer(player, message)
-	player:SendChatMessage( "[Дерби] " .. message, Color( 228, 142, 56 ) )
+	player:SendChatMessage( "[Дерби] " .. message, Color( 185, 215, 255 ) )
 end
 
 function DerbyManager:MessageGlobal(message)
-	Chat:Broadcast( "[Дерби] " .. message, Color( 228, 142, 56 ) )
+	Chat:Broadcast( "[Дерби] " .. message, Color( 185, 215, 255 ) )
 end
 
 function DerbyManager:HasPlayer(player)

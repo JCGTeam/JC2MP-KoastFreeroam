@@ -257,6 +257,7 @@ function Tetris:__init()
 		self.tSetGOver = "Финальный счёт: "
 		self.tSetGOver2 = " \n\n\n\nSPACE - Повторить попытку"
 		self.tSetGOver3 = " \n\n\n\n\n\n\nCTRL - Список лидеров"
+		self.controltip = "[←→] - Перемещение фигуры\n[↑] - Повернуть фигуру\n[↓] - Опустить фигуру ниже\n[END] - Опустить фигуру вниз\n[ESC] - Закрыть тетрис"
 	end
 
 	Events:Subscribe( "TetrisToggle", self, self.Toggle )
@@ -277,6 +278,7 @@ function Tetris:Lang()
 	self.tSetGOver = "Final score: "
 	self.tSetGOver2 = " \n\n\n\nSPACE - Try again"
 	self.tSetGOver3 = " \n\n\n\n\n\n\nCTRL - Leaderboard"
+	self.controltip = "[←→] - Move block\n[↑] - Rotate block\n[↓] - Soft drop block\n[END] - Hard drop block\n[ESC] - Close tetris"
 end
 
 function Tetris:Toggle()
@@ -470,14 +472,11 @@ function Tetris:ShowScore()
 		Render:SetFont( AssetLocation.SystemFont, "Impact" )
 	end
 
-	local shadow_clr = Color( 25, 25, 25, 150 )
+	local text_clr = Color.White
+	local shadow_clr = Color( 25, 25, 25 )
 	local totalScore = tostring( LocalPlayer:GetValue( "TetrisTotalScore" ) )
 
-	local pos = Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tScores .. totalScore, 20 ) / 2, 50 )
-	Render:DrawShadowedText( pos, self.tScores .. totalScore, Color( 255, 255, 0 ), shadow_clr, 20 )
-
 	if not self.inGame then
-		local text_clr = Color.White
 		local text_size = 32
 
 		if self.firstGo then
@@ -497,6 +496,21 @@ function Tetris:ShowScore()
 			Render:DrawShadowedText( pos, self.tSetGOver3, text_clr, shadow_clr, text_size )
 		end
 	end
+
+	local score = self.tScores .. totalScore
+	local pos = Vector2( self.offset.x + 11.5 * self.tileWidthV.x, self.offset.y - self.tileHeightV.y + 40 )
+	local text_size = 20
+	local text_size2 = 15
+	local padding = 10
+
+	Render:FillArea( pos, Vector2( Render:GetTextWidth( self.controltip, text_size2 ) * 1.15, ( Render:GetTextHeight( score, text_size ) + 5 + Render:GetTextHeight( self.controltip, text_size2 ) ) + padding * 2 ), self.backgroundCol )
+
+	pos = pos + Vector2( padding, padding )
+	Render:DrawShadowedText( pos, self.tScores, text_clr, shadow_clr, text_size )
+	Render:DrawShadowedText( pos + Vector2( Render:GetTextWidth( self.tScores, text_size ), 0 ), totalScore, Color( 185, 215, 255 ), shadow_clr, text_size )
+
+	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
+	Render:DrawShadowedText( pos + Vector2( 0, Render:GetTextHeight( score, text_size ) + 5 ), self.controltip, text_clr, shadow_clr, text_size2 )
 end
 
 function Tetris:GameOver()

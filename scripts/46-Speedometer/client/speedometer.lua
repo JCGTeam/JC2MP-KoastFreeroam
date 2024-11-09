@@ -47,13 +47,15 @@ function Speedometer:__init()
 
 	self.bHealth = Color( 100, 100, 100 )
 	self.zHealth = Color( 255, 150, 150 )
-	self.fHealth = Color( 255, 140, 50 )
+	self.fHealth = Color( 100, 150, 100 )
 	self.text_shadow = Color( 0, 0, 0, 100 )
 
 	if LocalPlayer:InVehicle() then
 		self.PreTickEvent = Events:Subscribe( "PreTick", self, self.PreTick )
 		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
 		self.GameRenderEvent = Events:Subscribe( "Render", self, self.GameRender )
+
+		self.animationValue = 1
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
@@ -68,12 +70,17 @@ function Speedometer:LocalPlayerEnterVehicle()
 	if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe( "PreTick", self, self.PreTick ) end
 	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "Render", self, self.GameRender ) end
+
+	self.animationValue = 1
+	--Animation:Play( 0, 1, 0.25, easeIOnut, function( value ) self.animationValue = value end )
 end
 
 function Speedometer:LocalPlayerExitVehicle()
 	if self.PreTickEvent then Events:Unsubscribe( self.PreTickEvent ) self.PreTickEvent = nil end
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
+
+	self.animationValue = nil
 end
 
 function Speedometer:Lang()
@@ -339,11 +346,16 @@ function Speedometer:GameRender()
 	local factor = math.clamp( vehicle:GetHealth() - 0.4, 0.0, 0.6 ) * 2.5
 
 	local vehBrake = LocalPlayer:GetValue( "VehBrake" )
-	local col = math.lerp( vehBrake and self.bHealth or self.zHealth, vehBrake and self.bHealth or self.fHealth, factor )
+	local alpha = math.lerp( 0, 255, self.animationValue )
+	local zHealth = Color( self.zHealth.r, self.zHealth.g, self.zHealth.b, alpha )
+	local fHealth = Color( self.fHealth.r, self.fHealth.g, self.fHealth.b, alpha )
+	local bHealth = Color( self.bHealth.r, self.bHealth.g, self.bHealth.b, alpha )
+	local col = math.lerp( vehBrake and bHealth or zHealth, vehBrake and bHealth or fHealth, factor )
 	local textcol = col
 
-	local text_col = Color.White
+	local text_col = Color( 255, 255, 255, alpha )
 	local text_size = speed_size + Vector2( unit_size.x + 24, 0 )
+	local text_shadow = Color( self.text_shadow.r, self.text_shadow.g, self.text_shadow.b, math.lerp( 0, self.text_shadow.a, self.animationValue ) )
 
 	local t = Transform3()
 
@@ -384,7 +396,7 @@ function Speedometer:GameRender()
 	end
 
 	Render:FillArea( bar_pos + Vector3( 1, 1, 4 ), Vector3( bar_len, 16, 0 ), col )
-	Render:FillArea( bar_pos + Vector3( 1, 1, 3 ), Vector3( text_size.x, 20, 0 ), self.text_shadow )
+	Render:FillArea( bar_pos + Vector3( 1, 1, 3 ), Vector3( text_size.x, 20, 0 ), text_shadow )
 	Render:FillArea( bar_pos, Vector3( bar_len, 16, 0 ), col )
 end
 

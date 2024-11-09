@@ -1,6 +1,9 @@
 class 'Menu'
 
 function Menu:__init()
+	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_color (steamid VARCHAR UNIQUE, r INTEGER, g INTEGER, b INTEGER)" )
+	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_registered (steamid VARCHAR UNIQUE, registered INTEGER)" )
+
 	self.languageslist = { 
         ["RU"] = true,
 		["UK"] = true,
@@ -10,53 +13,105 @@ function Menu:__init()
         ["N/A"] = true
     }
 
-	Network:Subscribe( "IsChecked", self, self.IsChecked )
+	--self.worlds = {}
 
+	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
+	--Events:Subscribe( "ClientModuleLoad", self, self.ClientModuleLoad )
+
+	Network:Subscribe( "SetPlayerColor", self, self.SetPlayerColor )
 	Network:Subscribe( "SetFreeroam", self, self.SetFreeroam )
-	Network:Subscribe( "SetEng", self, self.SetEng )
-	Network:Subscribe( "SetRus", self, self.SetRus )
+	Network:Subscribe( "SetLang", self, self.SetLang )
 	Network:Subscribe( "Exit", self, self.Exit )
 	Network:Subscribe( "GoMenu", self, self.GoMenu )
 end
 
-function Menu:IsChecked( args, sender )
-	sender:SetNetworkValue( "Warned", 1 )
+function Menu:PlayerJoin( args )
+    local qry = SQL:Query( "select registered from players_registered where steamid = (?)" )
+    qry:Bind( 1, args.player:GetSteamId().id )
+    local result = qry:Execute()
+
+	if #result > 0 then
+        args.player:SetNetworkValue( "Registered", tonumber(result[1].registered) )
+    end
+end
+
+function Menu:ClientModuleLoad( args )
+	local pId = args.player:GetId()
+	self.worlds[ pId ] = World.Create()
+	self.worlds[ pId ]:SetTime( 18 )
+	self.worlds[ pId ]:SetTimeStep( 0 )
+	self.worlds[ pId ]:SetWeatherSeverity( 0.6 )
+
+	args.player:SetWorld( self.worlds[ pId ] )
+	args.player:SetNetworkValue( "GameMode", "Приветствие" )
+end
+
+function Menu:SetPlayerColor( args, sender )
+	local color = args.color
+	local steamId = sender:GetSteamId().id
+
+	local qry = SQL:Query( 'INSERT OR REPLACE INTO players_color (steamid, r, g, b) VALUES(?, ?, ?, ?)' )
+	qry:Bind( 1, steamId )
+	qry:Bind( 2, color.r )
+	qry:Bind( 3, color.g )
+	qry:Bind( 4, color.b )
+	qry:Execute()
+
+	sender:SetColor( args.color )
 end
 
 function Menu:SetFreeroam( args, sender )
+	--[[local pId = sender:GetId()
+	if self.worlds[ pId ] then
+		self.worlds[ pId ]:Remove()
+		self.worlds[ pId ] = nil
+	end]]--
+
 	sender:SetNetworkValue( "GameMode", "FREEROAM" )
+
+	if sender:GetValue( "Registered" ) then return end
+
+    sender:SetNetworkValue( "Registered", 1 )
+
+    local cmd = SQL:Command( "INSERT OR REPLACE INTO players_registered (steamid, registered) values (?, ?)" )
+    cmd:Bind( 1, sender:GetSteamId().id )
+    cmd:Bind( 2, sender:GetValue( "Registered" ) )
+    cmd:Execute()
 end
 
-function Menu:SetEng( args, sender )
-	sender:SetNetworkValue( "Warned", 1 )
+function Menu:SetLang( args, sender )
+	if args.lang then
+		sender:SetNetworkValue( "Lang", args.lang )
 
-	sender:SetNetworkValue( "Lang", "EN" )
+		if args.lang == "RU" then
+			if sender:GetValue( "Country" ) and sender:GetValue( "Country" ) == "N/A" then
+				sender:SetNetworkValue( "Country", "RU" )
+			end
+		end
 
-	local pcountry = sender:GetValue( "Country" )
-
-	if sender:GetValue( "Country" ) and self.languageslist[pcountry] then
 		local text_clr = Color.White
-		local text2_clr = Color.Yellow
+		local text2_clr = Color.DarkGray
 
-		Chat:Send( sender, "Welcome to Koast Freeroam! Have a good game :3", Color( 200, 120, 255 ) )
-		Chat:Send( sender, "==============", Color( 255, 255, 255 ) )
-		Chat:Send( sender, "> Server Menu: ", text_clr, "B", text2_clr )
-		Chat:Send( sender, "> Actions Menu: ", text_clr, "V", text2_clr )
-		Chat:Send( sender, "> Server Map: ", text_clr, "F2", text2_clr, " / ", text_clr, "M",text2_clr )
-		Chat:Send( sender, "> Players List: ", text_clr, "F5", text2_clr )
-		Chat:Send( sender, "==============", Color( 255, 255, 255 ) )
-	end
-end
+		local pcountry = sender:GetValue( "Country" )
 
-function Menu:SetRus( args, sender )
-	if sender:GetMoney() <= 1 then
-		sender:SetNetworkValue( "Warned", 1 )
-	end
-
-	sender:SetNetworkValue( "Lang", "RU" )
-
-	if sender:GetValue( "Country" ) and sender:GetValue( "Country" ) == "N/A" then
-		sender:SetNetworkValue( "Country", "RU" )
+		local lang = sender:GetValue( "Lang" )
+		if lang then
+			if lang == "RU" then
+				Chat:Send( sender, "==============", text_clr )
+				Chat:Send( sender, "> Меню сервера: ", text_clr, "B", text2_clr )
+				Chat:Send( sender, "> Меню действий: ", text_clr, "V", text2_clr )
+				Chat:Send( sender, "> Серверная карта: ", text_clr, "M", text2_clr, " / ", text_clr, "F2", text2_clr )
+				Chat:Send( sender, "> Список игроков: ", text_clr, "F5", text2_clr )
+				Chat:Send( sender, "==============", text_clr )
+			elseif lang == "EN" then
+				Chat:Send( sender, "==============", text_clr )
+				Chat:Send( sender, "> Server Menu: ", text_clr, "B", text2_clr )
+				Chat:Send( sender, "> Actions Menu: ", text_clr, "V", text2_clr )
+				Chat:Send( sender, "> Server Map: ", text_clr, "M", text2_clr, " / ", text_clr, "F2", text2_clr )
+				Chat:Send( sender, "> Players List: ", text_clr, "F5", text2_clr )
+				Chat:Send( sender, "==============", text_clr )
+			end
+		end
 	end
 end
 

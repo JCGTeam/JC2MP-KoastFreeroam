@@ -78,7 +78,7 @@ function BetterMinimap:DrawPlayer( position, triangle, color )
 	local playerPosition = LocalPlayer:GetPosition()
 	local distance = Vector3.Distance( playerPosition, position )
 
-	if distance <= 5000 then
+	--if distance <= 5000 then
 		local sett_alpha = Game:GetSetting(4) * 2.25
 		local color = Color( color.r, color.g, color.b, sett_alpha )
 		local shadowColor = Color( 0, 0, 0, sett_alpha )
@@ -93,7 +93,7 @@ function BetterMinimap:DrawPlayer( position, triangle, color )
 			Render:FillCircle( pos, self.size, color )
 			Render:DrawCircle( pos, self.size, shadowColor )
 		end
-	end
+	--end
 end
 
 betterminimap = BetterMinimap()

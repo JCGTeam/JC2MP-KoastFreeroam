@@ -3,7 +3,7 @@ class 'Messages'
 function Messages:__init()
 	Network:Subscribe( "ClientError", self, self.ClientError )
 
-	self.err_prefix = "[Смэрть] "
+	self.err_prefix = "[Критическая ошибка] "
 
 	Events:Subscribe( "ModuleError", self, self.ModuleError )
 	Events:Subscribe( "ModulesLoad", self, self.ModulesLoad )
@@ -17,10 +17,9 @@ function Messages:ModuleError( e )
 	local tagColor = Color.White
 	local errColor = Color.Red
 
-	Chat:Broadcast( self.err_prefix, tagColor, "Произошла критическая ошибка сервера, сообщите администрации!", errColor )
+	Chat:Broadcast( self.err_prefix, tagColor, "Произошла критическая ошибка сервера, сообщите об этом администрации!", errColor )
 	Chat:Broadcast( self.err_prefix, tagColor, "Discord: t.me/koastfreeroam/197", errColor )
-	Chat:Broadcast( self.err_prefix, tagColor, "Steam: steamcommunity.com/groups/koastfreeroam", errColor )
-	Chat:Broadcast( self.err_prefix, tagColor, "VK: vk.com/koastfreeroam", errColor )
+	Chat:Broadcast( self.err_prefix, tagColor, "Telegram: t.me/koastreport_bot", errColor )
 
 	Events:Fire( "ToDiscord", { text = "**[Error] Critical server error has occurred! Module: " .. e.module .. "**" })
 	Events:Fire( "ToDiscordConsole", { text = "**[Error] Critical server error has occurred! Module: " .. e.module .. "**" .. "\nERROR CODE:\n```" .. e.error .. "```" } )

@@ -52,7 +52,7 @@ function KingHill:PlayerChat( args )
 				if lobby:GetState() == GamemodeState.WAITING and lobby:GetQueue():GetSize() < lobby.maxPlayers then
 					if lobby:GetQueue():Contains(player) then
 						lobby:RemoveFromQueue(player)
-						KingHill.SendMessage( player, "Вы были удалены из очереди на Царь Горы (Карта: " .. lobby.name .. "!", Color( 228, 142, 56 ) )
+						KingHill.SendMessage( player, "Вы были удалены из очереди на Царь Горы (Карта: " .. lobby.name .. "!", Color( 185, 215, 255 ) )
 
 						if not args[2] or lobby.name:lower():match(args[2]:lower()) then
 							return false
@@ -90,7 +90,7 @@ function KingHill:PlayerChat( args )
 					targetLobby = Lobby(KingHillConfig.Maps[index])
 					table.insert(self.lobbies, targetLobby)
 				else
-					KingHill.SendMessage( player, "Не нашли карту с именем " .. args[2] .. "!", Color( 228, 142, 56 ) )
+					KingHill.SendMessage( player, "Не нашли карту с именем " .. args[2] .. "!", Color( 185, 215, 255 ) )
 					return false
 				end
 			end
@@ -101,9 +101,9 @@ function KingHill:PlayerChat( args )
 			else
 				if player:GetWorld() == DefaultWorld then
 					targetLobby:AddToQueue(player)
-					KingHill.SendMessage( player, "Вы были добавлены в очередь на Царь Горы (Карта: " .. targetLobby.name .. ")", Color( 228, 142, 56 ) )
+					KingHill.SendMessage( player, "Вы были добавлены в очередь на Царь Горы (Карта: " .. targetLobby.name .. ")", Color( 185, 215, 255 ) )
 				else
-					KingHill.SendMessage( player, "Пожалуйста, выйдите из текущего мода!", Color( 228, 142, 56 ) )
+					KingHill.SendMessage( player, "Пожалуйста, выйдите из текущего мода!", Color( 185, 215, 255 ) )
 				end
 			end
 		elseif args[1] == "forcekhill" then
@@ -162,7 +162,7 @@ function KingHill:PlayerChat( args )
 				end
 			end
 
-			KingHill.SendMessage( player, "Сейчас есть " .. lobbyCount .. " лобби в процессе ожидания и " .. playerCount .. " активны" .. plural(playerCount, "х", "й") .. " " .. plural(playerCount, "игроков", "игрок") .. ".", Color( 228, 142, 56 ) )
+			KingHill.SendMessage( player, "Сейчас есть " .. lobbyCount .. " лобби в процессе ожидания и " .. playerCount .. " активны" .. plural(playerCount, "х", "й") .. " " .. plural(playerCount, "игроков", "игрок") .. ".", Color( 185, 215, 255 ) )
 		elseif args[1] == "khilllist" then
 			local mapstrings = {""}
 
@@ -178,13 +178,13 @@ function KingHill:PlayerChat( args )
 				end
 			end
 
-			KingHill.SendMessage( player, "Лист:", Color( 228, 142, 56 ) )
+			KingHill.SendMessage( player, "Лист:", Color( 185, 215, 255 ) )
 
 			for k, string in ipairs(mapstrings) do
 				player:SendChatMessage( string, Color.DarkGray )
 			end
 		elseif args[1] == "khillhelp" then
-			KingHill.SendMessage( player, "Список Команд:", Color( 228, 142, 56 ) )
+			KingHill.SendMessage( player, "Список Команд:", Color( 185, 215, 255 ) )
 
 			player:SendChatMessage( "/khill - зайти в лобби.", Color.DarkGray )
 			player:SendChatMessage( "/khilllist - лист локаций.", Color.DarkGray )

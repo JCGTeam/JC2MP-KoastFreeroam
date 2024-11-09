@@ -134,8 +134,7 @@ function Shop:CreateItems()
         ["Транспорт"] = 1,
         ["Оружие"] = 2,
         ["Персонаж"] = 3,
-		["Внешность"] = 4,
-		["Остальное >"] = 5
+		["Внешность"] = 4
     }
 
     self.id_types = {}
@@ -550,7 +549,7 @@ function Shop:CreateItems()
             },
 
             ["Тараканы"] = {
-                ModelBuyMenuEntry( 2, "Мутант (Разак Разман)" ),
+                ModelBuyMenuEntry( 2, "Разак Разман" ),
                 ModelBuyMenuEntry( 5, "Элита" ),
                 ModelBuyMenuEntry( 32, "Техник" ),
                 ModelBuyMenuEntry( 85, "Солдат 1" ),
@@ -625,7 +624,7 @@ function Shop:CreateItems()
         },
 
         [self.types["Внешность"]] = {
-            { "Головные уборы", "Фуражки и шлемы", "Платки", "Парики", "Лицо", "Шея", "Принадлежности", "*VIP*" },
+            { "Головные уборы", "Фуражки и шлемы", "Платки", "Парики", "Лицо", "Шея", "Принадлежности", "Парашюты", "*VIP*" },
 
             ["Головные уборы"] = {
 				AppearanceBuyMenuEntry( "Clear", "Head", "ОЧИСТИТЬ" ),
@@ -724,6 +723,17 @@ function Shop:CreateItems()
 				AppearanceBuyMenuEntry( "pd_ularboysbase1.eez/pd_ularboys_base_male-ammopouch.lod", "Back", "Подсумок" ),
 				AppearanceBuyMenuEntry( "pd_ularboysbase1.eez/pd_ularboys_base_male-waterbottle.lod", "Back", "Фляга" ),
 			},
+
+			["Парашюты"] = {
+				AppearanceBuyMenuEntry( "parachute00.pickup.execute", "Parachute", "Обычный парашют" ),
+				AppearanceBuyMenuEntry( "parachute01.pickup.execute", "Parachute", "DLC - Парашют с двигателями" ),
+				AppearanceBuyMenuEntry( "parachute02.pickup.execute", "Parachute", "DLC - Парашют Сорвиголовы" ),
+				AppearanceBuyMenuEntry( "parachute03.pickup.execute", "Parachute", "DLC - Парашют Хаоса" ),
+				AppearanceBuyMenuEntry( "parachute04.pickup.execute", "Parachute", "DLC - Камуфляжный парашют" ),
+				AppearanceBuyMenuEntry( "parachute05.pickup.execute", "Parachute", "DLC - Тигровый парашют" ),
+				AppearanceBuyMenuEntry( "parachute06.pickup.execute", "Parachute", "DLC - Парашют с скорпионом" ),
+				AppearanceBuyMenuEntry( "parachute07.pickup.execute", "Parachute", "DLC - Огненный парашют" ),
+			},
 			
 			["*VIP*"] = {
 				AppearanceBuyMenuEntry( "Clear", "Back", "ОЧИСТИТЬ" ),
@@ -732,21 +742,6 @@ function Shop:CreateItems()
 				AppearanceBuyMenuEntry( "Jungle_B34_KelpS-Whole.lod", "Back", "Водоросли", 1 ),
 				AppearanceBuyMenuEntry( "City_T01_SakuraL-TrunkA.lod", "Back", "Дерево (только пустыня)", 1 ),
 				AppearanceBuyMenuEntry( "go225-a.lod", "Back", "Мусорное ведро", 1 ),
-			}
-        },
-
-        [self.types["Остальное >"]] = {
-            { "Парашюты" },
-
-			["Парашюты"] = {
-				ParachutesBuyMenuEntry( "parachute00.pickup.execute", "Обычный парашют" ),
-				ParachutesBuyMenuEntry( "parachute01.pickup.execute", "DLC - Парашют с двигателями" ),
-				ParachutesBuyMenuEntry( "parachute02.pickup.execute", "DLC - Парашют Сорвиголовы" ),
-				ParachutesBuyMenuEntry( "parachute03.pickup.execute", "DLC - Парашют Хаоса" ),
-				ParachutesBuyMenuEntry( "parachute04.pickup.execute", "DLC - Камуфляжный парашют" ),
-				ParachutesBuyMenuEntry( "parachute05.pickup.execute", "DLC - Тигровый парашют" ),
-				ParachutesBuyMenuEntry( "parachute06.pickup.execute", "DLC - Парашют с скорпионом" ),
-				ParachutesBuyMenuEntry( "parachute07.pickup.execute", "DLC - Огненный парашют" ),
 			}
         }
     }

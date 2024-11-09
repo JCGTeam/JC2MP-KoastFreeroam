@@ -2,14 +2,15 @@ class 'QuickTP'
 
 function QuickTP:__init()
 	self.fontColor       = Color( 255, 255, 255 )
-	self.fontShadow      = Color( 25, 25, 25, 150 )
+	self.fontShadow      = Color( 25, 25, 25 )
 	self.fontUpper       = true
 	self.showGroupCount  = true
 
-	self.menuColor       = Color( 173, 216, 230, 170 )
+	self.menuColor       = Color( 185, 215, 255, 170 )
 	self.backgroundColor = Color( 10, 10, 10, 200 )
-	self.highlightColor  = Color( 173, 216, 230, 130 )
-	self.innerRadius     = 60
+	self.highlightColor  = Color( 185, 215, 255, 120 )
+	self.innerRadius     = 50
+	self.fontSize = 42
 
 	self.menuOpen = false
 
@@ -84,21 +85,14 @@ end
 function QuickTP:OpenMenu()
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-	if not self.subRender then
-		self.subRender = Events:Subscribe( "PostRender", self, self.PostRender )
-	end
+	if not self.subRender then self.subRender = Events:Subscribe( "PostRender", self, self.PostRender ) end
+	if not self.subMouse then self.subMouse = Events:Subscribe( "MouseDown", self, self.MouseDown ) end
 
-	if not self.subMouse then
-		self.subMouse = Events:Subscribe( "MouseDown", self, self.MouseDown )
-	end
+	Animation:Play( 0, 1, 0.15, easeIOnut, function( value ) self.animationValue = value end )
 
 	Mouse:SetPosition( Vector2( Render.Width / 2, Render.Height / 2 ) )
 	Mouse:SetVisible( true )
 	Input:SetEnabled( false )
-
-	if not self.timerF then
-		self.timerF = Timer()
-	end
 
 	self.menu = self.collection
 	self.menuOpen = true
@@ -111,9 +105,6 @@ function QuickTP:CloseMenu()
 	Mouse:SetVisible( false )
 	Input:SetEnabled( true )
 
-	self.border = false
-
-	if self.timerF then self.timerF = nil end
 	if self.sound then self.sound = nil end
 
 	self.menuOpen = false
@@ -122,33 +113,15 @@ end
 function QuickTP:PostRender()
 	if Game:GetState() ~= GUIState.Game then return end
 
-	local animationSpeed = 1
-	local alpha = 0
-
-	if self.timerF then
-		local endAlpha = 100
-		local timerFSeconds = self.timerF:GetSeconds()
-
-		if timerFSeconds > 0 and timerFSeconds < 0.1 / animationSpeed then
-			alpha = math.clamp( timerFSeconds * 10 * animationSpeed, 0, endAlpha )
-			self.border = false
-			animplay = false
-		elseif timerFSeconds > 0.1 / animationSpeed then
-			self.border = true
-			animplay = true
-			self.timerF = nil
-		end
-	end
-
 	if LocalPlayer:GetValue( "SystemFonts" ) then
 		Render:SetFont( AssetLocation.SystemFont, "Impact" )
 	end
 
 	local count = #self.menu - 1
-	local size = 42 - count * 1.4
+	local size = self.fontSize - count * 1.4
 	if size < 12 then size = 12 end
 
-	local radius = ( Render.Height / 2 ) - 42
+	local radius = ( Render.Height / 2 ) - self.fontSize
 	local angle = math.pi / count
 	local center = Vector2( Render.Width / 2, Render.Height / 2 )
 	local drawRad = 2200
@@ -161,28 +134,21 @@ function QuickTP:PostRender()
 
 	if self.selection < 0 then self.selection = self.selection + count end
 
-	if self.border then
-		Render:FillArea( Vector2.Zero, Render.Size, self.backgroundColor )
-	end
+	local fontAlpha = math.lerp( 0, self.fontColor.a, self.animationValue )
+	local backgroundColor = Color( self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b, math.lerp( 0, self.backgroundColor.a, self.animationValue ) )
+	local highlightColor = Color( self.highlightColor.r, self.highlightColor.g, self.highlightColor.b, math.lerp( 0, self.highlightColor.a, self.animationValue ) )
+	local menuColor = Color( self.menuColor.r, self.menuColor.g, self.menuColor.b, math.lerp( 0, self.menuColor.a, self.animationValue ) )
 
 	if self.sound then
 		self.sound:SetPosition( Camera:GetPosition() )
 	end
 
-	Render:FillArea( Vector2.Zero, Render.Size, Color( self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b, self.backgroundColor.a * alpha ) )
+	Render:FillArea( Vector2.Zero, Render.Size, backgroundColor )
 
-	if animplay then
-		if count < 3 then
-			Render:FillArea( Vector2( ( self.selection == 0 and count == 2 ) and center.x or 0, 0 ), Vector2( count == 1 and Render.Width or center.x, Render.Height ), self.highlightColor )
-		else
-			Render:FillTriangle( center, Vector2( math.cos( self.selection * ( angle * 2 ) - angle + current ) * drawRad, math.sin( self.selection * ( angle * 2 ) - angle + current ) * drawRad ) + center, Vector2( math.cos( self.selection * ( angle * 2 ) + angle + current ) * drawRad, math.sin( self.selection * ( angle * 2 ) + angle + current ) * drawRad ) + center, self.highlightColor )
-		end
+	if count < 3 then
+		Render:FillArea( Vector2( ( self.selection == 0 and count == 2 ) and center.x or 0, 0 ), Vector2( count == 1 and Render.Width or center.x, Render.Height ), highlightColor )
 	else
-		if count < 3 then
-			Render:FillArea( Vector2( ( self.selection == 0 and count == 2 ) and center.x or 0, 0 ), Vector2( count == 1 and Render.Width or center.x, Render.Height ), Color( self.menuColor.r, self.menuColor.g, self.menuColor.b, self.menuColor.a * alpha ) )
-		else
-			Render:FillTriangle( center, Vector2( math.cos( self.selection * ( angle * 2 ) - angle + current ) * drawRad, math.sin( self.selection * ( angle * 2 ) - angle + current ) * drawRad ) + center, Vector2( math.cos( self.selection * ( angle * 2 ) + angle + current ) * drawRad, math.sin( self.selection * ( angle * 2 ) + angle + current ) * drawRad) + center, Color( self.highlightColor.r, self.highlightColor.g, self.highlightColor.b, self.highlightColor.a * alpha ) )
-		end
+		Render:FillTriangle( center, Vector2( math.cos( self.selection * ( angle * 2 ) - angle + current ) * drawRad, math.sin( self.selection * ( angle * 2 ) - angle + current ) * drawRad ) + center, Vector2( math.cos( self.selection * ( angle * 2 ) + angle + current ) * drawRad, math.sin( self.selection * ( angle * 2 ) + angle + current ) * drawRad ) + center, highlightColor )
 	end
 
 	for i=2, #self.menu, 1 do
@@ -194,25 +160,14 @@ function QuickTP:PostRender()
 		local coord = Vector2( math.cos( current ) * radius + center.x - textSize.x / 2, math.sin( current ) * radius + center.y - textSize.y / 2 )
 		current  = current + angle
 
-		if animplay then
-			Render:DrawShadowedText( coord, t, self.fontColor, Color( self.fontShadow.r, self.fontShadow.g, self.fontShadow.b, self.fontShadow.a ), size )
-
-			Render:DrawLine( Vector2( math.cos( current ) * self.innerRadius, math.sin( current ) * self.innerRadius ) + center, Vector2( math.cos( current ) * drawRad, math.sin( current ) * drawRad ) + center, self.menuColor )
-		else
-			Render:DrawShadowedText( coord, t, Color( self.fontColor.r, self.fontColor.g, self.fontColor.b, self.fontColor.a * alpha ), Color( self.fontShadow.r, self.fontShadow.g, self.fontShadow.b, self.fontShadow.a * alpha ), size )
-			Render:DrawLine( Vector2( math.cos( current ) * self.innerRadius, math.sin( current ) * self.innerRadius ) + center, Vector2( math.cos( current ) * drawRad, math.sin( current ) * drawRad ) + center, Color( self.menuColor.r, self.menuColor.g, self.menuColor.b, self.menuColor.a * alpha ) )
-		end
+		Render:DrawShadowedText( coord, t, Color( self.fontColor.r, self.fontColor.g, self.fontColor.b, fontAlpha ), Color( self.fontShadow.r, self.fontShadow.g, self.fontShadow.b, fontAlpha ), size )
+		Render:DrawLine( Vector2( math.cos( current ) * self.innerRadius, math.sin( current ) * self.innerRadius ) + center, Vector2( math.cos( current ) * drawRad, math.sin( current ) * drawRad ) + center, menuColor )
 
 		current = current + angle
 	end
 
-	if animplay then
-		Render:FillCircle( center, self.innerRadius, self.backgroundColor )
-		Render:DrawCircle( center, self.innerRadius, self.menuColor )
-	else
-		Render:FillCircle( center, self.innerRadius, Color( self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b, self.backgroundColor.a * alpha ) )
-		Render:DrawCircle( center, self.innerRadius, Color( self.menuColor.r, self.menuColor.g, self.menuColor.b, self.menuColor.a * alpha ) )
-	end
+	Render:FillCircle( center, self.innerRadius, backgroundColor )
+	Render:DrawCircle( center, self.innerRadius, menuColor )
 end
 
 quicktp = QuickTP()

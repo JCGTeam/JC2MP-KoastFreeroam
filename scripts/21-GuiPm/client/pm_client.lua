@@ -264,17 +264,13 @@ function PM:TextChanged()
 
 	if filter:len() > 0 then
 		for k, v in pairs( self.playerToRow ) do
-			v:SetVisible( self:PlayerNameContains(v:GetCellText( 0 ), filter) )
+			v:SetVisible( playerNameContains(v:GetCellText( 0 ), filter) )
 		end
 	else
 		for k, v in pairs( self.playerToRow ) do
 			v:SetVisible( true )
 		end
 	end
-end
-
-function PM:PlayerNameContains( name, filter )
-	return string.match(name:lower(), filter:lower()) ~= nil
 end
 
 function PM:Focus()

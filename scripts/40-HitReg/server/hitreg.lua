@@ -36,16 +36,15 @@ function HitReg:Shoot( args, player )
 
     local distance = Vector3.Distance( args.target:GetPosition(), player:GetPosition() ) * 0.01
     local myWeapon = args.weapon
-
-    if args.target:GetModelId() == 82 and ( myWeapon == 6 or myWeapon == 13 ) then return end
+    local targetHealth = args.target:GetHealth()
 
     if not self.damage[myWeapon] then
         self.damage[myWeapon] = 0
     end
 
-    args.target:SetHealth( args.target:GetHealth() - ( ( 1 - distance ) * self.damage[myWeapon] ) )
+    args.target:SetHealth( targetHealth - ( ( 1 - distance ) * self.damage[myWeapon] ) )
 
-    if args.target:GetHealth() <= 0.2 and args.target.__type == "Vehicle" then
+    if targetHealth <= 0.2 and args.target.__type == "Vehicle" then
         local alreadyExploded = false
 
         for _, vehicleInfo in ipairs( self.explodedVehicles ) do

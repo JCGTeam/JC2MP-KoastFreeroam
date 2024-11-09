@@ -96,6 +96,7 @@ function ResourceItems:PlayerEnterCheckpoint( args )
 			if IsValid( ent2.checkpoint ) then
 				if ent2.checkpoint:GetId() == args.checkpoint:GetId() then
 					args.player:SetMoney( args.player:GetMoney() + 10 )
+					args.player:SetNetworkValue( "CollectedResourceItemsCount", ( args.player:GetValue( "CollectedResourceItemsCount" ) or 0 ) + 1 )
 
 					Network:Broadcast( "SyncTriggersRemove", { id = ent2.ent:GetId() } )
 

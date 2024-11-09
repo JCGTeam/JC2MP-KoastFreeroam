@@ -83,12 +83,12 @@ end
 Map = {
 	Heli  = Image.Create( AssetLocation.Game, "hud_icon_heli_orange_dif.dds" ),
 	Marker = Image.Create( AssetLocation.Base64, "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" ),
-	Image = Image.Create( AssetLocation.Disk, "map.jpg" ),
+	Image = Image.Create( AssetLocation.Game, "pda_map_dif.dds" ),
 	Zoom = 1,
 	Offset = Vector2(),
 	IconScale = 0.4,
 	Ramka = true,
-	Border = false,
+	Border = true,
 	RamkaAlpha = 1,
 	WaypointScale = 1.5,
 	ActiveLocation = nil,
@@ -530,26 +530,8 @@ function Map:ToggleWaypoint( position )
 end
 
 function Map:Draw()
-	local animationSpeed = 1
-	local alpha = 0
-
-	if timerF then
-		local endAlpha = 100
-		local timerFSeconds = timerF:GetSeconds()
-
-		if timerFSeconds > 0 and timerFSeconds < 0.1 / animationSpeed then
-			alpha = math.clamp( timerFSeconds * 10 * animationSpeed, 0, endAlpha )
-			animplay = false
-		elseif timerFSeconds > 0.1 / animationSpeed then
-			Map.Border = true
-			timerF = nil
-		end
-
-		Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, 200 * alpha ) )
-	end
-
 	if Map.Border then
-		Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, 200 ) )
+		Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, math.lerp( 0, 200, animationValue ) ) )
 	end
 
 	Map.Heli:SetSize( Vector2.One * 30 )
@@ -565,8 +547,8 @@ function Map:Draw()
 	end
 
 	if Map.Ramka then
-		local ramkaSize = Vector2( 4, 4 )
-		Render:FillArea( Map.Image:GetPosition() - ramkaSize, Map.Image:GetSize() + ramkaSize * 2, Color( 173, 216, 230, 100 * Map.RamkaAlpha ) )
+		local ramkaSize = Vector2( 3, 3 )
+		Render:FillArea( Map.Image:GetPosition() - ramkaSize, Map.Image:GetSize() + ramkaSize * 2, Color( 185, 215, 255, 100 * Map.RamkaAlpha ) )
 	end
 
 	Map.Image:Draw()
@@ -593,14 +575,14 @@ function Map:Draw()
 		end
 	end
 
-	local text_clr = Color.White
-	local text_shadow = Color.Black
+	local text_clr = Color( 255, 255, 255, math.lerp( 0, 255, animationValue ) )
+	local text_shadow = Color( 0, 0, 0, math.lerp( 0, 255, animationValue ) )
 
 	if rendermap then
 		local text_size = 14
 		local pId = LocalPlayer:GetId()
 		local pWorldId = LocalPlayer:GetWorld():GetId()
-		local background_clr = Color( 0, 0, 0, 150 )
+		local background_clr = Color( 0, 0, 0, math.lerp( 0, 150, animationValue ) )
 
 		for _, player in pairs( Map.Players ) do
 			if player.id ~= pId and player.worldId == pWorldId then

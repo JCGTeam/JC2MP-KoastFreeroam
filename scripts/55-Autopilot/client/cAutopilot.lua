@@ -622,6 +622,10 @@ function Autopilot:EnterPlane( args )
 				if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.DrawApproach ) end
 				if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 
+				if self.fadeOutAnimation then Animation:Stop( self.fadeOutAnimation ) self.fadeOutAnimation = nil end
+
+				Animation:Play( 0, 1, 0.15, easeIOnut, function( value ) self.animationValue = value end )
+			
 				if not self.hinttimer then
 					self.hinttimer = Timer()
 				else
@@ -641,7 +645,18 @@ function Autopilot:ExitPlane()
 		if self.KeyUpEvent then Events:Unsubscribe( self.KeyUpEvent ) self.KeyUpEvent = nil end
 		if self.KeyDownEvent then Events:Unsubscribe( self.KeyDownEvent ) self.KeyDownEvent = nil end
 		if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
-		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+
+		if self.animationValue then
+			if self.RenderEvent then
+				self.fadeOutAnimation = Animation:Play( self.animationValue, 0, 0.15, easeIOnut, function( value ) self.animationValue = value end, function()
+					self.animationValue = nil
+	
+					if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+				end )
+			end
+		else
+			if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+		end
 	end
 end
 
@@ -899,16 +914,12 @@ function Autopilot:TargetHold()
 end
 
 function Autopilot:Render()
-	local alpha = 255
+	if self.hinttimer and self.hinttimer:GetSeconds() >= 7 then
+		self.fadeOutAnimation = Animation:Play( self.animationValue, 0, 0.15, easeIOnut, function( value ) self.animationValue = value end, function()
+			self.animationValue = nil
+		end )
 
-	if self.hinttimer then
-		local hinttimerSeconds = self.hinttimer:GetSeconds()
-
-		if hinttimerSeconds > 10 then
-			alpha = math.clamp( 255 - ( ( hinttimerSeconds - 10 ) * 500 ), 0, 255 )
-
-			if hinttimerSeconds > 12 then self.hinttimer = nil end
-		end
+		self.hinttimer = nil
 	end
 
 	if Game:GetState() ~= GUIState.Game then return end
@@ -939,13 +950,15 @@ function Autopilot:Render()
 
 	if LocalPlayer:GetValue( "HiddenHUD" ) then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
-	if not self.hinttimer then return end
+	if not self.animationValue then return end
 
 	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
+	local boost = LocalPlayer:GetValue( "Boost" )
 	local textSize = 14
 	local size = Render:GetTextSize( self.namept, textSize )
-	local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - ( LocalPlayer:GetValue( "Boost" ) and 30 or 10 ) )
+	local pos = Vector2( ( Render.Width - size.x ) / 2, math.lerp( boost and ( Render.Height - size.y - 10 ) or Render.Height, Render.Height - size.y - ( boost and 17 + size.y or 10 ), self.animationValue ) )
+	local alpha = math.lerp( 0, 255, self.animationValue )
 
 	Render:DrawShadowedText( pos, self.namept, Color( 255, 255, 255, alpha ), Color( 0, 0, 0, alpha ), textSize )
 end

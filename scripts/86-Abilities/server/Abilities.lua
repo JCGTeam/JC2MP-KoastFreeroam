@@ -232,7 +232,7 @@ function Abilities:SaveToDB( args, sender )
 end
 
 function Abilities:PlayerJoin( args )
-    --args.player:SetNetworkValue( "Boost", 3 )
+    args.player:SetNetworkValue( "Boost", 3 )
 
     local qry = SQL:Query( "select wings, boost, moneybonus, morec4, supernuclearbomb, longergrapple, jesusmode from players_abilities where steamid = (?)" )
     qry:Bind( 1, args.player:GetSteamId().id )
@@ -240,7 +240,7 @@ function Abilities:PlayerJoin( args )
 
 	if #result > 0 then
         args.player:SetNetworkValue( "Wingsuit", tonumber(result[1].wings) )
-        args.player:SetNetworkValue( "Boost", tonumber(result[1].boost) )
+        --args.player:SetNetworkValue( "Boost", tonumber(result[1].boost) )
         args.player:SetNetworkValue( "MoneyBonus", tonumber(result[1].moneybonus) )
         args.player:SetNetworkValue( "MoreC4", tonumber(result[1].morec4) )
         args.player:SetNetworkValue( "SuperNuclearBomb", tonumber(result[1].supernuclearbomb) )

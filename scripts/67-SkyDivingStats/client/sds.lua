@@ -153,7 +153,7 @@ function SkydivingStats:GetUnitString()
 end
 
 function SkydivingStats:DrawText( text, textTw )
-	Render:DrawText( Vector3( 2, 2, 2 ), text .. textTw, self.text_shadow, self.text_size )
+	Render:DrawText( Vector3( 2, 2, 1 ), text .. textTw, self.text_shadow, self.text_size )
 	Render:DrawText( Vector3.Zero, text, self.text_clr, self.text_size )
 	Render:DrawText( Vector3.Zero + Vector3( Render:GetTextWidth( text, self.text_size ), 0, 0 ), textTw, self.text_clr2, self.text_size )
 end

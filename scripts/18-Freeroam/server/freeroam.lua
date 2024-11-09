@@ -400,6 +400,8 @@ function Freeroam:PlayerDeath( args )
     if args.player:GetWorld() ~= DefaultWorld then return end
 
     if args.killer and args.killer:GetSteamId() ~= args.player:GetSteamId() then
+        args.killer:SetNetworkValue( "KillsCount", ( args.killer:GetValue( "KillsCount" ) or 0 ) + 1 )
+
         if args.killer:GetValue( "Passive" ) then
 			args.killer:SetHealth( 0 )
 		else
@@ -427,6 +429,8 @@ function Freeroam:PlayerDeath( args )
                     end
                 end
             end
+
+            --Network:Send( args.player, "EnableKillerCamera", args.killer )
         end
 
         args.player:SetValue( "SpawnMode", 2 )

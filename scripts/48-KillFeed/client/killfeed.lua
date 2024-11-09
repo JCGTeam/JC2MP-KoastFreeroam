@@ -207,32 +207,35 @@ function Killfeed:Render()
 
 	for i,v in ipairs( self.list ) do
 		if os.clock() - v.time < self.removal_time then
-			local text_width = Render:GetTextWidth( v.message )
-			local text_height = Render:GetTextHeight( v.message )
-
-			local pos = center_hint + Vector2( -text_width, height_offset )
+			local pos = center_hint + Vector2( -Render:GetTextWidth( v.message ), height_offset )
 			local alpha = self:CalculateAlpha( v.time )
 
 			local color = Color( 255, 255, 255, alpha )
 			local shadow = Color( 20, 20, 20, alpha * 0.5 )
 
-			Render:DrawShadowedText( pos, v.message, color, shadow )
+            local post_player_text
+            if v.killer_name then
+                post_player_text = string.match( v.message, v.player_name .. "(.-)" .. v.killer_name )
+            else
+                post_player_text = string.match( v.message, v.player_name .. "(.-)$" )
+            end
 
 			local player_colour = v.player_colour
 			player_colour.a = alpha
+			Render:DrawShadowedText( pos, v.player_name, v.player_colour, shadow )
 
-			Render:DrawText( pos, v.player_name, player_colour )
+			pos = pos + Vector2( Render:GetTextWidth( v.player_name ), 0 )
+			Render:DrawShadowedText( pos, post_player_text, color, shadow )
 
 			if v.killer_name then
 				local killer_colour = v.killer_colour
 				killer_colour.a = alpha
-				local name_text = v.killer_name
-				local name_width = Render:GetTextWidth( name_text )
 
-				Render:DrawText( center_hint + Vector2( -name_width, height_offset ), v.killer_name, killer_colour )
+				pos = pos + Vector2( Render:GetTextWidth( post_player_text ), 0 )
+				Render:DrawShadowedText( pos, v.killer_name, v.killer_colour, shadow )
 			end
 
-			height_offset = height_offset + text_height + 4
+			height_offset = height_offset + Render:GetTextHeight( v.message ) + 4
 		else
 			table.remove( self.list, i )
 		end

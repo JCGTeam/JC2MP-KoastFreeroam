@@ -21,8 +21,7 @@ function GameModesMenu:__init()
 		[16] = true
 	}
 
-    self.manhuntimage = Image.Create( AssetLocation.Resource, "ManhuntICO" )
-	self.carbattlesimage = Image.Create( AssetLocation.Resource, "CarBattlesICO" )
+	self.derbyimage = Image.Create( AssetLocation.Resource, "DerbyICO" )
 	self.raceimage = Image.Create( AssetLocation.Resource, "RaceICO" )
 	self.tronimage = Image.Create( AssetLocation.Resource, "TronICO" )
 	self.kinghillimage = Image.Create( AssetLocation.Resource, "KingHillICO" )
@@ -51,10 +50,6 @@ end
 function GameModesMenu:Lang()
     self.window:SetTitle( "▧ Minigames" )
 	self.mainButton.txtlabel_gm:SetText( "Game Modes:" )
-	self.mainButton.hunt:SetText( "Hunt" )
-	self.mainButton.hunt:SetToolTip( "Survive and kill other players on a small island." )
-	self.mainButton.carbattles:SetText( "Car Battles" )
-	self.mainButton.carbattles:SetToolTip( "Fight and survive on cars." )
 	self.mainButton.race:SetText( "Race" )
 	self.mainButton.race:SetToolTip( "Get first to the finish line among other riders." )
 	self.mainButton.tron:SetText( "Tron" )
@@ -67,7 +62,7 @@ function GameModesMenu:Lang()
 	self.mainButton.tetris:SetText( "Tetris" )
 	self.mainButton.tetris:SetToolTip( "Classic tetris." )
 	self.mainButton.pong:SetText( "Pong" )
-	self.mainButton.pong:SetToolTip( "Gopnik waiting you in pong." )
+	self.mainButton.pong:SetToolTip( "Enemy waiting you in pong." )
 	self.mainButton.casino:SetText( "Casino" )
 	self.mainButton.casino:SetToolTip( "Money gambling." )
 
@@ -111,12 +106,9 @@ function GameModesMenu:OpenGameModesMenu()
         self.window:SetVisible( true )
         Mouse:SetVisible( true )
 
-		self.mainButton.scroll_gm:SetSize( Vector2( self.window:GetSize().x - 15, self.mainButton.hunt:GetHeight() + 25 ) )
 		self.mainButton.scroll_mg:SetSize( Vector2( self.window:GetSize().x - 15, self.mainButton.tetris:GetHeight() + 25 ) )
 
 		if LocalPlayer:GetValue( "SystemFonts" ) then
-			self.mainButton.hunt:SetFont( AssetLocation.SystemFont, "Impact" )
-			self.mainButton.carbattles:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.mainButton.race:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.mainButton.tron:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.mainButton.khill:SetFont( AssetLocation.SystemFont, "Impact" )
@@ -154,30 +146,31 @@ function GameModesMenu:CreateWindow()
 	self.scroll_control:SetScrollable( false, true )
 	self.scroll_control:SetDock( GwenPosition.Fill )
 
+	local textSize = 19
+	local textHeight = Render:GetTextHeight( self.resizer_txt, textSize )
+
     self.mainButton = {}
 
 	self.mainButton.txtlabel_gm = Label.Create( self.scroll_control )
 	self.mainButton.txtlabel_gm:SetText( "Игровые режимы:" )
 	self.mainButton.txtlabel_gm:SetDock( GwenPosition.Top )
-	self.mainButton.txtlabel_gm:SetMargin( Vector2( 5, 10 ), Vector2.Zero )
+	local padding = Vector2( 5, 10 )
+	self.mainButton.txtlabel_gm:SetMargin( padding, Vector2.Zero )
 	self.mainButton.txtlabel_gm:SizeToContents()
 
 	self.mainButton.scroll_gm = ScrollControl.Create( self.scroll_control )
 	self.mainButton.scroll_gm:SetScrollable( true, false )
-	self.mainButton.scroll_gm:SetSize( Vector2( self.window:GetSize().x - 15, 190 ) )
+	self.mainButton.scroll_gm:SetSize( Vector2( self.window:GetSize().x - 15, textHeight * 10 ) )
 	self.mainButton.scroll_gm:SetDock( GwenPosition.Top )
-	self.mainButton.scroll_gm:SetMargin( Vector2( 5, 10 ), Vector2( 5, 10 ) )
+	self.mainButton.scroll_gm:SetMargin( padding, padding )
 
-	local textSize = 19
 	local textWidth = Render:GetTextWidth( self.resizer_txt, textSize )
 
 	local spacing = textWidth + 15
-	self.mainButton.hunt = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Охота", self.manhuntimage, "Выживайте и убивайте игроков на небольшом острове.", 0, self.HuntToggle )
-	self.mainButton.carbattles = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Бои на тачках", self.carbattlesimage, "Сражайтесь и выживайте на тачках.", self.mainButton.hunt:GetPosition().x + spacing, self.CarBattlesToggle )
-	self.mainButton.race = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Гонки", self.raceimage, "Доберитесь первым до финиша среди прочих гонщиков.", self.mainButton.carbattles:GetPosition().x + spacing, self.RaceToggle )
+	self.mainButton.race = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Гонки", self.raceimage, "Доберитесь первым до финиша среди прочих гонщиков.", 0, self.RaceToggle )
 	self.mainButton.tron = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Трон", self.tronimage, "Заманивайте других игроков в свою полосу, чтобы одержать победу.", self.mainButton.race:GetPosition().x + spacing, self.TronToggle )
 	self.mainButton.khill = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Царь горы", self.kinghillimage, "Доберитесь первым до вершины горы, чтобы одержать победу.", self.mainButton.tron:GetPosition().x + spacing, self.KHillToggle )
-	self.mainButton.derby = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Дерби", self.carbattlesimage, "Ушатывайте машины других игроков стараясь выжить сами.", self.mainButton.khill:GetPosition().x + spacing, self.DerbyToggle )
+	self.mainButton.derby = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Дерби", self.derbyimage, "Ушатывайте машины других игроков стараясь выжить сами.", self.mainButton.khill:GetPosition().x + spacing, self.DerbyToggle )
 
 	self.mainButton.txtlabel_mg = Label.Create( self.scroll_control )
 	self.mainButton.txtlabel_mg:SetText( "Прочие:" )
@@ -188,19 +181,21 @@ function GameModesMenu:CreateWindow()
 	spacing = textWidth / 1.2 + 15
 	self.mainButton.scroll_mg = ScrollControl.Create( self.scroll_control )
 	self.mainButton.scroll_mg:SetScrollable( true, false )
-	self.mainButton.scroll_mg:SetSize( Vector2( self.window:GetSize().x - 15, 190 ) )
+	self.mainButton.scroll_mg:SetSize( Vector2( self.window:GetSize().x - 15, textHeight * 9 ) )
 	self.mainButton.scroll_mg:SetDock( GwenPosition.Top )
-	self.mainButton.scroll_mg:SetMargin( Vector2( 5, 10 ), Vector2( 5, 10 ) )
+	self.mainButton.scroll_mg:SetMargin( padding, padding )
 
 	self.mainButton.tetris_IMG = ImagePanel.Create( self.mainButton.scroll_mg )
 	self.mainButton.tetris_IMG:SetImage( self.tetrisimage )
 	self.mainButton.tetris_IMG:SetSize( Vector2( textWidth / 1.2, textWidth / 1.2 ) )
 
+	local textPadding = Vector2( 0, textWidth / 1.15 )
+	local height = textWidth * 1.25 / 1.15
 	self.mainButton.tetris = MenuItem.Create( self.mainButton.scroll_mg )
 	self.mainButton.tetris:SetPosition( self.mainButton.tetris_IMG:GetPosition() )
-	self.mainButton.tetris:SetSize( Vector2( self.mainButton.tetris_IMG:GetSize().x, textWidth * 1.25 / 1.15 ) )
+	self.mainButton.tetris:SetSize( Vector2( self.mainButton.tetris_IMG:GetSize().x, height ) )
 	self.mainButton.tetris:SetText( "Тетрис" )
-	self.mainButton.tetris:SetTextPadding( Vector2( 0, textWidth / 1.15 ), Vector2.Zero )
+	self.mainButton.tetris:SetTextPadding( textPadding, Vector2.Zero )
 	self.mainButton.tetris:SetTextSize( textSize )
 	self.mainButton.tetris:SetToolTip( "Классический тетрис." )
 	self.mainButton.tetris:Subscribe( "Press", self, self.TetrisToggle )
@@ -212,11 +207,11 @@ function GameModesMenu:CreateWindow()
 
 	self.mainButton.pong = MenuItem.Create( self.mainButton.scroll_mg )
 	self.mainButton.pong:SetPosition( self.mainButton.pong_IMG:GetPosition() )
-	self.mainButton.pong:SetSize( Vector2( self.mainButton.pong_IMG:GetSize().x, textWidth * 1.25 / 1.15 ) )
+	self.mainButton.pong:SetSize( Vector2( self.mainButton.pong_IMG:GetSize().x, height ) )
 	self.mainButton.pong:SetText( "Понг" )
-	self.mainButton.pong:SetTextPadding( Vector2( 0, textWidth / 1.15 ), Vector2.Zero )
+	self.mainButton.pong:SetTextPadding( textPadding, Vector2.Zero )
 	self.mainButton.pong:SetTextSize( textSize )
-	self.mainButton.pong:SetToolTip( "Гопник ждет вас в понг." )
+	self.mainButton.pong:SetToolTip( "Соперник ждет вас в понг." )
 	self.mainButton.pong:Subscribe( "Press", self, self.PongToggle )
 
 	self.mainButton.casino_IMG = ImagePanel.Create( self.mainButton.scroll_mg )
@@ -226,9 +221,9 @@ function GameModesMenu:CreateWindow()
 
 	self.mainButton.casino = MenuItem.Create( self.mainButton.scroll_mg )
 	self.mainButton.casino:SetPosition( self.mainButton.casino_IMG:GetPosition() )
-	self.mainButton.casino:SetSize( Vector2( self.mainButton.casino_IMG:GetSize().x, textWidth * 1.25 / 1.15 ) )
+	self.mainButton.casino:SetSize( Vector2( self.mainButton.casino_IMG:GetSize().x, height ) )
 	self.mainButton.casino:SetText( "Казино" )
-	self.mainButton.casino:SetTextPadding( Vector2( 0, textWidth / 1.15 ), Vector2.Zero )
+	self.mainButton.casino:SetTextPadding( textPadding, Vector2.Zero )
 	self.mainButton.casino:SetTextSize( textSize )
 	self.mainButton.casino:SetToolTip( "Азартные игры на деньги." )
 	self.mainButton.casino:Subscribe( "Press", self, self.CasinoToggle )
@@ -281,16 +276,6 @@ end
 function GameModesMenu:RemoveCustomGameModeButton()
 	if self.mainButton.custom_IMG then self.mainButton.custom_IMG:Remove() self.mainButton.custom_IMG = nil end
 	if self.mainButton.custom then self.mainButton.custom:Remove() self.mainButton.custom = nil end
-end
-
-function GameModesMenu:HuntToggle()
-	Events:Fire( "GoHunt" )
-	self:GameModesMenuClosed()
-end
-
-function GameModesMenu:CarBattlesToggle()
-	Events:Fire( "GoCB" )
-	self:GameModesMenuClosed()
 end
 
 function GameModesMenu:RaceToggle()

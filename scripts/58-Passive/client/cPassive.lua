@@ -5,6 +5,9 @@ function Passive:__init()
 	self.tagOffset = 10
 	self.textSize = 16
 
+	self.visible = LocalPlayer:GetValue( "Passive" )
+	self.animationValue = self.visible and 1 or 0
+
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
 		self:Lang()
@@ -118,9 +121,15 @@ function Passive:NetworkObjectValueChange( args )
 		if args.value then
 			Game:FireEvent( "ply.invulnerable" )
 			Events:Fire( "AntiCheat", false )
+			self.visible = true
+
+			if self.fadeOutAnimation then Animation:Stop( self.fadeOutAnimation ) self.fadeOutAnimation = nil end
+			Animation:Play( 0, 1, 0.05, easeIOnut, function( value ) self.animationValue = value end )
 		else
 			Game:FireEvent( "ply.vulnerable" )
 			Events:Fire( "AntiCheat", true )
+
+			self.fadeOutAnimation = Animation:Play( self.animationValue, 0, 0.05, easeIOnut, function( value ) self.animationValue = value end, function() self.visible = nil end )
 		end
 	end
 end
@@ -131,6 +140,7 @@ function Passive:Render()
 		self.pvpTimer = nil
 	end
 
+	if not self.visible then return end
 	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 	if not LocalPlayer:GetValue( "PassiveModeVisible" ) or LocalPlayer:GetValue( "HiddenHUD" ) then return end
@@ -147,22 +157,17 @@ function Passive:Render()
 	local text_size = 18
     local text_width = Render:GetTextWidth( self.name, text_size )
 	local text_height = Render:GetTextHeight( self.name, text_size )
-    local text_pos = Vector2( Render.Width / 1.52 - text_width / 1.8 + text_width / 25, 2 )
-	local sett_alpha = Game:GetSetting(4) * 2.25
+	local posY = math.lerp( -text_height - 2, 0, self.animationValue )
+    local text_pos = Vector2( Render.Width / 1.52 - text_width / 1.8 + text_width / 25, posY + 2 )
+	local sett_alpha = math.lerp( 0, Game:GetSetting(4) * 2.25, self.animationValue )
 	local background_clr = Color( 0, 0, 0, sett_alpha / 2.4 )
 
-	Render:FillArea( Vector2( Render.Width / 1.52 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), background_clr )
+	Render:FillArea( Vector2( Render.Width / 1.52 - text_width / 1.8, posY ), Vector2( text_width + 5, text_height + 2 ), background_clr )
 
-	Render:FillTriangle( Vector2( ( Render.Width / 1.52 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 ), text_height + 2 ), background_clr )
-	Render:FillTriangle( Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), background_clr )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.52 - text_width / 1.8 - 10 ), posY ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 ), posY ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 ), posY + text_height + 2 ), background_clr )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 15 ), posY ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 5 ), posY ), Vector2( ( Render.Width / 1.52 - text_width / 1.8 + text_width + 5 ), posY + text_height + 2 ), background_clr )
 
-	local passive_enabled = LocalPlayer:GetValue( "Passive" ) or LocalPlayer:GetValue( "FreecamEnabled" )
-
-	if passive_enabled then
-		Render:DrawText( text_pos + Vector2.One, self.name, Color( 0, 0, 0, sett_alpha ), text_size )
-	end
-
-	Render:DrawText( text_pos, self.name, passive_enabled and Color( 0, 250, 154, sett_alpha ) or Color( 255, 255, 255, sett_alpha / 4 ), text_size )
+	Render:DrawShadowedText( text_pos, self.name, Color( 0, 250, 154, sett_alpha ), Color( 0, 0, 0, sett_alpha ), text_size )
 end
 
 passive = Passive()

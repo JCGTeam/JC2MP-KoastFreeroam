@@ -159,7 +159,7 @@ function ServerMenu:LoadCategories()
 	self.tp_button = self:CreateServerMenuButton( "Телепортация", self.tpimage, "Телепортация к игрокам.", self.shop_button:GetPosition().x + spacing, self.CastWarpGUI )
 	self.clans_button = self:CreateServerMenuButton( "Кланы", self.clansimage, "Управление кланом и другие кланы игроков.", self.tp_button:GetPosition().x + spacing, self.CastClansMenu )
 	self.pm_button = self:CreateServerMenuButton( "Сообщения", self.pmimage, "Общайтесь лично с игроками.", self.clans_button:GetPosition().x + spacing, self.CastGuiPm )
-	self.tasks_button = self:CreateServerMenuButton( "Задания", self.dedmimage, "Ежедневные задания за которые вы получаете награды.", self.pm_button:GetPosition().x + spacing, self.CastDedMorozMenu )
+	self.tasks_button = self:CreateServerMenuButton( "Задачи", self.dedmimage, "Ежедневные задания за которые вы получаете награды.", self.pm_button:GetPosition().x + spacing, self.CastDedMorozMenu )
 	self.minigames_button = self:CreateServerMenuButton( "Развлечения", self.mainmenuimage, "Различные развлечения.", self.tasks_button:GetPosition().x + spacing, self.CastMainMenu )
 	self.abilities_button = self:CreateServerMenuButton( "Способности", self.abiltiesimage, "Прокачка способностей и навыков.", self.minigames_button:GetPosition().x + spacing, self.CastAbilitiesMenu )
 	self.sett_button = self:CreateServerMenuButton( "Настройки", self.settimage, "Настройки сервера.", self.abilities_button:GetPosition().x + spacing, self.CastSettingsMenu )
@@ -169,7 +169,7 @@ function ServerMenu:LoadCategories()
 
 	self.leftcontainer = BaseWindow.Create( self.window )
 	self.leftcontainer:SetDock( GwenPosition.Left )
-	self.leftcontainer:SetMargin( Vector2( 0, 15 ), Vector2( 5, 5 ) )
+	self.leftcontainer:SetMargin( Vector2( 5, 15 ), Vector2( 5, 5 ) )
 	self.leftcontainer:SetSize( Vector2( ( textWidth2 + 30 ) * 4, 0 ) )
 
 	self.passive = Label.Create( self.leftcontainer )
@@ -188,7 +188,7 @@ function ServerMenu:LoadCategories()
 	self.passiveon_btn:Subscribe( "Press", self, self.CastPassive )
 
 	self.jesusmode = Label.Create( self.leftcontainer )
-	self.jesusmode:SetTextColor( Color.LightBlue )
+	self.jesusmode:SetTextColor( Color( 185, 215, 255 ) )
 	self.jesusmode:SetText( "Режим Иисуса:" )
 	self.jesusmode:SetPosition( Vector2( self.passiveon_btn:GetSize().x + self.passiveon_btn:GetPosition().x + 10, 0 ) )
 	self.jesusmode:SizeToContents()
@@ -257,19 +257,60 @@ function ServerMenu:LoadCategories()
 	self.report_btn:Subscribe( "Press", self, self.CastReportMenu )
 
 	self.gametime = Label.Create( self.leftcontainer )
-	self.gametime:SetTextColor( Color.DarkGray )
 	self.gametime:SetText( "Игровое время: 00:00" )
 	self.gametime:SizeToContents()
-	self.gametime:SetMargin( Vector2( 10, 5 ), Vector2( 0, 15 ) )
 	self.gametime:SetDock( GwenPosition.Bottom )
 
-	self.level = Label.Create( self.leftcontainer )
-	self.level:SetTextColor( Color( 251, 184, 41 ) )
-	self.level:SetTextSize( 20 )
-	self.level:SetText( "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
-	self.level:SizeToContents()
-	self.level:SetMargin( Vector2( 10, 5 ), Vector2.Zero )
-	self.level:SetDock( GwenPosition.Bottom )
+	local avatarContainer = BaseWindow.Create( self.leftcontainer )
+	avatarContainer:SetDock( GwenPosition.Bottom )
+	avatarContainer:SetMargin( Vector2.Zero, Vector2( 0, 5 ) )
+	local avatarSize = Render:GetTextHeight( "A", 15 ) * 3
+	avatarContainer:SetSize( Vector2( 0, avatarSize ) )
+
+	local avatar = ImagePanel.Create( avatarContainer )
+	avatar:SetSize( Vector2( avatarSize, avatarSize ) )
+	avatar:SetImage( LocalPlayer:GetAvatar(2) )
+	avatar:SetDock( GwenPosition.Left )
+	avatar:SetMargin( Vector2( 2, 0 ), Vector2( 8, 0 ) )
+
+	--[[self.levelProgress = ProgressBar.Create( avatarContainer )
+	self.levelProgress:SetDock( GwenPosition.Left )
+	self.levelProgress:SetMargin( Vector2( 2, 0 ), Vector2( 8, 0 ) )
+	self.levelProgress:SetVertical()
+	self.levelProgress:SetWidth( 5 )
+	self.levelProgress:SetAutoLabel( false )
+	self.levelProgress:SetBackgroundVisible( false )]]--
+
+	local textContainer = BaseWindow.Create( avatarContainer )
+	textContainer:SetDock( GwenPosition.Fill )
+
+	local nameContainer = BaseWindow.Create( textContainer )
+	nameContainer:SetDock( GwenPosition.Top )
+	nameContainer:SetHeight( Render:GetTextHeight( "A", 20 ) )
+
+	self.statsName = Label.Create( nameContainer )
+	self.statsName:SetDock( GwenPosition.Left )
+	self.statsName:SetAlignment( GwenPosition.Center )
+	self.statsName:SetText( LocalPlayer:GetName() )
+	self.statsName:SetTextSize( 15 )
+
+	self.statsTag = Label.Create( nameContainer )
+	self.statsTag:SetDock( GwenPosition.Left )
+	self.statsTag:SetAlignment( GwenPosition.Center )
+	self.statsTag:SetTextSize( 15 )
+	self.statsTag:SetTextColor( Color.DarkGray )
+	self.statsTag:SetVisible( false )
+
+	self.level = Label.Create( textContainer )
+	self.level:SetDock( GwenPosition.Top )
+	self.level:SetTextColor( Color.DarkGray )
+	self.level:SetText( tostring( LocalPlayer:GetValue( "PlayerLevel" ) ) )
+
+	self.money = Label.Create( textContainer )
+	self.money:SetDock( GwenPosition.Top )
+	self.money:SetTextColor( Color( 251, 184, 41 ) )
+	self.money:SetText( "$" .. formatNumber( LocalPlayer:GetMoney() ) )
+	self.money:SizeToContents()
 end
 
 function ServerMenu:CreateServerMenuButton( title, image, description, pos, event )
@@ -282,7 +323,7 @@ function ServerMenu:CreateServerMenuButton( title, image, description, pos, even
 
 	local servermenu_btn = MenuItem.Create( self.scroll_control )
 	servermenu_btn:SetPosition( servermenu_img:GetPosition() )
-	servermenu_btn:SetSize( Vector2( servermenu_img:GetSize().x,textWidth * 1.25 ) )
+	servermenu_btn:SetSize( Vector2( servermenu_img:GetSize().x, textWidth * 1.25 ) )
 	servermenu_btn:SetText( title )
 	servermenu_btn:SetTextPadding( Vector2( 0, textWidth ), Vector2.Zero )
 	servermenu_btn:SetTextSize( self.textSize )
@@ -375,10 +416,33 @@ function ServerMenu:WindowClosed()
 	})
 end
 
+function ServerMenu:CurrentWeather()
+	local weather = Game:GetWeatherSeverity()
+
+    if weather < 0.5 then
+        return "Ясно"
+	elseif weather >= 0.5 and weather < 0.6 then
+        return "Преимущественно ясно"
+	elseif weather >= 0.6 and weather < 1 then
+        return "Небольшая облачность"
+    elseif weather >= 1 and weather < 1.5 then
+        return "Облачно"
+    elseif weather >= 1.5 and weather < 1.8 then
+        return "Пасмурно, местами дождь"
+    elseif weather >= 1.8 and weather < 2 then
+        return "Пасмурно, местами дождь и грозы"
+    elseif weather >= 2 then
+        return "Грозы"
+    end
+
+	return "Х/З"
+end
+
 function ServerMenu:UpdateGameInfo()
     local gettime = Game:GetTime()
     local hh, timedec = math.modf( gettime )
     local mm = math.floor( 60 * timedec )
+	--local precipitation = math.floor( math.lerp( 0, 100, math.clamp( Game:GetWeatherSeverity(), 0, 2 ) / 2 ) ) .. "%"
 
 	if LocalPlayer:GetValue( "Lang" ) == "RU" then
 		self.gametime:SetText( "Игровое время: " .. string.format("%d:%02d", hh, mm) )
@@ -423,7 +487,6 @@ function ServerMenu:SetWindowVisible( visible )
 			self.tasks_button:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.minigames_button:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.abilities_button:SetFont( AssetLocation.SystemFont, "Impact" )
-			self.level:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.help_button:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.news_button:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.passiveon_btn:SetFont( AssetLocation.SystemFont, "Impact" )
@@ -432,11 +495,36 @@ function ServerMenu:SetWindowVisible( visible )
 			self.pigeonmod_btn:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.bonus_btn:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.report_btn:SetFont( AssetLocation.SystemFont, "Impact" )
+			self.statsName:SetFont( AssetLocation.SystemFont, "Impact" )
+			self.statsTag:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
 
-		local gettag = LocalPlayer:GetValue( "Tag" )
+		self.statsName:SizeToContents()
+		self.statsTag:SizeToContents()
 
-		if self.permissions[gettag] then
+		local tag = LocalPlayer:GetValue( "Tag" )
+
+		if tag == "Creator" then
+			self.status = "[Пошлый Создатель]"
+		elseif tag == "GlAdmin" then
+			self.status = "[Гл. Админ]"
+		elseif tag == "Admin" then
+			self.status = "[Админ]"
+		elseif tag == "AdminD" then
+			self.status = "[Админ $]"
+		elseif tag == "ModerD" then
+			self.status = "[Модератор $]"
+		elseif tag == "Organizer" then
+			self.status = "[Организатор]"
+		elseif tag == "Parther" then
+			self.status = "[Партнер]"
+		elseif tag == "VIP" then
+			self.status = "[VIP]"
+		elseif LocalPlayer:GetValue( "NT_TagName" ) then
+			self.status = "[" .. LocalPlayer:GetValue( "NT_TagName" ) .. "]"
+		end
+
+		if self.permissions[tag] then
 			self.pigeonmod:SetVisible( true )
 			self.pigeonmod_btn:SetVisible( true )
 		else
@@ -444,10 +532,20 @@ function ServerMenu:SetWindowVisible( visible )
 			self.pigeonmod_btn:SetVisible( false )
 		end
 
+		if self.status then
+			self.statsTag:SetText( "  " .. self.status )
+			self.statsTag:SizeToContents()
+			self.statsTag:SetVisible( true )
+		end
+
+		self.statsName:SetTextColor( LocalPlayer:GetColor() )
+
+		self.money:SetText( "$" .. formatNumber( LocalPlayer:GetMoney() ) )
+
 		local lang = LocalPlayer:GetValue( "Lang" )
 		if lang then
 			if lang == "RU" then
-				self.level:SetText( "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
+				self.level:SetText( "Уровень: " .. LocalPlayer:GetValue( "PlayerLevel" ) )
 
 				self.passiveon_btn:SetText( LocalPlayer:GetValue( "Passive" ) and "Отключить" or "Включить" )
 				self.jesusmode_btn:SetText( LocalPlayer:GetValue( "WaterWalk" ) and "Отключить" or "Включить" )
@@ -455,7 +553,7 @@ function ServerMenu:SetWindowVisible( visible )
 				self.pigeonmod_btn:SetText( LocalPlayer:GetValue( "PigeonMod" ) and "Отключить" or "Включить" )
 				self.bonus_btn:SetText( LocalPlayer:GetValue( "MoneyBonus" ) and "$$ Денежный бонус $$" or "Недоступно :(" )
 			else
-				self.level:SetText( "Balance: $" .. formatNumber( LocalPlayer:GetMoney() ) )
+				self.level:SetText( "Level: " .. LocalPlayer:GetValue( "PlayerLevel" ) )
 
 				self.passiveon_btn:SetText( LocalPlayer:GetValue( "Passive" ) and "Disable" or "Enable" )
 				self.jesusmode_btn:SetText( LocalPlayer:GetValue( "WaterWalk" ) and "Disable" or "Enable" )
@@ -463,6 +561,8 @@ function ServerMenu:SetWindowVisible( visible )
 				self.pigeonmod_btn:SetText( LocalPlayer:GetValue( "PigeonMod" ) and "Disable" or "Enable" )
 				self.bonus_btn:SetText( LocalPlayer:GetValue( "MoneyBonus" ) and "$$ Money bonus $$" or "Not available" )
 			end
+
+			self.level:SizeToContents()
 		end
 
 		if LocalPlayer:GetWorld() == DefaultWorld then
@@ -619,9 +719,9 @@ function ServerMenu:Bonus()
 	if LocalPlayer:GetValue( "MoneyBonus" ) then
 		self.bonus_btn:SetEnabled( true )
 		if LocalPlayer:GetValue( "Lang" ) == "EN" then
-			Chat:Print( "[Bonus] ", Color.White, "Money bonus is available! Open the server menu to get it!", Color.GreenYellow )
+			Chat:Print( "[Bonus] ", Color.White, "Money bonus is available! Open the server menu to get it!", Color( 185, 215, 255 ) )
 		else
-			Chat:Print( "[Бонус] ", Color.White, "Доступен денежный бонус! Откройте меню сервера, чтобы получить его.", Color.GreenYellow )
+			Chat:Print( "[Бонус] ", Color.White, "Доступен денежный бонус! Откройте меню сервера, чтобы получить его.", Color( 185, 215, 255 ) )
 		end
 	end
 end
@@ -633,7 +733,7 @@ function ServerMenu:UpdateMoneyString( money )
 
 	local lang = LocalPlayer:GetValue( "Lang" )
     if lang then
-		self.level:SetText( lang == "EN" and "Balance: $" .. formatNumber( money ) or "Баланс: $" .. formatNumber( money ) )
+		self.money:SetText( "$" .. formatNumber( money ) )
     end
 end
 
