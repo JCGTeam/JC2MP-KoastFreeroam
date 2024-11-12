@@ -4,6 +4,7 @@ function PromoCodes:__init()
 	self.globalPromocodes = {}
 	self.invitationsPromocodes = {}
 
+
 	self.invalidArguments_txt = "Invalid arguments"
 
 	SQL:Execute( "CREATE TABLE IF NOT EXISTS promocodes_global (name INTEGER UNIQUE, bonus INTEGER, count INTEGER)" )
@@ -43,7 +44,7 @@ function PromoCodes:GlobalPromocodeUses( args, sender )
 		local successfully_txt = "Global promocode " .. name .. " removed (limit)"
 
 		print( successfully_txt )
-		Events:Fire( "ToDiscordConsole", { text = successfully_txt } )
+		Events:Fire( "ToDiscordConsole", { text = "[PromoCodes] " .. successfully_txt } )
 	else
 		count = count - 1
 
@@ -55,7 +56,7 @@ function PromoCodes:GlobalPromocodeUses( args, sender )
 		local successfully_txt = "Global promocode " .. name .. " activated. Count: " .. count
 
 		print( successfully_txt )
-		Events:Fire( "ToDiscordConsole", { text = successfully_txt } )
+		Events:Fire( "ToDiscordConsole", { text = "[PromoCodes] " .. successfully_txt } )
 	end
 
 	self:LoadGlobalPromocodes()
@@ -77,7 +78,7 @@ function PromoCodes:InvitationPromocodeUses( args, sender )
 	local successfully_txt = "Invitation promocode " .. name .. " used. Uses: " .. uses .. ", Activations: " .. activations
 
 	print( successfully_txt )
-	Events:Fire( "ToDiscordConsole", { text = successfully_txt } )
+	Events:Fire( "ToDiscordConsole", { text = "[PromoCodes] " .. successfully_txt } )
 
 	self:LoadInvitationsPromocodes()
 
@@ -119,7 +120,7 @@ function PromoCodes:InvitationPromocodeActivated( player )
 
     local successfully_txt = "Invitation promocode " .. name .. " activated. Uses: " .. uses .. ", Activations: " .. activations
     print( successfully_txt )
-    Events:Fire( "ToDiscordConsole", { text = successfully_txt } )
+    Events:Fire( "ToDiscordConsole", { text = "[PromoCodes] " .. successfully_txt } )
 
     self:LoadInvitationsPromocodes()
 
@@ -161,7 +162,7 @@ function PromoCodes:AddGlobalPromocode( args )
     local successfully_txt = "Global promocode successfully generated: " .. tostring( name ) .. ", " .. tostring( bonus ) .. ", " .. tostring( count )
 
     print( successfully_txt )
-    Events:Fire( "ToDiscordConsole", { text = successfully_txt } )
+    Events:Fire( "ToDiscordConsole", { text = "[PromoCodes] " .. successfully_txt } )
 
 	self:LoadGlobalPromocodes()
 end
@@ -194,7 +195,7 @@ function PromoCodes:AddInvitationPromocode( args )
     local successfully_txt = "Invitation promocode successfully generated: " .. tostring( steamId ) .. ", " .. tostring( name ) .. ", " .. tostring( bonus1 ) .. ", " .. tostring( bonus2 )
 
     print( successfully_txt )
-    Events:Fire( "ToDiscordConsole", { text = successfully_txt } )
+    Events:Fire( "ToDiscordConsole", { text = "[PromoCodes] " .. successfully_txt } )
 
 	self:LoadInvitationsPromocodes()
 end
@@ -242,7 +243,7 @@ function PromoCodes:RemoveGlobalPromocode( args )
 
         local successfully_txt = "Global promocode " .. args.text .. " successfully removed"
         print( successfully_txt )
-        Events:Fire( "ToDiscordConsole", { text = successfully_txt } )
+        Events:Fire( "ToDiscordConsole", { text = "[PromoCodes] " .. successfully_txt } )
 	else
         local notfound_txt = "Global promocode " .. args.text .. " not found"
         print( notfound_txt )
@@ -273,7 +274,7 @@ function PromoCodes:RemoveInvitationPromocode( args )
 
         local successfully_txt = "Invitation promocode (SteamId: " .. args.text .. ") successfully removed"
         print( successfully_txt )
-        Events:Fire( "ToDiscordConsole", { text = successfully_txt } )
+        Events:Fire( "ToDiscordConsole", { text = "[PromoCodes] " .. successfully_txt } )
 	else
         local notfound_txt = "Invitation promocode (SteamId: " .. args.text .. ") not found"
         print( notfound_txt )

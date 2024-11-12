@@ -3,8 +3,8 @@ class 'Menu'
 function Menu:__init()
     self.step = 0
 
-    self.rusFlag = Image.Create( AssetLocation.Resource, "RusFlag" )
-	self.engFlag = Image.Create( AssetLocation.Resource, "EngFlag" )
+    --self.rusFlag = Image.Create( AssetLocation.Resource, "RusFlag" )
+	--self.engFlag = Image.Create( AssetLocation.Resource, "EngFlag" )
 
     self.qrTelegram = Image.Create( AssetLocation.Resource, "QRTelegram" )
     self.qrDiscord = Image.Create( AssetLocation.Resource, "QRDiscord" )
