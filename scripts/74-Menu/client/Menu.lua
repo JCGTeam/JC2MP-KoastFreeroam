@@ -666,12 +666,12 @@ function Menu:ChangeStep( step )
         if LocalPlayer:GetValue( "Registered" ) then
             local lang = LocalPlayer:GetValue( "Lang" )
             if lang and lang == "EN" then
-                Events:Fire( "OpenWhatsNew", { titletext = "SPONSOR THE SERVER", text = "Donate more than 6,16$ to be in the list of sponsors!\nBy sponsoring the server and its author, you motivate and prolong the life of the project (and not only).\n \nLinks:\n> Donate - clck.ru/37FZkT\n> Discord - t.me/koastfreeroam/197\n> Telegram - t.me/koastfreeroam\n \nWith donation, you can also buy some service on the server or a privilege.", usepause = true } )
+                Events:Fire( "OpenWhatsNew", { titletext = "Warning!", text = "This server is open source and is not official.", usepause = true } )
             else
                 local type = 0
 
                 if type == 0 then
-                    Events:Fire( "OpenWhatsNew", { titletext = "VIP ДЛЯ ВСЕХ!", text = "В связи с неактуальностью и очень низким спросом на донат, мы дарим VIP каждому игроку.\n \nПолезные ссылки:\n> Discord - t.me/koastfreeroam/197\n> Telegram - t.me/koastfreeroam\n> Steam - steamcommunity.com/groups/koastfreeroam\n \nНаслаждайтесь :)", usepause = true } )
+                    Events:Fire( "OpenWhatsNew", { titletext = "Внимание!", text = "Данный сервер основан на открытом исходном коде и не является официальным.", usepause = true } )
                 end
             end
         end

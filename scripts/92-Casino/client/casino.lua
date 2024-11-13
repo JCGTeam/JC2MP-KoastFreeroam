@@ -28,8 +28,6 @@ function Casino:__init()
 
 	self.textSize = 13
 
-    self.coinflipimage = Image.Create( AssetLocation.Resource, "CoinFlipICO" )
-
 	Network:Subscribe( "TextBox", self, self.TextBox )
 	Network:Subscribe( "FinishCoinflip", self, self.FinishCoinflip )
 	Network:Subscribe( "EnableAccept", self, self.EnableAccept )
