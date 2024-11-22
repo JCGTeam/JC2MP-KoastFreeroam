@@ -56,7 +56,7 @@ function Bank:SendMoney( args, sender )
         return false
     end
 
-    if amount > 10000 then
+    if amount > BANK_CONFIGURATION.SENDLIMIT then
         Events:Fire( "CastCenterText", { target = sender, text = "Вы не можете отправить более $10.000!", time = 3, color = Color.Red } )
         return false
     end

@@ -213,7 +213,7 @@ function Killfeed:Render()
 			local color = Color( 255, 255, 255, alpha )
 			local shadow = Color( 20, 20, 20, alpha * 0.5 )
 
-            local post_player_text
+            local post_player_text = ""
             if v.killer_name then
                 post_player_text = string.match( v.message, v.player_name .. "(.-)" .. v.killer_name )
             else

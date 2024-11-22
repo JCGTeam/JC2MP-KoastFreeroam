@@ -10,7 +10,7 @@ function Messages:__init()
 end
 
 function Messages:ClientError( args )
-	Events:Fire( "ToDiscordConsole", { text = "**[Error] Client error has occurred! Module: " .. args.moduletxt .. "**" .. "\nERROR CODE:\n```" .. args.errortxt .. "```" } )
+	Events:Fire( "ToDiscordConsole", { text = "**[Error] Client error has occurred! Module: " .. args.moduletxt .. "**" .. "\nERROR CODE:\n```lua\n" .. args.errortxt .. "\n```" } )
 end
 
 function Messages:ModuleError( e )
@@ -22,7 +22,7 @@ function Messages:ModuleError( e )
 	Chat:Broadcast( self.err_prefix, tagColor, "Telegram: t.me/koastreport_bot", errColor )
 
 	Events:Fire( "ToDiscord", { text = "**[Error] Critical server error has occurred! Module: " .. e.module .. "**" })
-	Events:Fire( "ToDiscordConsole", { text = "**[Error] Critical server error has occurred! Module: " .. e.module .. "**" .. "\nERROR CODE:\n```" .. e.error .. "```" } )
+	Events:Fire( "ToDiscordConsole", { text = "**[Error] Critical server error has occurred! Module: " .. e.module .. "**" .. "\nERROR CODE:\n```lua\n" .. e.error .. "\n```" } )
 
 	Network:Broadcast( "textTw", { error = e.module } )
 end

@@ -605,7 +605,7 @@ function Menu:ChangeStep( step )
         self.donateScreen.boosty.window:SetSize( size )
 
         local finalPos = ( Render.Size.y / 2 - size.x / 2 ) - 20
-        Animation:Play( Render.Size.y, finalPos, 0.35, easeInOut, function( value ) self.donateScreen.boosty.window:SetPosition( Vector2( self.donateScreen.boosty.window:GetPosition().x, value ) ) end, function()
+        Animation:Play( Render.Size.y, finalPos, 0.35, easeInOut, function( value ) if self.donateScreen then self.donateScreen.boosty.window:SetPosition( Vector2( self.donateScreen.boosty.window:GetPosition().x, value ) ) end end, function()
             self.donateScreen.nextButton = ModernGUI.Button.Create()
             self.donateScreen.nextButton:SetSize( Vector2( Render:GetTextWidth( self.locStrings["continue"], self.donateScreen.nextButton:GetTextSize() ) + 30, 40 ) )
             self.donateScreen.nextButton:SetPosition( Vector2( Render.Size.x / 2 - self.donateScreen.nextButton:GetSize().x / 2, Render.Size.y ) )

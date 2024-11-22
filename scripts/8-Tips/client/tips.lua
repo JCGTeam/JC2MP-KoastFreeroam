@@ -74,7 +74,7 @@ function Tips:AddAds( lines )
 end
 
 function Tips:SendMessage()
-	Chat:Print( self.adsTag, Color.White, self.ads[ math.random( 1, self.adCount ) ], Color.DarkGray )
+	Chat:Print( self.adsTag, Color.White, self.ads[ math.random( 1, self.adCount or 0 ) ], Color.DarkGray )
 end
 
 tips = Tips()
