@@ -103,8 +103,6 @@ function WidgetsManager:Render()
 					Render:FillArea( position, Vector2( 30, 3 ), Color( 0, 0, 0, sett_alpha / 2 ) )
 					Render:FillArea( position, Vector2( bar_len, 3 ), Color( 255, 255, 255, sett_alpha ) )
 
-					if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
-
 					if self.attempt then
 						local player = Player.GetById( self.attempt[2] - 1 )
 

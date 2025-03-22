@@ -264,30 +264,37 @@ end
 
 function Boost:LandCheck( vehicle )
 	local id = vehicle:GetModelId()
+	local boost = LocalPlayer:GetValue( "Boost" )
 
-	if not LocalPlayer:GetValue( "Boost" ) then return end
-	if LocalPlayer:GetValue( "Boost" ) >= 1 then
+	if not boost then return end
+	if boost >= 1 then
 		return self.landBoost and not self.boats[id] and not self.helis[id] and not self.planes[id]
 	end
 end
 
 function Boost:BoatCheck( vehicle )
-	if not LocalPlayer:GetValue( "Boost" ) then return end
-	if LocalPlayer:GetValue( "Boost" ) >= 2 then
+	local boost = LocalPlayer:GetValue( "Boost" )
+
+	if not boost then return end
+	if boost >= 2 then
 		return self.boatBoost and self.boats[vehicle:GetModelId()]
 	end
 end
 
 function Boost:HeliCheck( vehicle )
-	if not LocalPlayer:GetValue( "Boost" ) then return end
-	if LocalPlayer:GetValue( "Boost" ) >= 3 then
+	local boost = LocalPlayer:GetValue( "Boost" )
+
+	if not boost then return end
+	if boost >= 3 then
 		return self.heliBoost and self.helis[vehicle:GetModelId()]
 	end
 end
 
 function Boost:PlaneCheck( vehicle )
-	if not LocalPlayer:GetValue( "Boost" ) then return end
-	if LocalPlayer:GetValue( "Boost" ) >= 3 then
+	local boost = LocalPlayer:GetValue( "Boost" )
+
+	if not boost then return end
+	if boost >= 3 then
 		return self.planeBoost and self.planes[vehicle:GetModelId()]
 	end
 end

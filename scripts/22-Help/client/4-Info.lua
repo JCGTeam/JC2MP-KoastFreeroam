@@ -51,7 +51,7 @@ function HInfo:EngHelp()
 				"     Dragonshifter (RUSSIAN FREEROAM MAYHEM server source code)\n \n" ..
 				"> Open source:\n" ..
 				"     GitHub - github.com/JCGTeam/JC2MP-KoastFreeroam\n \n" ..
-				"© JCGTeam, Hallkezz 2017-2024"
+				"© JCGTeam, Hallkezz 2017-2025"
 		})
 end
 
@@ -101,7 +101,7 @@ function HInfo:RusHelp()
 				"     Dragonshifter (Исходный код сервера RUSSIAN FREEROAM MAYHEM)\n \n" ..
 				"> Открытый исходный код:\n" ..
 				"     GitHub - github.com/JCGTeam/JC2MP-KoastFreeroam\n \n" ..
-				"© JCGTeam, Hallkezz 2017-2024"
+				"© JCGTeam, Hallkezz 2017-2025"
 		})
 end
 

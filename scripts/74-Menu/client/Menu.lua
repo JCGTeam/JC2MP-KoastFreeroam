@@ -2,6 +2,7 @@ class 'Menu'
 
 function Menu:__init()
     self.step = 0
+    self.backgroundColor = Color( 10, 10, 10, 200 )
 
     --self.rusFlag = Image.Create( AssetLocation.Resource, "RusFlag" )
 	--self.engFlag = Image.Create( AssetLocation.Resource, "EngFlag" )
@@ -66,12 +67,15 @@ function Menu:Lang()
 end
 
 function Menu:LangItem( langCode, langFull, flag )
+    local systemFonts = LocalPlayer:GetValue( "SystemFonts" )
+
     local langItem = ModernGUI.Button.Create( self.langScreen.list )
     langItem:SetDock( GwenPosition.Top )
     langItem:SetHeight( 40 )
-    langItem:SetMargin( Vector2( 0, 3 ), Vector2( 0, 3 ) )
+    local margin = Vector2( 0, 3 )
+    langItem:SetMargin( margin, margin )
     langItem:SetText( "[" .. langCode .. "] " .. langFull )
-    if LocalPlayer:GetValue( "SystemFonts" ) then
+    if systemFonts then
         langItem:SetFont( AssetLocation.SystemFont, "Impact" )
     end
     langItem:SetAlignment( GwenPosition.CenterV )
@@ -89,7 +93,7 @@ function Menu:LangItem( langCode, langFull, flag )
     langArrow:SetMargin( Vector2( 17, 0 ), Vector2( 20, 0 ) )
     langArrow:SetText( ">" )
     langArrow:SetTextSize( 20 )
-    if LocalPlayer:GetValue( "SystemFonts" ) then
+    if systemFonts then
         langArrow:SetFont( AssetLocation.SystemFont, "Impact" )
     end
     langArrow:SizeToContents()
@@ -163,15 +167,16 @@ function Menu:Render()
     Game:FireEvent( "gui.hud.hide" )
     Game:FireEvent( "gui.minimap.hide" )
 
-    Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, 200 ) )
+    Render:FillArea( Vector2.Zero, Render.Size, self.backgroundColor )
 
     if self.rico and self.rico:GetAlpha() > 0 then
         self.rico:Draw()
     end
 
-    local version_txt = "KMod Version: " .. tostring( LocalPlayer:GetValue( "KoastBuild" ) )
+    local build = LocalPlayer:GetValue( "KoastBuild" )
+    local version_txt = "KMod Version: " .. tostring( build )
 
-    if LocalPlayer:GetValue( "KoastBuild" ) then
+    if build then
         --Render:DrawText( Vector2( (Render.Width - Render:GetTextWidth( version_txt, 15 ) - 30 ), Render.Size.y - 45 ), version_txt, Color( 255, 255, 255, 100 ), 15 )
     end
 
@@ -373,6 +378,8 @@ function Menu:ChangeStep( step )
             sound:SetParameter(0,1)
         end )
 
+        local systemFonts = LocalPlayer:GetValue( "SystemFonts" )
+
         self.promocodes = {}
 
         local description = self.locStrings["promocodeDescription"]
@@ -388,7 +395,7 @@ function Menu:ChangeStep( step )
         padding = Vector2( 20, 20 )
         self.promocodes.title:SetMargin( padding, padding )
         self.promocodes.title:SetAlignment( GwenPosition.Center )
-        if LocalPlayer:GetValue( "SystemFonts" ) then
+        if systemFonts then
             self.promocodes.title:SetFont( AssetLocation.SystemFont, "Impact" )
         end
         self.promocodes.title:SetTextSize( 30 )
@@ -401,7 +408,7 @@ function Menu:ChangeStep( step )
         self.promocodes.windowTitle:SetDock( GwenPosition.Top )
         self.promocodes.windowTitle:SetMargin( Vector2( 10, 10 ), Vector2( 10, 5 ) )
         self.promocodes.windowTitle:SetText( description )
-        if LocalPlayer:GetValue( "SystemFonts" ) then
+        if systemFonts then
             self.promocodes.windowTitle:SetFont( AssetLocation.SystemFont, "Impact" )
         end
         self.promocodes.windowTitle:SetTextSize( 18 )
@@ -428,7 +435,7 @@ function Menu:ChangeStep( step )
         self.promocodes.skipButton:SetDock( GwenPosition.Left )
         self.promocodes.skipButton:SetWidth( self.promocodes.label:GetWidth() / 2.5 )
         self.promocodes.skipButton:SetText( self.locStrings["skip"] )
-        if LocalPlayer:GetValue( "SystemFonts" ) then
+        if systemFonts then
             self.promocodes.skipButton:SetFont( AssetLocation.SystemFont, "Impact" )
         end
         padding = Vector2( 5, 5 )
@@ -439,7 +446,7 @@ function Menu:ChangeStep( step )
         self.promocodes.nextButton:SetDock( GwenPosition.Right )
         self.promocodes.nextButton:SetWidth( self.promocodes.label:GetWidth() / 2.5 )
         self.promocodes.nextButton:SetText( self.locStrings["apply"] )
-        if LocalPlayer:GetValue( "SystemFonts" ) then
+        if systemFonts then
             self.promocodes.nextButton:SetFont( AssetLocation.SystemFont, "Impact" )
         end
         padding = Vector2( 5, 5 )
@@ -466,6 +473,8 @@ function Menu:ChangeStep( step )
 
         if self.nicknameColorScreen then return end
 
+        local systemFonts = LocalPlayer:GetValue( "SystemFonts" )
+
         self.nicknameColorScreen = {}
 
         local description = self.locStrings["initialSetup"]
@@ -481,7 +490,7 @@ function Menu:ChangeStep( step )
         padding = Vector2( 20, 20 )
         self.nicknameColorScreen.title:SetMargin( padding, padding )
         self.nicknameColorScreen.title:SetAlignment( GwenPosition.Center )
-        if LocalPlayer:GetValue( "SystemFonts" ) then
+        if systemFonts then
             self.nicknameColorScreen.title:SetFont( AssetLocation.SystemFont, "Impact" )
         end
         self.nicknameColorScreen.title:SetTextSize( 30 )
@@ -494,7 +503,7 @@ function Menu:ChangeStep( step )
         self.nicknameColorScreen.windowTitle:SetDock( GwenPosition.Top )
         self.nicknameColorScreen.windowTitle:SetMargin( Vector2( 10, 10 ), Vector2( 10, 5 ) )
         self.nicknameColorScreen.windowTitle:SetText( self.locStrings["nicknameColor"] )
-        if LocalPlayer:GetValue( "SystemFonts" ) then
+        if systemFonts then
             self.nicknameColorScreen.windowTitle:SetFont( AssetLocation.SystemFont, "Impact" )
         end
         self.nicknameColorScreen.windowTitle:SetTextSize( 18 )
@@ -523,7 +532,7 @@ function Menu:ChangeStep( step )
         self.nicknameColorScreen.nextButton = ModernGUI.Button.Create( self.nicknameColorScreen.window.window )
         self.nicknameColorScreen.nextButton:SetDock( GwenPosition.Bottom )
         self.nicknameColorScreen.nextButton:SetText( self.locStrings["next"] )
-        if LocalPlayer:GetValue( "SystemFonts" ) then
+        if systemFonts then
             self.nicknameColorScreen.nextButton:SetFont( AssetLocation.SystemFont, "Impact" )
         end
         padding = Vector2( 5, 5 )
@@ -642,6 +651,8 @@ function Menu:ChangeStep( step )
         --if self.CalcViewEvent then Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil end
 
         self.step = nil
+        self.backgroundColor = nil
+
         self.locStrings = nil
         self.rusFlag = nil
 	    self.engFlag = nil

@@ -156,8 +156,9 @@ function BetterChat:OpenChatMenu()
 		self.joinmessages_cb:AddItem( self.sc_cb_txt2, "1" )
 		self.joinmessages_cb:AddItem( self.sc_cb_txt3, "2" )
 
-		if LocalPlayer:GetValue( "VisibleJoinMessages" ) then
-			self.joinmessages_cb:SelectItemByName( tostring( LocalPlayer:GetValue( "VisibleJoinMessages" ) ) )
+		local visibleJoinMessages = LocalPlayer:GetValue( "VisibleJoinMessages" )
+		if visibleJoinMessages then
+			self.joinmessages_cb:SelectItemByName( tostring( visibleJoinMessages ) )
 		end
 	else
 		self:CloseWindow()
@@ -181,11 +182,13 @@ end
 
 function BetterChat:ChatPosChanger()
 	if not self.controlstipSh then
+		local systemFonts = LocalPlayer:GetValue( "SystemFonts" )
+
 		self.controlstipSh = Label.Create()
 		self.controlstipSh:SetText( self.tiptext )
 		self.controlstipSh:SetTextSize( 20 )
 		self.controlstipSh:SetTextColor( Color.Black )
-		if LocalPlayer:GetValue( "SystemFonts" ) then
+		if systemFonts then
 			self.controlstipSh:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
 		self.controlstipSh:SizeToContents()
@@ -194,7 +197,7 @@ function BetterChat:ChatPosChanger()
 		self.controlstip = Label.Create()
 		self.controlstip:SetText( self.tiptext )
 		self.controlstip:SetTextSize( 20 )
-		if LocalPlayer:GetValue( "SystemFonts" ) then
+		if systemFonts then
 			self.controlstip:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
 		self.controlstip:SizeToContents()

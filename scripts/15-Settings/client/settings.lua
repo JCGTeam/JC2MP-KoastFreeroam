@@ -1125,14 +1125,11 @@ function Settings:Open()
 	self:SetWindowVisible( not self.active )
 
 	if self.active then
-		if LocalPlayer:GetValue( "JesusModeEnabled" ) then
-			self.option4:SetVisible( true )
-		else
-			self.option4:SetVisible( false )
-		end
-	
-		if LocalPlayer:GetValue( "LongerGrapple" ) then
-			self.buttonLH:GetLabel():SetText( self.longerGrapple_txt .. " (" .. LocalPlayer:GetValue( "LongerGrapple" ) .. self.meters .. ")" )
+		self.option4:SetVisible( LocalPlayer:GetValue( "JesusModeEnabled" ) and true or false )
+
+		local longerGrapple = LocalPlayer:GetValue( "LongerGrapple" )
+		if longerGrapple then
+			self.buttonLH:GetLabel():SetText( self.longerGrapple_txt .. " (" .. longerGrapple .. self.meters .. ")" )
 			self.buttonLH:GetLabel():SetEnabled( true )
 			self.buttonLH:GetCheckBox():SetEnabled( true )
 		else

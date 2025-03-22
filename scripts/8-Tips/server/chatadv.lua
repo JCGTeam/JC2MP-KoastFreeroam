@@ -29,11 +29,7 @@ function ChatAdv:GetAds( args, sender )
 end
 
 function ChatAdv:PostTick()
-	if self.timer:GetMinutes() > self.delay then
-		Network:Broadcast( "SendMessage" )
-
-		self.timer:Restart()
-	end
+	if self.timer:GetMinutes() > self.delay then Network:Broadcast( "SendMessage" ) self.timer:Restart() end
 end
 
 chatadv = ChatAdv()

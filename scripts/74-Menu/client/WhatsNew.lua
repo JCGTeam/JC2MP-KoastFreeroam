@@ -21,7 +21,7 @@ function WhatsNew:Open( args )
 	self.text = args.text
 	self.usepause = args.usepause
 
-	self.copyright_txt = "© JCGTeam 2024"
+	self.copyright_txt = "© JCGTeam 2025"
 	self.text_clr = Color.White
 	self.background_clr = Color( 10, 10, 10, 200 )
 
@@ -67,7 +67,7 @@ function WhatsNew:Open( args )
 	self.continueButton:Subscribe( "Press", self, self.Close )
 
 	local finalPos = Render.Size.x / 2.7
-	Animation:Play( self.continueButton:GetPosition().x, finalPos, 0.25, easeInOut, function( value ) self.continueButton:SetPosition( Vector2( Render.Size.x / 2 - self.continueButton:GetSize().x / 2, value ) ) end )
+	Animation:Play( self.continueButton:GetPosition().x, finalPos, 0.25, easeInOut, function( value ) if self.continueButton then self.continueButton:SetPosition( Vector2( Render.Size.x / 2 - self.continueButton:GetSize().x / 2, value ) ) end end )
 end
 
 function WhatsNew:LocalPlayerInput( args )
