@@ -43,12 +43,11 @@ function Help:__init()
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
+	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
 	Events:Subscribe( "OpenHelpMenu", self, self.OpenHelpMenu )
 	Events:Subscribe( "CloseHelpMenu", self, self.CloseHelpMenu )
 	Events:Subscribe( "HelpAddItem", self, self.AddItem )
 	Events:Subscribe( "HelpRemoveItem", self, self.RemoveItem )
-
-	Network:Subscribe( "OpenHelpMenu", self, self.OpenHelpMenu )
 
 	Console:Subscribe( "help", self, self.GetConsoleHelp )
 end
@@ -82,6 +81,12 @@ function Help:SetActive( state )
 		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
+end
+
+function Help:LocalPlayerChat( args )
+	local cmd_args = args.text:split( " " )
+
+	if cmd_args[1] == "/help" or cmd_args[1] == "/rules" then self:OpenHelpMenu() end
 end
 
 function Help:OpenHelpMenu()

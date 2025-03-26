@@ -1301,11 +1301,16 @@ function Tuner:KeyUp( args )
 
 	if IsValid( self.veh ) then
 		if args.key == string.byte("N") then
-			if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 			self:SetWindowVisible( not self.active )
 			self.timer = nil
 
 			if self.active then
+				local visibile = LocalPlayer:GetWorld() == DefaultWorld
+				self.gui.color.button:SetVisible( visibile )
+				if self.gui.trans.button then self.gui.trans.button:SetVisible( visibile ) end
+				if self.gui.susp.button then self.gui.susp.button:SetVisible( visibile ) end
+				self.gui.aero.button:SetVisible( visibile )
+
 				self.gui.tabs:SetCurrentTab( self.gui.veh.button )
 			end
 

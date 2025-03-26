@@ -3,17 +3,17 @@ class("VehicleSelector")
 function VehicleSelector:__init(state , racer) ; EGUSM.SubscribeUtility.__init(self)
 	-- Expose functions.
 	self.Destroy = VehicleSelector.Destroy
-	
+
 	self.state = state
 	self.racer = racer
 	self.race = self.state.race
 	self.spawns = self.race.course.spawns
-	
+
 	self.world = World.Create()
 	self.vehicleIndex = -1
 	self.templateIndex = -1
 	self.vehicle = nil
-	
+
 	-- Colors
 	self.color2 = Utility.StringToColor(self.racer.player:GetValue("RaceVehicleColor2"))
 	self.color2 = self.color2 or self.racer.player:GetColor()
@@ -44,7 +44,7 @@ function VehicleSelector:__init(state , racer) ; EGUSM.SubscribeUtility.__init(s
 		garageAngle = StateVehicleSelection.garageAngle ,
 	}
 	Network:Send(self.racer.player , "RaceSetState" , args)
-	
+
 	self:NetworkSubscribe("VehicleSelectionLoaded")
 	self:NetworkSubscribe("VehicleSelected")
 	self:NetworkSubscribe("VehicleTemplateSelected")
@@ -56,9 +56,9 @@ function VehicleSelector:SpawnVehicle()
 	if self.vehicle then
 		self.vehicle:Remove()
 	end
-	
+
 	local vehicleInfo = self.state.vehicles[self.vehicleIndex]
-	
+
 	-- Spawn the vehicle, unless they chose on-foot.
 	if vehicleInfo.modelId == -1 then
 		self.vehicle = nil
@@ -78,9 +78,9 @@ end
 function VehicleSelector:Destroy()
 	local vehicleInfo = self.state.vehicles[self.vehicleIndex]
 	vehicleInfo.used = vehicleInfo.used - 1
-	
+
 	self.world:Remove()
-	
+
 	EGUSM.SubscribeUtility.Destroy(self)
 end
 
@@ -107,7 +107,7 @@ function VehicleSelector:VehicleSelectionLoaded(unused , player)
 	if player ~= self.racer.player then
 		return
 	end
-	
+
 	-- Spawn the vehicle.
 	self:SpawnVehicle()
 	-- Acknowledge their initialization and give them the initial counts of vehicles.
@@ -122,7 +122,7 @@ function VehicleSelector:VehicleSelected(vehicleIndex , player)
 	if player ~= self.racer.player then
 		return
 	end
-	
+
 	-- Check client arguments.
 	if
 		type(vehicleIndex) ~= "number" or
@@ -135,19 +135,19 @@ function VehicleSelector:VehicleSelected(vehicleIndex , player)
 	if vehicleInfo.used == vehicleInfo.available then
 		return
 	end
-	
+
 	local oldVehicleInfo = self.state.vehicles[self.vehicleIndex]
 	oldVehicleInfo.used = oldVehicleInfo.used - 1
-	
+
 	self.vehicleIndex = vehicleIndex
 	self.templateIndex = 1
-	
+
 	vehicleInfo.used = vehicleInfo.used + 1
-	
+
 	self:SpawnVehicle()
-	
+
 	Network:Send(self.racer.player , "VehicleSelected" , vehicleIndex)
-	
+
 	local vehicleUsages = {
 		{modelId = oldVehicleInfo.modelId , count = oldVehicleInfo.used} ,
 		{modelId = vehicleInfo.modelId , count = vehicleInfo.used} ,
@@ -159,7 +159,7 @@ function VehicleSelector:VehicleTemplateSelected(templateIndex , player)
 	if player ~= self.racer.player then
 		return
 	end
-	
+
 	-- Check client arguments.
 	if
 		type(templateIndex) ~= "number" or
@@ -168,11 +168,11 @@ function VehicleSelector:VehicleTemplateSelected(templateIndex , player)
 	then
 		return
 	end
-	
+
 	self.templateIndex = templateIndex
-	
+
 	self:SpawnVehicle()
-	
+
 	Network:Send(self.racer.player , "VehicleTemplateSelected" , templateIndex)
 end
 
@@ -180,15 +180,15 @@ function VehicleSelector:VehicleSetColors(colors , player)
 	if player ~= self.racer.player then
 		return
 	end
-	
-	if self.vehicle == nil then
+
+	if not IsValid(self.vehicle) then
 		return
 	end
 	-- Check client arguments.
 	if type(colors) ~= "table" then
 		return
 	end
-	
+
 	local color1 , color2 = colors[1] , colors[2]
 	-- Check client arguments.
 	if
@@ -199,7 +199,7 @@ function VehicleSelector:VehicleSetColors(colors , player)
 	then
 		return
 	end
-	
+
 	self.color1 , self.color2 = color1 , color2
 	self.vehicle:SetColors(self.color1 , self.color2)
 	self.racer.player:SetValue("RaceVehicleColor1" , Utility.ColorToString(self.color1))

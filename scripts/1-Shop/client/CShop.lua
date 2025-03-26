@@ -782,7 +782,8 @@ function Shop:CreateSubCategory( category, subcategory_name )
 			dlc_warning:SetText( self.dlcwarning_txt )
 			dlc_warning:SetTextColor( Color( 200, 200, 200 ) )
 			dlc_warning:SetDock( GwenPosition.Top )
-			dlc_warning:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
+			local margin = Vector2( 5, 5 )
+			dlc_warning:SetMargin( margin, margin )
 			dlc_warning:SizeToContents()
 		end
 	end
@@ -869,7 +870,8 @@ function Shop:LoadCategories()
 
 	local window = ScrollControl.Create( home.tab_control )
 	window:SetDock( GwenPosition.Fill )
-	window:SetMargin( Vector2( 10, 10 ), Vector2( 10, 10 ) )
+	local margin = Vector2( 10, 10 )
+	window:SetMargin( margin, margin )
 
 	local textSize = 12
 

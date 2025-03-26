@@ -30,6 +30,7 @@ function Jesus:__init()
 	Events:Subscribe( "PostTick", self, self.PostTick )
 	Events:Subscribe( "ModuleUnload", self, self.RemoveAllSurfaces )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
+	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
 	Events:Subscribe( "ToggleJesus", self, self.ToggleJesus )
 end
 
@@ -169,7 +170,6 @@ end
 function Jesus:Render()
 	if not self.visible then return end
 	if Game:GetState() ~= GUIState.Game then return end
-	if not LocalPlayer:GetValue( "JesusModeEnabled" ) then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 	if not LocalPlayer:GetValue( "JesusModeVisible" ) or LocalPlayer:GetValue( "HiddenHUD" ) then return end
 	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
@@ -190,7 +190,15 @@ function Jesus:Render()
 	Render:DrawShadowedText( text_pos, self.name, Color( 185, 215, 255, sett_alpha ), Color( 0, 0, 0, sett_alpha ), text_size )
 end
 
+function Jesus:LocalPlayerChat( args )
+	local cmd_args = args.text:split( " " )
+
+	if cmd_args[1] == "/jesus" or cmd_args[1] == "/waterwalk" then self:ToggleJesus() end
+end
+
 function Jesus:ToggleJesus()
+	if not LocalPlayer:GetValue( "JesusModeEnabled" ) then return end
+
 	if LocalPlayer:GetWorld() ~= DefaultWorld then
 		Events:Fire( "CastCenterText", { text = self.notusable, time = 3, color = Color.Red } )
 		return

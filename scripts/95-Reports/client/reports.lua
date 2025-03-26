@@ -37,6 +37,7 @@ function Reports:__init()
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
+	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
     Events:Subscribe( "OpenReportMenu", self, self.OpenReportMenu )
 	Events:Subscribe( "CloseReportMenu", self, self.CloseReportMenu )
 
@@ -218,6 +219,12 @@ function Reports:EscPressed()
 	if self.window:GetVisible() == true then
 		self:WindowClosed()
 	end
+end
+
+function Reports:LocalPlayerChat( args )
+	local cmd_args = args.text:split( " " )
+
+	if cmd_args[1] == "/report" then self:OpenReportMenu() end
 end
 
 function Reports:OpenReportMenu()

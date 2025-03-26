@@ -428,9 +428,7 @@ function Tron:Render()
 
 		if self.queue then
 			for k, player in ipairs(self.queue) do
-				if IsValid( player ) then
-					DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - (k * 20) ), player:GetName(), player:GetColor() )
-				end
+				DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - (k * 20) ), player:GetName(), player:GetColor() )
 			end
 
 			DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#self.queue + 1) * 20) ), self.nameTTw, Color.White, 20 )
