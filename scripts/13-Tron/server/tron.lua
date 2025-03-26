@@ -51,7 +51,7 @@ function Tron:PlayerChat( args )
 				if lobby:GetState() == GamemodeState.WAITING and lobby:GetQueue():GetSize() < lobby.maxPlayers then
 					if lobby:GetQueue():Contains(player) then
 						lobby:RemoveFromQueue(player)
-						Tron.SendMessage( player, "Вы были удалены из очереди на трон (Карта: " .. lobby.name .. ")", Color( 228, 142, 56 ) )
+						Tron.SendMessage( player, "Вы были удалены из очереди на трон (Карта: " .. lobby.name .. ")", Color( 185, 215, 255 ) )
 
 						if not args[2] or lobby.name:lower():match(args[2]:lower()) then
 							return false
@@ -91,7 +91,7 @@ function Tron:PlayerChat( args )
 					targetLobby = Lobby(TronConfig.Maps[index])
 					table.insert(self.lobbies, targetLobby)
 				else
-					Tron.SendMessage( player, "Не нашли карту с именем " .. args[2] .. "!", Color( 228, 142, 56 ) )
+					Tron.SendMessage( player, "Не нашли карту с именем " .. args[2] .. "!", Color( 185, 215, 255 ) )
 					return false
 				end
 			end
@@ -102,9 +102,9 @@ function Tron:PlayerChat( args )
 			else
 				if player:GetWorld() == DefaultWorld then
 					targetLobby:AddToQueue(player)
-					Tron.SendMessage( player, "Вы были добавлены в очередь на трон (Карта: " .. targetLobby.name .. ")", Color( 228, 142, 56 ) )
+					Tron.SendMessage( player, "Вы были добавлены в очередь на трон (Карта: " .. targetLobby.name .. ")", Color( 185, 215, 255 ) )
 				else
-					Tron.SendMessage( player, "Пожалуйста, выйдите из текущего мода!", Color( 228, 142, 56 ) )
+					Tron.SendMessage( player, "Пожалуйста, выйдите из текущего мода!", Color( 185, 215, 255 ) )
 				end
 			end
 		elseif args[1] == "forcetron" then
@@ -165,7 +165,7 @@ function Tron:PlayerChat( args )
 				end
 			end
 
-			Tron.SendMessage( player, "Сейчас есть " .. lobbyCount .. " лобби в процессе ожидания и " .. playerCount .. " активны" .. plural(playerCount, "х", "й") .. " " .. plural(playerCount, "игроков", "игрок") .. ".", Color( 228, 142, 56 ) )
+			Tron.SendMessage( player, "Сейчас есть " .. lobbyCount .. " лобби в процессе ожидания и " .. playerCount .. " активны" .. plural(playerCount, "х", "й") .. " " .. plural(playerCount, "игроков", "игрок") .. ".", Color( 185, 215, 255 ) )
 		elseif args[1] == "tronlist" then
 			local mapstrings = {""}
 
@@ -181,13 +181,13 @@ function Tron:PlayerChat( args )
 				end
 			end
 
-			Tron.SendMessage( player, "Лист:", Color( 228, 142, 56 ) )
+			Tron.SendMessage( player, "Лист:", Color( 185, 215, 255 ) )
 
 			for k, string in ipairs(mapstrings) do
 				player:SendChatMessage( string, Color.DarkGray )
 			end
 		elseif args[1] == "tronhelp" then
-			Tron.SendMessage( player, "Список Команд:", Color( 228, 142, 56 ) )
+			Tron.SendMessage( player, "Список Команд:", Color( 185, 215, 255 ) )
 
 			player:SendChatMessage( "/tron - зайти в лобби.", Color.DarkGray )
 			player:SendChatMessage( "/tronlist - лист локаций.", Color.DarkGray )

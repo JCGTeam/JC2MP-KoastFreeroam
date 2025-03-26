@@ -131,10 +131,11 @@ function Bank:CreateSendMoneyWindow()
 	self.plist.text:SetText( "Укажите отправляемую сумму:" )
 	self.plist.text:SizeToContents()
 	
-	self.plist.moneytosend = TextBoxNumeric.Create( self.plist.window )
+	self.plist.moneytosend = Numeric.Create( self.plist.window )
 	self.plist.moneytosend:SetDock( GwenPosition.Top )
 	self.plist.moneytosend:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
 	self.plist.moneytosend:SetHeight( 20 )
+	self.plist.moneytosend:SetRange( 0, BANK_CONFIGURATION.SENDLIMIT )
 	self.plist.moneytosend:Subscribe( "Focus", self, self.Focus )
 	self.plist.moneytosend:Subscribe( "Blur", self, self.Blur )
 	self.plist.moneytosend:Subscribe( "EscPressed", self, self.EscPressed )
@@ -236,17 +237,13 @@ function Bank:TextChanged()
 
 	if filter:len() > 0 then
 		for k, v in pairs( self.rows ) do
-			v:SetVisible( self:PlayerNameContains(v:GetCellText( 0 ), filter) )
+			v:SetVisible( playerNameContains(v:GetCellText( 0 ), filter) )
 		end
 	else
 		for k, v in pairs( self.rows ) do
 			v:SetVisible( true )
 		end
 	end
-end
-
-function Bank:PlayerNameContains( name, filter )
-	return string.match(name:lower(), filter:lower()) ~= nil
 end
 
 function Bank:Focus()
@@ -263,32 +260,36 @@ function Bank:EscPressed()
 end
 
 function Bank:Render()
-	if self.message_timer and self.message then
-		local alpha = 4
+	if not self.message then return end
 
+	if self.message_timer then
 		local message_timer_seconds = self.message_timer:GetSeconds()
-		if message_timer_seconds > 4 and message_timer_seconds < 5 then
-			alpha = 4 - (message_timer_seconds - 1)
-		elseif message_timer_seconds >= 5 then
+
+		if message_timer_seconds >= 5 then
+			self.fadeOutAnimation = Animation:Play( self.animationValue, 0, 0.75, easeIOnut, function( value ) self.animationValue = value end, function()
+				self.message_timer = nil
+				self.message = nil
+				self.submessage = nil
+				self.color = nil
+				self.shadowColor = nil
+				self.animationValue = nil
+				self.posY = nil
+				self.fadeOutAnimation = nil
+
+				if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+			end )
+
 			self.message_timer = nil
-			self.message = nil
-			self.submessage = nil
-
-			if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
-
-			return
 		end
-
-		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
-
-		local pos_2d = Vector2( (Render.Size.x / 2) - (Render:GetTextSize( self.message .. " | " .. self.submessage, self.submessage_size ).x / 2), 100 )
-		local col = Copy( self.colour )
-		local colS = Copy( Color( 25, 25, 25, 150 ) )
-		col.a = col.a * alpha
-		colS.a = colS.a * alpha
-
-		Render:DrawShadowedText( pos_2d, self.message .. " | " .. self.submessage, col, colS, self.submessage_size )
 	end
+
+	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
+
+	local pos_2d = Vector2( (Render.Size.x / 2) - (Render:GetTextSize( self.message .. " | " .. self.submessage, self.submessage_size ).x / 2), math.lerp( 110, 100, self.posY ) )
+	local textColor = Color( self.color.r, self.color.g, self.color.b, math.lerp( 0, self.color.a, self.animationValue ) )
+	local textShadow = Color( self.shadowColor.r, self.shadowColor.g, self.shadowColor.b, math.lerp( 0, self.shadowColor.a, self.animationValue ) )
+
+	Render:DrawShadowedText( pos_2d, self.message .. " | " .. self.submessage, textColor, textShadow, self.submessage_size )
 end
 
 function Bank:MoneyChange( args )
@@ -308,10 +309,15 @@ function Bank:MoneyChange( args )
 	-- Very unlikely you'll be able to get any money in the first 2 seconds!
     local diff = args.new_money - args.old_money
     if diff ~= 0 and self.timer:GetSeconds() > 2 then
-        self.message_timer = Timer()
+		if self.fadeOutAnimation then Animation:Stop( self.fadeOutAnimation ) self.fadeOutAnimation = nil end
+
+		Animation:Play( 0, 1, 0.2, easeIOnut, function( value ) self.animationValue = value self.posY = value end )
+
+		self.message_timer = Timer()
         self.message = ( diff > 0 and "+" or "-" ) .. " $" .. formatNumber( math.abs( diff ) )
         self.submessage = self.money .. formatNumber( args.new_money )
-        self.colour = diff > 0 and Color( 251, 184, 41 ) or Color.OrangeRed
+        self.color = diff > 0 and Color( 251, 184, 41 ) or Color.OrangeRed
+		self.shadowColor = Color( 0, 0, 0, 100 )
     end
 end
 

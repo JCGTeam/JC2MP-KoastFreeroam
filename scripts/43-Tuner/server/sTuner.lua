@@ -5,8 +5,8 @@ function sTuner:__init()
 
 	Network:Subscribe( "UpdateNeonColor", self, self.UpdateNeonColor )
 	Network:Subscribe( "ToggleSyncNeon", self, self.ToggleSyncNeon )
-	Network:Subscribe( "ActivateThrust", self, self.ActivateThrust )
 	Network:Subscribe( "SyncTune", self, self.syncTune )
+	Network:Subscribe( "ColorChanged", self, self.ColorChanged )
 end
 
 function sTuner:EntityDespawn( args )
@@ -126,12 +126,6 @@ function sTuner:ToggleSyncNeon( args, sender )
 	end
 end
 
-function sTuner:ActivateThrust( infoTable )
-	if IsValid(infoTable.Vehicle) then
-		infoTable.Vehicle:SetLinearVelocity(infoTable.Thrust)
-	end
-end
-
 function sTuner:syncTune( args, sender )
 	local v = Vehicle.GetById(args.vehid)
 	if not IsValid(v) then return end
@@ -230,6 +224,16 @@ function sTuner:syncTune( args, sender )
 	if args.wheel_ratios[6] then v:SetNetworkValue( "wheel_ratios6", args.wheel_ratios[6] ) end
 	if args.wheel_ratios[7] then v:SetNetworkValue( "wheel_ratios7", args.wheel_ratios[7] ) end
 	if args.wheel_ratios[8] then v:SetNetworkValue( "wheel_ratios8", args.wheel_ratios[8] ) end
+end
+
+function sTuner:ColorChanged( args, sender )
+    local veh = sender:GetVehicle()
+
+	if veh then
+		veh:SetColors( args.tone1, args.tone2 )
+	else
+		sender:SendChatMessage( sender:GetValue( "Lang" ) == "EN" and "This isn't your vehicle!" or "Это не ваш транспорт!", Color( 255, 0, 0 ) )
+	end
 end
 
 sTuner = sTuner()

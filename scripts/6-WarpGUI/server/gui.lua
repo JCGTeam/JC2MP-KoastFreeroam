@@ -4,7 +4,7 @@ function WarpGui:__init()
 	self.tag_ru = "[Телепорт] "
 	self.tag_en = "[Teleport] "
 
-	self.textColor = Color( 200, 50, 200 )
+	self.textColor = Color( 255, 250, 150 )
 	self.storeInSql = true
 
 	-- Set up SQL

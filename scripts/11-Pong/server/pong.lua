@@ -30,7 +30,7 @@ function Pong:PlayerChat( args )
 		end
 
 		if not params[2] then
-			Chat:Send( player, self.tag, self.tag_clr, "Используйте /pong <сложность>", Color.Yellow )
+			Chat:Send( player, self.tag, self.tag_clr, "Используйте /pong <сложность>", Color( 185, 215, 255 ) )
 			Chat:Send( player, self.tag, self.tag_clr, "Сложности: Noob, Easy, Medium, Hard, Extreme", Color( 165, 165, 165 ) )
 			return false
 		end
@@ -41,6 +41,8 @@ function Pong:PlayerChat( args )
 end
 
 function Pong:Win( args, sender )
+	sender:SetNetworkValue( "PongWinsCount", ( sender:GetValue( "PongWinsCount" ) or 0 ) + 1 )
+
 	sender:SetMoney( sender:GetMoney() + 5 )
 end
 

@@ -143,18 +143,12 @@ function Boost:LocalPlayerInput( args )
 end
 
 function Boost:Render( args )
-	local alpha = 255
+	if self.hinttimer and self.hinttimer:GetSeconds() >= 8 then
+		self.fadeOutAnimation = Animation:Play( self.animationValue, 0, 0.15, easeIOnut, function( value ) self.animationValue = value end, function()
+			self.animationValue = nil
+		end )
 
-	if self.hinttimer then
-		local hinttimerSeconds = self.hinttimer:GetSeconds()
-
-		if hinttimerSeconds > 12 then
-			alpha = math.clamp( 255 - ( ( hinttimerSeconds - 12 ) * 500 ), 0, 255 )
-
-			if hinttimerSeconds > 14 then
-				self.hinttimer = nil
-			end
-		end
+		self.hinttimer = nil
 	end
 
 	if not LocalPlayer:GetValue( "Boost" ) then return end
@@ -208,7 +202,7 @@ function Boost:Render( args )
 	end
 
 	if Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue( "HiddenHUD" ) then return end
-	if not self.hinttimer then return end
+	if not self.animationValue then return end
 
 	if self.textEnabled and (land or boat or heli or plane) then
 		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
@@ -227,10 +221,12 @@ function Boost:Render( args )
 			text = text .. self.nameFo
 		end
 
-		local size = Render:GetTextSize( text, 15 )
-		local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - 10 )
+		local textSize = 15
+		local size = Render:GetTextSize( text, textSize )
+		local pos = Vector2( ( Render.Width - size.x ) / 2, math.lerp( Render.Height, Render.Height - size.y - 10, self.animationValue ) )
+		local alpha = math.lerp( 0, 255, self.animationValue )
 
-		Render:DrawShadowedText( pos, text, Color( 255, 255, 255, alpha ), Color( 0, 0, 0, alpha ), 15 )
+		Render:DrawShadowedText( pos, text, Color( 255, 255, 255, alpha ), Color( 0, 0, 0, alpha ), textSize )
 	end
 end
 
@@ -268,30 +264,37 @@ end
 
 function Boost:LandCheck( vehicle )
 	local id = vehicle:GetModelId()
+	local boost = LocalPlayer:GetValue( "Boost" )
 
-	if not LocalPlayer:GetValue( "Boost" ) then return end
-	if LocalPlayer:GetValue( "Boost" ) >= 1 then
+	if not boost then return end
+	if boost >= 1 then
 		return self.landBoost and not self.boats[id] and not self.helis[id] and not self.planes[id]
 	end
 end
 
 function Boost:BoatCheck( vehicle )
-	if not LocalPlayer:GetValue( "Boost" ) then return end
-	if LocalPlayer:GetValue( "Boost" ) >= 2 then
+	local boost = LocalPlayer:GetValue( "Boost" )
+
+	if not boost then return end
+	if boost >= 2 then
 		return self.boatBoost and self.boats[vehicle:GetModelId()]
 	end
 end
 
 function Boost:HeliCheck( vehicle )
-	if not LocalPlayer:GetValue( "Boost" ) then return end
-	if LocalPlayer:GetValue( "Boost" ) >= 3 then
+	local boost = LocalPlayer:GetValue( "Boost" )
+
+	if not boost then return end
+	if boost >= 3 then
 		return self.heliBoost and self.helis[vehicle:GetModelId()]
 	end
 end
 
 function Boost:PlaneCheck( vehicle )
-	if not LocalPlayer:GetValue( "Boost" ) then return end
-	if LocalPlayer:GetValue( "Boost" ) >= 3 then
+	local boost = LocalPlayer:GetValue( "Boost" )
+
+	if not boost then return end
+	if boost >= 3 then
 		return self.planeBoost and self.planes[vehicle:GetModelId()]
 	end
 end
@@ -301,6 +304,10 @@ function Boost:LocalPlayerEnterVehicle( args )
 
 	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+
+	if self.fadeOutAnimation then Animation:Stop( self.fadeOutAnimation ) self.fadeOutAnimation = nil end
+
+	Animation:Play( 0, 1, 0.15, easeIOnut, function( value ) self.animationValue = value end )
 
 	if not self.hinttimer then
 		self.hinttimer = Timer()
@@ -312,7 +319,18 @@ end
 function Boost:LocalPlayerExitVehicle()
 	LocalPlayer:SetValue( "VehBrake", nil )
 
-	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	if self.animationValue then
+		if self.RenderEvent then
+			self.fadeOutAnimation = Animation:Play( self.animationValue, 0, 0.15, easeIOnut, function( value ) self.animationValue = value end, function()
+				self.animationValue = nil
+
+				if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+			end )
+		end
+	else
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	end
+
 	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 end
 

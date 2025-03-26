@@ -9,7 +9,7 @@ function Victorins:__init()
 	self.tag_en = "[Quiz] "
 
 	self.tag_clr = Color.White
-	self.text_clr = Color.Yellow
+	self.text_clr = Color( 185, 215, 255 )
 
 	Events:Subscribe( "PostTick", self, self.PostTick )
 	Events:Subscribe( "PlayerChat", self, self.PlayerChat )
@@ -45,7 +45,10 @@ function Victorins:PlayerChat( args )
 				end
 			end
 		end
+
 		args.player:SetMoney( args.player:GetMoney() + self.reward )
+		args.player:SetNetworkValue( "VictorinsCorrectAnswers", ( args.player:GetValue( "VictorinsCorrectAnswers" ) or 0 ) + 1 )
+
 		self.quizAnswer = nil
 	end
 end

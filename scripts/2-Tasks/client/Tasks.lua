@@ -14,7 +14,6 @@ function Tasks:__init()
 
 	self.locations = {}
 	self.availableJobKey = 0
-	self.taskscomplatedcount = 0
 	self.jobCheckTimer = Timer()
 
 	self.opcolor = Color( 251, 184, 41 )
@@ -168,8 +167,8 @@ function Tasks:JobFinish()
 		angle = Camera:GetAngle()
 	})
 	self.sound:SetParameter(0,1)
-	self.taskscomplatedcount = self.taskscomplatedcount + 1
-	Game:ShowPopup( self.taskcomplatedcounttxt .. self.taskscomplatedcount, true )
+
+	Game:ShowPopup( self.taskcomplatedcounttxt .. ( LocalPlayer:GetValue( "CompletedTasks" ) or 0 ), true )
 
 	self:JobCancel()
 end
@@ -311,8 +310,8 @@ function Tasks:DrawLocation2( k, v, dist, dir, jobDistance )
 	local pos = v.position + Vector3( 0, 3, 0 )
 	local angle = Angle( Camera:GetAngle().yaw, 0, math.pi ) * Angle( math.pi, 0, 0 )
 
-	local textSize = 100
-	local textScale = 0.005
+	local textSize = 50
+	local textScale = 0.0095
 	local normalizedDist = dist / self.jobDistance
 	local textAlpha = 255 - math.clamp( normalizedDist * 255 * 2.25, 0, 255 )
 
@@ -428,11 +427,14 @@ function Tasks:Render()
 
 		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
-		local textPos = Vector2( Render.Width / 2, Render.Height * 0.07 )
-		local text = self.target .. self.delivto .. self.job.description
+		local textShadow = Color( 0, 0, 0, 150 )
+		local textSize = 15
+		local textPos = Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.target .. self.delivto .. self.job.description, textSize ) / 2, Render.Height * 0.07 )
 
-		textPos = textPos - Vector2( Render:GetTextWidth( text ) / 2, 0 )
-		Render:DrawShadowedText( textPos, text, Color( 192, 255, 192 ), Color( 0, 0, 0, 80 ) )
+		Render:DrawShadowedText( textPos, self.target, Color( 192, 255, 192 ), textShadow, textSize )
+
+		textPos.x = textPos.x + Render:GetTextWidth( self.target, textSize )
+		Render:DrawShadowedText( textPos, self.delivto .. self.job.description, Color.White, textShadow, textSize )
 
 		local destPos = self.locations[self.job.destination].position
 		local destDist = Vector3.Distance( destPos, LocalPlayer:GetPosition() )

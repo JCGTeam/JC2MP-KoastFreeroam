@@ -18,11 +18,11 @@ function Tuner:__init()
 		self.vehicleFly = self:CheckList( self.planeVehicles, vehicle:GetModelId() ) and true
 	end
 
-	self.MaxThrust = 5
-	self.MinThrust = 0.1
-	self.CurrentThrust = 0
-	self.CarFlyLandThrust = 2
-	self.ThrustIncreaseFactor = 1.05
+	self.maxThrust = 5
+	self.minThrust = 0.1
+	self.currentThrust = 0
+	self.carFlyLandThrust = 2
+	self.thrustIncreaseFactor = 1.05
 
 	self:InitGUI()
 
@@ -41,7 +41,7 @@ function Tuner:__init()
 		self.gui.window:SetTitle( "▧ Тюнинг" )
 	end
 
-	self.SyncTimer = Timer()
+	self.syncTimer = Timer()
 
 	self.neons = {}
 
@@ -105,6 +105,10 @@ function Tuner:Lang()
 			label:SetPosition( Vector2( 5, 5 + 22 * (i - 1) ) )
 			label:SizeToContents()
 		end
+	end
+
+	if self.setColorBtn then
+		self.setColorBtn:SetText( "Apply" )
 	end
 
 	if self.gui.trans.labels then
@@ -258,7 +262,7 @@ function Tuner:PostTick()
 		end
 	end
 
-	if self.SyncTimer:GetSeconds() <= 1 then return end
+	if self.syncTimer:GetSeconds() <= 1 then return end
 
 	for v in Client:GetVehicles() do
 		if v:GetValue("vehid") then
@@ -312,13 +316,13 @@ function Tuner:PostTick()
 		end
 	end
 
-	self.SyncTimer:Restart()
+	self.syncTimer:Restart()
 end
 
 function Tuner:InitGUI()
 	self.peredacha = 1
 
-	self.gui = {veh = {}, trans = {}, aero = {}, neon = {}, susp = {}}
+	self.gui = {veh = {}, color = {}, trans = {}, aero = {}, neon = {}, susp = {}}
 
 	self.active = false
 
@@ -332,6 +336,7 @@ function Tuner:InitGUI()
 	self.gui.tabs:SetDock( GwenPosition.Fill )
 
 	self.gui.veh.window = BaseWindow.Create( self.gui.window )
+	self.gui.color.window = BaseWindow.Create( self.gui.window )
 	self.gui.trans.window = BaseWindow.Create( self.gui.window )
 	self.gui.aero.window = BaseWindow.Create( self.gui.window )
 	self.gui.neon.window = BaseWindow.Create( self.gui.window )
@@ -357,6 +362,36 @@ function Tuner:InitGUI()
 	self.gui.veh.button:Subscribe( "Press", function()
 		self.gui.window:SetSize( Vector2( 360, 465 ) )
 	end )
+
+	self.gui.color.button = self.gui.tabs:AddPage( "Цвет", self.gui.color.window )
+	self.gui.color.button:Subscribe( "Press", function()
+		self.gui.window:SetSize( Vector2( 460, 350 ) )
+	end )
+
+	local tab_control = TabControl.Create( self.gui.color.window )
+	tab_control:SetDock( GwenPosition.Fill )
+	tab_control:SetMargin( Vector2( 1, 0 ), Vector2( 1, 5 ) )
+
+	local vColor1, vColor2 = vehicle:GetColors()
+	local tone1Picker = HSVColorPicker.Create()
+	tab_control:AddPage( "▧ Тон 1", tone1Picker )
+	tone1Picker:SetDock( GwenPosition.Fill )
+	tone1Picker:SetColor( vColor1 )
+
+	local tone2Picker = HSVColorPicker.Create()
+	tab_control:AddPage( "▨ Тон 2", tone2Picker )
+	tone2Picker:SetDock( GwenPosition.Fill )
+	tone2Picker:SetColor( vColor2 )
+
+	local lpColor = LocalPlayer:GetColor()
+	tone1Picker:SetColor( lpColor )
+	tone2Picker:SetColor( lpColor )
+
+	self.setColorBtn = Button.Create( self.gui.color.window )
+	self.setColorBtn:SetText( "Применить" )
+	self.setColorBtn:SetHeight( 30 )
+	self.setColorBtn:SetDock( GwenPosition.Bottom )
+	self.setColorBtn:Subscribe( "Press", function() Network:Send( "ColorChanged", { tone1 = tone1Picker:GetColor(), tone2 = tone2Picker:GetColor() } ) end )
 
 	if vehicleClass == VehicleClass.Land then
 		self.gui.trans.button = self.gui.tabs:AddPage("Трансмиссия", self.gui.trans.window)
@@ -415,13 +450,14 @@ function Tuner:InitGUI()
 	local neoncolor = HSVColorPicker.Create( self.gui.neon.window )
 	neoncolor:SetColor( vehicle:GetValue( "NeonColor" ) or vehicle:GetColors() )
 	neoncolor:SetDock( GwenPosition.Fill )
+	neoncolor:SetMargin( Vector2( 1, 0 ), Vector2( 1, 5 ) )
 
-	self.neontoggle = Button.Create( self.gui.neon.window )
-	self.neontoggle:SetText( "Включить/отключить неон" )
-	self.neontoggle:SetTextSize( 15 )
-	self.neontoggle:SetHeight( 30 )
-	self.neontoggle:SetDock( GwenPosition.Bottom )
-	self.neontoggle:Subscribe( "Up", function() Network:Send( "UpdateNeonColor", { neoncolor = neoncolor:GetColor() } ) Network:Send( "ToggleSyncNeon" ) end )
+	local neontoggle = Button.Create( self.gui.neon.window )
+	neontoggle:SetText( "Включить/отключить неон" )
+	neontoggle:SetTextSize( 15 )
+	neontoggle:SetHeight( 30 )
+	neontoggle:SetDock( GwenPosition.Bottom )
+	neontoggle:Subscribe( "Up", function() Network:Send( "UpdateNeonColor", { neoncolor = neoncolor:GetColor() } ) Network:Send( "ToggleSyncNeon" ) end )
 	self.gui.neon.button:Subscribe( "Press", function()
 		self.gui.window:SetSize( Vector2( 460, 350 ) )
 	end )
@@ -469,8 +505,8 @@ function Tuner:InitVehicleGUI()
 	end
 
 	for i, getter in ipairs( self.gui.veh.getters ) do
-		getter:SetPosition( Vector2( 150, 5 + 22 * (i - 1) ) )
-		getter:SetSize( Vector2( 200, 12 ) )
+		getter:SetPosition( Vector2( 160, 5 + 22 * (i - 1) ) )
+		getter:SetSize( Vector2( 210, 12 ) )
 	end
 end
 
@@ -1310,11 +1346,11 @@ function Tuner:WindowClosed()
 end
 
 function Tuner:CheckThrust()
-	self.CurrentThrust = self.CurrentThrust * self.ThrustIncreaseFactor
-	if self.CurrentThrust < self.MinThrust then
-		self.CurrentThrust = self.MinThrust
-	elseif self.CurrentThrust > self.MaxThrust then
-		self.CurrentThrust = self.MaxThrust
+	self.currentThrust = self.currentThrust * self.thrustIncreaseFactor
+	if self.currentThrust < self.minThrust then
+		self.currentThrust = self.minThrust
+	elseif self.currentThrust > self.maxThrust then
+		self.currentThrust = self.maxThrust
 	end
 end
 
@@ -1341,12 +1377,7 @@ function Tuner:LocalPlayerInput( args )
 			local vehicleVelocity = vehicle:GetLinearVelocity()
 
 			self:CheckThrust()
-			local SetThrust = Vector3( vehicleVelocity.x, self.CurrentThrust, vehicleVelocity.z )
-			local SendInfo = {}
-			SendInfo.Player = LocalPlayer
-			SendInfo.Vehicle = vehicle
-			SendInfo.Thrust = SetThrust
-			Network:Send( "ActivateThrust", SendInfo )
+			vehicle:SetLinearVelocity( Vector3( vehicleVelocity.x, self.currentThrust, vehicleVelocity.z ) )
 		end
 	end
 end
@@ -1376,8 +1407,8 @@ function Tuner:EnterVehicle( args )
 	if args.is_driver then
 		self:InitVehicle( args.vehicle )
 
-		self.CurrentThrust = 0
-		self.CarFlyLandThrust = 1
+		self.currentThrust = 0
+		self.carFlyLandThrust = 1
 		self.peredacha = 1
 	end
 end

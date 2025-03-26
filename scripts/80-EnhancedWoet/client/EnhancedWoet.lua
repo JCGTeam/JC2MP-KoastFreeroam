@@ -26,19 +26,20 @@ function Woet:KeyUp( args )
 	if LocalPlayer:GetState() ~= PlayerState.InVehicle then return end
 	if LocalPlayer:GetValue( "Freeze" ) then return end
 
-	if LocalPlayer:GetValue( "EnhancedWoet" ) and args.key == string.byte( "Y" ) then
+	local enhancedWoet = LocalPlayer:GetValue( "EnhancedWoet" )
+	if enhancedWoet and args.key == string.byte( "Y" ) then
 		if not LocalPlayer:GetValue("Passive") then
 			local vehicle = LocalPlayer:GetVehicle()
 
 			if not IsValid( vehicle ) then return end
 
-			if LocalPlayer:GetValue( "EnhancedWoet" ) == "Roll" then
+			if enhancedWoet == "Roll" then
 				local dir2 = vehicle:GetAngle() * Vector3( 0, 0, -30 )
 				vehicle:SetAngularVelocity( dir2 )
-			elseif LocalPlayer:GetValue( "EnhancedWoet" ) == "Spin" then
+			elseif enhancedWoet == "Spin" then
 				local dir2 = vehicle:GetAngle() * Vector3( 0, -30, 0 )
 				vehicle:SetAngularVelocity( dir2 )
-			elseif LocalPlayer:GetValue( "EnhancedWoet" ) == "Flip" then
+			elseif enhancedWoet == "Flip" then
 				local dir1 = vehicle:GetLinearVelocity() + Vector3( 0, 35, 0 )
 				vehicle:SetLinearVelocity( dir1 )
 				local dir2 = vehicle:GetAngle() * Vector3( -30, 0, 0 )

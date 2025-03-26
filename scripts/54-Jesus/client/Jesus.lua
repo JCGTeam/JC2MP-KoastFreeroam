@@ -16,11 +16,15 @@ function Jesus:__init()
 	self.UnderWaterOffset = 0.157
 	self.MaxDistance = 50
 
+	self.visible = LocalPlayer:GetValue( "WaterWalk" )
+	self.animationValue = self.visible and 1 or 0
+
 	self.Model = ""
 	self.Collision = "areaset01.blz/gb245_lod1-d_col.pfx"
 
 	self.Surfaces = {}
 
+	Events:Subscribe( "NetworkObjectValueChange", self, self.NetworkObjectValueChange )
 	Events:Subscribe( "Render", self, self.Render )
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "PostTick", self, self.PostTick )
@@ -149,7 +153,21 @@ function Jesus:PostTick()
 	end
 end
 
+function Jesus:NetworkObjectValueChange( args )
+	if args.key == "WaterWalk" and args.object.__type == "LocalPlayer" then
+		if args.value then
+			self.visible = true
+
+			if self.fadeOutAnimation then Animation:Stop( self.fadeOutAnimation ) self.fadeOutAnimation = nil end
+			Animation:Play( 0, 1, 0.05, easeIOnut, function( value ) self.animationValue = value end )
+		else
+			self.fadeOutAnimation = Animation:Play( self.animationValue, 0, 0.05, easeIOnut, function( value ) self.animationValue = value end, function() self.visible = nil end )
+		end
+	end
+end
+
 function Jesus:Render()
+	if not self.visible then return end
 	if Game:GetState() ~= GUIState.Game then return end
 	if not LocalPlayer:GetValue( "JesusModeEnabled" ) then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
@@ -159,22 +177,17 @@ function Jesus:Render()
 	local text_size = 18
     local text_width = Render:GetTextWidth( self.nameSizer, text_size )
 	local text_height = Render:GetTextHeight( self.nameSizer, text_size )
-    local text_pos = Vector2( Render.Width / 1.3 - text_width / 1.8 + text_width / 5.5, 2 )
-	local sett_alpha = Game:GetSetting(4) * 2.25
+	local posY = math.lerp( -text_height - 2, 0, self.animationValue )
+    local text_pos = Vector2( Render.Width / 1.3 - text_width / 1.8 + text_width / 5.5, posY + 2 )
+	local sett_alpha = math.lerp( 0, Game:GetSetting(4) * 2.25, self.animationValue )
 	local background_clr = Color( 0, 0, 0, sett_alpha / 2.4 )
 
-	Render:FillArea( Vector2( Render.Width / 1.3 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), background_clr )
+	Render:FillArea( Vector2( Render.Width / 1.3 - text_width / 1.8, posY ), Vector2( text_width + 5, text_height + 2 ), background_clr )
 
-	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), text_height + 2 ), background_clr )
-	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), background_clr )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 - 10 ), posY ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), posY ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), posY + text_height + 2 ), background_clr )
+	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 15 ), posY ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), posY ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), posY + text_height + 2 ), background_clr )
 
-	local waterwalk_enabled = LocalPlayer:GetValue( "WaterWalk" )
-
-	if waterwalk_enabled then
-		Render:DrawText( text_pos + Vector2.One, self.name, Color( 0, 0, 0, sett_alpha ), text_size )
-	end
-
-	Render:DrawText( text_pos, self.name, waterwalk_enabled and Color( 173, 216, 230, sett_alpha ) or Color( 255, 255, 255, sett_alpha / 4 ), text_size )
+	Render:DrawShadowedText( text_pos, self.name, Color( 185, 215, 255, sett_alpha ), Color( 0, 0, 0, sett_alpha ), text_size )
 end
 
 function Jesus:ToggleJesus()
@@ -184,7 +197,7 @@ function Jesus:ToggleJesus()
 	end
 
 	LocalPlayer:SetSystemValue( "WaterWalk", not LocalPlayer:GetValue( "WaterWalk" ) )
-	Events:Fire( "CastCenterText", { text = self.name .. ( LocalPlayer:GetValue( "WaterWalk" ) and self.disabletxt or self.enabletxt ), time = 2, color = Color.LightBlue } )
+	Events:Fire( "CastCenterText", { text = self.name .. ( LocalPlayer:GetValue( "WaterWalk" ) and self.disabletxt or self.enabletxt ), time = 2, color = Color( 185, 215, 255 ) } )
 end
 
 function LocalPlayer:SetSystemValue( valueName, value )

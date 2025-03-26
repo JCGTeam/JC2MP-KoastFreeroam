@@ -57,7 +57,7 @@ function LargeMessage:Draw()
 		)
 	end
 
-	local color = Copy(settings.winColor)
+	local color = Copy(settings.textColor)
 	color.a = alpha
 
 	DrawText(

@@ -282,7 +282,7 @@ function Admin:requestInformation ( player, admin )
 				steamID = steamID,
 				ping = player:GetPing(),
 				health = math.floor ( ( player:GetHealth ( ) * 100 ) ) .."%",
-				money = convertNumber "$" .. ( player:GetMoney() ),
+				money = "$" .. ( formatNumber( player:GetMoney() ) ),
 				position = math.round ( x, 3 ) ..", ".. math.round ( y, 3 ) ..", ".. math.round ( z, 3 ),
 				angle = math.round ( ax, 3 ) ..", ".. math.round ( ay, 3 ) ..", ".. math.round ( az, 3 ),
 				vehicle = ( player:InVehicle() and vehicle:GetName ( ) .." ( ID: ".. vehicle:GetModelId ( ) .." ) " or "Пешком" ),
@@ -476,13 +476,13 @@ function Admin:executeAction ( args, player )
 				if IsValid ( args [ 2 ], false ) then
 					if tonumber ( args [ 3 ] ) then
 						args [ 2 ]:SetMoney ( tonumber ( args [ 3 ] ) )
-						player:Message( "Вы установили баланс ".. args [ 2 ]:GetName() .." на $".. tostring ( convertNumber ( args [ 3 ] ) ), "info" )
-						args [ 2 ]:Message( player:GetName() .." установил ваш баланс на $".. tostring ( convertNumber ( args [ 3 ] ) ), "info" )
+						player:Message( "Вы установили баланс ".. args [ 2 ]:GetName() .." на $".. tostring ( formatNumber ( args [ 3 ] ) ), "info" )
+						args [ 2 ]:Message( player:GetName() .." установил ваш баланс на $".. tostring ( formatNumber ( args [ 3 ] ) ), "info" )
 --						for _, thePlayer in pairs ( self.canChat ) do
---							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." установил опыт на " .. tostring ( convertNumber ( args [ 3 ] ) ) .. " для " .. args [ 2 ]:GetName() } )
+--							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." установил опыт на " .. tostring ( formatNumber ( args [ 3 ] ) ) .. " для " .. args [ 2 ]:GetName() } )
 --						end
 
-						local console_text = player:GetName() .. " set money ".. args [ 2 ]:GetName() .. " by $" .. tostring ( convertNumber ( args [ 3 ] ) )
+						local console_text = player:GetName() .. " set money ".. args [ 2 ]:GetName() .. " by $" .. tostring ( formatNumber ( args [ 3 ] ) )
 						print( console_text )
 						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else
@@ -495,13 +495,13 @@ function Admin:executeAction ( args, player )
 				if IsValid ( args [ 2 ], false ) then
 					if tonumber ( args [ 3 ] ) then
 						args [ 2 ]:SetMoney ( tonumber ( args [ 3 ] ) + args [ 2 ]:GetMoney ( ) )
-						player:Message( "Вы дали ".. args [ 2 ]:GetName ( ) .. " $" .. tostring ( convertNumber ( args [ 3 ] ) ), "info" )
-						args [ 2 ]:Message( player:GetName ( ) .." дал вам $".. tostring ( convertNumber ( args [ 3 ] ) ), "info" )
+						player:Message( "Вы дали ".. args [ 2 ]:GetName ( ) .. " $" .. tostring ( formatNumber ( args [ 3 ] ) ), "info" )
+						args [ 2 ]:Message( player:GetName ( ) .." дал вам $".. tostring ( formatNumber ( args [ 3 ] ) ), "info" )
 --						for _, thePlayer in pairs ( self.canChat ) do
---							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." добавил " .. tostring ( convertNumber ( args [ 3 ] ) ) .. " ОП для " .. args [ 2 ]:GetName() } )
+--							Network:Send( thePlayer, "admin.addChatMessage", { msg = os.date ( "[%X] " ) .. player:GetName() .." добавил " .. tostring ( formatNumber ( args [ 3 ] ) ) .. " ОП для " .. args [ 2 ]:GetName() } )
 --						end
 
-						local console_text = player:GetName() .. " give money ".. args [ 2 ]:GetName() .. " by $" .. tostring ( convertNumber ( args [ 3 ] ) )
+						local console_text = player:GetName() .. " give money ".. args [ 2 ]:GetName() .. " by $" .. tostring ( formatNumber ( args [ 3 ] ) )
 						print( console_text )
 						Events:Fire( "ToDiscordConsole", { text = console_text } )
 					else

@@ -72,7 +72,6 @@ function Shop:__init()
 	Network:Subscribe( "UpdateSpawnInHome", self, self.UpdateSpawnInHome )
 
 	Network:Subscribe( "PlayerFired", self, self.PlayerFired )
-	Network:Subscribe( "ColorChanged", self, self.ColorChanged )
 
 	SQL:Execute( "CREATE TABLE IF NOT EXISTS buymenu_parachutes (steamid VARCHAR UNIQUE, model_id INTEGER)")
 	SQL:Execute( "CREATE TABLE IF NOT EXISTS buymenu_colors (steamid VARCHAR UNIQUE, r1 INTEGER, g1 INTEGER, b1 INTEGER, r2 INTEGER, g2 INTEGER, b2 INTEGER)")
@@ -116,21 +115,6 @@ function Shop:GetSaveColor( args, player )
 			tone1 = Color(tonumber(row.r1), tonumber(row.g1), tonumber(row.b1)),
 			tone2 = Color(tonumber(row.r2), tonumber(row.g2), tonumber(row.b2))
 		})
-    end
-end
-
-function Shop:ColorChanged( args, sender )
-    local veh = sender:GetVehicle()
-	local pId = sender:GetId()
-
-	if IsValid(veh) then
-		if IsValid(self.vehicles[pId]) then
-			if self.vehicles[pId]:GetId() == veh:GetId() then
-				veh:SetColors( args.tone1, args.tone2 )
-			else
-				sender:SendChatMessage( sender:GetValue( "Lang" ) == "EN" and "This isn't your vehicle!" or "Это не ваш транспорт!", Color( 255, 0, 0 ) )
-			end
-		end
     end
 end
 
@@ -233,8 +217,6 @@ function Shop:PlayerFired( args, player )
         success, err = self:BuyModel( player, item )
 	elseif category_id == self.types["Внешность"] then
         success, err = self:BuyAppearance( player, item )
-	elseif category_id == self.types["Остальное >"] then
-        success, err = self:BuyParachutes( player, item )
     end
 
 	if success then
@@ -560,23 +542,22 @@ function Shop:ExecuteAppearance( player, item )
 			cmd:Execute()
 		end
 	end
+
+	if itemType == "Parachute" then
+		Network:Send( player, "Parachute", item:GetModelId() )
+
+		local cmd = SQL:Command( "INSERT OR REPLACE INTO buymenu_parachutes (steamid, model_id) values (?, ?)" )
+		cmd:Bind( 1, player:GetSteamId().id )
+		cmd:Bind( 2, item:GetModelId() )
+		cmd:Execute()
+	end
+
 	return true, ""
 end
 
 function Shop:BuyParachutes( player, item )
 	self:ExecuteParachutes( player, item )
     return true, ""	--	Return true must be right after the execution else the confirmation message gives an error.
-end
-
-function Shop:ExecuteParachutes( player, item )
-	Network:Send( player, "Parachute", item:GetModelId() )
-
-    local cmd = SQL:Command( "INSERT OR REPLACE INTO buymenu_parachutes (steamid, model_id) values (?, ?)" )
-    cmd:Bind( 1, player:GetSteamId().id )
-    cmd:Bind( 2, item:GetModelId() )
-    cmd:Execute()
-
-    return true, ""
 end
 
 shop = Shop()

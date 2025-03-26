@@ -344,7 +344,7 @@ function Tasks:PreTick()
 		self.jobCancelTimer:Restart()
 		--cancel jobs in queue
 		for player in Server:GetPlayers() do
-			pId = player:GetId()
+			local pId = player:GetId()
 
 			if self.jobsToCancel[pId] == true then
 				if IsValid( self.playerJobTimers[pId] ) then
@@ -446,6 +446,9 @@ function Tasks:PlayerCompleteJob( args, player )
 	--if player isn't in a company
 	if destDist < 20 and stopped then
 		if IsValid( thatJob.vehiclePointer ) and pVehicle == thatJob.vehiclePointer then
+			player:SetNetworkValue( "CompletedTasksCount", ( player:GetValue( "CompletedTasksCount" ) or 0 ) + 1 )
+			player:SetNetworkValue( "CompletedTasks", ( player:GetValue( "CompletedTasks" ) or 0 ) + 1 )
+
 			player:GetVehicle():Remove()
 			local reward = thatJob.reward
 			player:SetMoney(player:GetMoney() + reward)

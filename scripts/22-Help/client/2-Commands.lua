@@ -17,7 +17,6 @@ function HCommands:EngHelp()
 			"    /pos                      Get your coordinates.\n" ..
 			"    /angle                   Get character angle.\n" ..
 			"    /tp                         Teleport to an available location.\n" ..
-			"    /stats                    Show account information on the server.\n" ..
 			"    /bind                     Key binding.\n" ..
 			"    /myhomes            Get home coordinates.\n" ..
 			"    /mass <value>      Change vehicle mass.\n \n" ..
@@ -48,7 +47,6 @@ function HCommands:RusHelp()
 			"    /pos                      Узнать ваши координаты.\n" ..
 			"    /angle                   Узнать угол персонажа.\n" ..
 			"    /tp                         Телепортироваться в доступное место.\n" ..
-			"    /stats                    Показать данные об аккаунте на сервере.\n" ..
 			"    /bind                    Привязка клавиш.\n" ..
 			"    /myhomes           Получить координаты домов.\n" ..
 			"    /mass <число>   Изменить массу транспорта.\n \n" ..

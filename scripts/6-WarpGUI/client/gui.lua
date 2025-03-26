@@ -24,7 +24,7 @@ function WarpGui:__init()
 	self.cooldown = 15
 	self.cooltime = 0
 
-	self.textColor = Color( 200, 50, 200 )
+	self.textColor = Color( 255, 250, 150 )
 
 	self.textSize = 13
 
@@ -83,7 +83,7 @@ function WarpGui:__init()
 		self.w = "Подождите "
 		self.ws = " секунд, чтобы вновь отправить запрос!"
 		self.gonnawarp = ' хотел бы телепортироваться к вам. Нажмите "B" и зайдите в меню "Телепортация", чтобы принять.'
-		self.tprequest_txt = "Запрос на телепорт!"
+		self.tprequest_txt = "Запрос на телепорт"
 		self.prequester_txt = "Игрок: "
 		self.friend_txt = "Друг"
 		self.teleport_txt = "Телепорт ≫"
@@ -129,7 +129,7 @@ function WarpGui:Lang()
 	self.w = "Wait "
 	self.ws = " seconds to send the request again!"
 	self.gonnawarp = ' sent you a teleport request. Press "B" and go to the "Teleportation" menu to accept.'
-	self.tprequest_txt = "Teleport request!"
+	self.tprequest_txt = "Teleport request"
 	self.prequester_txt = "Sender: "
 	self.friend_txt = "Friend"
 	self.teleport_txt = "Teleport ≫"
@@ -177,10 +177,10 @@ function WarpGui:AddPlayer( player )
 	end
 
 	local warpToButton = self:CreateListButton( self.teleport_txt, true, item )
-	warpToButton:Subscribe( "Press", function() self:WarpToPlayerClick(player) end )
+	warpToButton:Subscribe( "Press", function() self:WarpToPlayerClick( player ) end )
 
 	local acceptButton = self:CreateListButton( self.accept_txt, false, item )
-	acceptButton:Subscribe( "Press", function() self:AcceptWarpClick(player) end )
+	acceptButton:Subscribe( "Press", function() self:AcceptWarpClick( player ) end )
 	self.acceptButtons[playerId] = acceptButton
 
 	local whitelist = self.whitelist[playerId]
@@ -216,17 +216,13 @@ function WarpGui:TextChanged()
 
 	if filter:len() > 0 then
 		for k, v in pairs( self.rows ) do
-			v:SetVisible( self:PlayerNameContains(v:GetCellText( 0 ), filter) )
+			v:SetVisible( playerNameContains(v:GetCellText( 0 ), filter) )
 		end
 	else
 		for k, v in pairs( self.rows ) do
 			v:SetVisible( true )
 		end
 	end
-end
-
-function WarpGui:PlayerNameContains( name, filter )
-	return string.match(name:lower(), filter:lower()) ~= nil
 end
 
 function WarpGui:WarpToPlayerClick( player )
@@ -270,7 +266,9 @@ function WarpGui:AcceptWarpClick( player )
 		if not acceptButton then return end
 		self.warpRequests[playerId] = nil
 		acceptButton:SetEnabled( false )
-		
+
+		self.requesterId = nil
+
 		Network:Send( "WarpTo", {requester = player, target = LocalPlayer} )
 		self:SetWindowVisible( false )
 
@@ -307,6 +305,7 @@ function WarpGui:WarpRequest( args )
 			Events:Fire( "SendNotification", { txt = self.tprequest_txt, image = "Information", subtxt = self.prequester_txt .. requestingPlayer:GetName() } )
 			Chat:Print( self.tag, Color.White, requestingPlayer:GetName() .. self.gonnawarp, self.textColor )
 
+			self.requesterId = playerId
 			if not self.PostTickEvent then
 				self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick )
 				self.RefreshTimer = Timer()
@@ -319,10 +318,19 @@ end
 
 function WarpGui:PostTick()
 	if self.RefreshTimer:GetSeconds() <= 30 then return end
-	self:refreshList()
+
 	self.RefreshTimer = nil
 
 	if self.PostTickEvent then Events:Unsubscribe( self.PostTickEvent ) self.PostTickEvent = nil end
+
+	if not self.requesterId then return end
+
+	local acceptButton = self.acceptButtons[self.requesterId]
+	if not acceptButton then return end
+	self.warpRequests[self.requesterId] = nil
+	acceptButton:SetEnabled( false )
+
+	self.requesterId = nil
 end
 
 --  White/black -list click
@@ -478,15 +486,6 @@ function WarpGui:SetWindowVisible( visible )
 			self.blacklistAllCheckbox:GetLabel():SetFont( AssetLocation.SystemFont, "Impact" )
 		end
 	end
-end
-
-function WarpGui:refreshList()
-	self.playerList:Clear()
-	self.playerToRow = {}
-	for player in Client:GetPlayers() do
-		self:AddPlayer( player )
-	end
-	--self:AddPlayer(LocalPlayer)
 end
 
 warpGui = WarpGui()

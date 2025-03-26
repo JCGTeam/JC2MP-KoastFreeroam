@@ -1,24 +1,64 @@
 class 'PromoCodes'
 
 function PromoCodes:__init()
-    Network:Subscribe( "SetPromoCode", self, self.SetPromoCode )
+    self.globalPromocodes = {}
+	self.invitationsPromocodes = {}
+
+    Network:Subscribe( "GlobalPromocodes", self, self.GlobalPromocodes )
+    Network:Subscribe( "InvitationsPromocodes", self, self.InvitationsPromocodes )
+
+    Events:Subscribe( "ApplyPromocode", self, self.ApplyPromocode )
+    Events:Subscribe( "ModuleUnload", function() Events:Fire( "PromocodeSkipped" ) end )
 end
 
-function PromoCodes:SetPromoCode( args )
-    if not self.PromoCodeEvent then
-        self.PromoCodeEvent = Console:Subscribe( args.promocode, self, self.GetMoney )
+function PromoCodes:GlobalPromocodes( args )
+	self.globalPromocodes = args
+end
+
+function PromoCodes:InvitationsPromocodes( args )
+	self.invitationsPromocodes = args
+end
+
+function PromoCodes:ApplyPromocode( args )
+    local promoCodeFound = false
+
+    if args.type then
+        if args.type == 0 then
+            for i, row in ipairs( self.globalPromocodes ) do
+                if args.name == row[2].name then
+                    promoCodeFound = true
+
+                    Network:Send( "GlobalPromocodeUses", { row = row } )
+                    Events:Fire( "PromocodeFound" )
+                    break
+                end
+            end
+
+            if not promoCodeFound then
+                Events:Fire( "PromocodeNotFound" )
+            end
+        elseif args.type == 1 then
+            for i, row in ipairs( self.invitationsPromocodes ) do
+                if args.name == row[2].name then
+                    promoCodeFound = true
+
+                    Network:Send( "InvitationPromocodeUses", { row = row } )
+                    Events:Fire( "PromocodeFound" )
+                    break
+                end
+            end
+
+            if not promoCodeFound then
+                Events:Fire( "PromocodeNotFound" )
+            end
+        end
     else
-        Console:Unsubscribe( self.PromoCodeEvent )
-        self.PromoCodeEvent = nil
-        self.PromoCodeEvent = Console:Subscribe( args.promocode, self, self.GetMoney )
+        error( "Type is not specified" )
     end
-end
 
-function PromoCodes:GetMoney()
-    print( "Промокод успешно активирован." )
-    Network:Send( "GetMoney" )
-
-    if self.PromoCodeEvent then Console:Unsubscribe( self.PromoCodeEvent ) self.PromoCodeEvent = nil end
+    if not promoCodeFound then        
+        Events:Fire( "PromocodeFailed" )
+    end
 end
 
 promocodes = PromoCodes()

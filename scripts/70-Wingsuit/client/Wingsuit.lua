@@ -82,7 +82,7 @@ function Pigeon:__init()
 	Console:Subscribe( "pigeonmod", self, function() print( "Данная команда больше ничего не дает, но режим голубя по прежнему доступен для VIP." ) end )
 	Console:Subscribe( "superspeed", self, self.Superspeed )
 
-	Network:Subscribe( "0003", self, self.onFlyingAttempt )
+	Network:Subscribe( "onFlyingAttempt", self, self.onFlyingAttempt )
 end
 
 function Pigeon:onFlyingAttempt( data )
@@ -423,15 +423,16 @@ end
 function Pigeon:Abort()
 	local object = NetworkObject.GetByName("Flying")
 	if not object or self.score > (object:GetValue("S") or 0) then
-		Network:Send("0001", self.score)
+		Network:Send("onFlyingRecord", self.score)
 	elseif self.score > ((object:GetValue("S") or 0) * 0.6) and (object:GetValue("N") or "None") ~= LocalPlayer:GetName() then
-		Network:Send("0002", self.score)
+		Network:Send("onFlyingAttempt", self.score)
 	end
 
 	local shared = SharedObject.Create("Flying")
 	if self.score > (shared:GetValue("Record") or 0) then
 		shared:SetValue( "Record", self.score )
-		Network:Send( "0003", self.score )
+		Network:Send( "FlyingRecordTask", self.score )
+		Network:Send( "UpdateMaxRecord", self.score )
 		Game:ShowPopup( self.tRecord .. self.score, true )
 	end
 

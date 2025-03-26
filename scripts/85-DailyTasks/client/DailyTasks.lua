@@ -23,12 +23,13 @@ function DailyTasks:__init()
 
     self.active = false
 
-    self.huntKillsNeeded = 666
-    self.fireworksNeeded = 666
-    self.flyingRecordNeeded = 666
-    self.tetrisRecordNeeded = 666
-    self.driftRecordNeeded = 666
-    self.tronWinsNeeded = 666
+    local defaultValue = 666
+    self.completedTasksNeeded = defaultValue
+    self.fireworksNeeded = defaultValue
+    self.flyingRecordNeeded = defaultValue
+    self.tetrisRecordNeeded = defaultValue
+    self.driftRecordNeeded = defaultValue
+    self.tronWinsNeeded = defaultValue
 
     Network:Send( "GetNeededs" )
 
@@ -57,6 +58,7 @@ function DailyTasks:__init()
 	self.list:SetBackgroundVisible( false )
 	self.list:AddColumn( "Задание:" )
     self.list:AddColumn( "√/x", 50 )
+    --self.list:AddColumn( "Награда", 65 )
 
     local lang = LocalPlayer:GetValue( "Lang" )
     if lang and lang == "EN" then
@@ -67,9 +69,9 @@ function DailyTasks:__init()
             self.prize_btn:SetText( "Получить награду " .. "( $10.000 )" )
             self.hidetexttip:SetText( "Выполняй эти задания, чтобы получить свой приз. Задания обновляются каждый день." )
         end
-        self.hunttask_txt = "Убейте "
-        self.hunttask2_txt = ' человек в режиме "Охота"'
-        self.hunttip_txt = 'Зайдите в развлечения через меню сервера, чтобы присоединиться к режиму "Охота"'
+        self.taskstask_txt = "Выполните "
+        self.taskstask2_txt = ' заданий'
+        self.taskstip_txt = "Задания расположены по всему Панау, а также отмечены кружками на мини-карте"
         self.trontask_txt = 'Выиграте в режиме "Трон" более '
         self.trontask2_txt = "-х раз"
         self.trontip_txt = 'Зайдите в развлечения через меню сервера, чтобы присоединиться к режиму "Трон"'
@@ -100,9 +102,9 @@ function DailyTasks:Lang()
         self.hidetexttip:SetText( "Complete these tasks to get your prize. Quests are updated every day." )
         self.prize_btn:SetText( "Get award " .. "( $10.000 )" )
     end
-    self.hunttask_txt = "Kill "
-    self.hunttask2_txt = ' players in "Hunt" mode'
-    self.hunttip_txt = 'Go to the minigames section through the server menu to go to the "Hunt" mode'
+    self.taskstask_txt = "Complete "
+    self.taskstask2_txt = " tasks"
+    self.taskstip_txt = "Tasks are located all over Panau and are also marked with icons on the minimap"
     self.trontask_txt = 'Win "Tron" mode more than '
     self.trontask2_txt = " times"
     self.trontip_txt = 'Go to the minigames section through the server menu to go to the "Tron" mode'
@@ -120,7 +122,7 @@ function DailyTasks:Lang()
 end
 
 function DailyTasks:NewNeededs( args )
-    self.huntKillsNeeded = args.huntkillsneeded
+    self.completedTasksNeeded = args.completedtasksneeded
     self.fireworksNeeded = args.fireworksneeded
     self.flyingRecordNeeded = args.flyingrecordneeded
     self.tetrisRecordNeeded = args.tetrisrecordneeded
@@ -148,7 +150,8 @@ function DailyTasks:Open()
     self:SetWindowVisible( not self.active )
 
     if self.active then
-        local huntKills = LocalPlayer:GetValue( "HuntKills" )
+        local defaultValue = 0
+        local completedTasks = LocalPlayer:GetValue( "CompletedTasks" )
         local tronWins = LocalPlayer:GetValue( "TronWins" )
         local tetrisRecord = LocalPlayer:GetValue( "TetrisRecord" )
         local driftRecord = LocalPlayer:GetValue( "DriftRecord" )
@@ -156,27 +159,27 @@ function DailyTasks:Open()
         local fireworksTossed = LocalPlayer:GetValue( "FireworksTossed" )
         local bloozing = LocalPlayer:GetValue( "Bloozing" )
 
-        self.huntKills = ( huntKills and huntKills or 0 ) >= self.huntKillsNeeded
-        self.tronWins = ( tronWins and tronWins or 0 ) >= self.tronWinsNeeded
-        self.tetrisRecord = ( tetrisRecord and tetrisRecord or 0 ) >= self.tetrisRecordNeeded
-        self.driftRecord = ( driftRecord and driftRecord or 0 ) >= self.driftRecordNeeded
-        self.flyingRecord = ( flyingRecord and flyingRecord or 0 ) >= self.flyingRecordNeeded
-        self.fireworksTossed = ( fireworksTossed and fireworksTossed or 0 ) >= self.fireworksNeeded
-        self.bloozing = ( bloozing and bloozing or 0 ) >= 1
+        self.completedTasks = ( completedTasks and completedTasks or defaultValue ) >= self.completedTasksNeeded
+        self.tronWins = ( tronWins and tronWins or defaultValue ) >= self.tronWinsNeeded
+        self.tetrisRecord = ( tetrisRecord and tetrisRecord or defaultValue ) >= self.tetrisRecordNeeded
+        self.driftRecord = ( driftRecord and driftRecord or defaultValue ) >= self.driftRecordNeeded
+        self.flyingRecord = ( flyingRecord and flyingRecord or defaultValue ) >= self.flyingRecordNeeded
+        self.fireworksTossed = ( fireworksTossed and fireworksTossed or defaultValue ) >= self.fireworksNeeded
+        self.bloozing = ( bloozing and bloozing or defaultValue ) >= 1
 
         local prize = LocalPlayer:GetValue( "Prize" )
         if prize and prize ~= 0 then
-            local tasksCompleted = huntKills >= self.huntKillsNeeded and tronWins >= self.tronWinsNeeded and tetrisRecord >= self.tetrisRecordNeeded and driftRecord >= self.driftRecordNeeded and flyingRecord >= self.flyingRecordNeeded and fireworksTossed >= self.fireworksNeeded and bloozing >= 1
+            local tasksCompleted = completedTasks >= self.completedTasksNeeded and tronWins >= self.tronWinsNeeded and tetrisRecord >= self.tetrisRecordNeeded and driftRecord >= self.driftRecordNeeded and flyingRecord >= self.flyingRecordNeeded and fireworksTossed >= self.fireworksNeeded and bloozing >= 1
             self.prize_btn:SetEnabled( tasksCompleted and true or false )
         else
             self.prize_btn:SetEnabled( false )
         end
 
-        self:Task( self.hunttask_txt .. self.huntKillsNeeded .. self.hunttask2_txt, self.huntKills, self.hunttip_txt )
-        self:Task( self.trontask_txt .. self.tronWinsNeeded .. self.trontask2_txt, self.tronWins, self.trontip_txt )
-        self:Task( self.earn_txt .. self.tetrisRecordNeeded .. self.tetristask_txt, self.tetrisRecord, self.tetristip_txt )
-        self:Task( self.earn_txt .. self.driftRecordNeeded .. self.drifttask_txt, self.driftRecord )
-        self:Task( self.earn_txt .. self.flyingRecordNeeded .. self.wingtask_txt, self.flyingRecord, self.wingtip_txt )
+        self:Task( self.taskstask_txt .. self.completedTasksNeeded .. self.taskstask2_txt, self.completedTasks, self.taskstip_txt, true )
+        self:Task( self.trontask_txt .. self.tronWinsNeeded .. self.trontask2_txt, self.tronWins, self.trontip_txt, true )
+        self:Task( self.earn_txt .. self.tetrisRecordNeeded .. self.tetristask_txt, self.tetrisRecord, self.tetristip_txt, true )
+        self:Task( self.earn_txt .. self.driftRecordNeeded .. self.drifttask_txt, self.driftRecord, nil, true )
+        self:Task( self.earn_txt .. self.flyingRecordNeeded .. self.wingtask_txt, self.flyingRecord, self.wingtip_txt, true )
         self:Task( self.bloozingtask_txt, self.bloozing, self.bloozingtip_txt )
         self:Task( self.fireworkstask_txt .. self.fireworksNeeded .. self.fireworkstask2_txt, self.fireworksTossed, self.fireworkstip_txt )
 
@@ -197,13 +200,20 @@ function DailyTasks:Open()
     })
 end
 
-function DailyTasks:Task( text, completed, tip )
+function DailyTasks:Task( text, completed, tip, rewarded )
     local item = self.list:AddItem( text )
     item:SetCellText( 1, completed and "√" or "x" )
     item:SetTextColor( completed and Color.Chartreuse or Color.Silver )
     if tip then
         item:SetToolTip( tip )
     end
+
+    --[[local button = Button.Create( item )
+    button:SetText( rewarded and "Забрать" or "-" )
+    button:SetDock( GwenPosition.Fill )
+    button:SetEnabled( ( rewarded and completed ) and true or false )
+
+    item:SetCellContents( 2, button )]]--
 end
 
 function DailyTasks:GetPrize()

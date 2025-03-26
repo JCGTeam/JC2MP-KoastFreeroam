@@ -20,12 +20,12 @@ function Clock:Render()
 	local position = Vector2( 20, Render.Height * 0.31 )
 
 	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
-	Render:DrawShadowedText( position, time_txt, Color( 255, 255, 255, sett_alpha ), shadow_clr, 24 )
+	Render:DrawShadowedText( position, time_txt, Color( 255, 255, 255, sett_alpha ), shadow_clr, 22 )
 
-	local height = Render:GetTextHeight("A") * 1.5
+	local height = Render:GetTextHeight("A") * 1.4
 	position.y = position.y + height
 
-	Render:DrawShadowedText( position, date_txt, Color( 255, 165, 0, sett_alpha ), shadow_clr, 16 )
+	Render:DrawShadowedText( position, date_txt, Color( 185, 215, 255, sett_alpha ), shadow_clr, 15 )
 end
 
 clock = Clock()

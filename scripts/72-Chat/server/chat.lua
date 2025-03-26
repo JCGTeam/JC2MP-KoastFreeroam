@@ -18,7 +18,7 @@ function BetterChat:__init()
 	Events:Subscribe( "PlayerChat", self, self.Chat )
 
 	self.msgColor = Color.White
-	self.msgActionColor = Color.Magenta
+	self.msgActionColor = Color.DarkGray
 
     self.distance = 30
     self.toggle = 0
@@ -94,8 +94,10 @@ function BetterChat:Chat( args )
 		if not args.player:GetValue( "Mute" ) then
 			local chatsetting = args.player:GetValue( "ChatMode" )
 
+			args.player:SetNetworkValue( "ChatMessagesCount", ( args.player:GetValue( "ChatMessagesCount" ) or 0 ) + 1 )
+
 			if chatsetting == 0 then
-				local tagColor = Color.LightSkyBlue
+				local tagColor = Color( 185, 215, 255 )
 				local pName = args.player:GetName()
 				local pColor = args.player:GetColor()
 
@@ -139,6 +141,7 @@ function BetterChat:Chat( args )
     local cmd_name = cmd_args[ 1 ]:lower()
 
 	if cmd_name == "me" then
+		local tagColor = Color.White
 		local pName = args.player:GetName()
 		local pPos = args.player:GetPosition()
 
@@ -147,10 +150,11 @@ function BetterChat:Chat( args )
 			local jDist = pPos:Distance( p:GetPosition() )
 
 			if jDist < 50 then
-				p:SendChatMessage( pName .. " " .. tostring( table.concat ( cmd_args, " " ) ), self.msgActionColor )
+				p:SendChatMessage( args.player:GetValue( "Lang" ) == "EN" and "[Action] " or "[Действие] ", tagColor, pName .. " " .. tostring( table.concat ( cmd_args, " " ) ), self.msgActionColor )
 			end
 		end
 	elseif cmd_name == "try" then
+		local tagColor = Color.White
 		local pName = args.player:GetName()
 		local pPos = args.player:GetPosition()
 
@@ -159,7 +163,7 @@ function BetterChat:Chat( args )
 			local jDist = pPos:Distance( p:GetPosition() )
 
 			if jDist < 50 then
-				p:SendChatMessage( pName .. " " .. tostring( table.concat ( cmd_args, " " ) ), self.msgActionColor, " | ", self.msgColor, p:GetValue( "Lang" ) == "EN" and values_en[math.random(#values_en)] or values_ru[math.random(#values_ru)], self.msgActionColor, " | ", self.msgColor )
+				p:SendChatMessage( args.player:GetValue( "Lang" ) == "EN" and "[Action] " or "[Действие] ", tagColor, pName .. " " .. tostring( table.concat ( cmd_args, " " ) ), self.msgActionColor, " | ", self.msgColor, p:GetValue( "Lang" ) == "EN" and values_en[math.random(#values_en)] or values_ru[math.random(#values_ru)], self.msgActionColor, " | ", self.msgColor )
 			end
 		end
 	end

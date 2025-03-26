@@ -1,7 +1,7 @@
 class "Drift"
 
 function Drift:__init()
-	self.textSize = 36
+	self.textSize = 30
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "Render", self, self.Render )
@@ -11,7 +11,7 @@ function Drift:__init()
 	Events:Subscribe( "LocalPlayerDeath", self, self.LocalPlayerDeath )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
 
-	Network:Subscribe( "03", self, self.onDriftAttempt )
+	Network:Subscribe( "onDriftAttempt", self, self.onDriftAttempt )
 
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
@@ -153,29 +153,30 @@ function Drift:Render()
 			local alpha = 1 - self.slide / 265
 			local shadowColor = Color( 25, 25, 25, 150 * alpha )
 
-			local position = Vector2(Render.Width / 2, Render.Height * 0.3 * alpha) - textSize / 2
-			local position_mult = position + Vector2(textSize.x / 2,textSize.y*1.6) - textSize_mult/2
+			local position = Vector2( Render.Width / 2, Render.Height * 0.3 * alpha ) - textSize / 2
+			local position_mult = position + Vector2( textSize.x / 2, textSize.y * 1.6 ) - textSize_mult/2
 
-			Render:DrawShadowedText( position, text, ( object and ( scoreMult > ( object:GetValue("S") or 0 ) ) ) and Color( 255, 0, 0, 255 * alpha ) or Color( 255, 150, 0, 255 * alpha ), shadowColor, self.textSize )
+			Render:DrawShadowedText( position, btext, Color( 255, 255, 255, 255 * alpha ), shadowColor, self.textSize )
+			Render:DrawShadowedText( position + Vector2( Render:GetTextWidth( btext, self.textSize ), 0 ), tostring( scoreMult ), ( object and ( scoreMult > ( object:GetValue("S") or 0 ) ) ) and Color( 185, 215, 255, 255 * alpha ) or Color( 175, 175, 175, 255 * alpha ), shadowColor, self.textSize )
 
-			Render:DrawShadowedText( position_mult, text_mult, Color( 255, 150, 0, 255 * alpha ), shadowColor, self.textSize )
-
-			Render:DrawText( position + Vector2( Render:GetTextWidth( btext, self.textSize ), 0 ), tostring( scoreMult ), Color( 255, 255, 255, 255 * alpha ), self.textSize )
+			Render:DrawShadowedText( position_mult, text_mult, Color( 175, 175, 175, 255 * alpha ), shadowColor, self.textSize )
 		end
 
 		if self.slide >= 255 then
 			local object = NetworkObject.GetByName("Drift")
 
 			if not object or scoreMult > (object:GetValue("S") or 0) then
-				Network:Send( "01", scoreMult )
+				Network:Send( "onDriftRecord", scoreMult )
 			elseif scoreMult > ((object:GetValue("S") or 0) * 0.6) and (object:GetValue("N") or "None") ~= LocalPlayer:GetName() then
-				Network:Send( "02", scoreMult )
+				Network:Send( "onDriftAttempt", scoreMult )
 			end
 
 			local shared = SharedObject.Create("Drift")
 			if scoreMult > (shared:GetValue("Record") or 0) then
+				Network:Send( "UpdateMaxRecord", scoreMult )
 				shared:SetValue( "Record", scoreMult )
-				Network:Send( "03", scoreMult )
+				Network:Send( "DriftRecordTask", scoreMult )
+				Network:Send( "UpdateMaxRecord", scoreMult )
 				Game:ShowPopup( self.tRecord .. scoreMult, true )
 			end
 
@@ -279,9 +280,10 @@ function Drift:Render()
 		local position = Vector2( Render.Width / 2, Render.Height * 0.3 ) - textSize / 2
 		local position_mult = position + Vector2( textSize.x / 2, textSize.y * self.size ) - textSize_mult / 2
 
-		Render:DrawShadowedText( position, text, ( IsValid( object ) and ( scoreMult > ( object:GetValue("S") or 0 ) ) ) and Color( 255, 0, 0 ) or Color( 255, 150, 0 ), shadowColor, self.textSize )
-		Render:DrawText( position + Vector2( Render:GetTextWidth( btext, self.textSize ), 0 ), tostring( scoreMult ), Color( 255, 255, 255 ), self.textSize )
-		Render:DrawShadowedText( position_mult, text_mult, Color( 255, 150, 0, 255 ), shadowColor, self.textSize )
+		Render:DrawShadowedText( position, btext, Color( 255, 255, 255 ), shadowColor, self.textSize )
+		Render:DrawShadowedText( position + Vector2( Render:GetTextWidth( btext, self.textSize ), 0 ), tostring( scoreMult ), ( IsValid( object ) and ( scoreMult > ( object:GetValue("S") or 0 ) ) ) and Color( 185, 215, 255 ) or Color( 175, 175, 175 ), shadowColor, self.textSize )
+
+		Render:DrawShadowedText( position_mult, text_mult, Color( 175, 175, 175, 255 ), shadowColor, self.textSize )
 	end
 end
 

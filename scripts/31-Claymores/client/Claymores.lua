@@ -41,22 +41,20 @@ function Claymores:LocalPlayerInput( args )
 	if LocalPlayer:GetValue( "Passive" ) then return end
 	if LocalPlayer:GetValue( "ServerMap" ) then return end
 
-	if not LocalPlayer:GetValue( "Passive" ) then
-		if args.input == Action.ThrowGrenade and LocalPlayer:GetValue( "Explosive" ) == 3 then
-			if self.placing then return end
-			if self.timer:GetMilliseconds() < self.cooldown then return end
-			if LocalPlayer:GetBaseState() ~= AnimationState.SUprightIdle then return end
-			LocalPlayer:SetBaseState(AnimationState.SCoverEntering)
-			self.placing = Timer()
-			local sound = ClientSound.Create(AssetLocation.Game, {
-					bank_id = 18,
-					sound_id = 5,
-					position = LocalPlayer:GetPosition(),
-					angle = Angle()
-			})
+	if args.input == Action.ThrowGrenade and LocalPlayer:GetValue( "Explosive" ) == 3 then
+		if self.placing then return end
+		if self.timer:GetMilliseconds() < self.cooldown then return end
+		if LocalPlayer:GetBaseState() ~= AnimationState.SUprightIdle then return end
+		LocalPlayer:SetBaseState(AnimationState.SCoverEntering)
+		self.placing = Timer()
+		local sound = ClientSound.Create(AssetLocation.Game, {
+				bank_id = 18,
+				sound_id = 5,
+				position = LocalPlayer:GetPosition(),
+				angle = Angle()
+		})
 
-			sound:SetParameter(0,1)
-		end
+		sound:SetParameter(0,1)
 	end
 end
 

@@ -153,7 +153,7 @@ function Help:AddItem( args )
 	label:SetText( args.text )
 	label:SetTextSize( 15 )
 	label:SizeToContents()
-	label:SetTextColor( Color.LightSkyBlue )
+	label:SetTextColor( Color( 155, 205, 255 ) )
 	label:SetWrap( true )
 	
 	label:Subscribe( "Render" , function(label)

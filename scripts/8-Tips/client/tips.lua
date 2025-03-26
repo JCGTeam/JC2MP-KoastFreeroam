@@ -65,7 +65,6 @@ end
 
 function Tips:AddAds( lines )
 	self.ads = {}
-	self.adCount = 0
 
 	for i, line in ipairs( lines ) do
 		self.adCount = i
@@ -74,7 +73,11 @@ function Tips:AddAds( lines )
 end
 
 function Tips:SendMessage()
-	Chat:Print( self.adsTag, Color.White, self.ads[ math.random( 1, self.adCount ) ], Color.DarkGray )
+	if not self.ads then return end
+
+	local defaultValue = 1
+
+	Chat:Print( self.adsTag, Color.White, self.ads[ math.random( defaultValue, self.adCount or defaultValue ) ], Color.DarkGray )
 end
 
 tips = Tips()

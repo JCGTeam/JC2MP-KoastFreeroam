@@ -65,7 +65,7 @@ settings.gamemodeDescription = [====[Введите /race, чтобы зайти
 settings.shadowColor = Color( 25, 25, 25, 150 )
 settings.textColor = Color( 255, 255, 255, 250 )
 settings.textColor2 = Color( 165, 165, 165, 250 )
-settings.winColor = Color( 228, 142, 56 )
+settings.winColor = Color( 185, 215, 255 )
 
 settings.targetArrowFlashNum = 3
 settings.targetArrowFlashInterval = 7

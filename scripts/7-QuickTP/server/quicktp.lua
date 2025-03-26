@@ -20,7 +20,7 @@ QuickTP = function( args, player )
 		end
 
 	if args.target then
-		Chat:Send( player, "[Телепорт] ", Color.White, "Вы телепортировались к " .. args.target, Color( 0, 255, 50 ) )
+		Chat:Send( player, "[Телепорт] ", Color.White, "Вы телепортировались на " .. args.target, Color.DarkGray )
 	end
 
 	item = quickList[args.target]

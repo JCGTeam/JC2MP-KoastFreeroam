@@ -93,10 +93,10 @@ function PDA:Toggle()
 
 		Events:Fire( "ToggleCamZoom", { zoomcam = false } )
 		Network:Send( "MapShown" )
-		Map.Border = false
 		CircleTimer = Timer()
-		timerF = Timer()
 		FadeInTimer = Timer()
+
+		Animation:Play( 0, 1, 0.15, easeIOnut, function( value ) animationValue = value end )
 	else
 		LocalPlayer:SetValue( "ServerMap", nil )
 		if self.EventPostRender then Events:Unsubscribe( self.EventPostRender ) self.EventPostRender = nil end
@@ -111,7 +111,6 @@ function PDA:Toggle()
 
 		Events:Fire( "ToggleCamZoom", { zoomcam = true } )
 		Network:Send( "MapHide" )
-		timerF = nil
 		CircleTimer = nil
 		FadeOutTimer = nil
 		DelayTimer = nil

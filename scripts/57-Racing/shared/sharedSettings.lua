@@ -2,7 +2,7 @@ settings = {}
 
 settings.spectatorRequestInterval = 2.5
 
-settings.textColor = Color( 228, 142, 56 ) -- Light red-orange.
+settings.textColor = Color( 185, 215, 255 ) -- Light red-orange.
 
 settings.command = "race"
 

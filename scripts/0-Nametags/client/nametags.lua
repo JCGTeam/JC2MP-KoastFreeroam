@@ -38,6 +38,9 @@ function Nametags:__init()
 
 	self:CreateSettings()
 
+	self.visible = LocalPlayer:GetValue( "TagHide" )
+	self.animationValue = self.visible and 1 or 0
+
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
 		self:Lang()
@@ -46,6 +49,7 @@ function Nametags:__init()
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
+	Events:Subscribe( "NetworkObjectValueChange", self, self.NetworkObjectValueChange )
 	Events:Subscribe( "Render", self, self.Render )
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	Events:Subscribe( "OpenNametagsMenu", self, self.Active )
@@ -355,27 +359,41 @@ function Nametags:WindowClosed()
 	self:SetWindowOpen( false )
 end
 
+function Nametags:NetworkObjectValueChange( args )
+	if args.key == "TagHide" and args.object.__type == "LocalPlayer" then
+		if args.value then
+			self.visible = true
+
+			if self.fadeOutAnimation then Animation:Stop( self.fadeOutAnimation ) self.fadeOutAnimation = nil end
+			Animation:Play( 0, 1, 0.05, easeIOnut, function( value ) self.animationValue = value end )
+		else
+			self.fadeOutAnimation = Animation:Play( self.animationValue, 0, 0.05, easeIOnut, function( value ) self.animationValue = value end, function() self.visible = nil end )
+		end
+	end
+end
+
 function Nametags:Render()
 	-- If we're not supposed to draw now, then take us out
 	if not self.enabled or Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue( "HiddenHUD" ) then return end
 
 	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
-	if LocalPlayer:GetValue( "TagHide" ) then
+	if self.visible then
 		local text = "/hidetag"
 		local text_size = 18
 		local text_width = Render:GetTextWidth( text, text_size )
 		local text_height = Render:GetTextHeight( text, text_size )
-		local text_pos = Vector2( Render.Width / 4 - text_width / 1.8 + text_width / 15, 2 )
-		local sett_alpha = Game:GetSetting(4) * 2.25
+		local posY = math.lerp( -text_height - 2, 0, self.animationValue )
+		local text_pos = Vector2( Render.Width / 4 - text_width / 1.8 + text_width / 15, posY + 2 )
+		local sett_alpha = math.lerp( 0, Game:GetSetting(4) * 2.25, self.animationValue )
 		local background_clr = Color( 0, 0, 0, sett_alpha / 2.4 )
 
 		Render:FillArea( Vector2( Render.Width / 4 - text_width / 1.8, 0 ), Vector2( text_width + 5, text_height + 2 ), background_clr )
 
-		Render:FillTriangle( Vector2( ( Render.Width / 4 - text_width / 1.8 - 10 ), 0 ), Vector2( ( Render.Width / 4 - text_width / 1.8 ), 0 ), Vector2( (Render.Width / 4 - text_width / 1.8 ), text_height + 2 ), background_clr )
-		Render:FillTriangle( Vector2( ( Render.Width / 4 - text_width / 1.8 + text_width + 15 ), 0 ), Vector2( ( Render.Width / 4 - text_width / 1.8 + text_width + 5 ), 0 ), Vector2( ( Render.Width / 4 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), background_clr )
+		Render:FillTriangle( Vector2( ( Render.Width / 4 - text_width / 1.8 - 10 ), posY ), Vector2( ( Render.Width / 4 - text_width / 1.8 ), posY ), Vector2( (Render.Width / 4 - text_width / 1.8 ), text_height + 2 ), background_clr )
+		Render:FillTriangle( Vector2( ( Render.Width / 4 - text_width / 1.8 + text_width + 15 ), posY ), Vector2( ( Render.Width / 4 - text_width / 1.8 + text_width + 5 ), posY ), Vector2( ( Render.Width / 4 - text_width / 1.8 + text_width + 5 ), text_height + 2 ), background_clr )
 
-		Render:DrawShadowedText( text_pos, text, Color( 173, 216, 230, sett_alpha ), Color( 0, 0, 0, sett_alpha ), text_size )
+		Render:DrawShadowedText( text_pos, text, Color( 185, 215, 255, sett_alpha ), Color( 0, 0, 0, sett_alpha ), text_size )
 	end
 
 	-- Create some prerequisite variables

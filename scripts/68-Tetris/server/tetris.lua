@@ -17,9 +17,11 @@ function ServerTetris:__init()
 	Network:Subscribe( "001", self, self.onTetrisRecord )
 	Network:Subscribe( "002", self, self.onTetrisAttempt )
 	Network:Subscribe( "UpdateTotalScore", self, self.UpdateTotalScore )
+	Network:Subscribe( "UpdateMaxRecord", self, self.UpdateMaxRecord )
 
 	self.tag_clr = Color.White
-	self.text_clr = Color( 255, 150, 0 )
+	self.text_clr = Color( 185, 215, 255 )
+	self.text2_clr = Color( 251, 184, 41 )
 end
 
 function ServerTetris:onModuleLoad()
@@ -79,9 +81,9 @@ function ServerTetris:onTetrisRecord( args, player )
 		if objectN ~= nil then
 			player:SetMoney( player:GetMoney() + 50 )
 			if player:GetValue( "Lang" ) == "EN" then
-				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new tetris record!", self.text_clr )
+				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new tetris record!", self.text2_clr )
 			else
-				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд по тетрису!", self.text_clr )
+				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд по тетрису!", self.text2_clr )
 			end
 
 			for p in Server:GetPlayers() do
@@ -94,9 +96,9 @@ function ServerTetris:onTetrisRecord( args, player )
 		else
 			player:SetMoney( player:GetMoney() + 50 )
 			if player:GetValue( "Lang" ) == "EN" then
-				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new tetris record!", self.text_clr )
+				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new tetris record!", self.text2_clr )
 			else
-				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд по тетрису!", self.text_clr )
+				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд по тетрису!", self.text2_clr )
 			end
 
 			for p in Server:GetPlayers() do
@@ -139,22 +141,27 @@ function ServerTetris:UpdateTotalScore( args, sender )
 	end
 end
 
+function ServerTetris:UpdateMaxRecord( score, player )
+	if tonumber( player:GetValue( "MaxRecordInBestTetris" ) or 0 ) >= score then return end
+	player:SetNetworkValue( "MaxRecordInBestTetris", score )
+end
+
 function ServerTetris:Reward( name, last )
 	for player in Server:GetPlayers() do
 		if player:GetName() == name then
 			if not last then
 				player:SetMoney( player:GetMoney() + 15 )
 				if player:GetValue( "Lang" ) == "EN" then
-					player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $15 for keeping tetris record!", self.text_clr )
+					player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $15 for keeping tetris record!", self.text2_clr )
 				else
-					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $15 за удержание рекорда по тетрису!", self.text_clr )
+					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $15 за удержание рекорда по тетрису!", self.text2_clr )
 				end
 			else
 				player:SetMoney( player:GetMoney() + 500 )
 				if player:GetValue( "Lang" ) == "EN" then
-					player:SendChatMessage( "[Record] ", self.tag_clr, "You won a fantastic tetris! Your reward: $500!", self.text_clr )
+					player:SendChatMessage( "[Record] ", self.tag_clr, "You won a fantastic tetris! Your reward: $500!", self.text2_clr )
 				else
-					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Вы победили в хорошечном тетрисе! Ваша награда: $500!", self.text_clr )
+					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Вы победили в хорошечном тетрисе! Ваша награда: $500!", self.text2_clr )
 				end
 
 				local pName = player:GetName()
@@ -184,6 +191,8 @@ function ServerTetris:NewScore( args, player )
 	if player:GetValue( "TetrisRecord" ) then
 		player:SetNetworkValue( "TetrisRecord", score )
 	end
+
+	self:UpdateMaxRecord( score, player )
 end
 
 function ServerTetris:TopScores( args, player )

@@ -22,7 +22,13 @@ function CameraView:__init()
 		self.s[j] = 0
 	end
 
-	self.names = { [0] = "front", [1] = "chase", [2] = "top", [3] = "standard" }
+	
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
+		self:Lang()
+	else
+		self.names = { [0] = "Вид спереди", [1] = "Вид сзади", [2] = "Вид сверху", [3] = "Стандартный вид" }
+	end
 
 	if LocalPlayer:InVehicle() then
 		self.CalcViewEvent = Events:Subscribe( "CalcView", self, self.CalcView )
@@ -32,6 +38,7 @@ function CameraView:__init()
 		self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll )
 	end
 
+	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "ToggleCamZoom", self, self.ToggleCamZoom )
 	Events:Subscribe( "ZoomReset", self, self.ZoomReset )
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.EnterVehicle )
@@ -143,8 +150,60 @@ function CameraView:__init()
 	self.vehicles[82] = { 1.6,-0.8,0,     1.35,0.05,-0.2,    3.05,4.8,0 }
 end
 
+function CameraView:Lang()
+	self.names = { [0] = "Front View", [1] = "Back View", [2] = "Top View", [3] = "Standard View" }
+end
+
 function CameraView:ToggleCamZoom( args )
 	self.enabled = args.zoomcam
+end
+
+function CameraView:CastCenterText( text )
+	self.timerF = Timer()
+    self.textF = text
+	self.timeF = 2
+	self.color = Color.White
+	self.shadowColor = Color.Black
+	self.size = 15
+	self.pos = Vector2( Render.Width / 2, Render.Height / 1.075 ) - Render:GetTextSize( self.textF, self.size ) / 2
+
+	if self.fadeOutAnimation then Animation:Stop( self.fadeOutAnimation ) self.fadeOutAnimation = nil end
+
+    Animation:Play( 0, 1, 0.15, easeIOnut, function( value ) self.animationValue = value end )
+
+    if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+end
+
+function CameraView:Render()
+	if Game:GetState() ~= GUIState.Game then return end	
+
+	if self.timerF and self.textF then
+        local timerFSeconds = self.timerF:GetSeconds()
+
+        if timerFSeconds > self.timeF then
+            self.fadeOutAnimation = Animation:Play( self.animationValue, 0, 0.75, easeIOnut, function( value ) self.animationValue = value end, function()
+                self.textF = nil
+                self.timeF = nil
+                self.color = nil
+                self.shadowColor = nil
+                self.size = nil
+				self.pos = nil
+				self.animationValue = nil
+                self.fadeOutAnimation = nil
+
+                if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+            end )
+
+            self.timerF = nil
+        end
+    end
+
+	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
+
+    local textColor = Color( self.color.r, self.color.g, self.color.b, math.lerp( 0, self.color.a, self.animationValue ) )
+    local textShadow = Color( self.shadowColor.r, self.shadowColor.g, self.shadowColor.b, math.lerp( 0,  self.shadowColor.a, self.animationValue ) )	
+
+	Render:DrawShadowedText( self.pos, self.textF, textColor, textShadow, self.size )
 end
 
 function CameraView:CalcView()
@@ -363,6 +422,8 @@ function CameraView:CycleViews()
 			self.camera = 0
 		end
 	end
+
+	self:CastCenterText( self.names[self.camera] )
 end
 
 cameralock = CameraView()

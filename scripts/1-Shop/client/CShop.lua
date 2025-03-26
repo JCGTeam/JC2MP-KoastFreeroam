@@ -41,7 +41,14 @@ function Shop:__init()
 	self.home = true
 	self.unit = 0
 
-	self.BuyMenuLineColor = Color.LightSkyBlue
+	self.BuyMenuLineColor = Color( 155, 205, 255 )
+
+	self.tone1 = Color.White
+	self.tone2 = Color.White
+	self.pcolor = LocalPlayer:GetColor()
+
+	self.tone1Picker = nil
+	self.tone2Picker = nil
 
 	self.HomeImage = Image.Create( AssetLocation.Resource, "HomeImage" )
 
@@ -55,6 +62,21 @@ function Shop:__init()
 	self.tab_control = TabControl.Create( self.window )
 	self.tab_control:SetDock( GwenPosition.Fill )
 
+	self.tab_control:Subscribe( "TabSwitch", function()
+		if self.tab_control:GetCurrentTab():GetText() == "Транспорт" then
+			self.decalLabel:SetVisible( true )
+		else
+			self.decalLabel:SetVisible( false )
+			self.vehColorWindow:SetVisible( false )
+		end
+
+		if self.tab_control:GetCurrentTab():GetText() == "Точки дома" then
+			self.buy_button:SetEnabled( false )
+		else
+			self.buy_button:SetEnabled( true )
+		end
+	end)
+
 	local base1 = BaseWindow.Create( self.window )
 	base1:SetDock( GwenPosition.Bottom )
 	base1:SetSize( Vector2( self.window:GetSize().x, 32 ) )
@@ -67,7 +89,7 @@ function Shop:__init()
 	self.buy_button = Button.Create( base1 )
 	self.buy_button:SetWidthAutoRel( 0.5 )
 	self.buy_button:SetText( "Взять" )
-	local btnColor = Color.LightBlue
+	local btnColor = Color( 185, 215, 255 )
 	self.buy_button:SetTextHoveredColor( btnColor )
 	self.buy_button:SetTextPressedColor( btnColor )
 	self.buy_button:SetTextSize( 15 )
@@ -75,25 +97,85 @@ function Shop:__init()
 	self.buy_button:SetDock( GwenPosition.Bottom )
 	self.buy_button:Subscribe( "Press", self, self.Buy )
 
+	self.decalLabel = Label.Create( self.window )
+	self.decalLabel:SetDock( GwenPosition.Bottom )
+	self.decalLabel:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
+	self.decalLabel:SetHeight( 20 )
+
+	local decal = ComboBox.Create( self.decalLabel )
+	decal:SetDock( GwenPosition.Right )
+
+	self.decalText = Label.Create( self.decalLabel )
+	self.decalText:SetDock( GwenPosition.Right )
+	self.decalText:SetMargin( Vector2.Zero, Vector2( 2, 0 ) )
+	self.decalText:SetAlignment( GwenPosition.Center )
+
+	self.vehColorText = Label.Create( self.decalLabel )
+	self.vehColorText:SetDock( GwenPosition.Left )
+	self.vehColorText:SetMargin( Vector2.Zero, Vector2( 2, 0 ) )
+	self.vehColorText:SetAlignment( GwenPosition.Center )
+
+	local vehColor = Label.Create( self.decalLabel )
+	vehColor:SetDock( GwenPosition.Left )
+	vehColor:SetWidth( 60 )
+
+	local vehColorsPreview = Label.Create( vehColor )
+	vehColorsPreview:SetDock( GwenPosition.Fill )
+
+	self.vehColorPreview = Rectangle.Create( vehColorsPreview )
+	self.vehColorPreview:SetDock( GwenPosition.Top )
+	self.vehColorPreview:SetColor( self.tone1 )
+
+	self.vehColor2Preview = Rectangle.Create( vehColorsPreview )
+	self.vehColor2Preview:SetDock( GwenPosition.Bottom )
+	self.vehColor2Preview:SetColor( self.tone2 )
+
+	local vehColorArrow = Label.Create( vehColor )
+	vehColorArrow:SetDock( GwenPosition.Right )
+	vehColorArrow:SetAlignment( GwenPosition.Center )
+	vehColorArrow:SetMargin( Vector2( 4, 0 ), Vector2( 4, 0 ) )
+	vehColorArrow:SetText( ">" )
+	vehColorArrow:SizeToContents()
+
+	local vehColorButton = MenuItem.Create( vehColor )
+	vehColorButton:SetDock( GwenPosition.None )
+	vehColorButton:Subscribe( "Press", function() self.vehColorWindow:SetSize( Vector2( 500, 350 ) ) self.vehColorWindow:SetPosition( Vector2( Mouse:GetPosition().x - self.vehColorWindow:GetSize().x / 2, Mouse:GetPosition().y - self.vehColorWindow:GetSize().y - 15 ) ) self.vehColorWindow:SetVisible( not self.vehColorWindow:GetVisible() ) end )
+
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
 		self:Lang()
 	else
+		self.vehicleColor_txt = "Цвет транспорта"
+		self.save_txt = "Сохранить"
 		self.noVipText = "У вас отсувствует VIP-статус :("
+		self.home_txt = "Дом"
+		self.sethomebutton_txt = "Установить точку дома здесь ( $500 )"
+		self.spawnonhomepoint_txt = "Появляться на точке дома после подключения к серверу"
+		self.gohome_txt = "Переместиться домой »"
 		self.pvpblock = "Вы не можете использовать это во время боя!"
 		self.dlcwarning_txt = "ВНИМАНИЕ! DLC-контент не сможет наносить урон и не будет виден игрокам, которые его не имеют."
 		self.w = "Пожалуйста, подождите "
 		self.ws = " секунд."
+
+		if self.window then
+			self.vehColorText:SetText( self.vehicleColor_txt .. ": " )
+			self.vehColorText:SizeToContents()
+
+			self.decalText:SetText( "Декаль: " )
+			self.decalText:SizeToContents()
+
+			self.decalNames = { "По умолчанию", "Панау", "Японцы", "Жнецы", "Тараканы", "Улары", "Такси" }
+		end
 	end
 
+	for i, v in ipairs( self.decalNames ) do
+		decal:AddItem( v, tostring( i ) )
+	end
+
+	decal:SetWidth( Render:GetTextWidth( "По умолчанию" ) )
+	decal:Subscribe( "Selection", function() self.unit = tonumber( decal:GetSelectedItem():GetName() ) end )
+
 	self.categories = {}
-
-	self.tone1 = Color.White
-	self.tone2 = Color.White
-	self.pcolor = LocalPlayer:GetColor()
-
-	self.tone1Picker = nil
-	self.tone2Picker = nil
 
 	self:CreateItems()
 
@@ -135,19 +217,32 @@ function Shop:__init()
 end
 
 function Shop:Lang()
-	if self.window then
-		self.window:SetTitle( "▧ Black Market" )
-	end
-
 	if self.buy_button then
 		self.buy_button:SetText( "Get" )
 	end
 
+	self.vehicleColor_txt = "Vehicle color"
+	self.save_txt = "Save"
 	self.noVipText = "Needed VIP status not found."
+	self.home_txt = "Home"
+	self.sethomebutton_txt = "Set home point here ( $500 )"
+	self.spawnonhomepoint_txt = "Spawn on home point after connecting to the server"
+	self.gohome_txt = "Go home »"
 	self.pvpblock = "You cannot use this during combat!"
 	self.dlcwarning_txt = "WARNING: DLC content will not be able to deal damage and will not be visible to players who do not have it."
 	self.w = "Please, wait "
 	self.ws = " seconds."
+
+	if self.window then
+		self.window:SetTitle( "▧ Black Market" )
+		self.vehColorText:SetText( self.vehicleColor_txt .. ": " )
+		self.vehColorText:SizeToContents()
+
+		self.decalText:SetText( "Decal: " )
+		self.decalText:SizeToContents()
+
+		self.decalNames = { "Default", "Panau", "Japan", "Reapers", "Roaches", "Ular Boys", "Taxi" }
+	end
 end
 
 function Shop:RenderAppearanceHat()
@@ -611,8 +706,12 @@ function Shop:SavedColor( args )
 
 	self.tone1 = tone1
 	self.tone2 = tone2
+
 	self.tone1Picker:SetColor( self.tone1 )
 	self.tone2Picker:SetColor( self.tone2 )
+
+	self.vehColorPreview:SetColor( self.tone1 )
+	self.vehColor2Preview:SetColor( self.tone2 )
 end
 
 function Shop:CreateCategory( category_name )
@@ -677,28 +776,8 @@ function Shop:CreateSubCategory( category, subcategory_name )
 
 	category.categories[subcategory_name] = t
 
-	if (subcategory_name == "Машины" or subcategory_name == "Мотоциклы" or subcategory_name == "Джипы" or subcategory_name == "Пикапы" or subcategory_name == "Автобусы" or subcategory_name == "Тяжи" or 
-	subcategory_name == "Трактора" or subcategory_name == "Вертолёты" or subcategory_name == "Самолёты" or subcategory_name == "Лодки" or subcategory_name == "DLC") then
-		local skin = RadioButtonController.Create( t.window )
-		skin:SetMargin( Vector2( 0, 5 ), Vector2.Zero )
-		skin:SetHeight( 20 )
-		skin:SetDock( GwenPosition.Bottom )
-		local units = { "Декаль Панау", "Декаль Японцев", "Декаль Уларов", "Декаль Жнецов", "Декаль Тараканов"}
-		for i, v in ipairs( units ) do
-			local option = skin:AddOption( v )
-			option:SetDock( GwenPosition.Left )
-			option:SetWidth( Render:GetTextWidth( v ) + 15 )
-
-			if i-1 == self.unit then
-				option:Select()
-			end
-
-			option:GetRadioButton():Subscribe( "Checked", function() self.unit = i-1 end )
-		end
-	end
-
 	if LocalPlayer:GetValue( "DLCWarning" ) then
-		if subcategory_name == "DLC" or subcategory_name == "Правая рука" or subcategory_name == "Левая рука" or subcategory_name == "Основное" then
+		if subcategory_name == "DLC" or subcategory_name == "Правая рука" or subcategory_name == "Левая рука" or subcategory_name == "Основное" or subcategory_name == "Парашюты" then
 			local dlc_warning = Label.Create( t.window )
 			dlc_warning:SetText( self.dlcwarning_txt )
 			dlc_warning:SetTextColor( Color( 200, 200, 200 ) )
@@ -734,121 +813,123 @@ function Shop:LoadCategories()
 				entry:SetListboxItem( row )
 			end
 		end
-
-		if category_id == self.types["Остальное >"] then
-			local window = BaseWindow.Create( self.window )
-			window:SetDock( GwenPosition.Fill )
-			category_table.tab_control:AddPage( "Цвет транспорта", window )
-
-			local tab_control = TabControl.Create( window )
-			tab_control:SetDock( GwenPosition.Fill )
-
-			self.tone1Picker = HSVColorPicker.Create()
-			tab_control:AddPage( "▧ Тон 1", self.tone1Picker )
-			self.tone1Picker:SetDock( GwenPosition.Fill )
-
-			self.tone1Picker:Subscribe( "ColorChanged", function()
-				self.tone1 = self.tone1Picker:GetColor()
-				self.colorChanged = true
-			end )
-
-			self.tone1Picker:SetColor( Color.White )
-			self.tone1 = self.tone1Picker:GetColor()
-
-			self.tone2Picker = HSVColorPicker.Create()
-			tab_control:AddPage( "▨ Тон 2", self.tone2Picker )
-			self.tone2Picker:SetDock( GwenPosition.Fill )
-
-			self.tone2Picker:Subscribe( "ColorChanged", function()
-				self.tone2 = self.tone2Picker:GetColor() 
-				self.colorChanged = true
-			end )
-
-			self.tone2Picker:SetColor( Color.White )
-			self.tone2 = self.tone2Picker:GetColor()
-
-			local lpColor = LocalPlayer:GetColor()
-			self.tone1Picker:SetColor( lpColor )
-			self.tone2Picker:SetColor( lpColor )
-
-			local setColorBtn = Button.Create( window )
-			setColorBtn:SetText( "Установить цвет »" )
-			local btnColor = Color.GreenYellow
-			setColorBtn:SetTextHoveredColor( btnColor )
-			setColorBtn:SetTextPressedColor( btnColor )
-			setColorBtn:SetTextSize( 15 )
-			setColorBtn:SetHeight( 30 )
-			setColorBtn:SetDock( GwenPosition.Bottom )
-			setColorBtn:Subscribe( "Down", function()
-				Network:Send( "ColorChanged", { tone1 = self.tone1, tone2 = self.tone2 } )
-				local sound = ClientSound.Create(AssetLocation.Game, {
-						bank_id = 20,
-						sound_id = 22,
-						position = LocalPlayer:GetPosition(),
-						angle = Angle()
-				})
-
-				sound:SetParameter(0,1)	
-				Game:FireEvent( "bm.savecheckpoint.go" )
-			end )
-
-			local window = BaseWindow.Create( self.window )
-			window:SetDock( GwenPosition.Fill )
-			category_table.tab_control:AddPage( "Дом", window )
-
-			self.texter = Label.Create( window )
-			self.texter:SetVisible( true )
-			self.texter:SetText( "Дом 1:" )
-			self.texter:SetPosition( Vector2( 5, 20 ) )
-			self.texter:SizeToContents()
-
-			local sethomebutton_txt = "Установить точку дома здесь ( $500 )"
-
-			self.buttonHB = Button.Create( window )
-			self.buttonHB:SetVisible( true )
-			self.buttonHB:SetText( sethomebutton_txt )
-			self.buttonHB:SetSize( Vector2( Render.Size.x / 5.5, Render.Size.x / 40 ) )
-			local btnColor = Color.GreenYellow
-			self.buttonHB:SetTextHoveredColor( btnColor )
-			self.buttonHB:SetTextPressedColor( btnColor )
-			self.buttonHB:SetTextSize( 12 )
-			self.buttonHB:SetPosition( Vector2( self.texter:GetSize().x + 12, 10 ) )
-			self.buttonHB:SetSize( Vector2( Render:GetTextWidth( sethomebutton_txt, 12 ) + 30, Render:GetTextHeight( sethomebutton_txt, 12 ) + 18 ) )
-			self.buttonHB:Subscribe( "Press", self, self.BuyHome )
-
-			self.toggleH = Button.Create( window )
-			self.toggleH:SetVisible( true )
-			self.toggleH:SetText( ">" )
-			self.toggleH:SetSize( Vector2( 60, Render:GetTextHeight( ">", 12 ) + 18 ) )
-			self.toggleH:SetTextSize( 15 )
-			self.toggleH:SetPosition( Vector2( self.buttonHB:GetPosition().x + self.buttonHB:GetSize().x + 5, 10 ) )
-			self.toggleH:Subscribe( "Press", self, self.ToggleHome )
-
-			local spawninhome = LabeledCheckBox.Create( window )
-			spawninhome:GetLabel():SetText( "Появляться на точке дома после подключения к серверу" )
-			spawninhome:SetWidth( 350 )
-			spawninhome:SetPosition( Vector2( 5, self.buttonHB:GetPosition().y + self.buttonHB:GetSize().y + 10 ) )
-			spawninhome:GetCheckBox():SetChecked( self:NumberToBoolean( LocalPlayer:GetValue( "SpawnInHome" ) ) )
-			spawninhome:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateSpawnInHome" ) end )
-
-			self.Home_Image = ImagePanel.Create( window )
-			self.Home_Image:SetImage( self.HomeImage )
-			self.Home_Image:SetPosition( Vector2( 5, spawninhome:GetPosition().y + spawninhome:GetSize().y + 15 ) )
-			self.Home_Image:SetHeight( Render.Size.x / 9 )
-			self.Home_Image:SetWidth( Render.Size.x / 5.5 )
-
-			self.Home_button = MenuItem.Create( window )
-			self.Home_button:SetPosition( self.Home_Image:GetPosition() )
-			self.Home_button:SetSize( Vector2( Render.Size.x / 5.5, Render.Size.x / 7 ) )
-			self.Home_button:SetText( "Переместиться домой »" )
-			local btnColor = Color.GreenYellow
-			self.Home_button:SetTextHoveredColor( btnColor )
-			self.Home_button:SetTextPressedColor( btnColor )
-			self.Home_button:SetTextPadding( Vector2( 0, Render.Size.x / 9 ), Vector2.Zero )
-			self.Home_button:SetTextSize( Render.Size.x / 0.75 / Render:GetTextWidth( "BTextResoliton" ) )
-			self.Home_button:Subscribe( "Press", self, self.GoHome )
-		end	
 	end
+
+	self.vehColorWindow = Window.Create()
+	self.vehColorWindow:SetVisible( false )
+	--self.vehColorWindow:SetClosable( false )
+	self.vehColorWindow:SetTitle( self.vehicleColor_txt )
+
+	local tab_control = TabControl.Create( self.vehColorWindow )
+	tab_control:SetDock( GwenPosition.Fill )
+	tab_control:SetMargin( Vector2( 1, 0 ), Vector2( 1, 5 ) )
+
+	self.tone1Picker = HSVColorPicker.Create()
+	tab_control:AddPage( "▧ Тон 1", self.tone1Picker )
+	self.tone1Picker:SetDock( GwenPosition.Fill )
+
+	self.tone1Picker:Subscribe( "ColorChanged", function()
+		self.tone1 = self.tone1Picker:GetColor()
+		self.colorChanged = true
+	end )
+
+	self.tone1Picker:SetColor( Color.White )
+	self.tone1 = self.tone1Picker:GetColor()
+
+	self.tone2Picker = HSVColorPicker.Create()
+	tab_control:AddPage( "▨ Тон 2", self.tone2Picker )
+	self.tone2Picker:SetDock( GwenPosition.Fill )
+
+	self.tone2Picker:Subscribe( "ColorChanged", function()
+		self.tone2 = self.tone2Picker:GetColor() 
+		self.colorChanged = true
+	end )
+
+	self.tone2Picker:SetColor( Color.White )
+	self.tone2 = self.tone2Picker:GetColor()
+
+	local lpColor = LocalPlayer:GetColor()
+	self.tone1Picker:SetColor( lpColor )
+	self.tone2Picker:SetColor( lpColor )
+
+	local setColorBtn = Button.Create( self.vehColorWindow )
+	setColorBtn:SetText( self.save_txt )
+	setColorBtn:SetHeight( 30 )
+	setColorBtn:SetDock( GwenPosition.Bottom )
+	setColorBtn:Subscribe( "Press", function()
+		self.vehColorPreview:SetColor( self.tone1 )
+		self.vehColor2Preview:SetColor( self.tone2 )
+
+		Game:FireEvent( "bm.savecheckpoint.go" )
+
+		self.vehColorWindow:SetVisible( false )
+	end )
+
+	local home = self:CreateCategory( "Точки дома" )
+
+	local window = ScrollControl.Create( home.tab_control )
+	window:SetDock( GwenPosition.Fill )
+	window:SetMargin( Vector2( 10, 10 ), Vector2( 10, 10 ) )
+
+	local textSize = 12
+
+	local top = Label.Create( window )
+	top:SetDock( GwenPosition.Top )
+	top:SetHeight( Render:GetTextHeight( self.sethomebutton_txt, textSize ) + 18 )
+
+	self.texter = Label.Create( top )
+	self.texter:SetText( self.home_txt .. " 1: " )
+	self.texter:SetDock( GwenPosition.Left )
+	self.texter:SetAlignment( GwenPosition.Center )
+	self.texter:SizeToContents()
+
+	self.buttonHB = Button.Create( top )
+	self.buttonHB:SetText( self.sethomebutton_txt )
+	local btnColor = Color.GreenYellow
+	self.buttonHB:SetTextHoveredColor( btnColor )
+	self.buttonHB:SetTextPressedColor( btnColor )
+	self.buttonHB:SetTextSize( textSize )
+	self.buttonHB:SetDock( GwenPosition.Left )
+	local padding = Vector2( 3, 0 )
+	self.buttonHB:SetMargin( padding, padding )
+	self.buttonHB:SetWidth( Render:GetTextWidth( self.sethomebutton_txt, textSize ) + 30 )
+	self.buttonHB:Subscribe( "Press", self, self.BuyHome )
+
+	self.toggleH = Button.Create( top )
+	self.toggleH:SetText( ">" )
+	self.toggleH:SetWidth( 60 )
+	self.toggleH:SetTextSize( 15 )
+	self.toggleH:SetDock( GwenPosition.Left )
+	self.toggleH:Subscribe( "Press", self, self.ToggleHome )
+
+	local spawninhome = LabeledCheckBox.Create( window )
+	spawninhome:GetLabel():SetText( self.spawnonhomepoint_txt )
+	spawninhome:SetWidth( 350 )
+	spawninhome:SetDock( GwenPosition.Top )
+	local padding = Vector2( 0, 10 )
+	spawninhome:SetMargin( padding, padding )
+	spawninhome:GetCheckBox():SetChecked( self:NumberToBoolean( LocalPlayer:GetValue( "SpawnInHome" ) ) )
+	spawninhome:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateSpawnInHome" ) end )
+
+	local textWidth = Render:GetTextWidth( "A", 19 )
+	local height = textWidth * 16
+
+	local home_img = ImagePanel.Create( window )
+	home_img:SetImage( self.HomeImage )
+	home_img:SetPosition( Vector2( 5, spawninhome:GetSize().y + Render:GetTextHeight( self.toggleH:GetText(), self.toggleH:GetTextSize() ) + 35 ) )
+	home_img:SetSize( Vector2( textWidth * 27, height ) )
+
+	self.Home_button = MenuItem.Create( window )
+	self.Home_button:SetPosition( home_img:GetPosition() )
+	self.Home_button:SetSize( Vector2( home_img:GetSize().x, height * 1.25 ) )
+	self.Home_button:SetText( self.gohome_txt )
+	local btnColor = Color.GreenYellow
+	self.Home_button:SetTextHoveredColor( btnColor )
+	self.Home_button:SetTextPressedColor( btnColor )
+	self.Home_button:SetTextPadding( Vector2( 0, height ), Vector2.Zero )
+	self.Home_button:SetTextSize( 19 )
+	self.Home_button:Subscribe( "Press", self, self.GoHome )
+
 	Network:Send( "BuyMenuGetSaveColor" )
 end
 
@@ -863,10 +944,10 @@ end
 function Shop:ToggleHome()
 	if self.home then
 		self.home = false
-		self.texter:SetText( "Дом 2:" )
+		self.texter:SetText( self.home_txt .. " 2: " )
 	else
 		self.home = true
-		self.texter:SetText( "Дом 1:" )
+		self.texter:SetText( self.home_txt .. " 1: " )
 	end
 	self.texter:SizeToContents()
 	self.buttonHB:SetPosition( Vector2( self.texter:GetSize().x + 12, 10 ) )
@@ -892,16 +973,20 @@ function Shop:BuyHome()
 end
 
 function Shop:GetUnitString()
-	if self.unit == 0 then
+	if self.unit == 1 then
 		Network:Send( "Skin", nil )
-	elseif self.unit == 1 then
-		Network:Send( "Skin", "OldJapan" )
 	elseif self.unit == 2 then
-		Network:Send( "Skin", "UlarBoys" )
+		Network:Send( "Skin", "MilStandard" )
 	elseif self.unit == 3 then
-		Network:Send( "Skin", "Reapers" )
+		Network:Send( "Skin", "OldJapan" )
 	elseif self.unit == 4 then
+		Network:Send( "Skin", "Reapers" )
+	elseif self.unit == 5 then
 		Network:Send( "Skin", "Roaches" )
+	elseif self.unit == 6 then
+		Network:Send( "Skin", "UlarBoys" )
+	elseif self.unit == 7 then
+		Network:Send( "Skin", "Taxi" )
 	end
 end
 
@@ -915,6 +1000,9 @@ function Shop:SetActive( active )
 		self:LoadCategories()
 
         Mouse:SetVisible( self.active )
+
+		self.vehColorWindow:SetVisible( false )
+
 		if not self.active and self.colorChanged then
 			self.colorChanged = false
 			Network:Send( "BuyMenuSaveColor", {tone1 = self.tone1, tone2 = self.tone2} )
@@ -947,6 +1035,7 @@ function Shop:OpenShop()
 	if self.active then
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			self.Home_button:SetFont( AssetLocation.SystemFont, "Impact" )
+			self.buy_button:SetFont( AssetLocation.SystemFont, "Impact" )
 		end
 
 		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end

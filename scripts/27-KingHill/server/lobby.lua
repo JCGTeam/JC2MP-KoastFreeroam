@@ -51,7 +51,7 @@ function Lobby:AddToQueue( player )
 	self:GetQueue():Add(player)
 
 	if self:GetQueue():GetSize() >= self.minPlayers then
-		self:Broadcast( player:GetName() .. " присоединился.", Color( 228, 142, 56 ), player )
+		self:Broadcast( player:GetName() .. " присоединился.", Color( 185, 215, 255 ), player )
 
 		if self:GetQueue():GetSize() == self.maxPlayers then
 			self:SetState(GamemodeState.PREPARING)
@@ -59,7 +59,7 @@ function Lobby:AddToQueue( player )
 			self.startingTime = self.timer:GetSeconds() + 30
 
 			if self:GetQueue():GetSize() == self.minPlayers then
-				self:Broadcast( "Игра начинается через: " .. math.ceil(self.startingTime - self.timer:GetSeconds()) .. " секунд.", Color( 228, 142, 56 ) )
+				self:Broadcast( "Игра начинается через: " .. math.ceil(self.startingTime - self.timer:GetSeconds()) .. " секунд.", Color( 185, 215, 255 ) )
 			else
 				--self:Broadcast("Wait time extended.", Color.Yellow, player)
 			end
@@ -79,10 +79,10 @@ end
 function Lobby:RemoveFromQueue( player )
 	self:GetQueue():Remove(player)
 
-	self:Broadcast( player:GetName() .. " вышел.", Color( 228, 142, 56 ), player )
+	self:Broadcast( player:GetName() .. " вышел.", Color( 185, 215, 255 ), player )
 
 	if self:GetQueue():GetSize() < self.minPlayers then
-		self:Broadcast( "Недостаточно игроков для начала, обратный отсчет остановлен.", Color( 228, 142, 56 ), player )
+		self:Broadcast( "Недостаточно игроков для начала, обратный отсчет остановлен.", Color( 185, 215, 255 ), player )
 
 		self.startingTime = 0
 		self.timer:Restart()
@@ -173,15 +173,15 @@ function Lobby:PreTick()
 
 	if state == GamemodeState.WAITING then
 		if self.timer:GetSeconds() >= self.startingTime and self.startingTime ~= 0 then
-			self:Broadcast( "Запуск Царь Горы с " .. self:GetQueue():GetSize() .. " игроками!", Color( 228, 142, 56 ) )
+			self:Broadcast( "Запуск Царь Горы с " .. self:GetQueue():GetSize() .. " игроками!", Color( 185, 215, 255 ) )
 			self:SetState(GamemodeState.PREPARING)
 		elseif self.startingTime == 0 and self.timer:GetSeconds() > 900 then
 			local playerCount = self:GetQueue():GetSize()
 
 			if playerCount == 0 then
-				KingHill.Broadcast( "Присоединяйся в царь горы! Главный приз: $" .. self.bonus .. "! ( Карта: " .. self.name .. " )", Color( 228, 142, 56 ) )
+				KingHill.Broadcast( "Присоединяйся в царь горы! Главный приз: $" .. self.bonus .. "! ( Карта: " .. self.name .. " )", Color( 185, 215, 255 ) )
 			else
-				KingHill.Broadcast( "Царь Горы с " .. playerCount .. " игрок" .. (playerCount == 1 and "ом" or "ами") .. " в ожидание начала! ( Карта: " .. self.name .. " )", Color( 228, 142, 56 ) )
+				KingHill.Broadcast( "Царь Горы с " .. playerCount .. " игрок" .. (playerCount == 1 and "ом" or "ами") .. " в ожидание начала! ( Карта: " .. self.name .. " )", Color( 185, 215, 255 ) )
 			end
 
 			self.timer:Restart()
@@ -220,7 +220,7 @@ function Lobby:PreTick()
 					self.timer:Restart()
 					self:SetState(GamemodeState.COUNTDOWN)
 				else
-					self:Broadcast( "Недостаточно игроков для продолжения. Сожалеем(", Color( 228, 142, 56 ) )
+					self:Broadcast( "Недостаточно игроков для продолжения. Сожалеем(", Color( 185, 215, 255 ) )
 					self:Disband()
 				end
 			end
@@ -262,7 +262,7 @@ function Lobby:PlayerQuit( args )
 		end
 
 		if table.find(players, player) then
-			self:Broadcast( player:GetName() .. " отсоединен.", Color( 228, 142, 56 ), player )
+			self:Broadcast( player:GetName() .. " отсоединен.", Color( 185, 215, 255 ), player )
 		end
 	elseif self:GetQueue():Contains(player) then
 		self:RemoveFromQueue(player)
@@ -302,13 +302,13 @@ function Lobby:PlayerWorldChange( args )
 		end
 
 		if self:GetState() < GamemodeState.ENDING then
-			self:Broadcast( player:GetName() .. " покинул лобби.", Color( 228, 142, 56 ), player )
-			KingHill.SendMessage( args.player, "Вы покинули лобби.", Color( 228, 142, 56 ) )
+			self:Broadcast( player:GetName() .. " покинул лобби.", Color( 185, 215, 255 ), player )
+			KingHill.SendMessage( args.player, "Вы покинули лобби.", Color( 185, 215, 255 ) )
 			player:SetNetworkValue( "GameMode", "FREEROAM" )
 		end
 	elseif self:GetState() == GamemodeState.WAITING and self:GetQueue():Contains(player) then -- Catch people switching worlds during waiting period
 		self:RemoveFromQueue(player)
-		KingHill.SendMessage( player, "Мир игры изменился, удалив вас из очереди :(", Color( 228, 142, 56 ) )
+		KingHill.SendMessage( player, "Мир игры изменился, удалив вас из очереди :(", Color( 185, 215, 255 ) )
 	end
 end
 
@@ -316,9 +316,11 @@ function Lobby:Disband( winner )
 	self:SetState(GamemodeState.ENDING)
 
 	if winner then
+		winner:SetNetworkValue( "KingHillWinsCount", ( winner:GetValue( "KingHillWinsCount" ) or 0 ) + 1 )
+
 		self:Broadcast( winner:GetName() .. " победил!", Color.Yellow )
 		winner:SetMoney( winner:GetMoney() + self.bonus )
-		Chat:Broadcast( "[Царь Горы] ", Color.White, winner:GetName(), winner:GetColor(), " забрался на вершину первым и выиграл $" .. self.bonus .. "!", Color( 228, 142, 56 ) )
+		Chat:Broadcast( "[Царь Горы] ", Color.White, winner:GetName(), winner:GetColor(), " забрался на вершину первым и выиграл $" .. self.bonus .. "!", Color( 185, 215, 255 ) )
 		winner:ClearInventory()
 	end
 

@@ -1,13 +1,8 @@
 class 'FreeCam'
 
 function FreeCam:__init()
-	self.Rama1Image = Image.Create( AssetLocation.Resource, "Rama1" )
-	self.Rama2Image = Image.Create( AssetLocation.Resource, "Rama2" )
-	self.Rama3Image = Image.Create( AssetLocation.Resource, "Rama3" )
-
 	self.pause = false
 	self.tip = true
-	self.RamaType = 0
 	self.speed = 1
 	self.speedSetting = 0
 	self.speedUp = 8
@@ -19,7 +14,7 @@ function FreeCam:__init()
 	self.permitted = true
 
 	self.prefix = "[Свободная камера] "
-	self.controltip = "[WASD] - Перемещение\n[Shift] - Ускорить движение\n[Ctrl] - Замедлить движение\n[<>] - Изменить угол камеры\n[?] - Сбросить угол камеры\n[{}] - Сменить рамку\n[Z] - Скрыть/показать подсказки"
+	self.controltip = "[WASD] - Перемещение\n[Shift] - Ускорить движение\n[Ctrl] - Замедлить движение\n[<>] - Изменить угол камеры\n[{}] - Изменить поле зрения камеры\n[X] - Сбросить угол и поле зрения камеры\n[L] - Показать/скрыть черные полосы\n[Z] - Скрыть/показать подсказки"
 
 	self.controltip_clr = Color.White
 	self.controltip_shadow = Color.Black
@@ -56,25 +51,16 @@ end
 
 function FreeCam:Lang()
 	self.prefix = "[FREECAM] "
-	self.controltip = "[WASD] - Movement\n[Shift] - Speed ​​up movement\n[Ctrl] - Slow down movement\n[<>] - Change camera angle\n[?] - Reset camera angle\n[{}] - Change frame\n[Z] - Hide/show tips"
+	self.controltip = "[WASD] - Move\n[Shift] - Speed ​​up movement\n[Ctrl] - Slow down movement\n[<>] - Change camera angle\n[{}] - Change camera FOV\n[X] - Reset camera angle and FOV\n[L] - Show/hide black bars\n[Z] - Hide/show tooltips"
 end
 
 function FreeCam:Render()
-	if self.RamaType == 1 then
-		self.Rama1Image:SetSize( Render.Size )
-		self.Rama1Image:Draw()
-	elseif self.RamaType == 2 then
+	if self.blackLines then
 		local blacklinesize = Render.Size.x / 20
 		local linescolor = Color.Black
 
 		Render:FillArea( Vector2.Zero, Vector2( Render.Size.x, blacklinesize ), linescolor )
 		Render:FillArea( Vector2( 0, Render.Size.y - blacklinesize ), Vector2( Render.Size.x, blacklinesize ), linescolor )
-	elseif self.RamaType == 3 then
-		self.Rama2Image:SetSize( Render.Size )
-		self.Rama2Image:Draw()
-	elseif self.RamaType == 4 then
-		self.Rama3Image:SetSize( Render.Size )
-		self.Rama3Image:Draw()
 	end
 
 	if Game:GetState() ~= 0 then
@@ -120,8 +106,15 @@ function FreeCam:UpdateCamera()
 	if Key:IsDown(190) then
 		self.angle = self.angle * Angle( 0, 0, - (speed * 0.02) )
 	end
-	if Key:IsDown(191) then
+	if Key:IsDown(219) then
+		self.fov = math.clamp( self.fov + (speed * 0.01), -0.01, 2 )
+	end
+	if Key:IsDown(221) then
+		self.fov = math.clamp( self.fov - (speed * 0.01), -0.01, 2 )
+	end
+	if Key:IsDown(88) then
 		self.angle = Angle( Camera:GetAngle().yaw, 0, 0 )
+		self.fov = self.defaultFOV
 	end
 	-- Set translation
 	self.translation = Vector3.Zero
@@ -148,6 +141,7 @@ end
 function FreeCam:CalcView()
 	Camera:SetAngle( self.angle )
 	Camera:SetPosition( self.position )
+	Camera:SetFOV( self.fov )
 	return false
 end
 
@@ -161,10 +155,11 @@ function FreeCam:Activate()
 	if not self.ModuleUnloadEvent then self.ModuleUnloadEvent = Events:Subscribe( "ModuleUnload", self, self.ModuleUnload ) end
 
 	self.active = true
-	self.RamaType = 0
 	self.position = LocalPlayer:GetBonePosition("ragdoll_Head")
 	self.angle = LocalPlayer:GetAngle()
 	self.angle.roll = 0
+	self.fov = Camera:GetFOV()
+	self.defaultFOV = Camera:GetFOV()
 
 	Game:FireEvent( "gui.hud.hide" )
 
@@ -182,6 +177,9 @@ function FreeCam:Deactivate()
 	if self.ModuleUnloadEvent then Events:Unsubscribe( self.ModuleUnloadEvent ) self.ModuleUnloadEvent = nil end
 
 	self.active = false
+	self.fov = nil
+	Camera:SetFOV( self.defaultFOV )
+	self.defaultFOV = nil
 
 	if self.teleport then
 		Network:Send( "FreeCamTP", {["pos"] = self.position, ["angle"] = self.angle} )
@@ -218,17 +216,8 @@ function FreeCam:KeyUp( args )
 			self.pause = not self.pause
 		elseif args.key == 90 then
 			self.tip = not self.tip
-		elseif args.key == 221 then
-			self.RamaType = self.RamaType + 1
-		elseif args.key == 219 then
-			self.RamaType = self.RamaType - 1
-		end
-
-		local maxrams = 4
-		if self.RamaType < 0 then
-			self.RamaType = maxrams
-		elseif self.RamaType > maxrams then
-			self.RamaType = 0
+		elseif args.key == 76 then
+			self.blackLines = not self.blackLines
 		end
 	end
 end

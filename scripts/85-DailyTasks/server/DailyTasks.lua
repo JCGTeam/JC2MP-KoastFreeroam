@@ -2,9 +2,9 @@ class 'DailyTasks'
 
 function DailyTasks:__init()
     SQL:Execute( "DROP TABLE IF EXISTS dailytasks" )
-    SQL:Execute( "CREATE TABLE IF NOT EXISTS dailytasks (steamid VARCHAR UNIQUE, huntkills INTEGER, tronwins INTEGER, tetrisrecord INTEGER, driftrecord INTEGER, flyingrecord INTEGER, bloozing INTEGER, fireworkstossed INTEGER, prize INTEGER)" )
+    SQL:Execute( "CREATE TABLE IF NOT EXISTS dailytasks (steamid VARCHAR UNIQUE, completedtasks INTEGER, tronwins INTEGER, tetrisrecord INTEGER, driftrecord INTEGER, flyingrecord INTEGER, bloozing INTEGER, fireworkstossed INTEGER, prize INTEGER)" )
 
-    self.huntkillsneeded = math.random( 2, 10 )
+    self.completedtasksneeded = math.random( 5, 15 )
     self.fireworksneeded = math.random( 5, 30 )
 
     local flyingrecordneeded = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300 }
@@ -28,10 +28,12 @@ function DailyTasks:__init()
 end
 
 function DailyTasks:GetNeededs( args, sender )
-    Network:Send( sender, "NewNeededs", { huntkillsneeded = self.huntkillsneeded, fireworksneeded =  self.fireworksneeded, flyingrecordneeded = self.flyingrecordneeded, tetrisrecordneeded = self.tetrisrecordneeded, driftrecordneeded = self.driftrecordneeded, tronwinsneeded = self.tronwinsneeded } )
+    Network:Send( sender, "NewNeededs", { completedtasksneeded = self.completedtasksneeded, fireworksneeded = self.fireworksneeded, flyingrecordneeded = self.flyingrecordneeded, tetrisrecordneeded = self.tetrisrecordneeded, driftrecordneeded = self.driftrecordneeded, tronwinsneeded = self.tronwinsneeded } )
 end
 
 function DailyTasks:GetPrize( args, sender )
+    sender:SetNetworkValue( "CompletedDailyTasksCount", ( sender:GetValue( "CompletedDailyTasksCount" ) or 0 ) + 1 )
+
     sender:SetMoney( sender:GetMoney() + 10000 )
     sender:SetNetworkValue( "Prize", 0 )
 
@@ -48,16 +50,16 @@ function DailyTasks:PostTick()
     if self.timer:GetHours() < self.delay then return end
     self.timer:Restart()
     SQL:Execute( "DROP TABLE IF EXISTS dailytasks" )
-    SQL:Execute( "CREATE TABLE IF NOT EXISTS dailytasks (steamid VARCHAR UNIQUE, huntkills INTEGER, tronwins INTEGER, tetrisrecord INTEGER, driftrecord INTEGER, flyingrecord INTEGER, bloozing INTEGER, fireworkstossed INTEGER, prize INTEGER)" )
+    SQL:Execute( "CREATE TABLE IF NOT EXISTS dailytasks (steamid VARCHAR UNIQUE, completedtasks INTEGER, tronwins INTEGER, tetrisrecord INTEGER, driftrecord INTEGER, flyingrecord INTEGER, bloozing INTEGER, fireworkstossed INTEGER, prize INTEGER)" )
 end
 
 function DailyTasks:PlayerJoin( args )
-    local qry = SQL:Query( "select huntkills, tronwins, tetrisrecord, driftrecord, flyingrecord, bloozing, fireworkstossed, prize from dailytasks where steamid = (?)" )
+    local qry = SQL:Query( "select completedtasks, tronwins, tetrisrecord, driftrecord, flyingrecord, bloozing, fireworkstossed, prize from dailytasks where steamid = (?)" )
     qry:Bind( 1, args.player:GetSteamId().id )
     local result = qry:Execute()
 
 	if #result > 0 then
-        args.player:SetNetworkValue( "HuntKills", tonumber(result[1].huntkills) )
+        args.player:SetNetworkValue( "CompletedTasks", tonumber(result[1].completedtasks) )
         args.player:SetNetworkValue( "TronWins", tonumber(result[1].tronwins) )
         args.player:SetNetworkValue( "TetrisRecord", tonumber(result[1].tetrisrecord) )
         args.player:SetNetworkValue( "DriftRecord", tonumber(result[1].driftrecord) )
@@ -66,7 +68,7 @@ function DailyTasks:PlayerJoin( args )
         args.player:SetNetworkValue( "FireworksTossed", tonumber(result[1].fireworkstossed) )
         args.player:SetNetworkValue( "Prize", tonumber(result[1].prize) )
     else
-        args.player:SetNetworkValue( "HuntKills", 0 )
+        args.player:SetNetworkValue( "CompletedTasks", 0 )
         args.player:SetNetworkValue( "TronWins", 0 )
         args.player:SetNetworkValue( "TetrisRecord", 0 )
         args.player:SetNetworkValue( "DriftRecord", 0 )
@@ -78,10 +80,10 @@ function DailyTasks:PlayerJoin( args )
 end
 
 function DailyTasks:PlayerQuit( args )
-    local cmd = SQL:Command( "INSERT OR REPLACE INTO dailytasks (steamid, huntkills, tronwins, tetrisrecord, driftrecord, flyingrecord, bloozing, fireworkstossed, prize) values (?, ?, ?, ?, ?, ?, ?, ?, ?)" )
+    local cmd = SQL:Command( "INSERT OR REPLACE INTO dailytasks (steamid, completedtasks, tronwins, tetrisrecord, driftrecord, flyingrecord, bloozing, fireworkstossed, prize) values (?, ?, ?, ?, ?, ?, ?, ?, ?)" )
     cmd:Bind( 1, args.player:GetSteamId().id )
-    if args.player:GetValue( "HuntKills" ) then
-        cmd:Bind( 2, args.player:GetValue( "HuntKills" ) )
+    if args.player:GetValue( "CompletedTasks" ) then
+        cmd:Bind( 2, args.player:GetValue( "CompletedTasks" ) )
     end
     if args.player:GetValue( "TronWins" ) then
         cmd:Bind( 3, args.player:GetValue( "TronWins" ) )

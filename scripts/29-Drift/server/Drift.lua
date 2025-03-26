@@ -6,13 +6,16 @@ function Drift:__init()
 	Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
 	Events:Subscribe( "PostTick", self, self.PostTick )
 	Events:Subscribe( "PlayerChat", self, self.PlayerChat )
-	Network:Subscribe( "01", self, self.onDriftRecord )
-	Network:Subscribe( "02", self, self.onDriftAttempt )
-	Network:Subscribe( "03", self, self.DriftRecordTask )
+
+	Network:Subscribe( "onDriftRecord", self, self.onDriftRecord )
+	Network:Subscribe( "onDriftAttempt", self, self.onDriftAttempt )
+	Network:Subscribe( "DriftRecordTask", self, self.DriftRecordTask )
+	Network:Subscribe( "UpdateMaxRecord", self, self.UpdateMaxRecord )
 	Network:Subscribe( "ChangeMass", self, self.ChangeMass )
 
 	self.tag_clr = Color.White
-	self.text_clr = Color( 255, 150, 0 )
+	self.text_clr = Color( 185, 215, 255 )
+	self.text2_clr = Color( 251, 184, 41 )
 end
 
 function Drift:initVars()
@@ -81,9 +84,9 @@ function Drift:onDriftRecord( score, player )
 		if objectN ~= nil then
 			player:SetMoney( player:GetMoney() + 50 )
 			if player:GetValue( "Lang" ) == "EN" then
-				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new drift record!", self.text_clr )
+				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new drift record!", self.text2_clr )
 			else
-				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд дрифта!", self.text_clr )
+				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд дрифта!", self.text2_clr )
 			end
 
 			for p in Server:GetPlayers() do
@@ -96,9 +99,9 @@ function Drift:onDriftRecord( score, player )
 		else
 			player:SetMoney( player:GetMoney() + 50 )
 			if player:GetValue( "Lang" ) == "EN" then
-				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new drift record!", self.text_clr )
+				player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $50 for a new drift record!", self.text2_clr )
 			else
-				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд дрифта!", self.text_clr )
+				player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $50 за новый рекорд дрифта!", self.text2_clr )
 			end
 
 			for p in Server:GetPlayers() do
@@ -129,7 +132,7 @@ function Drift:onDriftRecord( score, player )
 end
 
 function Drift:onDriftAttempt( score, player )
-	Network:Broadcast( "03", { score, player:GetId() + 1 } )
+	Network:Broadcast( "onDriftAttempt", { score, player:GetId() + 1 } )
 end
 
 function Drift:DriftRecordTask( score, player )
@@ -139,22 +142,27 @@ function Drift:DriftRecordTask( score, player )
 	end
 end
 
+function Drift:UpdateMaxRecord( score, player )
+	if tonumber( player:GetValue( "MaxRecordInBestDrift" ) or 0 ) >= score then return end
+	player:SetNetworkValue( "MaxRecordInBestDrift", score )
+end
+
 function Drift:Reward( name, last )
 	for player in Server:GetPlayers() do
 		if player:GetName() == name then
 			if not last then
 				player:SetMoney( player:GetMoney() + 15 )
 				if player:GetValue( "Lang" ) == "EN" then
-					player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $15 for keeping drift record!", self.text_clr )
+					player:SendChatMessage( "[Record] ", self.tag_clr, "Reward: $15 for keeping drift record!", self.text2_clr )
 				else
-					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $15 за удержание рекорда по дрифту!", self.text_clr )
+					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Награда: $15 за удержание рекорда по дрифту!", self.text2_clr )
 				end
 			else
 				player:SetMoney( player:GetMoney() + 500 )
 				if player:GetValue( "Lang" ) == "EN" then
-					player:SendChatMessage( "[Record] ", self.tag_clr, "You won a fantastic drifter! Your reward: $500!", self.text_clr )
+					player:SendChatMessage( "[Record] ", self.tag_clr, "You won a fantastic drifter! Your reward: $500!", self.text2_clr )
 				else
-					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Вы победили в хорошечном дрифтере! Ваша награда: $500!", self.text_clr )
+					player:SendChatMessage( "[Рекорд] ", self.tag_clr, "Вы победили в хорошечном дрифтере! Ваша награда: $500!", self.text2_clr )
 				end
 
 				local pName = player:GetName()
