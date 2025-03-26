@@ -63,6 +63,7 @@ function Casino:__init()
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
+	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
     Events:Subscribe( "OpenCasinoMenu", self, self.OpenCasinoMenu )
 	Events:Subscribe( "CasinoMenuClosed", self, self.WindowClosed )
 
@@ -129,6 +130,12 @@ end
 
 function Casino:LocalPlayerMoneyChange( args )
     self:UpdateMoneyString( args.new_money )
+end
+
+function Casino:LocalPlayerChat( args )
+	local cmd_args = args.text:split( " " )
+
+	if cmd_args[1] == "/casino" then self:OpenCasinoMenu() end
 end
 
 function Casino:OpenCasinoMenu()

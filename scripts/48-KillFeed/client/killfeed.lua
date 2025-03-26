@@ -225,7 +225,18 @@ function Killfeed:Render()
 			Render:DrawShadowedText( pos, v.player_name, v.player_colour, shadow )
 
 			pos = pos + Vector2( Render:GetTextWidth( v.player_name ), 0 )
-			Render:DrawShadowedText( pos, post_player_text, color, shadow )
+			local success, err = pcall( function()
+				Render:DrawShadowedText( pos, post_player_text, color, shadow )
+			end )
+
+			if not success then
+				error("PIZDECH NAXUI BLAYT IN Render:DrawShadowedText:\n" ..
+					  "error: " .. err .. "\n" ..
+					  "pos: " .. tostring(pos) .. "\n" ..
+					  "name: " .. tostring(post_player_text) .. "\n" ..
+					  "colour: " .. tostring(color) .. "\n" ..
+					  "shadow: " .. tostring(shadow))
+			end
 
 			if v.killer_name then
 				local killer_colour = v.killer_colour

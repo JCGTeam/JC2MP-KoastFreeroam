@@ -1,9 +1,9 @@
 class 'BetterChat'
 
-local values_ru = { "Неудачно", "Удачно", "Неудачно" }
-local values_en = { "Unsuccessful", "Successfully", "Unsuccessful" }
-
 function BetterChat:__init()
+	self.values_ru = { "Неудачно", "Удачно", "Неудачно" }
+	self.values_en = { "Unsuccessful", "Successfully", "Unsuccessful" }
+
 	SQL:Execute( "CREATE TABLE IF NOT EXISTS settings_chatpos (steamid VARCHAR UNIQUE, positionX INTEGER, positionY INTEGER)")
 	SQL:Execute( "CREATE TABLE IF NOT EXISTS players_chatsettings (steamid VARCHAR UNIQUE, visiblejoinmessages INTEGER)")
 
@@ -150,7 +150,7 @@ function BetterChat:Chat( args )
 			local jDist = pPos:Distance( p:GetPosition() )
 
 			if jDist < 50 then
-				p:SendChatMessage( args.player:GetValue( "Lang" ) == "EN" and "[Action] " or "[Действие] ", tagColor, pName .. " " .. tostring( table.concat ( cmd_args, " " ) ), self.msgActionColor )
+				p:SendChatMessage( p:GetValue( "Lang" ) == "EN" and "[Action] " or "[Действие] ", tagColor, pName .. " " .. tostring( table.concat ( cmd_args, " " ) ), self.msgActionColor )
 			end
 		end
 	elseif cmd_name == "try" then
@@ -163,7 +163,7 @@ function BetterChat:Chat( args )
 			local jDist = pPos:Distance( p:GetPosition() )
 
 			if jDist < 50 then
-				p:SendChatMessage( args.player:GetValue( "Lang" ) == "EN" and "[Action] " or "[Действие] ", tagColor, pName .. " " .. tostring( table.concat ( cmd_args, " " ) ), self.msgActionColor, " | ", self.msgColor, p:GetValue( "Lang" ) == "EN" and values_en[math.random(#values_en)] or values_ru[math.random(#values_ru)], self.msgActionColor, " | ", self.msgColor )
+				p:SendChatMessage( p:GetValue( "Lang" ) == "EN" and "[Action] " or "[Действие] ", tagColor, pName .. " " .. tostring( table.concat ( cmd_args, " " ) ), self.msgActionColor, " | ", self.msgColor, p:GetValue( "Lang" ) == "EN" and self.values_en[math.random(#self.values_en)] or self.values_ru[math.random(#self.values_ru)], self.msgActionColor, " | ", self.msgColor )
 			end
 		end
 	end

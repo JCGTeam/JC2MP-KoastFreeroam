@@ -66,6 +66,7 @@ function ServerMenu:__init()
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
+	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
     Events:Subscribe( "KeyUp", self, self.KeyUp )
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	Events:Subscribe( "LocalPlayerMoneyChange", self, self.LocalPlayerMoneyChange )
@@ -583,8 +584,15 @@ function ServerMenu:SetWindowVisible( visible )
 	end
 end
 
+function ServerMenu:LocalPlayerChat( args )
+	local cmd_args = args.text:split( " " )
+
+	if cmd_args[1] == "/hideme" then self:CastHideMe() end
+	if cmd_args[1] == "/pigeon" then self:CastPigeonMod() end
+end
+
 function ServerMenu:CastNewsMenu()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "OpenNewsMenu" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
@@ -592,56 +600,56 @@ function ServerMenu:CastNewsMenu()
 end
 
 function ServerMenu:CastHelpMenu()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "OpenHelpMenu" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastShop()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "OpenShop" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastWarpGUI()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "OpenWarpGUI" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastClansMenu()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "OpenClansMenu" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastGuiPm()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "OpenGuiPm" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastSettingsMenu()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "OpenSettingsMenu" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastDedMorozMenu()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "OpenDedMorozMenu" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastMainMenu()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "OpenGameModesMenu" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
@@ -649,7 +657,7 @@ function ServerMenu:CastMainMenu()
 end
 
 function ServerMenu:CastAbilitiesMenu()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "OpenAbitiliesMenu" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
@@ -657,21 +665,24 @@ function ServerMenu:CastAbilitiesMenu()
 end
 
 function ServerMenu:CastPassive()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "TogglePassive" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastJesusMode()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "ToggleJesus" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function ServerMenu:CastHideMe()
-	self:SetWindowVisible( not self.active )
+	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+
+	self:SetWindowVisible( false )
+
 	Network:Send( "ToggleHideMe" )
 	Events:Fire( "CastCenterText", { text = self.hidemetxt .. ( LocalPlayer:GetValue( "HideMe" ) and self.disabletxt or self.enabletxt ), time = 2 } )
 
@@ -679,7 +690,10 @@ function ServerMenu:CastHideMe()
 end
 
 function ServerMenu:CastPigeonMod()
-	self:SetWindowVisible( not self.active )
+	if not LocalPlayer:GetValue( "Wingsuit" ) then return end
+	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+
+	self:SetWindowVisible( false )
 
 	LocalPlayer:SetValue( "PigeonMod", not LocalPlayer:GetValue( "PigeonMod" ) )
 	Events:Fire( "CastCenterText", { text = self.pigeonmodtxt ..  ( LocalPlayer:GetValue( "PigeonMod" ) and self.enabletxt_2 or self.disabletxt_2 ), time = 2 } )
@@ -694,12 +708,11 @@ function ServerMenu:CastPigeonMod()
 end
 
 function ServerMenu:CastReportMenu()
-	self:SetWindowVisible( not self.active )
+	self:SetWindowVisible( false )
 	Events:Fire( "OpenReportMenu" )
 
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
-
 
 function ServerMenu:Cash()
 	local sound = ClientSound.Create(AssetLocation.Game, {

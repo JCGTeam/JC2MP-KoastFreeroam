@@ -260,6 +260,7 @@ function Tetris:__init()
 		self.controltip = "[←→] - Перемещение фигуры\n[↑] - Повернуть фигуру\n[↓] - Опустить фигуру ниже\n[END] - Опустить фигуру вниз\n[ESC] - Закрыть тетрис"
 	end
 
+	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
 	Events:Subscribe( "TetrisToggle", self, self.Toggle )
 	Network:Subscribe( "NewLeaderboard", self, self.NewLeaderboard )
 
@@ -279,6 +280,12 @@ function Tetris:Lang()
 	self.tSetGOver2 = " \n\n\n\nSPACE - Try again"
 	self.tSetGOver3 = " \n\n\n\n\n\n\nCTRL - Leaderboard"
 	self.controltip = "[←→] - Move block\n[↑] - Rotate block\n[↓] - Soft drop block\n[END] - Hard drop block\n[ESC] - Close tetris"
+end
+
+function Tetris:LocalPlayerChat( args )
+	local cmd_args = args.text:split( " " )
+
+	if cmd_args[1] == "/tetris" then self:Toggle() end
 end
 
 function Tetris:Toggle()

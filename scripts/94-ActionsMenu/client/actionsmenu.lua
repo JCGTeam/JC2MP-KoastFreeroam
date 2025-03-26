@@ -65,6 +65,7 @@ function ActionsMenu:__init()
 
     Events:Subscribe( "Lang", self, self.Lang )
     Events:Subscribe( "KeyUp", self, self.KeyUp )
+	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
 	Events:Subscribe( "LocalPlayerWorldChange", self, self.LocalPlayerWorldChange )
 end
 
@@ -121,6 +122,20 @@ function ActionsMenu:KeyUp( args )
     end
 end
 
+function ActionsMenu:LocalPlayerChat( args )
+	local cmd_args = args.text:split( " " )
+
+	if cmd_args[1] == "/heal" then self:Heal() end
+	if cmd_args[1] == "/kill" or cmd_args[1] == "/suicide" then Network:Send( "KillMe" ) end
+	if cmd_args[1] == "/clear" then Network:Send( "ClearInv") end
+	if cmd_args[1] == "/drink" or cmd_args[1] == "/blooze" then Events:Fire( "BloozingStart" ) end
+	if cmd_args[1] == "/repair" then self:VehicleRepair() end
+	if cmd_args[1] == "/lock" then self:VehicleToggleDriverSeatLock() end
+	if cmd_args[1] == "/boom" then self:VehicleBoom() end
+	if cmd_args[1] == "/sky" then self:Sky() end
+	if cmd_args[1] == "/down" then self:Down() end
+end
+
 function ActionsMenu:LocalPlayerWorldChange()
 	if self.window and self.window:GetVisible() then
 		self:WindowClosed()
@@ -130,7 +145,8 @@ end
 function ActionsMenu:CreateActionButton( title, event, color )
 	local actionBtn = Button.Create( self.scroll )
 	actionBtn:SetText( title )
-	actionBtn:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
+	local margin = Vector2( 5, 5 )
+	actionBtn:SetMargin( margin, margin )
 	if color then
 		actionBtn:SetTextHoveredColor( color )
 		actionBtn:SetTextPressedColor( color )
@@ -200,6 +216,8 @@ function ActionsMenu:CreateActionsMenu()
 end
 
 function ActionsMenu:Heal()
+	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+
 	if LocalPlayer:GetValue( "PVPMode" ) then
 		Events:Fire( "CastCenterText", { text = self.pvpblock, time = 6, color = Color.Red } )
 	else
@@ -269,6 +287,8 @@ function ActionsMenu:Sleep()
 end
 
 function ActionsMenu:VehicleRepair()
+	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+
 	local vehicle = LocalPlayer:GetVehicle()
 
 	if vehicle and vehicle:GetDriver() == LocalPlayer then
@@ -298,6 +318,8 @@ function ActionsMenu:VehicleRepair()
 end
 
 function ActionsMenu:VehicleToggleDriverSeatLock()
+	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+
 	local vehicle = LocalPlayer:GetVehicle()
 
 	if vehicle and vehicle:GetDriver() == LocalPlayer then
@@ -325,6 +347,8 @@ function ActionsMenu:VehicleToggleDriverSeatLock()
 end
 
 function ActionsMenu:VehicleBoom()
+	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+
 	local vehicle = LocalPlayer:GetVehicle()
 
 	if vehicle and vehicle:GetDriver() == LocalPlayer then
@@ -380,6 +404,8 @@ function ActionsMenu:Render()
 end
 
 function ActionsMenu:WindowClosed()
+	if not self.window then return end
+
     self.window:SetVisible( false )
 	Mouse:SetVisible( false )
 
@@ -435,6 +461,5 @@ function ActionsMenu:LocalPlayerExitVehicle( args )
 
 	if self.LocalPlayerExitVehicleEvent then Events:Unsubscribe( self.LocalPlayerExitVehicleEvent ) self.LocalPlayerExitVehicleEvent = nil end
 end
-
 
 actionsmenu = ActionsMenu()

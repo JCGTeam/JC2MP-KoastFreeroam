@@ -28,6 +28,7 @@ function Passive:__init()
 		[15] = true, [137] = true, [138] = true, [139] = true
 		}
 
+	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
 	Events:Subscribe( "TogglePassive", self, self.TogglePassive )
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	Events:Subscribe( "InputPoll", self, self.InputPoll )
@@ -70,6 +71,12 @@ function Passive:InputPoll()
 	Input:SetValue( Action.VehicleFireRight, 0 )
 	Input:SetValue( Action.FireRight, 0 )
 	Input:SetValue( Action.FireLeft, 0 )
+end
+
+function Passive:LocalPlayerChat( args )
+	local cmd_args = args.text:split( " " )
+
+	if cmd_args[1] == "/passive" or cmd_args[1] == "/peace" or cmd_args[1] == "/god" then self:TogglePassive() end
 end
 
 function Passive:TogglePassive()

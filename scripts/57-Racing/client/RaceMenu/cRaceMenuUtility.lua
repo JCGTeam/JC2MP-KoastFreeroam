@@ -91,7 +91,7 @@ RaceMenuUtility.CreateCourseVoteControl = function()
 	self.votesDownButton:SetTextNormalColor(Color.FromHSV(0 , 0.5 , 0.9))
 	self.votesDownButton:SetTextHoveredColor(Color.FromHSV(0 , 0.6 , 1))
 	self.votesDownButton:SetTextPressedColor(Color.FromHSV(0 , 0.7 , 0.9))
-	self.votesDownButton:SetToolTip("Дичь")
+	self.votesDownButton:SetToolTip("Не нравится")
 	self.votesDownButton:SetToggleable(true)
 	self.votesDownButton:SetEnabled(false)
 	
