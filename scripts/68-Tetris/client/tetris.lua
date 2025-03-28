@@ -232,8 +232,8 @@ function Tetris:__init()
 	self.list:SetDock( GwenPosition.Fill )
 	self.list:SetMargin( Vector2.Zero, Vector2.Zero )
 	self.list:SetBackgroundVisible( false )
-	self.list:AddColumn( "Имя" )
-	self.list:AddColumn( "Очки" )
+	self.list:AddColumn( "Игрок" )
+	self.list:AddColumn( "Счет" )
 	self.list:SetButtonsVisible( true )
 
 	self.globalOpacity = 200

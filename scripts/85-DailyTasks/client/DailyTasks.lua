@@ -40,35 +40,16 @@ function DailyTasks:__init()
     self.window:SetVisible( self.active )
     self.window:Subscribe( "WindowClosed", self, self.Open )
 
-    local container = BaseWindow.Create( self.window )
-	container:SetDock( GwenPosition.Fill )
-	container:SetMargin( Vector2( 0, 2 ), Vector2( 0, 4 ) )
-
-    self.prize_btn = Button.Create( container )
-    self.prize_btn:SetDock( GwenPosition.Bottom )
-    self.prize_btn:SetSize( Vector2( 0, 30 ) )
-    self.prize_btn:Subscribe( "Press", self, self.GetPrize )
-
-    self.hidetexttip = Label.Create( container )
-	self.hidetexttip:SetDock( GwenPosition.Top )
-	self.hidetexttip:SetMargin( Vector2( 0, 2 ), Vector2( 0, 4 ) )
-
-    self.list = SortedList.Create( container )
-	self.list:SetDock( GwenPosition.Fill )
-	self.list:SetBackgroundVisible( false )
-	self.list:AddColumn( "Задание:" )
-    self.list:AddColumn( "√/x", 50 )
-    --self.list:AddColumn( "Награда", 65 )
-
     local lang = LocalPlayer:GetValue( "Lang" )
     if lang and lang == "EN" then
 		self:Lang()
 	else
-        if self.window then
-            self.window:SetTitle( "▧ Ежедневные задания" )
-            self.prize_btn:SetText( "Получить награду " .. "( $10.000 )" )
-            self.hidetexttip:SetText( "Выполняй эти задания, чтобы получить свой приз. Задания обновляются каждый день." )
-        end
+        self.window:SetTitle( "▧ Ежедневные задания" )
+
+        self.getreward = "Получить награду"
+        self.toptip_txt = "Выполняй эти задания, чтобы получить свой приз. Задания обновляются каждый день."
+        self.task_txt = "Задание:"
+        self.reward_txt = "Награда:"
         self.taskstask_txt = "Выполните "
         self.taskstask2_txt = ' заданий'
         self.taskstip_txt = "Задания расположены по всему Панау, а также отмечены кружками на мини-карте"
@@ -88,8 +69,6 @@ function DailyTasks:__init()
         self.fireworkstip_txt = "Нажмите на G, чтобы выбрать гранату"
 	end
 
-    self.hidetexttip:SizeToContents()
-
     Events:Subscribe( "Lang", self, self.Lang )
     Network:Subscribe( "NewNeededs", self, self.NewNeededs )
     Events:Subscribe( "OpenDedMorozMenu", self, self.OpenDedMorozMenu )
@@ -97,11 +76,12 @@ function DailyTasks:__init()
 end
 
 function DailyTasks:Lang()
-    if self.window then
-        self.window:SetTitle( "▧ Daily Tasks" )
-        self.hidetexttip:SetText( "Complete these tasks to get your prize. Quests are updated every day." )
-        self.prize_btn:SetText( "Get award " .. "( $10.000 )" )
-    end
+    self.window:SetTitle( "▧ Daily Tasks" )
+
+    self.getreward = "Get award"
+    self.toptip_txt = "Complete these tasks to get your prize. Quests are updated every day."
+    self.task_txt = "Task:"
+    self.reward_txt = "Reward:"
     self.taskstask_txt = "Complete "
     self.taskstask2_txt = " tasks"
     self.taskstip_txt = "Tasks are located all over Panau and are also marked with icons on the minimap"
@@ -146,10 +126,46 @@ function DailyTasks:CloseDedMorozMenu()
 	end
 end
 
+function DailyTasks:CreateWindowObjects()
+	if self.isObjectsCreated then return end
+
+	self.isObjectsCreated = true
+
+    local container = BaseWindow.Create( self.window )
+	container:SetDock( GwenPosition.Fill )
+	container:SetMargin( Vector2( 0, 2 ), Vector2( 0, 4 ) )
+
+    self.prize_btn = Button.Create( container )
+    self.prize_btn:SetDock( GwenPosition.Bottom )
+    self.prize_btn:SetSize( Vector2( 0, 30 ) )
+    self.prize_btn:SetText( self.getreward .. " ( $10.000 )" )
+    self.prize_btn:Subscribe( "Press", self, self.GetPrize )
+
+    self.hidetexttip = Label.Create( container )
+	self.hidetexttip:SetDock( GwenPosition.Top )
+	self.hidetexttip:SetMargin( Vector2( 0, 2 ), Vector2( 0, 4 ) )
+    self.hidetexttip:SetText( self.toptip_txt )
+    self.hidetexttip:SizeToContents()
+
+    self.list = SortedList.Create( container )
+	self.list:SetDock( GwenPosition.Fill )
+	self.list:SetBackgroundVisible( false )
+	self.list:AddColumn( self.task_txt )
+    self.list:AddColumn( "√/x", 50 )
+    --self.list:AddColumn( self.reward_txt, 65 )
+
+    self.getreward = nil
+    self.toptip_txt = nil
+    self.task_txt = nil
+    self.reward_txt = nil
+end
+
 function DailyTasks:Open()
     self:SetWindowVisible( not self.active )
 
     if self.active then
+        self:CreateWindowObjects()
+
         local defaultValue = 0
         local completedTasks = LocalPlayer:GetValue( "CompletedTasks" )
         local tronWins = LocalPlayer:GetValue( "TronWins" )

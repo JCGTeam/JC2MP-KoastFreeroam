@@ -65,7 +65,7 @@ function Notifications:PostRender()
 			self.renderAlpha2 = math.clamp( 0 + ( fadeInTimerSeconds * 340 ), 0, 170 )
 			self.imageAlpha = math.clamp( 0 + ( fadeInTimerSeconds * 2 ), 0, 1 )
 
-			if self.txtAlpha >= 200 or  self.renderAlpha1 >= 180 or self.renderAlpha2 >= 170 or self.imageAlpha >= 1 then
+			if self.txtAlpha >= 200 or self.renderAlpha1 >= 180 or self.renderAlpha2 >= 170 or self.imageAlpha >= 1 then
 				self.txtAlpha = 200
 				self.renderAlpha1 = 180
 				self.renderAlpha2 = 170
