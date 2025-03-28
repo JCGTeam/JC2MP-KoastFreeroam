@@ -4,7 +4,7 @@ function AntiSpam:__init()
 	self.kickMessage = "был автоматически кикнут за флуд :("
 	self.kickReason = "\n\nВы были отключены системой Анти-Флуд.\n\n" .. 
 					"Кикнуло просто так? - Возможо у вас привязаны команды к клавишам. Ипользуйте /unbindall, чтобы отвязать их.\n\n" ..
-					"Поддержка в VK - vk.com/koastfreeroam\nПоддержка в Steam - steamcommunity.com/groups/koastfreeroam\nПоддержка в Discord - t.me/koastfreeroam/197"
+					"Поддержка в Telegram - t.me/koastreport_bot\nПоддержка в Steam - steamcommunity.com/groups/koastfreeroam\nПоддержка в Discord - t.me/koastfreeroam/197"
 	self.messageColor = Color( 255, 0, 0 )
 	self.maxWarnings = 2
 	self.messagesResetInterval = 5

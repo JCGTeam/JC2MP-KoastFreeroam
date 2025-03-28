@@ -933,6 +933,12 @@ function Shop:LoadCategories()
 	self.Home_button:Subscribe( "Press", self, self.GoHome )
 
 	Network:Send( "BuyMenuGetSaveColor" )
+
+	self.vehicleColor_txt = nil
+	self.save_txt = nil
+	self.sethomebutton_txt = nil
+	self.spawnonhomepoint_txt = nil
+	self.gohome_txt = nil
 end
 
 function Shop:NumberToBoolean( value )

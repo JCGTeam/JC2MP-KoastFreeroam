@@ -103,7 +103,7 @@ function ActionsMenu:KeyUp( args )
         if self.window and self.window:GetVisible() then
             self:WindowClosed()
         else
-            self:CreateActionsMenu()
+            self:CreateWindow()
             self.window:SetVisible( true )
             Mouse:SetVisible( true )
 
@@ -162,7 +162,7 @@ function ActionsMenu:CreateActionButton( title, event, color )
 	return actionBtn
 end
 
-function ActionsMenu:CreateActionsMenu()
+function ActionsMenu:CreateWindow()
     if self.window then return end
 
 	self.greenColor = Color( 192, 255, 192 )
@@ -213,6 +213,20 @@ function ActionsMenu:CreateActionsMenu()
 
 	self.SkyBtn = self:CreateActionButton( self.sky_txt, self.Sky )
 	self.DownBtn = self:CreateActionButton( self.down_txt, self.Down )
+
+	self.healme_txt = nil
+    self.killme_txt = nil
+    self.clearinv_txt = nil
+    self.sendmoney_txt = nil
+    self.bloozing_txt = nil
+    self.seat_txt = nil
+    self.lezat_txt = nil
+	self.vehiclerepair_txt = nil
+	self.vehicleboom_txt = nil
+	self.sky_txt = nil
+	self.down_txt = nil
+	self.ltext1 = nil
+	self.ltext2 = nil
 end
 
 function ActionsMenu:Heal()

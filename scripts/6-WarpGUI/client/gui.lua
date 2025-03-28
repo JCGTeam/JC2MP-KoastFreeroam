@@ -326,7 +326,7 @@ function WarpGui:PostTick()
 	if not self.requesterId then return end
 
 	local acceptButton = self.acceptButtons[self.requesterId]
-	if not acceptButton then return end
+	if not IsValid( acceptButton ) then return end
 	self.warpRequests[self.requesterId] = nil
 	acceptButton:SetEnabled( false )
 
