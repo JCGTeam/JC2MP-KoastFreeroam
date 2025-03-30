@@ -47,9 +47,6 @@ function Shop:__init()
 	self.tone2 = Color.White
 	self.pcolor = LocalPlayer:GetColor()
 
-	self.tone1Picker = nil
-	self.tone2Picker = nil
-
 	self.HomeImage = Image.Create( AssetLocation.Resource, "HomeImage" )
 
 	self.window = Window.Create()
@@ -57,20 +54,22 @@ function Shop:__init()
 	self.window:SetPositionRel( Vector2( 0.7, 0.5 ) - self.window:GetSizeRel()/2 )
 	self.window:SetVisible( self.active )
 	self.window:SetTitle( "▧ Чёрный рынок" )
-	self.window:Subscribe( "WindowClosed", self, self.Close )
+	self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
 
 	self.tab_control = TabControl.Create( self.window )
 	self.tab_control:SetDock( GwenPosition.Fill )
 
 	self.tab_control:Subscribe( "TabSwitch", function()
-		if self.tab_control:GetCurrentTab():GetText() == "Транспорт" then
+		local current_tab = self.tab_control:GetCurrentTab():GetText()
+
+		if current_tab == "Транспорт" then
 			self.decalLabel:SetVisible( true )
 		else
 			self.decalLabel:SetVisible( false )
 			self.vehColorWindow:SetVisible( false )
 		end
 
-		if self.tab_control:GetCurrentTab():GetText() == "Точки дома" then
+		if current_tab == "Точки дома" then
 			self.buy_button:SetEnabled( false )
 		else
 			self.buy_button:SetEnabled( true )
@@ -80,11 +79,6 @@ function Shop:__init()
 	local base1 = BaseWindow.Create( self.window )
 	base1:SetDock( GwenPosition.Bottom )
 	base1:SetSize( Vector2( self.window:GetSize().x, 32 ) )
-
-	local background = Rectangle.Create( base1 )
-	background:SetSizeRel( Vector2( 0.5, 1.0 ) )
-	background:SetDock( GwenPosition.Fill )
-	background:SetColor( Color( 0, 0, 0, 100 ) )
 
 	self.buy_button = Button.Create( base1 )
 	self.buy_button:SetWidthAutoRel( 0.5 )
@@ -99,7 +93,8 @@ function Shop:__init()
 
 	self.decalLabel = Label.Create( self.window )
 	self.decalLabel:SetDock( GwenPosition.Bottom )
-	self.decalLabel:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
+	local margin = Vector2( 5, 5 )
+	self.decalLabel:SetMargin( margin, margin )
 	self.decalLabel:SetHeight( 20 )
 
 	local decal = ComboBox.Create( self.decalLabel )
@@ -133,7 +128,8 @@ function Shop:__init()
 	local vehColorArrow = Label.Create( vehColor )
 	vehColorArrow:SetDock( GwenPosition.Right )
 	vehColorArrow:SetAlignment( GwenPosition.Center )
-	vehColorArrow:SetMargin( Vector2( 4, 0 ), Vector2( 4, 0 ) )
+	local margin = Vector2( 4, 0 )
+	vehColorArrow:SetMargin( margin, margin )
 	vehColorArrow:SetText( ">" )
 	vehColorArrow:SizeToContents()
 
@@ -157,15 +153,13 @@ function Shop:__init()
 		self.w = "Пожалуйста, подождите "
 		self.ws = " секунд."
 
-		if self.window then
-			self.vehColorText:SetText( self.vehicleColor_txt .. ": " )
-			self.vehColorText:SizeToContents()
+		self.vehColorText:SetText( self.vehicleColor_txt .. ": " )
+		self.vehColorText:SizeToContents()
 
-			self.decalText:SetText( "Декаль: " )
-			self.decalText:SizeToContents()
+		self.decalText:SetText( "Декаль: " )
+		self.decalText:SizeToContents()
 
-			self.decalNames = { "По умолчанию", "Панау", "Японцы", "Жнецы", "Тараканы", "Улары", "Такси" }
-		end
+		self.decalNames = { "По умолчанию", "Панау", "Японцы", "Жнецы", "Тараканы", "Улары", "Такси" }
 	end
 
 	for i, v in ipairs( self.decalNames ) do
@@ -208,17 +202,16 @@ function Shop:__init()
 	Events:Subscribe( "ModuleUnload", self, self.ModuleUnloadAppearance )
 	Events:Subscribe( "RestoreParachute", self, self.RestoreParachute )
 
-	Network:Subscribe( "Shop", self, self.Shop )
 	Network:Subscribe( "PlayerFired", self, self.Sound )
 	Network:Subscribe( "NoVipText", self, self.NoVipText )
-	Network:Subscribe( "Parachute", self, self.Parachute )
+	Network:Subscribe( "SetParachute", self, self.SetParachute )
 
 	Network:Subscribe( "BuyMenuSavedColor", self, self.SavedColor )
 end
 
 function Shop:Lang()
 	if self.buy_button then
-		self.buy_button:SetText( "Get" )
+		self.buy_button:SetText( "Get it" )
 	end
 
 	self.vehicleColor_txt = "Vehicle color"
@@ -233,16 +226,14 @@ function Shop:Lang()
 	self.w = "Please, wait "
 	self.ws = " seconds."
 
-	if self.window then
-		self.window:SetTitle( "▧ Black Market" )
-		self.vehColorText:SetText( self.vehicleColor_txt .. ": " )
-		self.vehColorText:SizeToContents()
+	self.window:SetTitle( "▧ Black Market" )
+	self.vehColorText:SetText( self.vehicleColor_txt .. ": " )
+	self.vehColorText:SizeToContents()
 
-		self.decalText:SetText( "Decal: " )
-		self.decalText:SizeToContents()
+	self.decalText:SetText( "Decal: " )
+	self.decalText:SizeToContents()
 
-		self.decalNames = { "Default", "Panau", "Japan", "Reapers", "Roaches", "Ular Boys", "Taxi" }
-	end
+	self.decalNames = { "Default", "Panau", "Japan", "Reapers", "Roaches", "Ular Boys", "Taxi" }
 end
 
 function Shop:RenderAppearanceHat()
@@ -957,13 +948,15 @@ function Shop:ToggleHome()
 		self.home = true
 		self.texter:SetText( self.home_txt .. " 1: " )
 	end
+
 	self.texter:SizeToContents()
 	self.buttonHB:SetPosition( Vector2( self.texter:GetSize().x + 12, 10 ) )
 	self.toggleH:SetPosition( Vector2( self.buttonHB:GetPosition().x + self.buttonHB:GetSize().x + 5, 10 ) )
 end
 
 function Shop:GoHome()
-	self:Close()
+	self:WindowClosed()
+
 	if self.home then
 		Events:Fire( "GoHome" )
 	else
@@ -972,7 +965,8 @@ function Shop:GoHome()
 end
 
 function Shop:BuyHome()
-	self:Close()
+	self:WindowClosed()
+
 	if self.home then
 		Events:Fire( "BuyHome" )
 	else
@@ -982,19 +976,19 @@ end
 
 function Shop:GetUnitString()
 	if self.unit == 1 then
-		Network:Send( "Skin", nil )
+		Network:Send( "VehicleDecal", nil )
 	elseif self.unit == 2 then
-		Network:Send( "Skin", "MilStandard" )
+		Network:Send( "VehicleDecal", "MilStandard" )
 	elseif self.unit == 3 then
-		Network:Send( "Skin", "OldJapan" )
+		Network:Send( "VehicleDecal", "OldJapan" )
 	elseif self.unit == 4 then
-		Network:Send( "Skin", "Reapers" )
+		Network:Send( "VehicleDecal", "Reapers" )
 	elseif self.unit == 5 then
-		Network:Send( "Skin", "Roaches" )
+		Network:Send( "VehicleDecal", "Roaches" )
 	elseif self.unit == 6 then
-		Network:Send( "Skin", "UlarBoys" )
+		Network:Send( "VehicleDecal", "UlarBoys" )
 	elseif self.unit == 7 then
-		Network:Send( "Skin", "Taxi" )
+		Network:Send( "VehicleDecal", "Taxi" )
 	end
 end
 
@@ -1033,13 +1027,16 @@ end
 function Shop:OpenShop()
 	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+
 	local effect = ClientEffect.Play(AssetLocation.Game, {
 		effect_id = 382,
 
 		position = Camera:GetPosition(),
 		angle = Angle()
 	})
+
 	self:SetActive( not self:GetActive() )
+
 	if self.active then
 		if LocalPlayer:GetValue( "SystemFonts" ) then
 			self.Home_button:SetFont( AssetLocation.SystemFont, "Impact" )
@@ -1061,9 +1058,9 @@ function Shop:OpenShop()
 end
 
 function Shop:CloseShop()
-	if Game:GetState() ~= GUIState.Game and LocalPlayer:GetWorld() ~= DefaultWorld then return end
-	if self.window:GetVisible() == true then
+	if self.window:GetVisible() then
 		self:SetActive( false )
+
 		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 	end
 end
@@ -1071,9 +1068,10 @@ end
 function Shop:LocalPlayerInput( args )
 	if args.input == Action.GuiPause then
 		self:SetActive( false )
-		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil
-		end
+
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 	end
+
 	if self.actions[args.input] then
 		return false
 	end
@@ -1095,8 +1093,10 @@ function Shop:Buy()
 	if first_selected_item ~= nil then
 		local index = first_selected_item:GetDataNumber( "id" )
 		local time = Client:GetElapsedSeconds()
+
 		self:GetUnitString()
-		self:Close()
+		self:WindowClosed()
+
 		if self.types[category_name] == 1 then
 			if LocalPlayer:GetValue( "PVPMode" ) then
 				Events:Fire( "CastCenterText", { text = self.pvpblock, time = 6, color = Color.Red } )
@@ -1115,7 +1115,7 @@ function Shop:Buy()
 	end
 end
 
-function Shop:Close()
+function Shop:WindowClosed()
 	if self.active then
 		self:SetActive( false )
 
@@ -1134,12 +1134,11 @@ function Shop:NoVipText()
 	Events:Fire( "CastCenterText", { text = self.noVipText, time = 3, color = Color.Red } )
 end
 
-function Shop:Parachute( message )
-	Game:FireEvent( message )
+function Shop:SetParachute( model_id )
+	Game:FireEvent( model_id )
 end
 
 function Shop:RestoreParachute()
-	if LocalPlayer:GetValue( "GameMode" ) == "Охота" then return end
 	Network:Send( "GiveMeParachute" )
 end
 
@@ -1154,10 +1153,6 @@ function Shop:Sound()
 	})
 
 	sound:SetParameter(0,1)
-end
-
-function Shop:Shop( args )
-	self.active = true
 end
 
 shop = Shop()

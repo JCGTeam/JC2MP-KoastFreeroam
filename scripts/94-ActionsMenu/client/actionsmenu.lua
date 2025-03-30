@@ -434,19 +434,6 @@ function ActionsMenu:WindowClosed()
     })
 end
 
-function ActionsMenu:Lezat()
-	local bs = LocalPlayer:GetBaseState()
-
-	if bs == AnimationState.SUprightIdle then
-		LocalPlayer:SetBaseState( AnimationState.SSwimDie )
-	else
-		if bs == AnimationState.SDead then
-			LocalPlayer:SetBaseState( AnimationState.SUprightIdle )
-		end
-	end
-    self:WindowClosed()
-end
-
 function ActionsMenu:SeatInput( args )
 	if args.input == 39 or args.input == 40 or args.input == 41 or args.input == 42 then
 		LocalPlayer:SetBaseState( AnimationState.SUprightIdle )

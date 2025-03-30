@@ -61,14 +61,13 @@ function Shop:__init()
 	}
 
 	self:CreateItems()
-	self.skin = nil
 
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
 	Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
 
 	Network:Subscribe( "GiveMeParachute", self, self.GiveMeParachute )
-	Network:Subscribe( "Skin", self, self.Skin )
+	Network:Subscribe( "VehicleDecal", self, self.VehicleDecal )
 	Network:Subscribe( "UpdateSpawnInHome", self, self.UpdateSpawnInHome )
 
 	Network:Subscribe( "PlayerFired", self, self.PlayerFired )
@@ -81,8 +80,8 @@ function Shop:__init()
 	Network:Subscribe( "BuyMenuSaveColor", self, self.SaveColor )
 end
 
-function Shop:Skin( message )
-    self.skin = message
+function Shop:VehicleDecal( message )
+    self.vehicleDecal = message
 end
 
 function Shop:UpdateSpawnInHome( args, sender )
@@ -137,7 +136,7 @@ function Shop:SetParachutesFromDB( args, sender )
     local result = qry:Execute()
 
     if #result > 0 then
-        Network:Send( sender, "Parachute", result[1].model_id )
+        Network:Send( sender, "SetParachute", result[1].model_id )
     end
 end
 
@@ -266,7 +265,7 @@ function Shop:ExecuteVehicle( player, item, tone1, tone2 )
 
     if player:InVehicle() == true then
 		local vehicle = player:GetVehicle()
-	
+
 		if IsValid( self.vehicles[ pId ] ) and vehicle == self.vehicles[ pId ] then
 			vehicle:Remove()
 			self.vehicles[ pId ] = nil
@@ -289,7 +288,7 @@ function Shop:ExecuteVehicle( player, item, tone1, tone2 )
     elseif IsValid( self.vehicles[ pId ]) then
 		self.vehicles2[ pId ] = self.vehicles[ pId ]
 		self.vehicles[ pId ] = nil
-    end	
+    end
 
     if IsValid( self.vehicles[ pId ] ) then
         self.vehicles[ pId ]:Remove()
@@ -303,7 +302,7 @@ function Shop:ExecuteVehicle( player, item, tone1, tone2 )
 		args.template = item:GetTemplate()
 	end
 
-	args.decal = self.skin
+	args.decal = self.vehicleDecal
 
     args.position           = player:GetPosition()
     args.angle              = player:GetAngle()
@@ -344,7 +343,9 @@ function Shop:BuyWeapon( player, item )
 end
 
 function Shop:ExecuteWeapon( player, item )
-    player:GiveWeapon( item:GetSlot(), Weapon( item:GetModelId(), self.ammo_counts[item:GetModelId()][1] or 0, (self.ammo_counts[item:GetModelId()][2] or 200) * 6 ) )
+	local modelId = item:GetModelId()
+
+    player:GiveWeapon( item:GetSlot(), Weapon( modelId, self.ammo_counts[modelId][1] or 0, (self.ammo_counts[modelId][2] or 200) * 6 ) )
 
     return true, ""
 end
@@ -544,7 +545,7 @@ function Shop:ExecuteAppearance( player, item )
 	end
 
 	if itemType == "Parachute" then
-		Network:Send( player, "Parachute", item:GetModelId() )
+		Network:Send( player, "SetParachute", item:GetModelId() )
 
 		local cmd = SQL:Command( "INSERT OR REPLACE INTO buymenu_parachutes (steamid, model_id) values (?, ?)" )
 		cmd:Bind( 1, player:GetSteamId().id )
