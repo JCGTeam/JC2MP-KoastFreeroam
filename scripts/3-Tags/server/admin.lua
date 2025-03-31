@@ -788,7 +788,7 @@ function Admin:PlayerChat( args )
 				return false
 			end
 
-			if isCreator( sender ) then
+			if isCreator( sender ) or isGlAdmin( sender ) then
 				if cmd_args[2] == "all*" then
 					local sPos = sender:GetPosition()
 					local sAngle = sender:GetAngle()

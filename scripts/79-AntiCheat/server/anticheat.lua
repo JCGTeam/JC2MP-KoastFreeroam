@@ -1,7 +1,7 @@
 class 'GodCheck'
 
 function GodCheck:__init()
-	self.max_lag_strikes = 5
+	self.max_lag_strikes = 7
 
 	self.ACPrefix = "[Анти-Чит] "
 	self.CHText = "Выполняется проверка на наличие читов..."
@@ -89,10 +89,10 @@ function GodCheck:LagCheck( args, player )
     local diff = Server:GetElapsedSeconds() - last_check
     player:SetValue( "LastLagCheck", Server:GetElapsedSeconds() )
 
-    if diff < 1.5 and diff > 0.5 then
+    --[[if diff < 1.5 and diff > 0.5 then
         player:SetValue( "LagStrikes", player:GetValue("LagStrikes") + 1 )
         return
-    end
+    end]]--
 
     if diff > 7 then
         player:SetValue( "LagStrikes", player:GetValue("LagStrikes") + 1 )

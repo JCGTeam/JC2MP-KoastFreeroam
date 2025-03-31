@@ -60,8 +60,6 @@ function VehicleRadio:KeyUp( args )
 end
 
 function VehicleRadio:ToggleRadio()
-	if Game:GetState() ~= GUIState.Game then return end
-
 	if self.check <= 4 then
 		self.check = self.check + 1
 	end

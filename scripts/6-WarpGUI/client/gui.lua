@@ -434,7 +434,6 @@ function WarpGui:OpenWarpGUI()
 end
 
 function WarpGui:CloseWarpGUI()
-	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
 	if self.window:GetVisible() == true then

@@ -116,7 +116,6 @@ function DailyTasks:OpenDedMorozMenu()
 end
 
 function DailyTasks:CloseDedMorozMenu()
-    if Game:GetState() ~= GUIState.Game then return end
 	if self.window:GetVisible() == true then
         self:SetWindowVisible( false )
         self.list:Clear()

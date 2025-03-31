@@ -255,7 +255,6 @@ function Reports:OpenReportMenu()
 end
 
 function Reports:CloseReportMenu()
-	if Game:GetState() ~= GUIState.Game then return end
 	if self.window:GetVisible() == true then
 		self:WindowClosed()
 	end
