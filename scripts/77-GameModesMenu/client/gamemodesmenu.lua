@@ -127,7 +127,6 @@ function GameModesMenu:OpenGameModesMenu()
 end
 
 function GameModesMenu:CloseGameModesMenu()
-	if Game:GetState() ~= GUIState.Game then return end
 	if self.window:GetVisible() == true then
 		self:WindowClosed()
 	end

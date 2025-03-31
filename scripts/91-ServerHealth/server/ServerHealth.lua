@@ -1,6 +1,15 @@
 class 'ServerHealth'
 
 function ServerHealth:__init()
+    self.autoShutdown = false
+
+    if self.autoShutdown then
+        self.timer = Timer()
+        self.checkTime = "4:00:00"
+
+        Events:Subscribe( "PreTick", self, self.PreTick )
+    end
+
     self:CheckServerHealth()
 
     Events:Subscribe( "ServerStart", self, self.ServerStart )
@@ -69,6 +78,29 @@ function ServerHealth:ServerStart()
 
         Events:Fire( "ToDiscordConsole", { text = "**[Status] " .. self.iKnowWhatImDoingWarning .. "**" } )
     end
+end
+
+function ServerHealth:PreTick()
+    if self.timer:GetSeconds() < 1 then return end
+
+    local current_time = os.date( "%H:%M:%S" )
+
+    if current_time == self.checkTime then
+        local pCount = Server:GetPlayerCount()
+
+        if pCount == 0 then
+            self:KickX()
+        else
+            local text = "Auto shutdown skipped. Online: " .. pCount
+
+            print( text )
+            Events:Fire( "ToDiscordConsole", { text = text } )
+
+            --Console:Run( "loadall" )
+        end
+    end
+
+    self.timer:Restart()
 end
 
 function ServerHealth:PlayerJoin( args )
@@ -156,19 +188,11 @@ function ServerHealth:GetHelp()
 end
 
 function ServerHealth:SecondsToClock( seconds )
-    local seconds = tonumber( seconds )
+    local hours = math.floor( seconds / 3600 )
+    local mins = math.floor( ( seconds % 3600 ) / 60 )
+    local secs = math.floor( seconds % 60 )
 
-    if seconds <= 0 then
-        return "00:00:00"
-    else
-        local format = "%02.f"
-
-        hours = string.format( format, math.floor( seconds / 3600) )
-        mins = string.format( format, math.floor( seconds / 60 - ( hours * 60 ) ) )
-        secs = string.format( format, math.floor( seconds - hours * 3600 - mins * 60 ) )
-
-        return hours .. ":" .. mins .. ":" .. secs
-    end
+    return string.format( "%02d:%02d:%02d", hours, mins, secs )
 end
 
 serverhealth = ServerHealth()
