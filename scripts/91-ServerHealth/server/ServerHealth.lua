@@ -5,7 +5,7 @@ function ServerHealth:__init()
 
     if self.autoShutdown then
         self.timer = Timer()
-        self.checkTime = "4:00:00"
+        self.checkTime = "04:00:00"
 
         Events:Subscribe( "PreTick", self, self.PreTick )
     end
