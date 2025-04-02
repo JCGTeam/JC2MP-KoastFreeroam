@@ -2,7 +2,7 @@ class 'AFKSystem'
 
 function AFKSystem:__init()
 	self.timer = Timer()
-	self.secondsToEnterAFK = 60
+	self.secondsToEnterAFK = 180
 
 	self.tag = "[AFK] "
 
@@ -16,6 +16,7 @@ function AFKSystem:__init()
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+	Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
 end
 
 function AFKSystem:Lang()
@@ -33,6 +34,10 @@ function AFKSystem:LocalPlayerInput()
 	end
 
 	self.timer:Restart()
+end
+
+function AFKSystem:ModuleUnload()
+	self:LocalPlayerInput()
 end
 
 function AFKSystem:SecondsToClock( seconds )

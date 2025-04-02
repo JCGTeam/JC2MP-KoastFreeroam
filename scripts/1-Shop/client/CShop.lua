@@ -211,7 +211,7 @@ end
 
 function Shop:Lang()
 	if self.buy_button then
-		self.buy_button:SetText( "Get it" )
+		self.buy_button:SetText( "Get" )
 	end
 
 	self.vehicleColor_txt = "Vehicle color"
