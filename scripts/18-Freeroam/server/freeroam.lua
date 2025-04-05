@@ -31,7 +31,6 @@ function Freeroam:__init()
     Events:Subscribe( "ClearCustomTeleports", self, self.ClearCustomTeleports )
 
 	Network:Subscribe( "GiveMeWeapon", self, self.GiveMeWeapon )
-    Network:Subscribe( "SetSpawnMode", self, self.SetSpawnMode )
     Network:Subscribe( "TogglePassiveAfterSpawn", self, self.TogglePassiveAfterSpawn )
 end
 
@@ -224,10 +223,6 @@ function Freeroam:ModulesLoad()
     for _, v in pairs(self.teleports) do
         Events:Fire( "TeleportPoint", v )
     end
-end
-
-function Freeroam:SetSpawnMode( args )
-    sender:SetValue( "SpawnMode", args.type )
 end
 
 function Freeroam:ToggleSpawnInHome( args )
@@ -433,7 +428,7 @@ function Freeroam:PlayerDeath( args )
             --Network:Send( args.player, "EnableKillerCamera", args.killer )
         end
 
-        args.player:SetValue( "SpawnMode", 2 )
+        args.player:SetValue( "SpawnMode", 0 ) -- 2 to respawn in random position
 	else
         args.player:SetValue( "SpawnMode", 0 )
     end
