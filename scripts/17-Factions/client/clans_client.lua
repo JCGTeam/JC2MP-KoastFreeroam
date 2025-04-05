@@ -51,6 +51,9 @@ function ClanSystem:ModuleLoad()
 	self.playerToRow = {}
 	self.clansRow = {}
 
+	self.sort_dir = false
+	self.last_column = -1
+
 	self.clanMenu.window = GUI:Window( "✽ Кланы", Vector2( 0.54, 0.4 ) - Vector2( 0.3, 0.45 ) / 2, Vector2( 0.6, 0.70 ) )
 	self.clanMenu.window:SetVisible( self.active )
 	self.clanMenu.window:Subscribe( "WindowClosed", self, self.WindowClosed )
@@ -68,6 +71,8 @@ function ClanSystem:ModuleLoad()
 	self.clanMenu.list:AddColumn( "Основатель" )
 	self.clanMenu.list:AddColumn( "Тип" )
 	self.clanMenu.list:AddColumn( "Участников" )
+	self.clanMenu.list:SetSort( self, self.SortFunction )
+	self.clanMenu.list:Subscribe( "SortPress", function( button ) self.sort_dir = not self.sort_dir end )
 	self.clanMenu.list:Subscribe( "RowSelected", self, self.GetClanInfo )
 
 	self.clanMenu.bkpanelsLabel = Label.Create( clanslist )
@@ -341,7 +346,6 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.ranks:AddItem( "Заместитель" )
 	self.manageClan.ranks:AddItem( "Редактор" )
 	self.manageClan.ranks:AddItem( "Участник" )
-	self.manageClan.ranks:AddItem( "Петух" )
 
 	self.manageClan.setRank = Button.Create( self.manageClan.psettLabel )
 	self.manageClan.setRank:SetDock( GwenPosition.Top )
@@ -671,6 +675,33 @@ function ClanSystem:Lang()
 	self.clanList.window:SetTitle( "••• List of players •••" )
 	self.clanList.invitePlayer:SetText( "» Invite player" )
 	self.clanList.searchEdit:SetToolTip( "Search" )
+end
+
+function ClanSystem:SortFunction( column, a, b )
+	if column ~= -1 then
+		self.last_column = column
+	elseif column == -1 and self.last_column ~= -1 then
+		column = self.last_column
+	else
+		column = 0
+	end
+
+	local a_value = a:GetCellText( column )
+	local b_value = b:GetCellText( column )
+
+	local a_num = tonumber( a_value )
+	local b_num = tonumber( b_value )
+
+	if a_num ~= nil and b_num ~= nil then
+		a_value = a_num
+		b_value = b_num
+	end
+
+	if self.sort_dir then
+		return a_value > b_value
+	else
+		return a_value < b_value
+	end
 end
 
 function ClanSystem:GetClanInfo()
