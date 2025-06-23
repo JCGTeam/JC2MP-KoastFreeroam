@@ -13,8 +13,9 @@ function FreeCam:__init()
 	self.gamepadSensitivity = 0.08
 	self.permitted = true
 
-	self.prefix = "[Свободная камера] "
-	self.controltip = "[WASD] - Перемещение\n[Shift] - Ускорить движение\n[Ctrl] - Замедлить движение\n[<>] - Изменить угол камеры\n[{}] - Изменить поле зрения камеры\n[X] - Сбросить угол и поле зрения камеры\n[L] - Показать/скрыть черные полосы\n[Z] - Скрыть/показать подсказки"
+	self.locStrings = {
+		controltip = "[WASD] - Перемещение\n[Shift] - Ускорить движение\n[Ctrl] - Замедлить движение\n[<>] - Изменить угол камеры\n[{}] - Изменить поле зрения камеры\n[X] - Сбросить угол и поле зрения камеры\n[L] - Показать/скрыть черные полосы\n[Z] - Скрыть/показать подсказки"
+	}
 
 	self.controltip_clr = Color.White
 	self.controltip_shadow = Color.Black
@@ -50,8 +51,9 @@ function FreeCam:__init()
 end
 
 function FreeCam:Lang()
-	self.prefix = "[FREECAM] "
-	self.controltip = "[WASD] - Move\n[Shift] - Speed ​​up movement\n[Ctrl] - Slow down movement\n[<>] - Change camera angle\n[{}] - Change camera FOV\n[X] - Reset camera angle and FOV\n[L] - Show/hide black bars\n[Z] - Hide/show tooltips"
+	self.locStrings = {
+		controltip = "[WASD] - Move\n[Shift] - Speed ​​up movement\n[Ctrl] - Slow down movement\n[<>] - Change camera angle\n[{}] - Change camera FOV\n[X] - Reset camera angle and FOV\n[L] - Show/hide black bars\n[Z] - Hide/show tooltips"
+	}
 end
 
 function FreeCam:Render()
@@ -71,7 +73,7 @@ function FreeCam:Render()
 
 	if self.tip then
 		Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
-		Render:DrawShadowedText( Vector2( 50, 50 ), self.controltip, self.controltip_clr, self.controltip_shadow, self.controltip_size )
+		Render:DrawShadowedText( Vector2( 50, 50 ), self.locStrings["controltip"], self.controltip_clr, self.controltip_shadow, self.controltip_size )
 	end
 end
 

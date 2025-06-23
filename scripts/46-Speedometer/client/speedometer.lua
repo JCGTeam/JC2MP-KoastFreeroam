@@ -33,15 +33,21 @@ function Speedometer:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.ms_txt = "м/с"
-		self.kmh_txt = "км/ч"
-		self.mph = "миль"
+		self.locStrings = {
+			ms = "м/с",
+			kmh = "км/ч",
+			mph = "миль",
+			title = "Настройка спидометра",
+			enabled = "Включено",
+			gear = "Показывать передачу",
+			onscreenmode = "Экранный режим",
+			firstpersonmode = "Режим от 1-го лица"
+		}
 	end
 
 	self.speedScale = 120
 	self.speedFactor = 3.6
 
-	self:CreateSettings()
 	self.speed_text_size = TextSize.Gigantic
 	self.unit_text_size = TextSize.Huge
 
@@ -63,7 +69,7 @@ function Speedometer:__init()
 
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
-	Events:Subscribe( "OpenSpeedometerMenu", self, self.Active )
+	Events:Subscribe( "OpenSpeedometerMenu", self, self.ToggleWindowVisible )
 end
 
 function Speedometer:LocalPlayerEnterVehicle()
@@ -84,21 +90,27 @@ function Speedometer:LocalPlayerExitVehicle()
 end
 
 function Speedometer:Lang()
-	self.ms_txt = "m/s"
-	self.kmh_txt = "km/h"
-	self.mph = "mph"
+	self.locStrings = {
+		ms = "m/s",
+		kmh = "km/h",
+		mph = "mph",
+		title = "Speedometer Settings",
+		enabled = "Enabled",
+		gear = "Show current gear",
+		onscreenmode = "On-screen mode",
+		firstpersonmode = "First-person mode"
+	}
 end
 
-function Speedometer:CreateSettings()
-	self.window_open = false
+function Speedometer:CreateWindow()
+	if self.window then return end
 
 	self.window = Window.Create()
 	self.window:SetSize( Vector2( 300, 135 ) )
 	self.window:SetPosition( (Render.Size - self.window:GetSize())/2 )
 
-	self.window:SetTitle( "Настройка спидометра" )
-	self.window:SetVisible( self.window_open )
-	self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
+	self.window:SetTitle( self.locStrings["title"] )
+	self.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false ) end )
 
 	self.widgets = {}
 
@@ -109,21 +121,21 @@ function Speedometer:CreateSettings()
 
 	enabled_checkbox:SetSize( Vector2( 300, 20 ) )
 	enabled_checkbox:SetDock( GwenPosition.Top )
-	enabled_checkbox:GetLabel():SetText( "Включено" )
+	enabled_checkbox:GetLabel():SetText( self.locStrings["enabled"] )
 	enabled_checkbox:GetCheckBox():SetChecked( self.enabled )
 	enabled_checkbox:GetCheckBox():Subscribe( "CheckChanged", 
 		function() self.enabled = enabled_checkbox:GetCheckBox():GetChecked() end )
 	
 	peredacha_checkbox:SetSize( Vector2( 300, 20 ) )
 	peredacha_checkbox:SetDock( GwenPosition.Top )
-	peredacha_checkbox:GetLabel():SetText( "Показывать передачу" )
+	peredacha_checkbox:GetLabel():SetText( self.locStrings["gear"] )
 	peredacha_checkbox:GetCheckBox():SetChecked( self.peredacha )
 	peredacha_checkbox:GetCheckBox():Subscribe( "CheckChanged", 
 		function() self.peredacha = peredacha_checkbox:GetCheckBox():GetChecked() end )
 
 	bottom_checkbox:SetSize( Vector2( 300, 20 ) )
 	bottom_checkbox:SetDock( GwenPosition.Top )
-	bottom_checkbox:GetLabel():SetText( "Экранный режим" )
+	bottom_checkbox:GetLabel():SetText( self.locStrings["onscreenmode"] )
 	bottom_checkbox:GetCheckBox():SetChecked( self.bottom_aligned )
 	bottom_checkbox:GetCheckBox():Subscribe( "CheckChanged", 
 		function()
@@ -145,7 +157,7 @@ function Speedometer:CreateSettings()
 
 	center_checkbox:SetSize( Vector2( 300, 20 ) )
 	center_checkbox:SetDock( GwenPosition.Top )
-	center_checkbox:GetLabel():SetText( "Режим от 1-го лица" )
+	center_checkbox:GetLabel():SetText( self.locStrings["firstpersonmode"] )
 	center_checkbox:GetCheckBox():SetChecked( self.center_aligned )
 	center_checkbox:GetCheckBox():Subscribe( "CheckChanged", 
 		function()
@@ -157,11 +169,11 @@ function Speedometer:CreateSettings()
 		end
 	)
 
-   local rbc = RadioButtonController.Create( self.window )
+	local rbc = RadioButtonController.Create( self.window )
 	rbc:SetSize( Vector2( 300, 20 ) )
 	rbc:SetDock( GwenPosition.Top )
 
-	local units = { self.ms_txt, self.kmh_txt, self.mph }
+	local units = { self.locStrings["ms"], self.locStrings["kmh"], self.locStrings["mph"] }
 	for i, v in ipairs( units ) do
 		local option = rbc:AddOption( v )
 		option:SetSize( Vector2( 100, 20 ) )
@@ -178,14 +190,14 @@ function Speedometer:CreateSettings()
 	end
 end
 
-function Speedometer:GetWindowOpen()
-	return self.window_open
-end
+function Speedometer:SetWindowVisible( visible )
+	self:CreateWindow()
 
-function Speedometer:SetWindowOpen( state )
-	self.window_open = state
-	self.window:SetVisible( self.window_open )
-	Mouse:SetVisible( self.window_open )
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
 end
 
 function Speedometer:GetSpeed( vehicle )
@@ -202,11 +214,11 @@ end
 
 function Speedometer:GetUnitString()
 	if self.unit == 0 then
-		return self.ms_txt
+		return self.locStrings["ms"]
 	elseif self.unit == 1 then
-		return self.kmh_txt
+		return self.locStrings["kmh"]
 	elseif self.unit == 2 then
-		return self.mph
+		return self.locStrings["mph"]
 	end
 end
 
@@ -400,21 +412,20 @@ function Speedometer:GameRender()
 	Render:FillArea( bar_pos, Vector3( bar_len, 16, 0 ), col )
 end
 
-function Speedometer:Active()
-	self:SetWindowOpen( not self:GetWindowOpen() )
-	return true
+function Speedometer:ToggleWindowVisible()
+	self:SetWindowVisible( not self.activeWindow )
 end
 
 function Speedometer:LocalPlayerInput( args )
-	if self:GetWindowOpen() and Game:GetState() == GUIState.Game then
+	if args.input == Action.GuiPause then
+		self:SetWindowVisible( false )
+	end
+
+	if self.activeWindow and Game:GetState() == GUIState.Game then
 		if self.actions[args.input] then
 			return false
 		end
 	end
-end
-
-function Speedometer:WindowClosed()
-	self:SetWindowOpen( false )
 end
 
 speedometer = Speedometer()

@@ -131,7 +131,7 @@ function Autopilot:InitGUI()
 		v.button = Button.Create( gui.window )
 		v.button:SetText( config[i].name )
 		v.button:SetToggleable( true )
-		v.button:SetTextPressedColor( Color.GreenYellow )
+		v.button:SetTextPressedColor( Color.LightGreen )
 
 		if config[i].setting then
 			v.label = Label.Create( gui.window )
@@ -302,7 +302,7 @@ function Autopilot:WaypointHoldOn()
 		self:HeadingHoldOn()
 		config[7].on = true
 	else
-		Events:Fire( "CastCenterText", { text = "Точку не поставил.", time = 4, color = Color.GreenYellow } )
+		Events:Fire( "CastCenterText", { text = "Точку не поставил.", time = 4, color = Color.LightGreen } )
 		return
 	end
 end
@@ -315,7 +315,7 @@ function Autopilot:ApproachHoldOn()
 	config[8].on = true
 	self.scanning = true
 	self.approach_timer = Timer()
-	Events:Fire( "CastCenterText", { text = "Сканирование взлетно-посадочных полос...", time = 4, color = Color.GreenYellow } )
+	Events:Fire( "CastCenterText", { text = "Сканирование взлетно-посадочных полос...", time = 4, color = Color.LightGreen } )
 	return
 end
 
@@ -327,7 +327,7 @@ function Autopilot:TargetHoldOn()
 	config[9].on = true
 	self.scanning = true
 	self.target_timer = Timer()
-	Events:Fire( "CastCenterText", { text = "Сканирование целей...", time = 4, color = Color.GreenYellow } )
+	Events:Fire( "CastCenterText", { text = "Сканирование целей...", time = 4, color = Color.LightGreen } )
 	return
 end
 
@@ -436,7 +436,7 @@ function Autopilot:PanelOpen( args )
 			self:SettingsOff()
 			Mouse:SetVisible( self.gui.window:GetVisible() )
 
-			local effect = ClientEffect.Play(AssetLocation.Game, {
+			local effect = ClientEffect.Play( AssetLocation.Game, {
 				effect_id = self.gui.window:GetVisible() and 382 or 383,
 
 				position = Camera:GetPosition(),
@@ -451,7 +451,7 @@ function Autopilot:Close()
 	self:SettingsOff()
 	Mouse:SetVisible( self.gui.window:GetVisible() )
 
-	local effect = ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play( AssetLocation.Game, {
 		effect_id = self.gui.window:GetVisible() and 382 or 383,
 
 		position = Camera:GetPosition(),
@@ -804,7 +804,7 @@ function Autopilot:ApproachHold()
 			self:HeadingHoldOn()
 			self:AlitudeHoldOn()
 			self:SpeedHoldOn()
-			Events:Fire( "CastCenterText", { text = "Подход к " .. airport_name.. " RWY" .. runway_name .. " установке.", time = 4, color = Color.GreenYellow } )
+			Events:Fire( "CastCenterText", { text = "Подход к " .. airport_name.. " RWY" .. runway_name .. " установке.", time = 4, color = Color.LightGreen } )
 			self.approach = {
 				near_marker = airports[airport_name][runway_name].near_marker,
 				far_marker = airports[airport_name][runway_name].far_marker,
@@ -853,7 +853,7 @@ function Autopilot:DrawApproach() -- Subscribed to GameRender
 	if config[8].on and self.draw_approach then
 		local approach = self.approach
 		if approach then
-			Render:DrawLine( approach.near_marker, approach.near_marker + approach.angle * Vector3.Forward * approach.glide_length, Color.GreenYellow )
+			Render:DrawLine( approach.near_marker, approach.near_marker + approach.angle * Vector3.Forward * approach.glide_length, Color.LightGreen )
 			Render:DrawLine( approach.near_marker, approach.near_marker + approach.angle * approach.sweep_yaw * Vector3.Forward * approach.glide_length, Color.Cyan )
 			Render:DrawLine( approach.near_marker, approach.near_marker + approach.angle * -approach.sweep_yaw * Vector3.Forward * self.approach.glide_length, Color.Cyan )
 		end
@@ -881,7 +881,7 @@ function Autopilot:TargetHold()
 
 		if nearest_target then
 			self.scanning = nil
-			Events:Fire( "CastCenterText", { text = "Цель: "..tostring(nearest_target:GetDriver()), time = 4, color = Color.GreenYellow } )
+			Events:Fire( "CastCenterText", { text = "Цель: "..tostring(nearest_target:GetDriver()), time = 4, color = Color.LightGreen } )
 			self.target = {
 				vehicle = nearest_target,
 				follow_distance = 100,
@@ -898,7 +898,7 @@ function Autopilot:TargetHold()
 
 	if target then
 		if not IsValid(target.vehicle) or not target.vehicle:GetDriver() then
-			Events:Fire( "CastCenterText", { text = "Цель потеряна!", time = 4, color = Color.GreenYellow } )
+			Events:Fire( "CastCenterText", { text = "Цель потеряна!", time = 4, color = Color.LightGreen } )
 			return self:TargetHoldOff()
 		end
 
@@ -936,7 +936,7 @@ function Autopilot:Render()
 
 			local n = Render.Height * self.text_scale
 			local m = 0.75 * n
-			local color = Color.GreenYellow
+			local color = Color.LightGreen
 
 			Render:DrawLine( center + Vector2(-n, -m), center + Vector2(-n,  m), color )
 			Render:DrawLine( center + Vector2(-m,  n), center + Vector2( m,  n), color )

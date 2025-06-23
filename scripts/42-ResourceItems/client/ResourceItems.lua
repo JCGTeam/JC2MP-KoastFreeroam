@@ -50,7 +50,7 @@ end
 function ResourceItems:CrateTaken()
 	self.numcrates = self.numcrates + 1
 
-	local sound = ClientSound.Create(AssetLocation.Game, {
+	local sound = ClientSound.Create( AssetLocation.Game, {
 		bank_id = 19,
 		sound_id = 3,
 		position = LocalPlayer:GetPosition(),

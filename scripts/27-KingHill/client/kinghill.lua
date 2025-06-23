@@ -11,14 +11,16 @@ function KingHil:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.nameT = "Игроки"
-		self.nameTTw = "Очередь"
-		self.nameTTh = "Ожидание других игроков..."
-		self.nameTFo = "Доберитесь до чекпоинта первым и отбивайтесь ракетницей от соперников!"
-		self.nameTFi = "За границами "
-		self.lobbyneeds_txt = "Нужно на "
-		self.lobbymore_txt = " больше"
-		self.lobbyplayer_txt = "игроков)"
+		self.locStrings = {
+			nameT = "Игроки",
+			nameTTw = "Очередь",
+			nameTTh = "Ожидание других игроков...",
+			nameTFo = "Доберитесь до чекпоинта первым и отбивайтесь ракетницей от соперников!",
+			nameTFi = "За границами ",
+			lobbyneeds = "Нужно на ",
+			lobbymore = " больше",
+			lobbyplayer = "игроков)"
+		}
 	end
 
 	self.spec = {
@@ -44,14 +46,16 @@ function KingHil:__init()
 end
 
 function KingHil:Lang()
-	self.nameT = "Players"
-	self.nameTTw = "Current Queue"
-	self.nameTTh = "Waiting for other players..."
-	self.nameTFo = "Get to checkpoint first and fight off your rivals with a rocket launcher!"
-	self.nameTFi = "Out of bounds "
-	self.lobbyneeds_txt = "We need "
-	self.lobbymore_txt = " more"
-	self.lobbyplayer_txt = "players)"
+	self.locStrings = {
+		nameT = "Players",
+		nameTTw = "Current Queue",
+		nameTTh = "Waiting for other players...",
+		nameTFo = "Get to checkpoint first and fight off your rivals with a rocket launcher!",
+		nameTFi = "Out of bounds ",
+		lobbyneeds = "We need ",
+		lobbymore = " more",
+		lobbyplayer = "players)"
+	}
 end
 
 function DrawCenteredShadowedText( position, text, color, textsize )
@@ -164,7 +168,7 @@ function KingHil:Render()
 		DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 ), #self.queue .. ' / ' .. self.queueMax, Color.White, TextSize.Large )
 
 		if playersNeeded > 0 then
-			DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 + TextSize.Large ), '(' .. self.lobbyneeds_txt .. playersNeeded .. self.lobbymore_txt .. (playersNeeded ~= 1 and self.lobbyplayer_txt or " " .. self.lobbyplayer_txt), Color( 165, 165, 165 ), 25 )
+			DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 + TextSize.Large ), '(' .. self.locStrings["lobbyneeds"] .. playersNeeded .. self.locStrings["lobbymore"] .. (playersNeeded ~= 1 and self.locStrings["lobbyplayer"] or " " .. self.locStrings["lobbyplayer"]), Color( 165, 165, 165 ), 25 )
 		end
 
 		if self.queue then
@@ -172,14 +176,14 @@ function KingHil:Render()
 				DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - (k * 20) ), player:GetName(), player:GetColor() )
 			end
 
-			DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#self.queue + 1) * 20) ), self.nameTTw, Color.White, 20 )
+			DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#self.queue + 1) * 20) ), self.locStrings["nameTTw"], Color.White, 20 )
 		end
 	elseif self.state == GamemodeState.PREPARING then
-		DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 ), self.nameTTh, Color.White, TextSize.Large )
+		DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 ), self.locStrings["nameTTh"], Color.White, TextSize.Large )
 	elseif self.state == GamemodeState.COUNTDOWN then
 		DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 ), math.max(math.ceil(5 - self.timer:GetSeconds()), 1) .. "", Color.White, TextSize.Huge )
 	elseif self.state == GamemodeState.INPROGRESS then
-		DrawCenteredShadowedText( Vector2( Render.Width / 2, Render.Height - 35 ), self.nameTFo, Color.Yellow )
+		DrawCenteredShadowedText( Vector2( Render.Width / 2, Render.Height - 35 ), self.locStrings["nameTFo"], Color.Yellow )
 
 		Waypoint:SetPosition(self.stateArgs.finish)
 
@@ -187,7 +191,7 @@ function KingHil:Render()
 		local timerSeconds = self.timer:GetSeconds()
 
 		if timerSeconds > 0 and distance >= self.stateArgs.maxRadius then
-			DrawCenteredShadowedText( Render.Size / 2, self.nameTFi .. math.max(math.ceil(5 - timerSeconds), 1) .. "...", Color.Red, TextSize.Huge )
+			DrawCenteredShadowedText( Render.Size / 2, self.locStrings["nameTFi"] .. math.max(math.ceil(5 - timerSeconds), 1) .. "...", Color.Red, TextSize.Huge )
 		end
 	end
 
@@ -207,7 +211,7 @@ function KingHil:Render()
 			DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - (k * 20) ), player:GetName(), color )
 		end
 
-		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.nameT, Color.White, 20 )
+		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.locStrings["nameT"], Color.White, 20 )
 	end
 end
 

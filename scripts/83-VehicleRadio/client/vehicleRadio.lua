@@ -5,8 +5,10 @@ function VehicleRadio:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.radioname = "Магнитола: "
-		self.offname = "Выключено"
+		self.locStrings = {
+			title = "Магнитола: ",
+			off = "Выключено"
+		}
 	end
 
 	self.check = 0
@@ -27,8 +29,10 @@ function VehicleRadio:__init()
 end
 
 function VehicleRadio:Lang()
-	self.radioname = "Radio: "
-	self.offname = "Disabled"
+	self.locStrings = {
+		title = "Radio: ",
+		off = "Disabled"
+	}
 end
 
 function VehicleRadio:LocalPlayerInput( args )
@@ -70,40 +74,40 @@ function VehicleRadio:ToggleRadio()
 		end
 		self.refresh = true
 		self.radio = true
-		self.sound = ClientSound.Create(AssetLocation.Game, {
+		self.sound = ClientSound.Create( AssetLocation.Game, {
 				bank_id = 25,
 				sound_id = 86,
 				position = Camera:GetPosition(),
 				angle = Angle()
 		})
 
-		Game:ShowPopup( self.radioname .. "Tom Main Theme", false )
+		Game:ShowPopup( self.locStrings["title"] .. "Tom Main Theme", false )
 	elseif self.check == 2 then
 		if self.refresh then
 			self:ModuleUnload()
 		end
 		self.radio = true
-		self.sound = ClientSound.Create(AssetLocation.Game, {
+		self.sound = ClientSound.Create( AssetLocation.Game, {
 				bank_id = 25,
 				sound_id = 155,
 				position = Camera:GetPosition(),
 				angle = Angle()
 		})
 
-		Game:ShowPopup( self.radioname .. "Fighting 01", false )
+		Game:ShowPopup( self.locStrings["title"] .. "Fighting 01", false )
 	elseif self.check == 3 then
 		if self.refresh then
 			self:ModuleUnload()
 		end
 		self.radio = true
-		self.sound = ClientSound.Create(AssetLocation.Game, {
+		self.sound = ClientSound.Create( AssetLocation.Game, {
 				bank_id = 25,
 				sound_id = 154,
 				position = Camera:GetPosition(),
 				angle = Angle()
 		})
 
-		Game:ShowPopup( self.radioname .. "Fighting 02", false )
+		Game:ShowPopup( self.locStrings["title"] .. "Fighting 02", false )
 	elseif self.check == 4 then
 		if self.refresh then
 			self:ModuleUnload()
@@ -111,7 +115,7 @@ function VehicleRadio:ToggleRadio()
 		self.refresh = nil
 		self.radio = nil
 		self.check = 0
-		Game:ShowPopup( self.radioname .. self.offname, false )
+		Game:ShowPopup( self.locStrings["title"] .. self.locStrings["off"], false )
 	end
 end
 
@@ -125,7 +129,7 @@ function VehicleRadio:PreTick()
 end
 
 function VehicleRadio:LocalPlayerEnterVehicle()
-	Game:ShowPopup( self.radioname .. self.offname, false )
+	Game:ShowPopup( self.locStrings["title"] .. self.locStrings["off"], false )
 	self.check = 0
 
 	if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe( "PreTick", self, self.PreTick ) end

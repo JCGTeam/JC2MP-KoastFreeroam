@@ -18,15 +18,34 @@ function Grenades:__init()
 		[AnimationState.LaSReload] = false
 	}]]--
 
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
+		self:Lang()
+	else
+		self.locStrings = {
+			fragmentation = "Осколочная граната",
+			triggered = "Бомбы-липучки",
+			claymore = "Мины Клеймор",
+			firework = "Фейерверковая граната",
+			nuclear = "Ядерная граната",
+			supernuclear = "СУПЕР Ядерная граната"
+		}
+	end
+
+	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "KeyUp", self, self.KeyUp )
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	Events:Subscribe( "Render", self, self.Render )
 
-	self.grenadeIMG = Image.Create( AssetLocation.Resource, "Grenade" )
-	self.c4 = Image.Create( AssetLocation.Resource, "C4" )
-	self.clay = Image.Create( AssetLocation.Resource, "Claymore" )
-	self.background = Image.Create( AssetLocation.Resource, "Background" )
+	self.weaponsImage = Image.Create( AssetLocation.Game, "hud_weapons_a_dif.dds" )
 
+	self.uvs = {
+		grenade = { Vector2( 0.707, 0.467 ), Vector2( 0.935, 0.695 ) },
+		c4 = { Vector2( 0.237, 0.707 ), Vector2( 0.465, 0.935 ) },
+		clay = { Vector2( 0.472, 0.707 ), Vector2( 0.700, 0.935 ) }
+	}
+
+	self.background = Image.Create( AssetLocation.Game, "hud_wea_bg_dif.dds" )
 	self.textb = Image.Create( AssetLocation.Resource, "TextBackground" )
 
 --[[
@@ -37,6 +56,17 @@ function Grenades:__init()
 	self.stars4 = Image.Create( AssetLocation.Resource, "Stars4" )
 	self.stars5 = Image.Create( AssetLocation.Resource, "Stars5" )
 ]]--
+end
+
+function Grenades:Lang()
+	self.locStrings = {
+		fragmentation = "Fragmentation Grenade",
+		triggered = "Triggered Explosive",
+		claymore = "Claymore Mine",
+		firework = "Firework Grenade",
+		nuclear = "Nuclear Grenade",
+		supernuclear = "SUPER Nuclear Grenade"
+	}
 end
 
 function Grenades:CheckList( tableList, modelID )
@@ -226,12 +256,12 @@ function Grenades:Render()
 		self.background:SetSize( Vector2( Render.Height * 0.18, Render.Height * 0.09 ) )
 		self.textb:SetSize( Vector2( Render.Height * 0.2, Render.Height * 0.035 ) )
 
-		local imga = self.grenadeIMG
-		local text = "Осколочная граната"
+		local uv = self.uvs.grenade
+		local text = self.locStrings["fragmentation"]
 
 		if explosive == 1 then
-			imga = self.grenadeIMG
-			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Fragmentation Grenade" or "Осколочная граната"
+			uv = self.uvs.grenade
+			text = self.locStrings["fragmentation"]
 			text_timer = "R"
 
 			if self.TossTimer then
@@ -244,20 +274,20 @@ function Grenades:Render()
 				end
 			end
 		elseif explosive == 2 then
-			imga = self.c4
-			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Triggered Explosive" or "Бомбы-липучки"
+			uv = self.uvs.c4
+			text = self.locStrings["triggered"]
 			text_max = self.C4Max
 			text_timer = LocalPlayer:GetValue( "C4Count" ) and tostring( LocalPlayer:GetValue( "C4Count" ) ) or "0"
 
 			self.c4actv = true
 		elseif explosive == 3 then
-			imga = self.clay
-			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Claymore Mine" or "Мины Клеймор"
+			uv = self.uvs.clay
+			text = self.locStrings["claymore"]
 			text_timer = "∞"
 
 			self.c4actv = false
 		elseif explosive == 4 then
-			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Firework Grenade" or "Фейерверковая граната"
+			text = self.locStrings["firework"]
 			text_timer = "R"
 
 			if self.TossTimer then
@@ -270,7 +300,7 @@ function Grenades:Render()
 				end
 			end
 		elseif explosive == 5 then
-			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "Nuclear Grenade" or "Ядерная граната"
+			text = self.locStrings["nuclear"]
 			text_timer = "R"
 
 			if self.TossTimer then
@@ -283,7 +313,7 @@ function Grenades:Render()
 				end
 			end
 		elseif explosive == 6 then
-			text = LocalPlayer:GetValue( "Lang" ) == "EN" and "SUPER Nuclear Grenade" or "СУПЕР Ядерная граната"
+			text = self.locStrings["supernuclear"]
 			text_timer = "R"
 
 			if self.TossTimer then
@@ -304,9 +334,9 @@ function Grenades:Render()
 
 		Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
 
-		imga:SetSize( Vector2( Render.Height * 0.09, Render.Height * 0.045 ) )
+		self.weaponsImage:SetSize( Vector2( Render.Height * 0.09, Render.Height * 0.045 ) )
 
-		local imgaSize = imga:GetSize()
+		local imgaSize = self.weaponsImage:GetSize()
 		local backgroundSize = self.background:GetSize()
 		local textbSize = self.textb:GetSize()
 
@@ -314,13 +344,13 @@ function Grenades:Render()
 		local c4maxwidth = Render:GetTextSize( text_max, imgaSize.y / 1.8 ).x / 2
 
 		local pos_2d = Vector2( Render.Size.x / 0.995 - backgroundSize.x, ( Render.Height - Render.Height * 0.24 ) - imgaSize.y / 2 )
-		local pos_2d_a = Vector2( Render.Size.x / 1.009 - backgroundSize.x, ( Render.Height - Render.Height * 0.24 ) - backgroundSize.y / 2 )
-		local pos_2d_t = Vector2( Render.Size.x / 1.015 - textbSize.x, ( Render.Height - Render.Height * 0.193 ) - textbSize.y / 2 )
-		local pos_2d_timer = Vector2( Render.Size.x / 1.01 - timerwidth /2  - imgaSize.x / 2, ( Render.Height - Render.Height * 0.234 ) - textbSize.y / 2 )
+		local pos_2d_a = Vector2( Render.Size.x / 1.003 - backgroundSize.x, ( Render.Height - Render.Height * 0.24 ) - backgroundSize.y / 2 )
+		local pos_2d_t = Vector2( Render.Size.x / 1.014 - textbSize.x, ( Render.Height - Render.Height * 0.193 ) - textbSize.y / 2 )
+		local pos_2d_timer = Vector2( Render.Size.x / 1.007 - timerwidth /2  - imgaSize.x / 2, ( Render.Height - Render.Height * 0.234 ) - textbSize.y / 2 )
 		if self.c4actv then
-			pos_2d_timer = Vector2( Render.Size.x / 1.009 - timerwidth / 2 - imgaSize.x / 2, ( Render.Height - Render.Height * 0.242 ) - textbSize.y / 2 )
+			pos_2d_timer = Vector2( Render.Size.x / 1.006 - timerwidth / 2 - imgaSize.x / 2, ( Render.Height - Render.Height * 0.242 ) - textbSize.y / 2 )
 		end
-		local pos_2d_c4max = Vector2( Render.Size.x / 1.0085 - c4maxwidth / 2 - imgaSize.x / 2, ( Render.Height - Render.Height * 0.22 ) - textbSize.y / 2 )
+		local pos_2d_c4max = Vector2( Render.Size.x / 1.0055 - c4maxwidth / 2 - imgaSize.x / 2, ( Render.Height - Render.Height * 0.22 ) - textbSize.y / 2 )
 		local pos_2d_text = Vector2( Render.Size.x - ( Render:GetTextWidth( text, textbSize.y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) ) ) - Render.Size.x / 40, ( Render.Height - Render.Height * 0.186 ) - textbSize.y / 2 )
 
 		local gameAlpha = Game:GetSetting(4)
@@ -328,24 +358,30 @@ function Grenades:Render()
 			local sett_alpha = gameAlpha * 2.25
 			local sett_alpha2 = gameAlpha * 2
 
-			imga:SetPosition( pos_2d )
-			imga:SetAlpha( 201 - sett_alpha2 )
+			self.weaponsImage:SetPosition( pos_2d )
+			self.weaponsImage:SetAlpha( 201 - sett_alpha2 )
+
 			self.background:SetPosition( pos_2d_a )
 			self.background:SetAlpha( 201 - sett_alpha2 )
+
 			self.textb:SetPosition( pos_2d_t )
 			self.textb:SetAlpha( 201 - sett_alpha2 )
 
+			self.weaponsImage:SetUV( uv[1], uv[2] )
+
 			self.textb:Draw()
 			self.background:Draw()
-			imga:Draw()
+			self.weaponsImage:Draw()
 
 			local color = Color( 255, 255, 255, sett_alpha )
 			local color2 = Color( 169, 169, 169, sett_alpha )
 			local shadow = Color( 0, 0, 0, sett_alpha )
 
 			Render:DrawShadowedText( pos_2d_text, text, color, shadow, textbSize.y / 0.018 / Render:GetTextWidth( "BTextResoliton" ) )
-			Render:DrawShadowedText( pos_2d_timer, text_timer, color, shadow, imgaSize.y / 0.13 / Render:GetTextWidth( "00" ) )
-			Render:DrawShadowedText( pos_2d_c4max, text_max, color2, shadow, imgaSize.y / 0.18 / Render:GetTextWidth( "00" ) )
+
+			local textWidth = Render:GetTextWidth( "00" )
+			Render:DrawText( pos_2d_timer, text_timer, color, imgaSize.y / 0.13 / textWidth )
+			Render:DrawText( pos_2d_c4max, text_max, color2, imgaSize.y / 0.18 / textWidth )
 		end
 	end
 end

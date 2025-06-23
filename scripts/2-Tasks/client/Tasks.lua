@@ -31,14 +31,17 @@ function Tasks:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.rewardtip = "Награда: $"
-		self.vehicletip = "Транспорт: "
-		self.delivto = "Доставить к "
-		self.target = "● Цель: "
-		self.taskstartedtxt = "Задание начато!"
-		self.taskfailedtxt = "Задание провалено!"
-		self.taskcompletedtxt = "Задание выполнено!"
-		self.taskcomplatedcounttxt = "Заданий выполнено: "
+		self.locStrings = {
+			rewardtip = "Награда: $",
+			vehicletip = "Транспорт: ",
+			presstostart = "Нажмите X, чтобы начать задание",
+			delivto = "Доставить к ",
+			target = "● Цель: ",
+			taskstarted = "Задание начато!",
+			taskfailed = "Задание провалено!",
+			taskcompleted = "Задание выполнено!",
+			taskcomplatedcount = "Заданий выполнено: "
+		}
 	end
 
 	self.window = Rectangle.Create()
@@ -59,13 +62,13 @@ function Tasks:__init()
 	self.descriptionContainer:SetMargin( Vector2( 10, 10 ), Vector2( 10, 10 ) )
 
 	local textSize = 15
-	self.windowL2:SetText( self.rewardtip .. "777" )
+	self.windowL2:SetText( self.locStrings["rewardtip"] .. "777" )
 	self.windowL2:SetTextColor( self.opcolor )
 	self.windowL2:SetDock( GwenPosition.Top )
 	self.windowL2:SetTextSize( textSize )
 	self.windowL2:SetHeight( Render:GetTextHeight( self.windowL2:GetText(), textSize ) )
 
-	self.windowL3:SetText( self.vehicletip .. "Вилка" )
+	self.windowL3:SetText( self.locStrings["vehicletip"] .. "Lada Granta" )
 	self.windowL3:SetDock( GwenPosition.Top )
 	self.windowL3:SetMargin( Vector2( 0, 10 ), Vector2() )
 	self.windowL3:SetHeight( Render:GetTextHeight( self.windowL3:GetText() ) )
@@ -74,7 +77,7 @@ function Tasks:__init()
 	self.windowL1:SetDock( GwenPosition.Top )
 	self.windowL1:SetHeight( Render:GetTextHeight( self.windowL1:GetText() ) )
 
-	self.StartJobLabel:SetText( "Нажмите X, чтобы начать задание" )
+	self.StartJobLabel:SetText( self.locStrings["presstostart"] )
 	self.StartJobLabel:SetDock( GwenPosition.Fill )
 	self.StartJobLabel:SetTextSize( textSize )
 	self.StartJobLabel:SetMargin( Vector2( 0, 8 ), Vector2( 0, 8 ) )
@@ -100,17 +103,21 @@ function Tasks:__init()
 end
 
 function Tasks:Lang()
+	self.locStrings = {
+		rewardtip = "Reward: $",
+		vehicletip = "Vehicle: ",
+		presstostart = "Press X to start task",
+		delivto = "Deliver to ",
+		target = "● Task: ",
+		taskstarted = "Task started!",
+		taskfailed = "Task failed!",
+		taskcompleted = "Task completed!",
+		taskcomplatedcount = "Tasks completed: "
+	}
+
 	if self.StartJobLabel then
-		self.StartJobLabel:SetText( "Press X to start task" )
+		self.StartJobLabel:SetText( self.locStrings["presstostart"] )
 	end
-	self.rewardtip = "Reward: $"
-	self.vehicletip = "Vehicle: "
-	self.delivto = "Deliver to "
-	self.target = "● Task: "
-	self.taskstartedtxt = "Task started!"
-	self.taskfailedtxt = "Task failed!"
-	self.taskcompletedtxt = "Task completed!"
-	self.taskcomplatedcounttxt = "Tasks completed: "
 end
 
 function Tasks:ModelReceive( model, name )
@@ -136,8 +143,8 @@ function Tasks:JobStart( args )
 	Waypoint:SetPosition( self.locations[self.job.destination].position )
 
 	if self.locationsAutoHide then
-		Events:Fire( "CastCenterText", { text = self.taskstartedtxt, time = 6, color = Color( 0, 255, 0 ) } )
-		self.sound = ClientSound.Create(AssetLocation.Game, {
+		Events:Fire( "CastCenterText", { text = self.locStrings["taskstarted"], time = 6, color = Color( 0, 255, 0 ) } )
+		self.sound = ClientSound.Create( AssetLocation.Game, {
 			bank_id = 25,
 			sound_id = 47,
 			position = Camera:GetPosition(),
@@ -159,8 +166,8 @@ end
 function Tasks:JobFinish()
 	if not self.job then return end
 
-	Events:Fire( "CastCenterText", { text = self.taskcompletedtxt, time = 6, color = Color( 0, 255, 0 ) } )
-	self.sound = ClientSound.Create(AssetLocation.Game, {
+	Events:Fire( "CastCenterText", { text = self.locStrings["taskcompleted"], time = 6, color = Color( 0, 255, 0 ) } )
+	self.sound = ClientSound.Create( AssetLocation.Game, {
 		bank_id = 25,
 		sound_id = 45,
 		position = Camera:GetPosition(),
@@ -168,7 +175,7 @@ function Tasks:JobFinish()
 	})
 	self.sound:SetParameter(0,1)
 
-	Game:ShowPopup( self.taskcomplatedcounttxt .. ( LocalPlayer:GetValue( "CompletedTasks" ) or 0 ), true )
+	Game:ShowPopup( self.locStrings["taskcomplatedcount"] .. ( LocalPlayer:GetValue( "CompletedTasks" ) or 0 ), true )
 
 	self:JobCancel()
 end
@@ -176,8 +183,8 @@ end
 function Tasks:JobFailed()
 	if not self.job then return end
 
-	Events:Fire( "CastCenterText", { text = self.taskfailedtxt, time = 6, color = Color.Red } )
-	self.sound = ClientSound.Create(AssetLocation.Game, {
+	Events:Fire( "CastCenterText", { text = self.locStrings["taskfailed"], time = 6, color = Color.Red } )
+	self.sound = ClientSound.Create( AssetLocation.Game, {
 		bank_id = 25,
 		sound_id = 46,
 		position = Camera:GetPosition(),
@@ -220,7 +227,7 @@ function Tasks:PostTick()
 		if jDist < 1028 and jobToRender.direction then
 			if not self.ResolutionChangeEvent then self.ResolutionChangeEvent = Events:Subscribe( "ResolutionChange", self, self.ResolutionChange ) end
 			if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
-			if not self.GameRenderEvent then self.jobUpdateTimer = Timer() self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.GameRender ) end
+			if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "GameRender", self, self.GameRender ) end
 			if not self.GameRenderOpaqueEvent then self.GameRenderOpaqueEvent = Events:Subscribe( "GameRender", self, self.GameRenderOpaque ) end
 
 			self.jobsfounded = true
@@ -231,7 +238,7 @@ function Tasks:PostTick()
 	if not self.jobsfounded then return end
 	if self.ResolutionChangeEvent then Events:Unsubscribe( self.ResolutionChangeEvent ) self.ResolutionChangeEvent = nil end
 	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
-	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil self.jobUpdateTimer = nil end
+	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
 	if self.GameRenderOpaqueEvent then Events:Unsubscribe( self.GameRenderOpaqueEvent ) self.GameRenderOpaqueEvent = nil end
 
 	self.jobsfounded = nil
@@ -331,27 +338,29 @@ function Tasks:DrawLocation2( k, v, dist, dir, jobDistance )
 	if v.position:Distance( LocalPlayer:GetPosition() ) <= 3.5 and not self.job and not LocalPlayer:GetVehicle() then
 		local theJob = self.jobsTable[k]
 
-		if self.jobUpdateTimer:GetSeconds() > 1 then
-			self.windowL1:SetText( self.delivto .. theJob.description )
-			self.windowL1:SetTextColor( self.jobcolor )
-			self.windowL2:SetText( self.rewardtip .. tostring(theJob.reward) )
-			self.windowL2:SetTextColor( self.opcolor )
-			self.windowL3:SetText( self.vehicletip .. Vehicle.GetNameByModelId(theJob.vehicle) )
-
-			self.jobUpdateTimer:Restart()
-		end
-
 		if not LocalPlayer:GetValue( "HiddenHUD" ) then
-			if LocalPlayer:GetValue( "SystemFonts" ) then
-				self.windowL2:SetFont( AssetLocation.SystemFont, "Impact")
-				self.StartJobLabel:SetFont( AssetLocation.SystemFont, "Impact")
-			end
+			if not self.window:GetVisible() then
+				if LocalPlayer:GetValue( "SystemFonts" ) then
+					self.windowL2:SetFont( AssetLocation.SystemFont, "Impact")
+					self.StartJobLabel:SetFont( AssetLocation.SystemFont, "Impact")
+				end
 
-			self.window:SetVisible( true )
+				self.windowL1:SetText( self.locStrings["delivto"] .. theJob.description )
+				self.windowL1:SetTextColor( self.jobcolor )
+				self.windowL2:SetText( self.locStrings["rewardtip"] .. tostring(theJob.reward) )
+				self.windowL2:SetTextColor( self.opcolor )
+				self.windowL3:SetText( self.locStrings["vehicletip"] .. Vehicle.GetNameByModelId(theJob.vehicle) )
+
+				self.window:SetVisible( true )
+			end
+		else
+			if self.window:GetVisible() then self.window:SetVisible( false ) end
 		end
 
 		self.availableJobKey = k
 		self.availableJob = theJob
+	else
+		if self.window:GetVisible() then self.window:SetVisible( false ) end
 	end
 end
 
@@ -429,12 +438,12 @@ function Tasks:Render()
 
 		local textShadow = Color( 0, 0, 0, 150 )
 		local textSize = 15
-		local textPos = Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.target .. self.delivto .. self.job.description, textSize ) / 2, Render.Height * 0.07 )
+		local textPos = Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.locStrings["target"] .. self.locStrings["delivto"] .. self.job.description, textSize ) / 2, Render.Height * 0.07 )
 
-		Render:DrawShadowedText( textPos, self.target, Color( 192, 255, 192 ), textShadow, textSize )
+		Render:DrawShadowedText( textPos, self.locStrings["target"], Color( 192, 255, 192 ), textShadow, textSize )
 
-		textPos.x = textPos.x + Render:GetTextWidth( self.target, textSize )
-		Render:DrawShadowedText( textPos, self.delivto .. self.job.description, Color.White, textShadow, textSize )
+		textPos.x = textPos.x + Render:GetTextWidth( self.locStrings["target"], textSize )
+		Render:DrawShadowedText( textPos, self.locStrings["delivto"] .. self.job.description, Color.White, textShadow, textSize )
 
 		local destPos = self.locations[self.job.destination].position
 		local destDist = Vector3.Distance( destPos, LocalPlayer:GetPosition() )
@@ -464,10 +473,6 @@ function Tasks:Render()
 end
 
 function Tasks:GameRender()
-	if self.window and self.window:GetVisible() == true then
-		self.window:SetVisible( false )
-	end
-
 	if not LocalPlayer:GetValue( "JobsVisible" ) or Game:GetState() ~= GUIState.Game or LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
 	if self.jobsTable then

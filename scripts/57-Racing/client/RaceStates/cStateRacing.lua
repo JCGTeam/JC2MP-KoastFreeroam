@@ -285,7 +285,7 @@ function StateRacing:RacerFinish(args)
 
 	local player = Player.GetById(playerId)
 	if player then
-		local effect = ClientEffect.Play(AssetLocation.Game, {
+		local effect = ClientEffect.Play( AssetLocation.Game, {
 			effect_id = 342,
 			position = player:GetPosition(),
 			angle = player:GetAngle()

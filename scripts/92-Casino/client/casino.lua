@@ -41,21 +41,24 @@ function Casino:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.title_txt = "▧ Казино"
-		self.largeName_txt = "$ $ $  Казино  $ $ $"
-		self.search_txt = "Поиск"
-		self.bet_txt = "Ваша ставка:"
-		self.secondBet_txt = "Ставка "
-		self.makeBet_txt = "$ Сделать ставку $"
-		self.casinorequest_txt = "Приглашение в казино"
-		self.prequester_txt = "Игрок: "
-		self.friend_txt = "Друг"
-		self.send_txt = "Отправить ≫"
-		self.accept_txt = "Принять √"
-		self.ready = "Готов"
-		self.unready = "Не готов"
-		self.waiting_txt = "Ожидание "
-		self.quitlobby_txt = "Покинуть комнату"
+		self.locStrings = {
+			title = "▧ Казино",
+			largename = "$ $ $  Казино  $ $ $",
+			search = "Поиск",
+			balance = "Баланс: $",
+			bet = "Ваша ставка:",
+			secondbet = "Ставка ",
+			makeBet = "$ Сделать ставку $",
+			casinorequest = "Приглашение в казино",
+			prequester = "Игрок: ",
+			friend = "Друг",
+			send = "Отправить ≫",
+			accept = "Принять √",
+			ready = "Готов",
+			unready = "Не готов",
+			waiting = "Ожидание ",
+			quitlobby = "Покинуть комнату"
+		}
 	end
 
     self:CreateWindow()
@@ -65,7 +68,7 @@ function Casino:__init()
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
 	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
     Events:Subscribe( "OpenCasinoMenu", self, self.OpenCasinoMenu )
-	Events:Subscribe( "CasinoMenuClosed", self, self.WindowClosed )
+	Events:Subscribe( "CasinoMenuClosed", self, function() self:SetWindowVisible( false ) end )
 
 	--self:AddPlayer( LocalPlayer )
 	for player in Client:GetPlayers() do
@@ -74,21 +77,32 @@ function Casino:__init()
 end
 
 function Casino:Lang()
-	self.title_txt = "▧ Casino"
-	self.largeName_txt = "$ $ $  Casino  $ $ $"
-	self.search_txt = "Search"
-	self.bet_txt = "Your bet:"
-	self.secondBet_txt = "Bet from "
-	self.makeBet_txt = "$ MAKE A BET $"
-	self.casinorequest_txt = "Casino invitation"
-	self.prequester_txt = "Player: "
-	self.friend_txt = "Friend"
-	self.send_txt = "Send ≫"
-	self.accept_txt = "Accept √"
-	self.ready = "Ready"
-	self.unready = "Unready"
-	self.waiting_txt = "Waiting "
-	self.quitlobby_txt = "Leave current room"
+	self.locStrings = {
+		title = "▧ Casino",
+		largename = "$ $ $  Casino  $ $ $",
+		search = "Search",
+		balance = "Balance: $",
+		bet = "Your bet:",
+		secondbet = "Bet from ",
+		makeBet = "$ MAKE A BET $",
+		casinorequest = "Casino invitation",
+		prequester = "Player: ",
+		friend = "Friend",
+		send = "Send ≫",
+		accept = "Accept √",
+		ready = "Ready",
+		unready = "Unready",
+		waiting = "Waiting ",
+		quitlobby = "Leave current room"
+	}
+
+	if self.window then
+		self.window:SetTitle( self.locStrings["title"] )
+		self.largename:SetText( self.locStrings["largename"] )
+		self.coinflip.stavka_txt:SetText( self.locStrings["bet"] .. " $0" )
+		self.coinflip.okay:SetText( self.locStrings["makeBet"] )
+		self.coinflip.filter:SetToolTip( self.locStrings["search"] )
+	end
 end
 
 function Casino:TextBox( args )
@@ -98,12 +112,12 @@ function Casino:TextBox( args )
 	if args.color then
 		self.coinflip.messages:SetTextColor( args.color )
 
-		local sound = ClientSound.Create(AssetLocation.Game, {
+		local sound = ClientSound.Create( AssetLocation.Game, {
 			bank_id = 20,
 			sound_id = 20,
 			position = LocalPlayer:GetPosition(),
 			angle = Angle()
-		})
+		} )
 	
 		sound:SetParameter(0,1)
 	else
@@ -116,16 +130,8 @@ function Casino:UpdateMoneyString( money )
         money = LocalPlayer:GetMoney()
     end
 
-	local lang = LocalPlayer:GetValue( "Lang" )
-    if lang then
-		if lang == "RU" then
-			self.coinflip.balance_txt:SetText( "Баланс: $" .. formatNumber( money ) )
-		else
-			self.coinflip.balance_txt:SetText( "Balance: $" .. formatNumber( money ) )
-		end
-
-		self.coinflip.balance_txt:SizeToContents()
-    end
+	self.coinflip.balance_txt:SetText( self.locStrings["balance"] .. formatNumber( money ) )
+	self.coinflip.balance_txt:SizeToContents()
 end
 
 function Casino:LocalPlayerMoneyChange( args )
@@ -138,28 +144,19 @@ function Casino:LocalPlayerChat( args )
 	if cmd_args[1] == "/casino" then self:OpenCasinoMenu() end
 end
 
-function Casino:OpenCasinoMenu()
-	if Game:GetState() ~= GUIState.Game then return end
+function Casino:SetWindowVisible( visible, sound )
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
 
-    if self.window:GetVisible() then
-        self:WindowClosed()
-    else
-        self.window:SetVisible( true )
-        Mouse:SetVisible( true )
-
-		local lang = LocalPlayer:GetValue( "Lang" )
-		if lang then
-			if lang == "RU" then
-				self.coinflip.balance_txt:SetText( "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
-			else
-				self.coinflip.balance_txt:SetText( "Balance: $" .. formatNumber( LocalPlayer:GetMoney() ) )
-			end
-
-			self.coinflip.balance_txt:SizeToContents()
-		end
+	if self.activeWindow then
+		self.coinflip.balance_txt:SetText( self.locStrings["balance"] .. formatNumber( LocalPlayer:GetMoney() ) )
+		self.coinflip.balance_txt:SizeToContents()
 
 		if LocalPlayer:GetValue( "SystemFonts" ) then
-			self.largeName:SetFont( AssetLocation.SystemFont, "Impact" )
+			self.largename:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.coinflip.balance_txt:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.coinflip.stavka_txt:SetFont( AssetLocation.SystemFont, "Impact" )
 			self.coinflip.stavkaSecond_txt:SetFont( AssetLocation.SystemFont, "Impact" )
@@ -171,18 +168,47 @@ function Casino:OpenCasinoMenu()
 			self.rows[ p:GetId() ]:SetTextColor( p:GetColor() )
 		end
 
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
         if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 		if not self.LocalPlayerMoneyChangeEvent then self.LLocalPlayerMoneyChangeEvent = Events:Subscribe( "LocalPlayerMoneyChange", self, self.LocalPlayerMoneyChange ) end
+	else
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.LocalPlayerMoneyChangeEvent then Events:Unsubscribe( self.LocalPlayerMoneyChangeEvent ) self.LocalPlayerMoneyChangeEvent = nil end
+	end
+
+	if sound then
+		local effect = ClientEffect.Play( AssetLocation.Game, {
+			effect_id = self.activeWindow and 382 or 383,
+
+			position = Camera:GetPosition(),
+			angle = Angle()
+		} )
+	end
+end
+
+function Casino:Render()
+    local is_visible = Game:GetState() == GUIState.Game
+
+    if self.window:GetVisible() ~= is_visible then
+        self.window:SetVisible( is_visible )
+		Mouse:SetVisible( is_visible )
     end
+end
+
+function Casino:OpenCasinoMenu()
+	if Game:GetState() ~= GUIState.Game then return end
+
+	self:SetWindowVisible( not self.activeWindow, true )
 end
 
 function Casino:CreateWindow()
     self.window = Window.Create()
     self.window:SetSize( Vector2( 700, 700 ) )
     self.window:SetPositionRel( Vector2( 0.75, 0.5 ) - self.window:GetSizeRel()/2 )
-    self.window:SetTitle( self.title_txt )
+    self.window:SetTitle( self.locStrings["title"] )
     self.window:SetVisible( false )
-    self.window:Subscribe( "WindowClosed", self, self.CasinoMenuClosed )
+    self.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false, true ) end )
 
 	local topAreaBackground = Rectangle.Create( self.window )
 	topAreaBackground:SetPadding( Vector2.One * 2 , Vector2.One * 2 )
@@ -195,14 +221,14 @@ function Casino:CreateWindow()
 	topArea:SetDock( GwenPosition.Top )
 	topArea:SetColor( Color( 25, 25, 25 ) )
 
-	self.largeName = Label.Create( topArea )
-	self.largeName:SetMargin( Vector2(), Vector2( 0, -6 ) )
-	self.largeName:SetDock( GwenPosition.Top )
-	self.largeName:SetAlignment( GwenPosition.CenterH )
-	self.largeName:SetTextSize( 32 )
-	self.largeName:SetTextColor( Color( 255, 150, 50 ) )
-	self.largeName:SetText( self.largeName_txt )
-	self.largeName:SizeToContents()
+	self.largename = Label.Create( topArea )
+	self.largename:SetMargin( Vector2(), Vector2( 0, -6 ) )
+	self.largename:SetDock( GwenPosition.Top )
+	self.largename:SetAlignment( GwenPosition.CenterH )
+	self.largename:SetTextSize( 32 )
+	self.largename:SetTextColor( Color( 255, 150, 50 ) )
+	self.largename:SetText( self.locStrings["largename"] )
+	self.largename:SizeToContents()
 
 	topArea:SizeToChildren()
 	topAreaBackground:SizeToChildren()
@@ -227,15 +253,15 @@ function Casino:CreateWindow()
 
 	self.coinflip.stavka_quitLobby_btn = Button.Create( self.coinflip.top )
 	self.coinflip.stavka_quitLobby_btn:SetDock( GwenPosition.Right )
-	self.coinflip.stavka_quitLobby_btn:SetText( self.quitlobby_txt )
-	self.coinflip.stavka_quitLobby_btn:SetWidth( Render:GetTextWidth( self.quitlobby_txt, self.coinflip.stavka_quitLobby_btn:GetTextSize() + 2 ) )
+	self.coinflip.stavka_quitLobby_btn:SetText( self.locStrings["quitlobby"] )
+	self.coinflip.stavka_quitLobby_btn:SetWidth( Render:GetTextWidth( self.locStrings["quitlobby"], self.coinflip.stavka_quitLobby_btn:GetTextSize() + 2 ) )
 	self.coinflip.stavka_quitLobby_btn:SetVisible( false )
 	self.coinflip.stavka_quitLobby_btn:Subscribe( "Press", function() Network:Send( "DestroyLobby", { secondPlayer = self.secondPlayer } ) end )
 
 	self.coinflip.stavka_txt = Label.Create( self.coinflip.scroll_control )
 	self.coinflip.stavka_txt:SetDock( GwenPosition.Top )
 	self.coinflip.stavka_txt:SetMargin( Vector2( 5, 5 ), Vector2.Zero )
-	self.coinflip.stavka_txt:SetText( self.bet_txt .. " $0" )
+	self.coinflip.stavka_txt:SetText( self.locStrings["bet"] .. " $0" )
 	self.coinflip.stavka_txt:SetTextSize( 15 )
 	self.coinflip.stavka_txt:SizeToContents()
 
@@ -314,14 +340,14 @@ function Casino:CreateWindow()
 	self.coinflip.okay = Button.Create( self.coinflip.scroll_control )
 	self.coinflip.okay:SetDock( GwenPosition.Bottom )
 	self.coinflip.okay:SetHeight( 35 )
-	self.coinflip.okay:SetText( self.makeBet_txt )
+	self.coinflip.okay:SetText( self.locStrings["makeBet"] )
 	self.coinflip.okay:Subscribe( "Press", self, self.ReadyCoinflip )
 
 	self.coinflip.filter = TextBox.Create( self.coinflip.scroll_control )
 	self.coinflip.filter:SetDock( GwenPosition.Bottom )
 	self.coinflip.filter:SetMargin( Vector2( 0, 5 ), Vector2( 0, 5 ) )
 	self.coinflip.filter:SetHeight( 25 )
-	self.coinflip.filter:SetToolTip( self.search_txt )
+	self.coinflip.filter:SetToolTip( self.locStrings["search"] )
 	self.coinflip.filter:Subscribe( "TextChanged", self, self.TextChanged )
 	self.coinflip.filter:Subscribe( "Focus", self, self.Focus )
 	self.coinflip.filter:Subscribe( "Blur", self, self.Blur )
@@ -360,11 +386,11 @@ end
 function Casino:UpdateSecondStavka( secondStavka )
 	if secondStavka then
 		if self.secondPlayer then
-			self.coinflip.stavkaSecond_txt:SetText( self.secondBet_txt .. self.secondPlayer:GetName() .. ": $" .. formatNumber( secondStavka ) )
+			self.coinflip.stavkaSecond_txt:SetText( self.locStrings["secondbet"] .. self.secondPlayer:GetName() .. ": $" .. formatNumber( secondStavka ) )
 			self.coinflip.stavkaSecond_txt:SizeToContents()
 		end
 	else
-		self.coinflip.stavka_txt:SetText( self.bet_txt .. " $" .. formatNumber( self.coinflip.stavkaNumeric:GetText() ) )
+		self.coinflip.stavka_txt:SetText( self.locStrings["bet"] .. " $" .. formatNumber( self.coinflip.stavkaNumeric:GetText() ) )
 		self.coinflip.stavka_txt:SizeToContents()
 	end
 end
@@ -380,7 +406,7 @@ function Casino:ReadyCoinflip()
 				self:StartCoinflip()
 			else
 				self.coinflip.okay:SetEnabled( false )
-				self.coinflip.okay:SetText( self.waiting_txt .. self.secondPlayer:GetName() .. "..." )
+				self.coinflip.okay:SetText( self.locStrings["waiting"] .. self.secondPlayer:GetName() .. "..." )
 
 				Network:Send( "FinalReadyCoinflip", { secondPlayer = self.secondPlayer } )
 			end
@@ -410,9 +436,9 @@ function Casino:FinishCoinflip()
 	self.value = 0
 
 	if self.secondPlayer then
-		self.coinflip.okay:SetText( ( self.isReady and self.unready or self.ready ) .. " (" .. tostring( self.value ) .. "/2)" )
+		self.coinflip.okay:SetText( ( self.isReady and self.locStrings["unready"] or self.locStrings["ready"] ) .. " (" .. tostring( self.value ) .. "/2)" )
 	else
-		self.coinflip.okay:SetText( self.makeBet_txt )
+		self.coinflip.okay:SetText( self.locStrings["makeBet"] )
 	end
 
 	self.coinflip.okay:SetEnabled( true )
@@ -430,11 +456,11 @@ function Casino:UpdateReady( args )
 	end
 
 	if self.value < 2 then
-		self.coinflip.okay:SetText( ( self.isReady and self.unready or self.ready ) .. " (" .. tostring( self.value ) .. "/2)" )
+		self.coinflip.okay:SetText( ( self.isReady and self.locStrings["unready"] or self.locStrings["ready"] ) .. " (" .. tostring( self.value ) .. "/2)" )
 	else
 		self.coinflip.stavkaNumeric:SetEnabled( false )
 		self.coinflip.stavka_ok_btn:SetEnabled( false )
-		self.coinflip.okay:SetText( self.makeBet_txt )
+		self.coinflip.okay:SetText( self.locStrings["makeBet"] )
 	end
 
 	self:UpdateStavka()
@@ -479,14 +505,14 @@ function Casino:AddPlayer( player )
 	local item = self.coinflip.playerList:AddItem( playerName )
 
 	if LocalPlayer:IsFriend( player ) then
-		item:SetToolTip( self.friend_txt )
+		item:SetToolTip( self.locStrings["friend"] )
 	end
 
-	local requestButton = self:CreateListButton( self.send_txt, true, item )
+	local requestButton = self:CreateListButton( self.locStrings["send"], true, item )
 	requestButton:Subscribe( "Press", function() self:SendRequest( player ) end )
 	self.requestButtons[playerId] = requestButton
 
-	local acceptButton = self:CreateListButton( self.accept_txt, false, item )
+	local acceptButton = self:CreateListButton( self.locStrings["accept"], false, item )
 	acceptButton:Subscribe( "Press", function() self:AcceptRequest( player ) end )
 	self.acceptButtons[playerId] = acceptButton
 
@@ -539,14 +565,14 @@ function Casino:CreateLobby( args )
 	local secondPlayerName = self.secondPlayer:GetName()
 
 	self.coinflip.stavkaNumeric:SetValue( stavkaValue )
-	self.coinflip.stavka_txt:SetText( self.bet_txt .. " $" .. formatNumber( stavkaValue ) )
-	self.coinflip.stavkaSecond_txt:SetText( self.secondBet_txt .. secondPlayerName .. ": $" .. formatNumber( stavkaValue ) )
+	self.coinflip.stavka_txt:SetText( self.locStrings["bet"] .. " $" .. formatNumber( stavkaValue ) )
+	self.coinflip.stavkaSecond_txt:SetText( self.locStrings["secondbet"] .. secondPlayerName .. ": $" .. formatNumber( stavkaValue ) )
 	self.coinflip.stavkaSecond_txt:SizeToContents()
 	self.coinflip.messages:SetVisible( false )
 
 	self.coinflip.stavkaSecond_txt:SetVisible( true )
 	self.coinflip.stavka_quitLobby_btn:SetVisible( true )
-	self.coinflip.okay:SetText( self.ready .. " (0/2)" )
+	self.coinflip.okay:SetText( self.locStrings["ready"] .. " (0/2)" )
 	self.coinflip.okay:SetEnabled( false )
 
 	self.coinflip.playerList:SetVisible( false )
@@ -562,7 +588,7 @@ function Casino:EnableAccept( requester )
 		self.sendedRequests[playerId] = true
 	end
 
-	Events:Fire( "SendNotification", { txt = self.casinorequest_txt, image = "Information", subtxt = self.prequester_txt .. requester:GetName() } )
+	Events:Fire( "SendNotification", { txt = self.locStrings["casinorequest"], image = "Information", subtxt = self.locStrings["prequester"] .. requester:GetName() } )
 end
 
 function Casino:DestroyLobby()
@@ -570,12 +596,12 @@ function Casino:DestroyLobby()
 
 	self.coinflip.stavkaNumeric:SetEnabled( true )
 	self.coinflip.stavkaNumeric:SetValue( stavkaValue )
-	self.coinflip.stavka_txt:SetText( self.bet_txt .. " $" .. formatNumber( stavkaValue ) )
+	self.coinflip.stavka_txt:SetText( self.locStrings["bet"] .. " $" .. formatNumber( stavkaValue ) )
 	self.coinflip.messages:SetVisible( false )
 
 	self.coinflip.stavkaSecond_txt:SetVisible( false )
 	self.coinflip.stavka_quitLobby_btn:SetVisible( false )
-	self.coinflip.okay:SetText( self.makeBet_txt )
+	self.coinflip.okay:SetText( self.locStrings["makeBet"] )
 	self.coinflip.okay:SetEnabled( false )
 
 	self.coinflip.playerList:SetVisible( true )
@@ -597,9 +623,7 @@ end
 
 function Casino:LocalPlayerInput( args )
 	if args.input == Action.GuiPause then
-		if self.window:GetVisible() == true then
-			self:WindowClosed()
-		end
+		self:SetWindowVisible( false )
 	end
 
 	if self.actions[args.input] then
@@ -632,26 +656,7 @@ end
 
 function Casino:EscPressed()
 	self:Blur()
-	self:WindowClosed()
-end
-
-function Casino:WindowClosed()
-    self.window:SetVisible( false )
-    Mouse:SetVisible( false )
-
-    if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-	if self.LocalPlayerMoneyChangeEvent then Events:Unsubscribe( self.LocalPlayerMoneyChangeEvent ) self.LocalPlayerMoneyChangeEvent = nil end
-end
-
-function Casino:CasinoMenuClosed()
-	self:WindowClosed()
-
-	local effect = ClientEffect.Create(AssetLocation.Game, {
-		effect_id = 383,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
+	self:SetWindowVisible( false )
 end
 
 casino = Casino()

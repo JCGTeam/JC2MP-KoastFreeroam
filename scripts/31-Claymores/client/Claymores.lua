@@ -47,7 +47,7 @@ function Claymores:LocalPlayerInput( args )
 		if LocalPlayer:GetBaseState() ~= AnimationState.SUprightIdle then return end
 		LocalPlayer:SetBaseState(AnimationState.SCoverEntering)
 		self.placing = Timer()
-		local sound = ClientSound.Create(AssetLocation.Game, {
+		local sound = ClientSound.Create( AssetLocation.Game, {
 				bank_id = 18,
 				sound_id = 5,
 				position = LocalPlayer:GetPosition(),

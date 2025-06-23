@@ -34,15 +34,15 @@ function WarpGui:__init()
 	self.whitelist = {}
 	self.whitelistAll = false
 	self.warpRequests = {}
-	self.windowShown = false
+	self.activeWindow = false
 	self.warping = true
 
 	self.window = Window.Create()
-	self.window:SetVisible( self.windowShown )
+	self.window:SetVisible( self.activeWindow )
 	self.window:SetSizeRel( Vector2( 0.35, 0.7 ) )
 	self.window:SetMinimumSize( Vector2( 400, 200 ) )
 	self.window:SetPositionRel( Vector2( 0.75, 0.5 ) - self.window:GetSizeRel()/2 )
-    self.window:Subscribe( "WindowClosed", self, self.OpenWarpGUI )
+    self.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false, true ) end )
 
 	self.playerList = SortedList.Create( self.window )
 	self.playerList:SetMargin( Vector2(), Vector2( 0, 4 ) )
@@ -79,21 +79,23 @@ function WarpGui:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.tag = "[Телепорт] "
-		self.w = "Подождите "
-		self.ws = " секунд, чтобы вновь отправить запрос!"
-		self.gonnawarp = ' хотел бы телепортироваться к вам. Нажмите "B" и зайдите в меню "Телепортация", чтобы принять.'
-		self.tprequest_txt = "Запрос на телепорт"
-		self.prequester_txt = "Игрок: "
-		self.friend_txt = "Друг"
-		self.teleport_txt = "Телепорт ≫"
-		self.accept_txt = "Принять √"
-		self.autotp_txt = "Авто-ТП"
-		self.blacklist_txt = "Заблок."
-		self.teleportrequest_txt = "Запрос на телепортацию отправлен. Ожидайте принятия запроса."
-		self.teleportrequest2_txt = "Запрос на телепортацию отправлен, но игрок находится в другом режиме."
-		self.teleportrequest3_txt = " хотел телепортироваться к вам, но вы находитесь в другом режиме."
-		self.noteleport_txt = " не просил вас телепортироваться."
+		self.locStrings = {
+			tag = "[Телепорт] ",
+			w = "Подождите ",
+			ws = " секунд, чтобы вновь отправить запрос!",
+			gonnawarp = ' хотел бы телепортироваться к вам. Нажмите "B" и зайдите в меню "Телепортация", чтобы принять.',
+			tprequest = "Запрос на телепорт",
+			prequester = "Игрок: ",
+			friend = "Друг",
+			teleport = "Телепорт ≫",
+			accept = "Принять √",
+			autotp = "Авто-ТП",
+			blacklist = "Заблок.",
+			teleportrequest = "Запрос на телепортацию отправлен. Ожидайте принятия запроса.",
+			teleportrequest2 = "Запрос на телепортацию отправлен, но игрок находится в другом режиме.",
+			teleportrequest3 = " хотел телепортироваться к вам, но вы находитесь в другом режиме.",
+			noteleport = " не просил вас телепортироваться."
+		}
 
 		if self.window then
 			self.window:SetTitle( "▧ Телепорт к игрокам" )
@@ -113,7 +115,7 @@ function WarpGui:__init()
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
 	Events:Subscribe( "OpenWarpGUI", self, self.OpenWarpGUI )
-	Events:Subscribe( "CloseWarpGUI", self, self.CloseWarpGUI )
+	Events:Subscribe( "CloseWarpGUI", self, function() self:SetWindowVisible( false ) end )
 
 	Network:Subscribe( "CenterText", self, self.CenterText )
 	Network:Subscribe( "WarpRequestToTarget", self, self.WarpRequest )
@@ -125,21 +127,23 @@ function WarpGui:__init()
 end
 
 function WarpGui:Lang()
-	self.tag = "[Teleport] "
-	self.w = "Wait "
-	self.ws = " seconds to send the request again!"
-	self.gonnawarp = ' sent you a teleport request. Press "B" and go to the "Teleportation" menu to accept.'
-	self.tprequest_txt = "Teleport request"
-	self.prequester_txt = "Sender: "
-	self.friend_txt = "Friend"
-	self.teleport_txt = "Teleport ≫"
-	self.accept_txt = "Accept √"
-	self.autotp_txt = "Auto-TP"
-	self.blacklist_txt = "Blocked"
-	self.teleportrequest_txt = "Teleport request has been sent. Wait for the request to be accepted."
-	self.teleportrequest2_txt = "Teleport request has been sent, but the player is in a different game mode."
-	self.teleportrequest3_txt = " wanted teleport to you, but you are in a different game mode."
-	self.noteleport_txt = " did not ask you to warp."
+	self.locStrings = {
+		tag = "[Teleport] ",
+		w = "Wait ",
+		ws = " seconds to send the request again!",
+		gonnawarp = ' sent you a teleport request. Press "B" and go to the "Teleportation" menu to accept.',
+		tprequest = "Teleport request",
+		prequester = "Sender: ",
+		friend = "Friend",
+		teleport = "Teleport ≫",
+		accept = "Accept √",
+		autotp = "Auto-TP",
+		blacklist = "Blocked",
+		teleportrequest = "Teleport request has been sent. Wait for the request to be accepted.",
+		teleportrequest2 = "Teleport request has been sent, but the player is in a different game mode.",
+		teleportrequest3 = " wanted teleport to you, but you are in a different game mode.",
+		noteleport = " did not ask you to warp."
+	}
 
 	if self.window then
 		self.window:SetTitle( "▧ Teleport to players" )
@@ -173,21 +177,21 @@ function WarpGui:AddPlayer( player )
 	local item = self.playerList:AddItem( playerId )
 
 	if LocalPlayer:IsFriend( player ) then
-		item:SetToolTip( self.friend_txt )
+		item:SetToolTip( self.locStrings["friend"] )
 	end
 
-	local warpToButton = self:CreateListButton( self.teleport_txt, true, item )
+	local warpToButton = self:CreateListButton( self.locStrings["teleport"], true, item )
 	warpToButton:Subscribe( "Press", function() self:WarpToPlayerClick( player ) end )
 
-	local acceptButton = self:CreateListButton( self.accept_txt, false, item )
+	local acceptButton = self:CreateListButton( self.locStrings["accept"], false, item )
 	acceptButton:Subscribe( "Press", function() self:AcceptWarpClick( player ) end )
 	self.acceptButtons[playerId] = acceptButton
 
 	local whitelist = self.whitelist[playerId]
 	local whitelistButtonText = "-"
 	if whitelist ~= nil then
-		if whitelist == 1 then whitelistButtonText = self.autotp_txt
-		elseif whitelist == 2 then whitelistButtonText = self.blacklist_txt
+		if whitelist == 1 then whitelistButtonText = self.locStrings["autotp"]
+		elseif whitelist == 2 then whitelistButtonText = self.locStrings["blacklist"]
 		end
 	end
 	local whitelistButton = self:CreateListButton( whitelistButtonText, true, item )
@@ -226,28 +230,15 @@ function WarpGui:TextChanged()
 end
 
 function WarpGui:WarpToPlayerClick( player )
-	local effect = ClientEffect.Play(AssetLocation.Game, {
-		effect_id = 383,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
-
 	local time = Client:GetElapsedSeconds()
 	if time < self.cooltime then
 		self:SetWindowVisible( false )
 
-		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
-
-		Events:Fire( "CastCenterText", { text = self.w .. math.ceil(self.cooltime - time) .. self.ws, time = 6, color = Color.Red } )
+		Events:Fire( "CastCenterText", { text = self.locStrings["w"] .. math.ceil(self.cooltime - time) .. self.locStrings["ws"], time = 6, color = Color.Red } )
 		return
 	end
 
 	Network:Send( "WarpRequestToServer", {requester = LocalPlayer, target = player} )
-
-	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 
 	self:SetWindowVisible( false )
 
@@ -259,7 +250,7 @@ function WarpGui:AcceptWarpClick( player )
 	local playerId = tostring(player:GetSteamId().id)
 
 	if not self.warpRequests[playerId] then
-		Chat:Print( self.tag, Color.White, player:GetName() .. self.noteleport_txt, self.textColor )
+		Chat:Print( self.locStrings["tag"], Color.White, player:GetName() .. self.locStrings["noteleport"], self.textColor )
 		return
 	else
 		local acceptButton = self.acceptButtons[playerId]
@@ -271,9 +262,6 @@ function WarpGui:AcceptWarpClick( player )
 
 		Network:Send( "WarpTo", {requester = player, target = LocalPlayer} )
 		self:SetWindowVisible( false )
-
-		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
 end
 
@@ -297,13 +285,13 @@ function WarpGui:WarpRequest( args )
 			acceptButton:SetEnabled( true )
 			self.warpRequests[playerId] = true
 			if LocalPlayer:GetWorld() ~= DefaultWorld then
-				Network:Send( "WarpMessageTo", {target = requestingPlayer, message = self.teleportrequest2_txt, centertext = true } )
-				Chat:Print( self.tag, Color.White, requestingPlayer:GetName() .. self.teleportrequest3_txt, self.textColor )
+				Network:Send( "WarpMessageTo", {target = requestingPlayer, message = self.locStrings["teleportrequest2"], centertext = true } )
+				Chat:Print( self.locStrings["tag"], Color.White, requestingPlayer:GetName() .. self.locStrings["teleportrequest3"], self.textColor )
 				return
 			end
-			Network:Send( "WarpMessageTo", {target = requestingPlayer, message = self.teleportrequest_txt, centertext = true } )
-			Events:Fire( "SendNotification", { txt = self.tprequest_txt, image = "Information", subtxt = self.prequester_txt .. requestingPlayer:GetName() } )
-			Chat:Print( self.tag, Color.White, requestingPlayer:GetName() .. self.gonnawarp, self.textColor )
+			Network:Send( "WarpMessageTo", {target = requestingPlayer, message = self.locStrings["teleportrequest"], centertext = true } )
+			Events:Fire( "SendNotification", { txt = self.locStrings["tprequest"], image = "Information", subtxt = self.locStrings["prequester"] .. requestingPlayer:GetName() } )
+			Chat:Print( self.locStrings["tag"], Color.White, requestingPlayer:GetName() .. self.locStrings["gonnawarp"], self.textColor )
 
 			self.requesterId = playerId
 			if not self.PostTickEvent then
@@ -356,10 +344,10 @@ function WarpGui:SetWhitelist( playerId, whitelisted, sendToServer )
 		whitelistButton:SetText( "-" )
 		whitelistButton:SetTextSize( self.textSize )
 	elseif whitelisted == 1 then
-		whitelistButton:SetText( self.autotp_txt )
+		whitelistButton:SetText( self.locStrings["autotp"] )
 		whitelistButton:SetTextSize( self.textSize )
 	elseif whitelisted == 2 then
-		whitelistButton:SetText( self.blacklist_txt )
+		whitelistButton:SetText( self.locStrings["blacklist"] )
 		whitelistButton:SetTextSize( self.textSize )
 	end
 
@@ -384,9 +372,6 @@ end
 function WarpGui:LocalPlayerInput( args )
 	if args.input == Action.GuiPause then
 		self:SetWindowVisible( false )
-
-		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
 
 	if self.actions[args.input] then
@@ -405,43 +390,13 @@ end
 function WarpGui:EscPressed()
 	self:Blur()
 	self:SetWindowVisible( false )
-
-	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 end
 
 function WarpGui:OpenWarpGUI()
 	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-	self:SetWindowVisible( not self.windowShown )
-
-	if self.windowShown then
-		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
-		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
-	else
-		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-
-		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
-	end
-
-	local effect = ClientEffect.Play(AssetLocation.Game, {
-		effect_id = self.windowShown and 382 or 383,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
-end
-
-function WarpGui:CloseWarpGUI()
-	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
-
-	if self.window:GetVisible() == true then
-		self:SetWindowVisible( false )
-
-		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
-	end
+	self:SetWindowVisible( not self.activeWindow, true )
 end
 
 function WarpGui:PlayerJoin( args )
@@ -465,17 +420,18 @@ function WarpGui:Render()
 
 	if self.window:GetVisible() ~= is_visible then
 		self.window:SetVisible( is_visible )
+		Mouse:SetVisible( is_visible )
 	end
-
-	Mouse:SetVisible( is_visible )
 end
 
-function WarpGui:SetWindowVisible( visible )
-    if self.windowShown ~= visible then
-		self.windowShown = visible
+function WarpGui:SetWindowVisible( visible, sound )
+    if self.activeWindow ~= visible then
+		self.activeWindow = visible
 		self.window:SetVisible( visible )
 		Mouse:SetVisible( visible )
+	end
 
+	if self.activeWindow then
 		for p in Client:GetPlayers() do
 			self.rows[ tostring( p:GetSteamId().id ) ]:SetTextColor( p:GetColor() )
 		end
@@ -484,6 +440,21 @@ function WarpGui:SetWindowVisible( visible )
 			self.whitelistAllCheckbox:GetLabel():SetFont( AssetLocation.SystemFont, "Impact" )
 			self.blacklistAllCheckbox:GetLabel():SetFont( AssetLocation.SystemFont, "Impact" )
 		end
+
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+	else
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	end
+
+	if sound then
+		local effect = ClientEffect.Play( AssetLocation.Game, {
+			effect_id = self.activeWindow and 382 or 383,
+
+			position = Camera:GetPosition(),
+			angle = Angle()
+		} )
 	end
 end
 

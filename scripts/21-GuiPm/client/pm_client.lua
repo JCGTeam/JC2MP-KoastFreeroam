@@ -21,6 +21,7 @@ function PM:__init( player )
 		[16] = true
 	}
 
+	self.activeWindow = false
 	self.dmoode = false
 	self.maxmessagesymbols = 300
 
@@ -31,7 +32,7 @@ function PM:__init( player )
 	self.GUI.window:SetMinimumSize( Vector2( 600, 442 ) )
 	self.GUI.window:SetPositionRel( Vector2( 0.7, 0.5 ) - self.GUI.window:GetSizeRel()/2 )
 	self.GUI.window:SetTitle( "[▼] Личные Сообщения" )
-	self.GUI.window:SetVisible( false )
+	self.GUI.window:SetVisible( self.activeWindow )
 
 	self.GUI.labelP = Label.Create( self.GUI.window )
 	self.GUI.labelP:SetDock( GwenPosition.Left )
@@ -67,7 +68,7 @@ function PM:__init( player )
 	self.GUI.clear:SetDock( GwenPosition.Right )
 	self.GUI.clear:SetText( "Очистить" )
 	self.GUI.clear:SetSize( Vector2( Render:GetTextWidth( self.GUI.clear:GetText() ), 25 ) )
-	self.GUI.clear:SetTextHoveredColor( Color.DarkOrange )
+	self.GUI.clear:SetTextHoveredColor( Color( 255, 150, 150 ) )
 	self.GUI.clear:Subscribe( "Press", self, self.clearMessage )
 
 	self.GUI.PMDistrub = Button.Create( self.GUI.PMMessagesControlLabel )
@@ -76,7 +77,7 @@ function PM:__init( player )
 	self.GUI.PMDistrub:SetText( "Не беспокоить" )
 	self.GUI.PMDistrub:SetSize( Vector2( Render:GetTextWidth( self.GUI.PMDistrub:GetText() ), 25 ) )
 	if LocalPlayer:GetValue( "PMDistrub" ) then
-		local btnColor = Color.DarkOrange
+		local btnColor = Color( 255, 150, 150 )
 		self.GUI.PMDistrub:SetTextNormalColor( btnColor )
 		self.GUI.PMDistrub:SetTextHoveredColor( btnColor )
 	else
@@ -129,21 +130,23 @@ function PM:__init( player )
 	self.GUI.labelL:SetMargin( Vector2( 10, 0 ), Vector2.Zero )
 	self.GUI.labelL:SizeToContents()
 
-	self.GUI.window:Subscribe( "WindowClosed", self, self.CloseWindow )
+	self.GUI.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false, true ) end )
 	self.playerToRow = {}
 
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.tag = "[Сообщения] "
-		self.friend_txt = "Друг"
-		self.newmsg_txt = "Новое сообщение!"
-		self.sendermsg_txt = "Игрок: "
-		self.limit_txt = "Вы привысили допустимый лимит!"
-		self.playeroffline_txt = "Игрок не в сети!"
-		self.playernotselected_txt = "Игрок не выбран!"
-		self.clearmessages_txt = "Сообщения очищены."
+		self.locStrings = {
+			tag = "[Сообщения] ",
+			friend = "Друг",
+			newmsg = "Новое сообщение!",
+			sendermsg = "Игрок: ",
+			limit = "Вы привысили допустимый лимит!",
+			playeroffline = "Игрок не в сети!",
+			playernotselected = "Игрок не выбран!",
+			clearmessages = "Сообщения очищены."
+		}
 
 		if self.GUI.window then
 			self.GUI.filter:SetToolTip( "Поиск" )
@@ -159,21 +162,22 @@ function PM:__init( player )
 	Events:Subscribe( "PlayerJoin", self, self.playerJoin )
 	Events:Subscribe( "PlayerQuit", self, self.playerQuit )
 	Events:Subscribe( "OpenGuiPm", self, self.OpenGuiPm )
-	Events:Subscribe( "CloseGuiPm", self, self.CloseGuiPm )
-	Events:Subscribe( "LocalPlayerInput", self, self.localPlayerInput )
+	Events:Subscribe( "CloseGuiPm", self, function() self:SetWindowVisible( false ) end )
 	Network:Subscribe( "PM.notification", self, self.notification )
 	Network:Subscribe( "PM.addMessage", self, self.addMessage )
 end
 
 function PM:Lang()
-	self.tag = "[Messages] "
-	self.friend_txt = "Friend"
-	self.newmsg_txt = "New message!"
-	self.sendermsg_txt = "Sender: "
-	self.limit_txt = "You have exceeded the allowed limit!"
-	self.playeroffline_txt = "Player is offline!"
-	self.playernotselected_txt = "Player not selected!"
-	self.clearmessages_txt = "Messages cleared."
+	self.locStrings = {
+		tag = "[Messages] ",
+		friend = "Friend",
+		newmsg = "New message!",
+		sendermsg = "Sender: ",
+		limit = "You have exceeded the allowed limit!",
+		playeroffline = "Player is offline!",
+		playernotselected = "Player not selected!",
+		clearmessages = "Messages cleared."
+	}
 
 	if self.GUI.window then
 		self.GUI.window:SetTitle( "[▼] Private Messages" )
@@ -181,6 +185,45 @@ function PM:Lang()
 		self.GUI.clear:SetText( "Clear" )
 		self.GUI.PMDistrub:SetText( "Do not disturb" )
 		self.GUI.filter:SetToolTip( "Search" )
+	end
+end
+
+function PM:SetWindowVisible( visible, sound )
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.GUI.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
+
+	if self.activeWindow then
+		for p in Client:GetPlayers() do
+			local playerColor = p:GetColor()
+			self.playerToRow[ p:GetId() ]:SetTextColor( playerColor )
+		end
+
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+	else
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+    	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	end
+
+	if sound then
+		local effect = ClientEffect.Play( AssetLocation.Game, {
+			effect_id = self.activeWindow and 382 or 383,
+
+			position = Camera:GetPosition(),
+			angle = Angle()
+		} )
+	end
+end
+
+function PM:Render()
+	local is_visible = Game:GetState() == GUIState.Game
+
+	if self.GUI.window:GetVisible() ~= is_visible then
+		self.GUI.window:SetVisible( is_visible )
+		Mouse:SetVisible( is_visible )
 	end
 end
 
@@ -194,42 +237,10 @@ function PM:ChangelLText()
 	self.GUI.send:SetEnabled( limit )
 end
 
-function PM:CloseWindow()
-	Mouse:SetVisible( false )
-	local effect = ClientEffect.Create(AssetLocation.Game, {
-		effect_id = 383,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
-end
-
 function PM:OpenGuiPm()
 	if Game:GetState() ~= GUIState.Game then return end
 
-	local effect = ClientEffect.Play(AssetLocation.Game, {
-		effect_id = 382,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
-
-	self.GUI.window:SetVisible( not self.GUI.window:GetVisible() )
-	if self.GUI.window:GetVisible() == true then
-		for p in Client:GetPlayers() do
-			local playerColor = p:GetColor()
-			self.playerToRow[ p:GetId() ]:SetTextColor( playerColor )
-		end
-	end
-	Mouse:SetVisible( self.GUI.window:GetVisible() )
-end
-
-function PM:CloseGuiPm()
-	if Game:GetState() ~= GUIState.Game then return end
-	if self.GUI.window:GetVisible() == true then
-		self.GUI.window:SetVisible( false )
-	end
-	Mouse:SetVisible( false )
+	self:SetWindowVisible( not self.activeWindow, true )
 end
 
 function PM:ToggleDistrub()
@@ -240,17 +251,16 @@ function PM:ToggleDistrub()
 		self.GUI.PMDistrub:SetTextNormalColor( btnColor )
 		self.GUI.PMDistrub:SetTextHoveredColor( btnColor )
 	else
-		local btnColor = Color.DarkOrange
+		local btnColor = Color( 255, 150, 150 )
 		self.GUI.PMDistrub:SetTextNormalColor( btnColor )
 		self.GUI.PMDistrub:SetTextHoveredColor( btnColor )
 	end
 end
 
-function PM:localPlayerInput( args )
+function PM:LocalPlayerInput( args )
 	if ( self.GUI.window:GetVisible() and Game:GetState() == GUIState.Game ) then
 		if args.input == Action.GuiPause then
-			self.GUI.window:SetVisible( false )
-			Mouse:SetVisible( false )
+			self:SetWindowVisible( false )
 		end
 
 		if self.actions[args.input] then
@@ -283,8 +293,7 @@ end
 
 function PM:EscPressed()
 	self:Blur()
-	self.GUI.window:SetVisible( false )
-	Mouse:SetVisible( false )
+	self:SetWindowVisible( false )
 end
 
 function PM:addPlayerToList( player )
@@ -292,7 +301,7 @@ function PM:addPlayerToList( player )
 	local color = player:GetColor()
 
 	if LocalPlayer:IsFriend( player ) then
-		item:SetToolTip( self.friend_txt )
+		item:SetToolTip( self.locStrings["friend"] )
 	end
 
 	item:SetTextColor( color )
@@ -337,7 +346,7 @@ function PM:loadMessages()
 end
 
 function PM:notification( args )
-	Events:Fire( "SendNotification", { txt = self.newmsg_txt, image = "Information", subtxt = self.sendermsg_txt .. args.msgsender } )
+	Events:Fire( "SendNotification", { txt = self.locStrings["newmsg"], image = "Information", subtxt = self.locStrings["sendermsg"] .. args.msgsender } )
 end
 
 function PM:addMessage( data )
@@ -380,18 +389,18 @@ function PM:sendMessage()
 					self.GUI.message:Focus()
 				end
 			else
-				Chat:Print( self.tag, Color.White, self.limit_txt, Color.DarkGray )
+				Chat:Print( self.locStrings["tag"], Color.White, self.locStrings["limit"], Color.DarkGray )
 			end
 		else
-			Chat:Print( self.tag, Color.White, self.playeroffline_txt, Color.DarkGray )
+			Chat:Print( self.locStrings["tag"], Color.White, self.locStrings["playeroffline"], Color.DarkGray )
 		end
 	else
-		Chat:Print( self.tag, Color.White, self.playernotselected_txt, Color.DarkGray )
+		Chat:Print( self.locStrings["tag"], Color.White, self.locStrings["playernotselected"], Color.DarkGray )
 	end
 end
 
 function PM:clearMessage()
-	self.GUI.messagesLabel:SetText( self.clearmessages_txt )
+	self.GUI.messagesLabel:SetText( self.locStrings["clearmessages"] )
 end
 
 Events:Subscribe( "ModuleLoad",

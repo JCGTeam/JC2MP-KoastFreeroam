@@ -10,8 +10,10 @@ function AFKSystem:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.welcomeback_txt = "С возвращением,"
-		self.pausetime_txt = "Время вашей паузы:"
+		self.locStrings = {
+			welcomeback = "С возвращением,",
+			pausetime = "Время вашей паузы:"
+		}
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
@@ -20,15 +22,17 @@ function AFKSystem:__init()
 end
 
 function AFKSystem:Lang()
-	self.welcomeback_txt = "Welcome back,"
-	self.pausetime_txt = "Your pause time:"
+	self.locStrings = {
+		welcomeback = "Welcome back,",
+		pausetime = "Your pause time:"
+	}
 end
 
 function AFKSystem:LocalPlayerInput()
 	local seconds = self.timer:GetSeconds()
 
 	if seconds >= self.secondsToEnterAFK then
-		local text = self.welcomeback_txt .. " " .. tostring( LocalPlayer:GetName() ) .. "! " .. self.pausetime_txt .. " " .. self:SecondsToClock( seconds )
+		local text = self.locStrings["welcomeback"] .. " " .. tostring( LocalPlayer:GetName() ) .. "! " .. self.locStrings["pausetime"] .. " " .. self:SecondsToClock( seconds )
 
 		Chat:Print( self.tag, Color.White, text, Color.DarkGray )
 	end

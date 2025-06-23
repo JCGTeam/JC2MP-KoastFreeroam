@@ -21,13 +21,13 @@ function Help:__init()
 		[16] = true
 	}
 
-	self.HelpActive = false
+	self.activeWindow = false
 
 	self.window = Window.Create()
 	self.window:SetSizeRel( Vector2( 0.58, 0.7 ) )
 	self.window:SetPositionRel( Vector2( 0.69, 0.5 ) - self.window:GetSizeRel()/2 )
-	self.window:SetVisible( self.HelpActive )
-	self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
+	self.window:SetVisible( self.activeWindow )
+	self.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false, true ) end )
 
 	self.tab_control = TabControl.Create( self.window )
 	self.tab_control:SetDock( GwenPosition.Fill )
@@ -45,7 +45,7 @@ function Help:__init()
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
 	Events:Subscribe( "OpenHelpMenu", self, self.OpenHelpMenu )
-	Events:Subscribe( "CloseHelpMenu", self, self.CloseHelpMenu )
+	Events:Subscribe( "CloseHelpMenu", self, function() self:SetWindowVisible( false ) end )
 	Events:Subscribe( "HelpAddItem", self, self.AddItem )
 	Events:Subscribe( "HelpRemoveItem", self, self.RemoveItem )
 
@@ -56,30 +56,34 @@ function Help:Lang()
 	self.window:SetTitle( "ⓘ Help" )
 end
 
-function Help:GetActive()
-	return self.HelpActive
-end
+function Help:SetWindowVisible( visible, sound )
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
 
-function Help:SetActive( state )
-	self.HelpActive = state
-	self.window:SetVisible( self.HelpActive )
-	Mouse:SetVisible( self.HelpActive )
-
-	if self.HelpActive then
+	if self.activeWindow then
 		Network:Send( "Save" )
 
 		Events:Fire( "LoadAdminsTab" )
 
 		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalHelpInput ) end
-
-		--[[if not self.RenderEvent then
-			self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-		end--]]
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	else
 		Events:Fire( "UnloadAdminsTab" )
 
 		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	end
+
+	if sound then
+		local effect = ClientEffect.Play( AssetLocation.Game, {
+			effect_id = self.activeWindow and 382 or 383,
+
+			position = Camera:GetPosition(),
+			angle = Angle()
+		} )
 	end
 end
 
@@ -90,26 +94,13 @@ function Help:LocalPlayerChat( args )
 end
 
 function Help:OpenHelpMenu()
-	local effect = ClientEffect.Play(AssetLocation.Game, {
-		effect_id = self.HelpActive and 383 or 382,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
-
-	self:SetActive( not self:GetActive() )
-end
-
-function Help:CloseHelpMenu()
-	if self:GetActive() then
-		self:SetActive( false )
-	end
+	self:SetWindowVisible( not self.activeWindow, true )
 end
 
 function Help:LocalHelpInput( args )
-	if self:GetActive() and Game:GetState() == GUIState.Game then
+	if self.activeWindow and Game:GetState() == GUIState.Game then
 		if args.input == Action.GuiPause then
-			self:SetActive( false )
+			self:SetWindowVisible( false )
 		end
 
 		if self.actions[args.input] then
@@ -119,23 +110,12 @@ function Help:LocalHelpInput( args )
 end
 
 function Help:Render()
-	local is_visible = Game:GetState() == GUIState.Game
+	local is_visible = Game:GetState() ~= GUIState.PDA
 
 	if self.window:GetVisible() ~= is_visible then
 		self.window:SetVisible( is_visible )
+		Mouse:SetVisible( is_visible )
 	end
-
-	Mouse:SetVisible( is_visible )
-end
-
-function Help:WindowClosed()
-	self:SetActive( false )
-	local effect = ClientEffect.Create(AssetLocation.Game, {
-		effect_id = 383,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
 end
 
 function Help:AddItem( args )

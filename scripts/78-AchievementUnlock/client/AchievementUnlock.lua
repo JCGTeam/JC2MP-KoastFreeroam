@@ -5,8 +5,10 @@ function AchievementUnlock:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.tag = "[Достижения] "
-		self.unlocktext = " получил достижение "
+		self.locStrings = {
+			tag = "[Достижения] ",
+			unlock = " получил достижение "
+		}
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
@@ -14,12 +16,14 @@ function AchievementUnlock:__init()
 end
 
 function AchievementUnlock:Lang()
-	self.tag = "[Achievements] "
-	self.unlocktext = " has unlocked the achievement "
+	self.locStrings = {
+		tag = "[Achievements] ",
+		unlock = " has unlocked the achievement "
+	}
 end
 
 function AchievementUnlock:PlayerAchievementUnlock( args )
-	Chat:Print( self.tag, Color.White, args.player:GetName(), args.player:GetColor(), self.unlocktext, Color.White, args.name, Color( 255, 215, 0 ) )
+	Chat:Print( self.locStrings["tag"], Color.White, args.player:GetName(), args.player:GetColor(), self.locStrings["unlock"], Color.White, args.name, Color( 255, 215, 0 ) )
 	return false
 end
 

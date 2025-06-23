@@ -60,7 +60,7 @@ end
 function BloozeMod:BloozingStart()
     Network:Send( "MinusHP" )
 
-	local sound = ClientSound.Create(AssetLocation.Game, {
+	local sound = ClientSound.Create( AssetLocation.Game, {
         bank_id = 12,
         sound_id = 19,
         position = LocalPlayer:GetPosition(),
@@ -69,7 +69,7 @@ function BloozeMod:BloozingStart()
 
     sound:SetParameter(0,1)
 
-    local sound = ClientSound.Create(AssetLocation.Game, {
+    local sound = ClientSound.Create( AssetLocation.Game, {
         bank_id = 12,
         sound_id = 1,
         position = LocalPlayer:GetPosition(),

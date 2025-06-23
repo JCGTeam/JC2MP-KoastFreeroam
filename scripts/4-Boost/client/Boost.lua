@@ -1,6 +1,26 @@
 class 'Boost'
 
 function Boost:__init()
+	self.actions = {
+		[3] = true,
+		[4] = true,
+		[5] = true,
+		[6] = true,
+		[11] = true,
+		[12] = true,
+		[13] = true,
+		[14] = true,
+		[17] = true,
+		[18] = true,
+		[105] = true,
+		[137] = true,
+		[138] = true,
+		[139] = true,
+		[51] = true,
+		[52] = true,
+		[16] = true
+	}
+
 	self.defaultLandBoost = true
 	self.defaultBoatBoost = true
 	self.defaultHeliBoost = true
@@ -20,17 +40,27 @@ function Boost:__init()
 	self.padEnabled   = self.defaultPadEnabled
 	self.brake   	  = self.defaultBrakeEnabled
 	self.strength	  = self.defaultStrength
-	self.windowOpen   = false
 	self.delta        = 0
 
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.name = "Нажмите "
-		self.nameTw = "или LB "
-		self.nameTh = "для супер-ускорения. "
-		self.nameFo = "Нажмите F для мгновенной заморозки."
+		self.locStrings = {
+			name = "Нажмите ",
+			nameTw = "или LB ",
+			nameTh = "для супер-ускорения. ",
+			nameFo = "Нажмите F для мгновенной заморозки.",
+			title = "Настройки супер-ускорения",
+			opt1 = "Супер-ускорение для машин",
+			opt2 = "Супер-ускорение для лодок",
+			opt3 = "Супер-ускорение для вертолётов",
+			opt4 = "Супер-ускорение для самолётов",
+			opt5 = "Показывать подсказку",
+			opt6 = "Разрешить использование геймпада",
+			opt7 = "Мгновенная заморозка",
+			opt8 = "Сила разгона"
+		}
 	end
 
 	self.boats = {
@@ -47,57 +77,73 @@ function Boost:__init()
 		[24] = true, [30] = true, [34] = true, [39] = true,
 		[51] = true, [59] = true, [81] = true, [85] = true
 		}
-		
+
 	self.settingSub = Network:Subscribe( "UpdateSettings", self, self.UpdateSettings )
 
 	local vehicle = LocalPlayer:GetVehicle()
 	if vehicle and vehicle:GetDriver() == LocalPlayer then
 		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-		self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
+	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
 end
 
 function Boost:Lang()
-	self.name = "Press "
-	self.nameTw = "or LB "
-	self.nameTh = "to boost. "
-	self.nameFo = "Press F to brake."
+	self.locStrings = {
+		name = "Press ",
+		nameTw = "or LB ",
+		nameTh = "to boost. ",
+		nameFo = "Press F to brake.",
+		title = "Boost Settings",
+		opt1 = "Land vehicles boost",
+		opt2 = "Boats boost",
+		opt3 = "Helicopters boost",
+		opt4 = "Planes boost",
+		opt5 = "Show tooltip",
+		opt6 = "Allow gamepad usage",
+		opt7 = "Instant brake",
+		opt8 = "Boost strength"
+	}
 end
 
 function Boost:UpdateSettings( settings )
-	Network:Unsubscribe( self.settingSub )
+	Network:Unsubscribe( self.settingSub ) self.settingSub = nil
 
-	self.settingSub = nil
+	self.settings = settings
 
-	if settings then
-		for setting, value in pairs(settings) do
+	Events:Subscribe( "BoostSettings", self, self.BoostSettings )
+end
+
+function Boost:CreateWindow()
+	if self.window then return end
+
+	if self.settings then
+		for setting, value in pairs(self.settings) do
 			self[setting] = ( setting == "strength" ) and value or value == 1
 		end
 	end
 
 	self.window = Window.Create()
 	self.window:SetSize( Vector2( 250, 240 ) )
-	self.window:SetTitle( "Настройки супер-ускорения" )
-	self.window:SetVisible( false )
-	self.window:Subscribe( "WindowClosed", function() self:SetWindowOpen( false ) end )
+	self.window:SetTitle( self.locStrings["title"] )
+	self.window:Subscribe( "WindowClosed", function() self:SetWindowVisible( false ) end )
 	self:ResolutionChange()
 
-	self:AddSetting( "Супер-ускорение для машин", "landBoost", self.landBoost, self.defaultLandBoost )
-	self:AddSetting( "Супер-ускорение для лодок", "boatBoost", self.boatBoost, self.defaultBoatBoost )
-	self:AddSetting( "Супер-ускорение для вертолётов", "heliBoost", self.heliBoost, self.defaultHeliBoost )
-	self:AddSetting( "Супер-ускорение для самолётов", "planeBoost", self.planeBoost, self.defaultPlaneBoost )
-	self:AddSetting( "Показывать подсказку", "textEnabled", self.textEnabled, self.defaultTextEnabled )
-	self:AddSetting( "Разрешить использование геймпада", "padEnabled", self.padEnabled, self.defaultPadEnabled )
-	self:AddSetting( "Мгновенная заморозка", "brake", self.brake, self.defaultBrakeEnabled )
+	self:AddSetting( self.locStrings["opt1"], "landBoost", self.landBoost, self.defaultLandBoost )
+	self:AddSetting( self.locStrings["opt2"], "boatBoost", self.boatBoost, self.defaultBoatBoost )
+	self:AddSetting( self.locStrings["opt3"], "heliBoost", self.heliBoost, self.defaultHeliBoost )
+	self:AddSetting( self.locStrings["opt4"], "planeBoost", self.planeBoost, self.defaultPlaneBoost )
+	self:AddSetting( self.locStrings["opt5"], "textEnabled", self.textEnabled, self.defaultTextEnabled )
+	self:AddSetting( self.locStrings["opt6"], "padEnabled", self.padEnabled, self.defaultPadEnabled )
+	self:AddSetting( self.locStrings["opt7"], "brake", self.brake, self.defaultBrakeEnabled )
 
 	local strength_text = Label.Create( self.window )
 	strength_text:SetSize( Vector2( 160, 32 ) )
 	strength_text:SetDock( GwenPosition.Top )
-	strength_text:SetText( "Сила разгона" )
+	strength_text:SetText( self.locStrings["opt8"] )
 	strength_text:SetAlignment( GwenPosition.CenterV )
 
 	local strength_numeric = Numeric.Create( self.window )
@@ -110,28 +156,35 @@ function Boost:UpdateSettings( settings )
 		Network:Send( "ChangeSetting", { setting = "strength", value = strength_numeric:GetValue() } )
 	end )
 
-	Events:Subscribe( "BoostSettings", self, self.BoostSettings )
 	Events:Subscribe( "ResolutionChange", self, self.ResolutionChange )
+
+	self.settings = nil
 end
 
-function Boost:GetWindowOpen()
-	return self.windowOpen
-end
+function Boost:SetWindowVisible( visible )
+	self:CreateWindow()
 
-function Boost:SetWindowOpen( state )
-	self.windowOpen = state
-	self.window:SetVisible( state )
-	Mouse:SetVisible( state )
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
 end
 
 function Boost:BoostSettings()
-	self:SetWindowOpen( not self:GetWindowOpen() )
-	return false
+	self:SetWindowVisible( not self.activeWindow )
 end
 
 function Boost:LocalPlayerInput( args )
+	if args.input == Action.GuiPause then
+		self:SetWindowVisible( false )
+	end
+
 	if Game:GetState() ~= GUIState.Game then return end
-	if self.windowOpen then return false end
+
+	if self.activeWindow and self.actions[args.input] then
+		return false
+	end
 
 	if self.padEnabled and args.input == self.controllerAction and LocalPlayer:GetWorld() == DefaultWorld and Game:GetSetting(GameSetting.GamepadInUse) == 1 then
 		local vehicle = LocalPlayer:GetVehicle()
@@ -194,10 +247,10 @@ function Boost:Render( args )
 		else
 			if LocalPlayer:GetValue( "VehBrake" ) then
 				LocalPlayer:SetValue( "VehBrake", nil )
-			end
 
-			self.vpos = nil
-			self.vangle = nil
+				self.vpos = nil
+				self.vangle = nil
+			end
 		end
 	end
 
@@ -207,18 +260,18 @@ function Boost:Render( args )
 	if self.textEnabled and (land or boat or heli or plane) then
 		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
-		local text = self.name
+		local text = self.locStrings["name"]
 		if land or boat then
 			text = text .. "Shift "
 		elseif heli or plane then
 			text = text .. "Q "
 		end
 		if self.padEnabled then
-			text = text .. self.nameTw
+			text = text .. self.locStrings["nameTw"]
 		end
-		text = text .. self.nameTh
+		text = text .. self.locStrings["nameTh"]
 		if self.brake then
-			text = text .. self.nameFo
+			text = text .. self.locStrings["nameFo"]
 		end
 
 		local textSize = 15
@@ -303,7 +356,6 @@ function Boost:LocalPlayerEnterVehicle( args )
 	if not args.is_driver then return end
 
 	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
-	if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 
 	if self.fadeOutAnimation then Animation:Stop( self.fadeOutAnimation ) self.fadeOutAnimation = nil end
 
@@ -330,8 +382,6 @@ function Boost:LocalPlayerExitVehicle()
 	else
 		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
-
-	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 end
 
 boost = Boost()

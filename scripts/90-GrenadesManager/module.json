@@ -6,16 +6,6 @@
 		"name": "90-GrenadesManager"
 	},
 	"resources": {
-		"Background": "https://i.ibb.co/0XsZ0pd/hud-background.png",
-		"Grenade": "https://i.ibb.co/YQQhfJ0/grenade.png",
-		"C4": "https://i.ibb.co/pQJTkyd/C4.png",
-		"Claymore": "https://i.ibb.co/bzqgX73/claymore.png",
-		"TextBackground": "https://i.ibb.co/gwvxgJR/hud-backgroundtext.png",
-		"Stars0": "https://i.ibb.co/NVr2fsR/stars.png",
-		"Stars1": "https://i.ibb.co/TrHHmBH/stars1.png",
-		"Stars2": "https://i.ibb.co/W0Pkp5k/stars2.png",
-		"Stars3": "https://i.ibb.co/FJ8G2C7/stars3.png",
-		"Stars4": "https://i.ibb.co/tBSg56X/stars4.png",
-		"Stars5": "https://i.ibb.co/fpRysfc/stars5.png"
+		"TextBackground": "https://i.ibb.co/gwvxgJR/hud-backgroundtext.png"
 	}
 }

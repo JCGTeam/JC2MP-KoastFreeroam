@@ -13,7 +13,7 @@ function HDonate:EngHelp()
 		name = "Donate",
 		text =
 			"> Links:\n" ..
-			"    Prices and payment methods - clck.ru/37FZkT\n" ..
+			"    Prices and payment methods - bit.ly/45x8U0n\n" ..
 			"    Sponsorship support - boosty.to/jcgteam/donate\n \n" ..
 			"> VIP:\n" ..
 			"    - Prefix VIP.\n" ..
@@ -71,7 +71,7 @@ function HDonate:RusHelp()
 		name = "Донат",
 		text =
 			"> Ссылки:\n" ..
-			"    Цены и способы оплаты - clck.ru/37FZkT\n" ..
+			"    Цены и способы оплаты - bit.ly/45x8U0n\n" ..
 			"    Спонсорская поддержка - boosty.to/jcgteam/donate\n \n" ..
 			"> VIP:\n" ..
 			"    - Префикс VIP.\n" ..

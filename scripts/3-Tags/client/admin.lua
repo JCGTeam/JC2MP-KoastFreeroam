@@ -5,7 +5,9 @@ function Admin:__init()
     if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.tag = "[Объявление] "
+		self.locStrings = {
+			tag = "[Объявление] "
+		}
 	end
 
 	self.textColor = Color( 255, 210, 0 )
@@ -16,7 +18,9 @@ function Admin:__init()
 end
 
 function Admin:Lang()
-	self.tag = "[Notice] "
+	self.locStrings = {
+		tag = "[Notice] "
+	}
 end
 
 function Admin:PostRender()
@@ -26,12 +30,12 @@ function Admin:PostRender()
 		end
 
 		local size = 30
-		local testpos = Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.tag .. self.message, size ) / 2, 80 )
+		local testpos = Vector2( Render.Size.x / 2 - Render:GetTextWidth( self.locStrings["tag"] .. self.message, size ) / 2, 80 )
 		local shadowColor = Color( 0, 0, 0 )
 
-		Render:DrawShadowedText( testpos, self.tag, self.textColor, shadowColor, size )
+		Render:DrawShadowedText( testpos, self.locStrings["tag"], self.textColor, shadowColor, size )
 
-		testpos.x = testpos.x + Render:GetTextWidth( self.tag, size )
+		testpos.x = testpos.x + Render:GetTextWidth( self.locStrings["tag"], size )
 
 		Render:DrawShadowedText( testpos, self.message, self.textColor2, shadowColor, size )
 
@@ -48,7 +52,7 @@ function Admin:ClientFunction( args )
 	self.timer = Timer()
 	self.message = args.text
 
-	Chat:Print( self.tag, self.textColor, self.message, self.textColor2 )
+	Chat:Print( self.locStrings["tag"], self.textColor, self.message, self.textColor2 )
 
 	if not self.PostRenderEvent then self.PostRenderEvent = Events:Subscribe( "PostRender", self, self.PostRender ) end
 end

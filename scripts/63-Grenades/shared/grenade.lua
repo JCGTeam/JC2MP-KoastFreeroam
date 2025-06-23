@@ -137,7 +137,7 @@ function Grenade:Detonate()
 		["type"] = self.type
 	})
 
-	local effect = ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play( AssetLocation.Game, {
 		["position"] = objectPos,
 		["angle"] = Angle(),
 		["effect_id"] = self.effect_id
@@ -153,7 +153,7 @@ function Grenade:Detonate()
 			variable_id_focus = 2
 		})
 		if objectPos.y < 200 then
-			local effect = ClientEffect.Play(AssetLocation.Game, {
+			local effect = ClientEffect.Play( AssetLocation.Game, {
 				effect_id = 112,
 				position = Vector3(objectPos.x, 200, objectPos.z),
 				angle = Angle()

@@ -12,7 +12,7 @@ function MHCMusicFix:GameLoad()
 	local dist = LocalPlayer:GetPosition():DistanceSqr( self.mhc_pos )
 
 	if not self.sound and dist <= self.mhc_dist then
-		self.sound = ClientSound.Create(AssetLocation.Game, {
+		self.sound = ClientSound.Create( AssetLocation.Game, {
 			bank_id = 25,
 			sound_id = 148,
 			position = self.mhc_pos,

@@ -5,12 +5,14 @@ function Messages:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.updatefiles = "Обновление файлов! "
-		self.loadfiles = "Идёт загрузка файлов..."
-		self.err = "Произошла ошибка! "
-		self.errTw = "Критическая ошибка! "
-		self.higping = "Высокий пинг! "
-		self.mblags = "Возможны задержки"
+		self.locStrings = {
+			updatefiles = "Обновление файлов! ",
+			loadfiles = "Идёт загрузка файлов...",
+			err = "Произошла ошибка! ",
+			errTw = "Критическая ошибка! ",
+			higping = "Высокий пинг! ",
+			mblags = "Возможны задержки"
+		}
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
@@ -21,30 +23,32 @@ function Messages:__init()
 end
 
 function Messages:Lang()
-	self.updatefiles = "Updating files! "
-	self.loadfiles = "Downloading files..."
-	self.err = "Module error! "
-	self.errTw = "Critical error! "
-	self.higping = "High ping! "
-	self.mblags = "Possible delays"
+	self.locStrings = {
+		updatefiles = "Updating files! ",
+		loadfiles = "Downloading files...",
+		err = "Module error! ",
+		errTw = "Critical error! ",
+		higping = "High ping! ",
+		mblags = "Possible delays"
+	}
 end
 
 function Messages:ModulesLoad()
-	Events:Fire( "SendNotification", {txt = self.updatefiles, image = "Upgrade", subtxt = self.loadfiles} )
+	Events:Fire( "SendNotification", {txt = self.locStrings["updatefiles"], image = "Upgrade", subtxt = self.locStrings["loadfiles"]} )
 	Events:Fire( "LoadUI" )
 end
 
 function Messages:ModuleError( e )
-	Events:Fire( "SendNotification", {txt = self.err, image = "Warning", subtxt = "Module: " .. e.module} )
+	Events:Fire( "SendNotification", {txt = self.locStrings["err"], image = "Warning", subtxt = "Module: " .. e.module} )
 	Network:Send( "ClientError", { moduletxt = e.module, errortxt = e.error } )
 end
 
 function Messages:Text()
-	Events:Fire( "SendNotification", {txt = self.higping, image = "Warning", subtxt = self.mblags} )
+	Events:Fire( "SendNotification", {txt = self.locStrings["higping"], image = "Warning", subtxt = self.locStrings["mblags"]} )
 end
 
 function Messages:TextTw( args )
-    Events:Fire( "SendNotification", {txt = self.errTw, image = "Warning", subtxt = "Module: " .. args.error} )
+    Events:Fire( "SendNotification", {txt = self.locStrings["errTw"], image = "Warning", subtxt = "Module: " .. args.error} )
 end
 
 messages = Messages()

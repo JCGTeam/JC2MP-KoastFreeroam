@@ -10,12 +10,14 @@ function Pong:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.tip_txt = "ⓘ Используйте мышь для перемещения платформы"
-		self.you_txt = "Вы: "
-		self.enemy_txt = "Соперник: "
-		self.limit_txt = "Лимит попаданий: "
-		self.win_txt = "Вы победили!"
-		self.lose_txt = "Вы проиграли :("
+		self.locStrings = {
+			tip = "ⓘ Используйте мышь для перемещения платформы",
+			you = "Вы: ",
+			enemy = "Соперник: ",
+			limit = "Лимит попаданий: ",
+			win = "Вы победили!",
+			lose = "Вы проиграли :("
+		}
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
@@ -24,12 +26,14 @@ function Pong:__init()
 end
 
 function Pong:Lang()
-	self.tip_txt = "ⓘ Move the mouse to move the platform"
-	self.you_txt = "You: "
-	self.enemy_txt = "Enemy: "
-	self.limit_txt = "Hit limit: "
-	self.win_txt = "Well done!"
-	self.lose_txt = "You suck!"
+	self.locStrings = {
+		tip = "ⓘ Move the mouse to move the platform",
+		you = "You: ",
+		enemy = "Enemy: ",
+		limit = "Hit limit: ",
+		win = "Well done!",
+		lose = "You suck!"
+	}
 end
 
 function Pong:LocalPlayerInput( args )
@@ -72,11 +76,11 @@ function Pong:Render()
 		Render:FillArea( pong_draw_start + ball_pos, Vector2( ball_width, ball_height ), self.text_clr )
 
 		local textSize = 15
-		Render:DrawShadowedText( pong_draw_start + Vector2( 0, pong_table_height + 5 ), self.you_txt .. scores[1], self.text_clr, self.shadow, textSize )
-		Render:DrawShadowedText( pong_draw_start + Vector2( pong_table_width - 65, pong_table_height + 5 ), self.enemy_txt .. scores[2], self.text_clr, self.shadow, textSize )
-		Render:DrawShadowedText( pong_draw_start + Vector2( pong_table_width / 2 - Render:GetTextWidth( self.limit_txt, textSize ) / 2, pong_table_height + 5 ), self.limit_txt .. score_limit, self.text_clr, self.shadow, textSize )
+		Render:DrawShadowedText( pong_draw_start + Vector2( 0, pong_table_height + 5 ), self.locStrings["you"] .. scores[1], self.text_clr, self.shadow, textSize )
+		Render:DrawShadowedText( pong_draw_start + Vector2( pong_table_width - 65, pong_table_height + 5 ), self.locStrings["enemy"] .. scores[2], self.text_clr, self.shadow, textSize )
+		Render:DrawShadowedText( pong_draw_start + Vector2( pong_table_width / 2 - Render:GetTextWidth( self.locStrings["limit"], textSize ) / 2, pong_table_height + 5 ), self.locStrings["limit"] .. score_limit, self.text_clr, self.shadow, textSize )
 
-		Render:DrawShadowedText( pong_draw_start + Vector2( pong_table_width / 2 - Render:GetTextWidth( self.tip_txt, textSize ) / 2, pong_table_height + 50 ), self.tip_txt, self.text_clr, self.shadow, textSize )
+		Render:DrawShadowedText( pong_draw_start + Vector2( pong_table_width / 2 - Render:GetTextWidth( self.locStrings["tip"], textSize ) / 2, pong_table_height + 50 ), self.locStrings["tip"], self.text_clr, self.shadow, textSize )
 
 		if paused then
 			Render:DrawText( pong_draw_start + pong_table_center + Vector2( Render:GetTextWidth( status_text, TextSize.Huge ) * -0.5, Render:GetTextHeight( status_text, TextSize.Huge) * -0.5 ), status_text, status_colour, TextSize.Huge )
@@ -156,7 +160,7 @@ function Pong:HandleBallData()
 		ball_pos = Vector2(pong_table_center.x - (ball_width / 2), pong_table_center.y - (ball_height / 2))
 
 		if scores[2] == score_limit then 
-			Events:Fire( "CastCenterText", { text = self.lose_txt, time = 2, color = Color.Red } )
+			Events:Fire( "CastCenterText", { text = self.locStrings["lose"], time = 2, color = Color.Red } )
 			active = false
 			Mouse:SetVisible( active )
 			LocalPlayer:SetValue( "InPong", active )
@@ -174,7 +178,7 @@ function Pong:HandleBallData()
 		ball_pos = Vector2(pong_table_center.x - (ball_width / 2), pong_table_center.y - (ball_height / 2))
 
 		if scores[1] == score_limit then 
-			Events:Fire( "CastCenterText", { text = self.win_txt, time = 2, color = Color( 0, 222, 0 ) } )
+			Events:Fire( "CastCenterText", { text = self.locStrings["win"], time = 2, color = Color( 0, 222, 0 ) } )
 			Network:Send( "Win" )
 			active = false
 			Mouse:SetVisible( active )

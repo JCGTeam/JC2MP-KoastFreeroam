@@ -42,7 +42,7 @@ function GameModesMenu:__init()
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "OpenGameModesMenu", self, self.OpenGameModesMenu )
-	Events:Subscribe( "CloseGameModesMenu", self, self.CloseGameModesMenu )
+	Events:Subscribe( "CloseGameModesMenu", self, function() self:SetWindowVisible( false ) end )
 	Events:Subscribe( "AddCustomGameModeButton", self, self.AddCustomGameModeButton )
 	Events:Subscribe( "RemoveCustomGameModeButton", self, self.RemoveCustomGameModeButton )
 end
@@ -51,22 +51,62 @@ function GameModesMenu:Lang()
     self.window:SetTitle( "▧ Minigames" )
 	self.mainButton.txtlabel_gm:SetText( "Game Modes:" )
 	self.mainButton.race:SetText( "Race" )
-	self.mainButton.race:SetToolTip( "Get first to the finish line among other riders." )
+	self.mainButton.race:SetToolTip( "Get first to the finish line among other riders" )
 	self.mainButton.tron:SetText( "Tron" )
-	self.mainButton.tron:SetToolTip( "Lure other players into your lane to win." )
+	self.mainButton.tron:SetToolTip( "Lure other players into your lane to win" )
 	self.mainButton.khill:SetText( "King Of The Hill" )
-	self.mainButton.khill:SetToolTip( "Get to the top of the hill first to win." )
+	self.mainButton.khill:SetToolTip( "Get to the top of the hill first to win" )
 	self.mainButton.derby:SetText( "Derby" )
-	self.mainButton.derby:SetToolTip( "Crush the cars of other players trying to survive on your own." )
+	self.mainButton.derby:SetToolTip( "Crush the cars of other players trying to survive on your own" )
 	self.mainButton.txtlabel_mg:SetText( "Others:" )
 	self.mainButton.tetris:SetText( "Tetris" )
-	self.mainButton.tetris:SetToolTip( "Classic tetris." )
+	self.mainButton.tetris:SetToolTip( "Classic tetris" )
 	self.mainButton.pong:SetText( "Pong" )
-	self.mainButton.pong:SetToolTip( "Enemy waiting you in pong." )
+	self.mainButton.pong:SetToolTip( "Enemy waiting you in pong" )
 	self.mainButton.casino:SetText( "Casino" )
-	self.mainButton.casino:SetToolTip( "Money gambling." )
+	self.mainButton.casino:SetToolTip( "Money gambling" )
 
 	self.customButton_txt = "Unknown"
+end
+
+function GameModesMenu:SetWindowVisible( visible, sound )
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
+
+	if self.activeWindow then
+		self.mainButton.scroll_mg:SetSize( Vector2( self.window:GetSize().x - 15, self.mainButton.tetris:GetHeight() + 25 ) )
+
+		if LocalPlayer:GetValue( "SystemFonts" ) then
+			self.mainButton.race:SetFont( AssetLocation.SystemFont, "Impact" )
+			self.mainButton.tron:SetFont( AssetLocation.SystemFont, "Impact" )
+			self.mainButton.khill:SetFont( AssetLocation.SystemFont, "Impact" )
+			self.mainButton.derby:SetFont( AssetLocation.SystemFont, "Impact" )
+			self.mainButton.tetris:SetFont( AssetLocation.SystemFont, "Impact" )
+			self.mainButton.pong:SetFont( AssetLocation.SystemFont, "Impact" )
+			self.mainButton.casino:SetFont( AssetLocation.SystemFont, "Impact" )
+			if self.mainButton.custom then
+				self.mainButton.custom:SetFont( AssetLocation.SystemFont, "Impact" )
+			end
+		end
+
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+        if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+	else
+		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+    	if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+	end
+
+	if sound then
+		local effect = ClientEffect.Play( AssetLocation.Game, {
+			effect_id = self.activeWindow and 382 or 383,
+
+			position = Camera:GetPosition(),
+			angle = Angle()
+		} )
+	end
 end
 
 function GameModesMenu:CreateGameModesMenuButton( scroll, title, image, description, pos, event )
@@ -93,43 +133,7 @@ end
 function GameModesMenu:OpenGameModesMenu()
 	if Game:GetState() ~= GUIState.Game then return end
 
-    if self.window:GetVisible() then
-        self:WindowClosed()
-    else
-		local effect = ClientEffect.Play(AssetLocation.Game, {
-			effect_id = 382,
-
-			position = Camera:GetPosition(),
-			angle = Angle()
-		})
-
-        self.window:SetVisible( true )
-        Mouse:SetVisible( true )
-
-		self.mainButton.scroll_mg:SetSize( Vector2( self.window:GetSize().x - 15, self.mainButton.tetris:GetHeight() + 25 ) )
-
-		if LocalPlayer:GetValue( "SystemFonts" ) then
-			self.mainButton.race:SetFont( AssetLocation.SystemFont, "Impact" )
-			self.mainButton.tron:SetFont( AssetLocation.SystemFont, "Impact" )
-			self.mainButton.khill:SetFont( AssetLocation.SystemFont, "Impact" )
-			self.mainButton.derby:SetFont( AssetLocation.SystemFont, "Impact" )
-			self.mainButton.tetris:SetFont( AssetLocation.SystemFont, "Impact" )
-			self.mainButton.pong:SetFont( AssetLocation.SystemFont, "Impact" )
-			self.mainButton.casino:SetFont( AssetLocation.SystemFont, "Impact" )
-			if self.mainButton.custom then
-				self.mainButton.custom:SetFont( AssetLocation.SystemFont, "Impact" )
-			end
-		end
-
-		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
-        if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
-    end
-end
-
-function GameModesMenu:CloseGameModesMenu()
-	if self.window:GetVisible() == true then
-		self:WindowClosed()
-	end
+	self:SetWindowVisible( not self.activeWindow, true )
 end
 
 function GameModesMenu:CreateWindow()
@@ -139,7 +143,7 @@ function GameModesMenu:CreateWindow()
 	self.window:SetPositionRel( Vector2( 0.7, 0.5 ) - self.window:GetSizeRel()/2 )
     self.window:SetTitle( "▧ Развлечения" )
     self.window:SetVisible( false )
-    self.window:Subscribe( "WindowClosed", self, self.GameModesMenuClosed )
+    self.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false, true ) end )
 
     self.scroll_control = ScrollControl.Create( self.window )
 	self.scroll_control:SetScrollable( false, true )
@@ -166,10 +170,10 @@ function GameModesMenu:CreateWindow()
 	local textWidth = Render:GetTextWidth( self.resizer_txt, textSize )
 
 	local spacing = textWidth + 15
-	self.mainButton.race = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Гонки", self.raceimage, "Доберитесь первым до финиша среди прочих гонщиков.", 0, self.RaceToggle )
-	self.mainButton.tron = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Трон", self.tronimage, "Заманивайте других игроков в свою полосу, чтобы одержать победу.", self.mainButton.race:GetPosition().x + spacing, self.TronToggle )
-	self.mainButton.khill = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Царь горы", self.kinghillimage, "Доберитесь первым до вершины горы, чтобы одержать победу.", self.mainButton.tron:GetPosition().x + spacing, self.KHillToggle )
-	self.mainButton.derby = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Дерби", self.derbyimage, "Ушатывайте машины других игроков стараясь выжить сами.", self.mainButton.khill:GetPosition().x + spacing, self.DerbyToggle )
+	self.mainButton.race = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Гонки", self.raceimage, "Доберитесь первым до финиша среди прочих гонщиков", 0, self.RaceToggle )
+	self.mainButton.tron = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Трон", self.tronimage, "Заманивайте других игроков в свою полосу, чтобы одержать победу", self.mainButton.race:GetPosition().x + spacing, self.TronToggle )
+	self.mainButton.khill = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Царь горы", self.kinghillimage, "Доберитесь первым до вершины горы, чтобы одержать победу", self.mainButton.tron:GetPosition().x + spacing, self.KHillToggle )
+	self.mainButton.derby = self:CreateGameModesMenuButton( self.mainButton.scroll_gm, "Дерби", self.derbyimage, "Ушатывайте машины других игроков стараясь выжить сами", self.mainButton.khill:GetPosition().x + spacing, self.DerbyToggle )
 
 	self.mainButton.txtlabel_mg = Label.Create( self.scroll_control )
 	self.mainButton.txtlabel_mg:SetText( "Прочие:" )
@@ -196,7 +200,7 @@ function GameModesMenu:CreateWindow()
 	self.mainButton.tetris:SetText( "Тетрис" )
 	self.mainButton.tetris:SetTextPadding( textPadding, Vector2.Zero )
 	self.mainButton.tetris:SetTextSize( textSize )
-	self.mainButton.tetris:SetToolTip( "Классический тетрис." )
+	self.mainButton.tetris:SetToolTip( "Классический тетрис" )
 	self.mainButton.tetris:Subscribe( "Press", self, self.TetrisToggle )
 
 	self.mainButton.pong_IMG = ImagePanel.Create( self.mainButton.scroll_mg )
@@ -210,7 +214,7 @@ function GameModesMenu:CreateWindow()
 	self.mainButton.pong:SetText( "Понг" )
 	self.mainButton.pong:SetTextPadding( textPadding, Vector2.Zero )
 	self.mainButton.pong:SetTextSize( textSize )
-	self.mainButton.pong:SetToolTip( "Соперник ждет вас в понг." )
+	self.mainButton.pong:SetToolTip( "Соперник ждет вас в понг" )
 	self.mainButton.pong:Subscribe( "Press", self, self.PongToggle )
 
 	self.mainButton.casino_IMG = ImagePanel.Create( self.mainButton.scroll_mg )
@@ -224,7 +228,7 @@ function GameModesMenu:CreateWindow()
 	self.mainButton.casino:SetText( "Казино" )
 	self.mainButton.casino:SetTextPadding( textPadding, Vector2.Zero )
 	self.mainButton.casino:SetTextSize( textSize )
-	self.mainButton.casino:SetToolTip( "Азартные игры на деньги." )
+	self.mainButton.casino:SetToolTip( "Азартные игры на деньги" )
 	self.mainButton.casino:Subscribe( "Press", self, self.CasinoToggle )
 end
 
@@ -279,27 +283,27 @@ end
 
 function GameModesMenu:RaceToggle()
 	Events:Fire( "EnableRaceMenu" )
-	self:GameModesMenuClosed()
+	self:SetWindowVisible( false )
 end
 
 function GameModesMenu:TronToggle()
 	Network:Send( "GoTron" )
-	self:GameModesMenuClosed()
+	self:SetWindowVisible( false )
 end
 
 function GameModesMenu:KHillToggle()
 	Network:Send( "GoKHill" )
-	self:GameModesMenuClosed()
+	self:SetWindowVisible( false )
 end
 
 function GameModesMenu:DerbyToggle()
 	Network:Send( "GoDerby" )
-	self:GameModesMenuClosed()
+	self:SetWindowVisible( false )
 end
 
 function GameModesMenu:TetrisToggle()
 	Events:Fire( "TetrisToggle" )
-	self:GameModesMenuClosed()
+	self:SetWindowVisible( false )
 end
 
 function GameModesMenu:PongToggle()
@@ -312,17 +316,17 @@ function GameModesMenu:PongToggle()
 		Network:Send( "LeavePong" )
 	end
 
-	self:GameModesMenuClosed()
+	self:SetWindowVisible( false )
 end
 
 function GameModesMenu:CasinoToggle()
 	Events:Fire( "OpenCasinoMenu" )
-	self:GameModesMenuClosed()
+	self:SetWindowVisible( false )
 end
 
 function GameModesMenu:CustomToggle( fireevent )
 	Events:Fire( fireevent )
-	self:GameModesMenuClosed()
+	self:SetWindowVisible( false )
 end
 
 function GameModesMenu:Render()
@@ -330,40 +334,20 @@ function GameModesMenu:Render()
 
     if self.window:GetVisible() ~= is_visible then
         self.window:SetVisible( is_visible )
+		Mouse:SetVisible( is_visible )
     end
-
-    Mouse:SetVisible( is_visible )
 end
 
 function GameModesMenu:LocalPlayerInput( args )
 	if args.input == Action.GuiPause then
-		if self.window:GetVisible() == true then
-			self:WindowClosed()
+		if self.window:GetVisible() then
+			self:SetWindowVisible( false )
 		end
 	end
+
 	if self.actions[args.input] then
 		return false
 	end
-end
-
-function GameModesMenu:WindowClosed()
-    self.window:SetVisible( false )
-
-    Mouse:SetVisible( false )
-
-	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
-    if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-end
-
-function GameModesMenu:GameModesMenuClosed()
-	self:WindowClosed()
-
-	local effect = ClientEffect.Create(AssetLocation.Game, {
-		effect_id = 383,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
 end
 
 gamemodesmenu = GameModesMenu()

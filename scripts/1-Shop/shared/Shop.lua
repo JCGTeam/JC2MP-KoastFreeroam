@@ -131,10 +131,10 @@ end
 
 function Shop:CreateItems()
     self.types = {
-        ["Транспорт"] = 1,
-        ["Оружие"] = 2,
-        ["Персонаж"] = 3,
-		["Внешность"] = 4
+        vehicles = 1,
+        weapon = 2,
+        character = 3,
+		appearance = 4
     }
 
     self.id_types = {}
@@ -144,10 +144,10 @@ function Shop:CreateItems()
     end
 
     self.items = {
-         [self.types["Транспорт"]] = {
-            { "Машины", "Мотоциклы", "Джипы", "Пикапы", "Автобусы", "Тяжи", "Трактора", "Вертолёты", "Самолёты", "Лодки", "DLC" },
+         [self.types.vehicles] = {
+            { "cars", "bikes", "jeeps", "pickups", "buses", "heavy", "tractors", "helicopters", "planes", "boats", "DLC" },
 
-			["Машины"] = {
+			["cars"] = {
 				VehicleBuyMenuEntry( 44, "Softtop", nil, "" ),
 				-- ^ Hamaya Oldman Softtop
 				VehicleBuyMenuEntry( 44, "Cab", nil, "" ),
@@ -188,7 +188,7 @@ function Shop:CreateItems()
 				-- ^ Garret Traver-Z Armed
 			},
 			
-			["Мотоциклы"] = {
+			["bikes"] = {
 				VehicleBuyMenuEntry( 9 ),
 				-- ^ Tuk-Tuk Rickshaw
 				VehicleBuyMenuEntry( 22 ),
@@ -221,7 +221,7 @@ function Shop:CreateItems()
 				-- ^ Shimuzu Tracline Windshield
 			},
 
-			["Джипы"] = {
+			["jeeps"] = {
 				VehicleBuyMenuEntry( 48, "Buggy", nil, "" ),
 				-- ^ Maddox FVA 45
 				VehicleBuyMenuEntry( 48, "BuggyMG", nil, "" ),
@@ -258,7 +258,7 @@ function Shop:CreateItems()
 				-- ^ Hedge Wildchild Rockets
 			},
 
-			["Пикапы"] = {
+			["pickups"] = {
 				VehicleBuyMenuEntry( 60, nil, nil, "" ),
 				-- ^ Vaultier Patrolman
 				VehicleBuyMenuEntry( 26, nil, nil, "" ),
@@ -283,7 +283,7 @@ function Shop:CreateItems()
 				-- ^ Poloma Renegade Rockets
 			},
 
-			["Автобусы"] = {
+			["buses"] = {
 				VehicleBuyMenuEntry( 66, "Single", nil, "" ),
 				-- ^ Dinggong 134D Single-Decker
 				VehicleBuyMenuEntry( 66, "Double", nil, "" ),
@@ -292,7 +292,7 @@ function Shop:CreateItems()
 				-- ^ Vanderbildt LeisureLiner
 			},
 
-			["Тяжи"] = {
+			["heavy"] = {
 				VehicleBuyMenuEntry( 42, nil, nil, "" ),
 				-- ^ Niseco Tusker P246
 				VehicleBuyMenuEntry( 49, nil, nil, "" ),
@@ -335,7 +335,7 @@ function Shop:CreateItems()
 				-- ^ GV-104 Razorback with Autocannon & Machine Guns
 			},
 
-			["Трактора"] = {
+			["tractors"] = {
 				VehicleBuyMenuEntry( 1, "Modern_Cab", nil, "" ),
 				-- ^ Dongtai Agriboss 35 Modern Open Cab
 				VehicleBuyMenuEntry( 1, "Modern_Hardtop", nil, "" ),
@@ -346,7 +346,7 @@ function Shop:CreateItems()
 				-- ^ Dongtai Agriboss 35 Old Style Closed Cab
 			},
 
-			["Вертолёты"] = {
+			["helicopters"] = {
 				VehicleBuyMenuEntry( 3, nil, nil, "" ),
 				-- ^ Rowlinson K22
 				VehicleBuyMenuEntry( 3, "FullyUpgraded", nil, "" ),
@@ -375,7 +375,7 @@ function Shop:CreateItems()
 				-- ^ UH-10 Chippewa (4 Seater) Rockets
 			},
 			
-			["Самолёты"] = {
+			["planes"] = {
 				VehicleBuyMenuEntry( 59, nil, nil, "" ),
 				-- ^ Peek Airhawk 225
 				VehicleBuyMenuEntry( 81, nil, nil, "" ),
@@ -392,7 +392,7 @@ function Shop:CreateItems()
 				-- ^ Bering I-86DP
 			},
 			
-			["Лодки"] = {
+			["boats"] = {
 				VehicleBuyMenuEntry( 38, "Djonk01", nil, "" ),
 				-- ^ Kuang Sunrise
 				VehicleBuyMenuEntry( 38, "Djonk02", nil, "" ),
@@ -442,7 +442,7 @@ function Shop:CreateItems()
 				-- ^ Tuk Tuk Boom Boom
 				VehicleBuyMenuEntry( 58, nil, nil, "" ),
 				-- ^ Chevalier Classic
-				VehicleBuyMenuEntry( 82, "Мороженка", nil, "" ),
+				VehicleBuyMenuEntry( 82, nil, nil, "" ),
 				-- ^ Chevalier Ice Breaker
 				VehicleBuyMenuEntry( 20, nil, nil, "" ),
 				-- ^ Monster Truck
@@ -453,9 +453,9 @@ function Shop:CreateItems()
 			}
         },
 
-        [self.types["Оружие"]] = {
-            { "Правая рука", "Левая рука" , "Основное", "*VIP*" },
-            ["Правая рука"] = {
+        [self.types.weapon] = {
+            { "righthand", "lefthand" , "primary", "★ VIP" },
+            ["righthand"] = {
 				WeaponBuyMenuEntry( Weapon.BubbleGun, 1, "Пузырьковая Пушка" ),
                 WeaponBuyMenuEntry( Weapon.Handgun, 1, "Пистолетик" ),
                 WeaponBuyMenuEntry( Weapon.Revolver, 1, "Револьвер" ),
@@ -466,7 +466,7 @@ function Shop:CreateItems()
 				WeaponBuyMenuEntry( Weapon.SignatureGun, 1, "DLC - Личное оружие Рико" ),
             },
 
-            ["Левая рука"] = {
+            ["lefthand"] = {
 				WeaponBuyMenuEntry( Weapon.BubbleGun, 0, "Пузырьковая Пушка" ),
                 WeaponBuyMenuEntry( Weapon.Handgun, 0, "Пистолетик" ),
                 WeaponBuyMenuEntry( Weapon.Revolver, 0, "Револьвер" ),
@@ -477,7 +477,7 @@ function Shop:CreateItems()
 				WeaponBuyMenuEntry( Weapon.SignatureGun, 0, "DLC - Личное оружие Рико" ),
             },
 			
-            ["Основное"] = {
+            ["primary"] = {
 				WeaponBuyMenuEntry( Weapon.Assault, 2, "Штурмовая Винтовка" ),
 				WeaponBuyMenuEntry( Weapon.Shotgun, 2, "Дробовик" ),
 				WeaponBuyMenuEntry( Weapon.MachineGun, 2, "Пулемет" ),
@@ -491,7 +491,7 @@ function Shop:CreateItems()
 				WeaponBuyMenuEntry( Weapon.AlphaDLCWeapon, 2, "DLC - Штурмовая винтовка 'В яблочко'" ),
 			},
 			
-			["*VIP*"] = {
+			["★ VIP"] = {
 				WeaponBuyMenuEntry( Weapon.PanayRocketLauncher, 1, "СУПЕР Ракетная Установка [Правая рука]", 1 ),
 				WeaponBuyMenuEntry( Weapon.PanayRocketLauncher, 0, "СУПЕР Ракетная Установка [Левая рука]", 1 ),
 				WeaponBuyMenuEntry( Weapon.RocketARVE, 2, "Ракеты", 1 ),
@@ -499,9 +499,9 @@ function Shop:CreateItems()
             }
         },
 
-        [self.types["Персонаж"]] = {
-            { "Мальчики", "Девочки", "Тараканы", "Улары", "Жнецы", "Правительство", "Агентство", "Прочее", "*VIP*" },
-            ["Мальчики"] = {
+        [self.types.character] = {
+            { "boys", "girls", "roaches", "ulars", "reapers", "gov", "agency", "misc", "★ VIP" },
+            ["boys"] = {
 				ModelBuyMenuEntry( 54, "Русский телохранитель" ),
                 ModelBuyMenuEntry( 96, "Японский телохранитель" ),
 				ModelBuyMenuEntry( 6, "Китайский телохранитель" ),
@@ -533,7 +533,7 @@ function Shop:CreateItems()
                 ModelBuyMenuEntry( 40, "Фабричный босс" ),
             },
 
-            ["Девочки"] = {
+            ["girls"] = {
 				ModelBuyMenuEntry( 14, "Прохожая 1" ),
 				ModelBuyMenuEntry( 31, "Прохожая 2" ),
 				ModelBuyMenuEntry( 41, "Прохожая 3" ),
@@ -548,7 +548,7 @@ function Shop:CreateItems()
 				ModelBuyMenuEntry( 86, "Стриптизёрша" ),
             },
 
-            ["Тараканы"] = {
+            ["roaches"] = {
                 ModelBuyMenuEntry( 2, "Разак Разман" ),
                 ModelBuyMenuEntry( 5, "Элита" ),
                 ModelBuyMenuEntry( 32, "Техник" ),
@@ -556,7 +556,7 @@ function Shop:CreateItems()
                 ModelBuyMenuEntry( 59, "Солдат 2" )
             },
 
-            ["Улары"] = {
+            ["ulars"] = {
                 ModelBuyMenuEntry( 38, "Шри Ираван" ),
                 ModelBuyMenuEntry( 87, "Элита" ),
                 ModelBuyMenuEntry( 22, "Техник" ),
@@ -564,7 +564,7 @@ function Shop:CreateItems()
                 ModelBuyMenuEntry( 103, "Солдат 2" )
             },
 
-            ["Жнецы"] = {
+            ["reapers"] = {
                 ModelBuyMenuEntry( 90, "Боло Сантоси" ),
                 ModelBuyMenuEntry( 63, "Элита" ),
                 ModelBuyMenuEntry( 8, "Техник" ),
@@ -572,7 +572,7 @@ function Shop:CreateItems()
                 ModelBuyMenuEntry( 58, "Солдат 2" ),
             },
 
-            ["Правительство"] = {
+            ["gov"] = {
                 ModelBuyMenuEntry( 74, "Малыш Панай" ),
                 ModelBuyMenuEntry( 67, "Сгоревший малыш Панай" ),
                 ModelBuyMenuEntry( 101, "Полковник" ),
@@ -586,7 +586,7 @@ function Shop:CreateItems()
                 ModelBuyMenuEntry( 66, "Солдат 2" ) 
             },
 
-            ["Агентство"] = {
+            ["agency"] = {
                 ModelBuyMenuEntry( 9, "Карл Блейн" ),
                 ModelBuyMenuEntry( 65, "Джейд Тан" ),
                 ModelBuyMenuEntry( 25, "Мария Кейн" ),
@@ -597,7 +597,7 @@ function Shop:CreateItems()
                 ModelBuyMenuEntry( 51, "Рико Родригес" )
             },
 
-            ["Прочее"] = {
+            ["misc"] = {
                 ModelBuyMenuEntry( 70, "Генерал Масайо" ),
                 ModelBuyMenuEntry( 11, "Чжан Сунь" ),
                 ModelBuyMenuEntry( 84, "Александр Мириков" ),
@@ -618,15 +618,15 @@ function Shop:CreateItems()
 				ModelBuyMenuEntry( 69, "Свидетель" ),
             },
 
-            ["*VIP*"] = {
+            ["★ VIP"] = {
                 ModelBuyMenuEntry( 20, "Невидимка", 1 )
             }
         },
 
-        [self.types["Внешность"]] = {
-            { "Головные уборы", "Фуражки и шлемы", "Платки", "Парики", "Лицо", "Шея", "Принадлежности", "Парашюты", "*VIP*" },
+        [self.types.appearance] = {
+            { "hats", "capshelmets", "shawls", "wigs", "face", "neck", "accessories", "parachutes", "★ VIP" },
 
-            ["Головные уборы"] = {
+            ["hats"] = {
 				AppearanceBuyMenuEntry( "Clear", "Head", "ОЧИСТИТЬ" ),
 				AppearanceBuyMenuEntry( "pd_arcticvillage_female2.eez/pd_arcticvillage_female_2-hat_winter.lod", "Head", "Зимняя льняная шапка" ),
 				AppearanceBuyMenuEntry( "pd_arcticvillage_male2.eez/pd_arcticvillage_male_2-hat_winter.lod", "Head", "Большая зимняя льняная шапка" ),
@@ -657,7 +657,7 @@ function Shop:CreateItems()
 				AppearanceBuyMenuEntry( "pd_generic_female_2.eez/pd_generic_female_2-hat_towel.lod", "Head", "Тканевый тюрбан" ),
             },
 			
-            ["Фуражки и шлемы"] = {
+            ["capshelmets"] = {
 				AppearanceBuyMenuEntry( "Clear", "Head", "ОЧИСТИТЬ" ),
 				AppearanceBuyMenuEntry( "pd_tourist_male1.eez/pd_tourist_male-keps.lod", "Head", "Фуражка туриста" ),
 				AppearanceBuyMenuEntry( "pd_arcticvillage_male1.eez/pd_arcticvillage_male-hat.lod", "Head", "Зимняя шапка" ),
@@ -679,7 +679,7 @@ function Shop:CreateItems()
 				AppearanceBuyMenuEntry( "pd_roacheselite1.eez/pd_roaches_elite-h_bandana.lod", "Head", "Элитный берет Тараканов" ),
             },
 			
-            ["Платки"] = {
+            ["shawls"] = {
 				AppearanceBuyMenuEntry( "Clear", "Covering", "ОЧИСТИТЬ" ),
 				AppearanceBuyMenuEntry( "pd_arcticvillage_female1.eez/pd_arcticvillage_female-headcloth.lod", "Covering", "Черный платок" ),
 				AppearanceBuyMenuEntry( "pd_arcticvillage_female1.eez/pd_arcticvillage_female-headcloth2.lod", "Covering", "Бело-темный платок" ),
@@ -690,14 +690,14 @@ function Shop:CreateItems()
 				AppearanceBuyMenuEntry( "pd_generic_female_5.eez/pd_generic_female_5-hat_scarf.lod", "Covering", "Черный чепец" ),
             },
 
-            ["Парики"] = {
+            ["wigs"] = {
 				AppearanceBuyMenuEntry( "Clear", "Hair", "ОЧИСТИТЬ" ),
 				AppearanceBuyMenuEntry( "pd_tourist_female2.eez/pd_tourist_female-h_hair.lod", "Hair", "Средний [Черный]" ),
 				AppearanceBuyMenuEntry( "pd_ms_strippers_female1.eez/pd_stripper_female-h_hair1.lod", "Hair", "Средний [Серый]" ),
 				AppearanceBuyMenuEntry( "pd_ms_strippers_female1.eez/pd_stripper_female-h_hair2.lod", "Hair", "Короткий [Рыжий]" ),
             },
 
-            ["Лицо"] = {
+            ["face"] = {
 				AppearanceBuyMenuEntry( "Clear", "Face", "ОЧИСТИТЬ" ),
 				AppearanceBuyMenuEntry( "pd_ms_strippers_female1.eez/pd_stripper_female-a_sunglasses.lod", "Face", "Круглые солнцезащитные очки" ),
 				AppearanceBuyMenuEntry( "pd_ularboyselite1.eez/pd_ularboys_elite_male-glasses.lod", "Face", "Темные непрозрачные солнцезащитные очки" ),
@@ -707,14 +707,14 @@ function Shop:CreateItems()
 				AppearanceBuyMenuEntry( "pd_tourist_male1.eez/pd_tourist_male-sunglasses.lod", "Face", "Темные туристические солнцезащитные очки" ),
             },
 
-            ["Шея"] = {
+            ["neck"] = {
 				AppearanceBuyMenuEntry( "Neck", "Neck", "ОЧИСТИТЬ" ),
 				AppearanceBuyMenuEntry( "pd_ms_civ_strippers_male2.eez/pd_civilian_stripper_male-cowboyscarf.lod", "Neck", "Красная бандана" ),
 				AppearanceBuyMenuEntry( "pd_ms_strippers_male2.eez/pd_ms_stripper_male-cowboyscarf.lod", "Neck", "Ковбойская бандана" ),
 				AppearanceBuyMenuEntry( "pd_blackmarket.eez/pd_blackmarket-scarf.lod", "Neck", "Чернокнижковая бандана" ),
             },
 
-            ["Принадлежности"] = {
+            ["accessories"] = {
 				AppearanceBuyMenuEntry( "Clear", "Back", "ОЧИСТИТЬ" ),
 				AppearanceBuyMenuEntry( "pd_ularboysbase1.eez/pd_ularboys_base_male-backpack.lod", "Back", "Рюкзак" ),
 				AppearanceBuyMenuEntry( "pd_gov_base02.eez/pd_gov_base-bags.lod", "Back", "Рюкзак для спецопераций" ),
@@ -724,8 +724,8 @@ function Shop:CreateItems()
 				AppearanceBuyMenuEntry( "pd_ularboysbase1.eez/pd_ularboys_base_male-waterbottle.lod", "Back", "Фляга" ),
 			},
 
-			["Парашюты"] = {
-				AppearanceBuyMenuEntry( "parachute00.pickup.execute", "Parachute", "Обычный парашют" ),
+			["parachutes"] = {
+				AppearanceBuyMenuEntry( "parachute00.pickup.execute", "Parachute", "Стандартный парашют" ),
 				AppearanceBuyMenuEntry( "parachute01.pickup.execute", "Parachute", "DLC - Парашют с двигателями" ),
 				AppearanceBuyMenuEntry( "parachute02.pickup.execute", "Parachute", "DLC - Парашют Сорвиголовы" ),
 				AppearanceBuyMenuEntry( "parachute03.pickup.execute", "Parachute", "DLC - Парашют Хаоса" ),
@@ -735,7 +735,7 @@ function Shop:CreateItems()
 				AppearanceBuyMenuEntry( "parachute07.pickup.execute", "Parachute", "DLC - Огненный парашют" ),
 			},
 			
-			["*VIP*"] = {
+			["★ VIP"] = {
 				AppearanceBuyMenuEntry( "Clear", "Back", "ОЧИСТИТЬ" ),
 				AppearanceBuyMenuEntry( "general.blz/gae05-gae05.lod", "Back", "Парашют", 1 ),
 				AppearanceBuyMenuEntry( "City_B10_roofbush-Whole.lod", "Back", "Кустик", 1 ),

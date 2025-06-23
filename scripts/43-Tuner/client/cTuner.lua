@@ -30,13 +30,15 @@ function Tuner:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.gear_txt = "Передача: "
-		self.kmh_txt = "км/ч"
-		self.ms_txt = "м/с"
-		self.mph_txt = "миль/ч"
-		self.kg_txt = "кг"
-		self.in_txt = "за"
-		self.seconds_txt = "секунд"
+		self.locStrings = {
+			gear = "Передача: ",
+			kmh = "км/ч",
+			ms = "м/с",
+			mph = "миль/ч",
+			kg_txt = "кг",
+			in_txt = "за",
+			seconds = "секунд"
+		}
 
 		self.gui.window:SetTitle( "▧ Тюнинг" )
 	end
@@ -71,13 +73,15 @@ function Tuner:__init()
 end
 
 function Tuner:Lang()
-	self.gear_txt = "Gear: "
-	self.kmh_txt = "km/h"
-	self.ms_txt = "m/s"
-	self.mph_txt = "mph"
-	self.kg_txt = "kg"
-	self.in_txt = "in"
-	self.seconds_txt = "seconds"
+	self.locStrings = {
+		gear = "Gear: ",
+		kmh = "km/h",
+		ms = "m/s",
+		mph = "mph",
+		kg_txt = "kg",
+		in_txt = "in",
+		seconds = "seconds"
+	}
 
 	self.gui.window:SetTitle( "▧ Tuning" )
 
@@ -240,14 +244,11 @@ function Tuner:ToggleNeonLight( args )
 end
 
 function Tuner:Render()
-	local is_visible = self.active and (Game:GetState() == GUIState.Game)
+	local is_visible = self.activeWindow and (Game:GetState() == GUIState.Game)
 
     if self.gui.window:GetVisible() ~= is_visible then
         self.gui.window:SetVisible( is_visible )
-    end
-
-    if self.active then
-        Mouse:SetVisible( is_visible )
+		Mouse:SetVisible( is_visible )
     end
 end
 
@@ -324,13 +325,13 @@ function Tuner:InitGUI()
 
 	self.gui = {veh = {}, color = {}, trans = {}, aero = {}, neon = {}, susp = {}}
 
-	self.active = false
+	self.activeWindow = false
 
 	self.gui.window = Window.Create()
-	self.gui.window:SetVisible( self.active )
+	self.gui.window:SetVisible( self.activeWindow )
 	self.gui.window:SetPosition( Vector2( 0.15 * Render.Width, 0.02 * Render.Height ) )
 	self.gui.window:SetSize( Vector2( 500, 520 ) )
-	self.gui.window:Subscribe( "WindowClosed", self, self.WindowClosed )
+	self.gui.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false, true ) end )
 
 	self.gui.tabs = TabControl.Create( self.gui.window )
 	self.gui.tabs:SetDock( GwenPosition.Fill )
@@ -1150,7 +1151,7 @@ function Tuner:InitVehicle( vehicle )
 	end
 	self.gui.veh.getters[9]:SetText( f("%i", vehicle:GetWheelCount()) )
 	self.gui.veh.getters[10]:SetText( f("%i", vehicle:GetMaxRPM()) )
-	self.gui.veh.getters[15]:SetText( f("%i " .. self.ms_txt, vehicle:GetTopSpeed()) )
+	self.gui.veh.getters[15]:SetText( f("%i " .. self.locStrings["ms"], vehicle:GetTopSpeed()) )
 end
 
 function Tuner:VehicleUpdate()
@@ -1163,7 +1164,7 @@ function Tuner:VehicleUpdate()
 	local wt = t * self.trans:GetPrimaryTransmissionRatio() * ratios[self.trans:GetGear()]
 
 	self.gui.veh.getters[7]:SetText( f("%i%s", self.veh:GetHealth() * 100, "%") )
-	self.gui.veh.getters[8]:SetText( f("%s " .. self.kg_txt, self.veh:GetMass()) )
+	self.gui.veh.getters[8]:SetText( f("%s " .. self.locStrings["kg_txt"], self.veh:GetMass()) )
 	self.gui.veh.getters[11]:SetText( f("%i", self.veh:GetRPM()) )
 	self.gui.veh.getters[12]:SetText( f("%.f N", t) )
 
@@ -1174,12 +1175,12 @@ function Tuner:VehicleUpdate()
 	end
 
 	self.gui.veh.getters[14]:SetText( f("%.f N", wt ) )
-	self.gui.veh.getters[16]:SetText( f("%i " .. self.ms_txt .. ", %i " .. self.kmh_txt .. ", %i " .. self.mph_txt, s, s * 3.6, s * 2.234) )
+	self.gui.veh.getters[16]:SetText( f("%i " .. self.locStrings["ms"] .. ", %i " .. self.locStrings["kmh"] .. ", %i " .. self.locStrings["mph"], s, s * 3.6, s * 2.234) )
 
 	self.peak_s = self.peak_s or 0
 	if s > self.peak_s then
 		self.peak_s = s
-		self.gui.veh.getters[17]:SetText( f("%i " .. self.ms_txt .. ", %i " .. self.kmh_txt .. ", %i " .. self.mph_txt, self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234) )
+		self.gui.veh.getters[17]:SetText( f("%i " .. self.locStrings["ms"] .. ", %i " .. self.locStrings["kmh"] .. ", %i " .. self.locStrings["mph"], self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234) )
 	end
 
 	if s < 0.1 then 
@@ -1187,7 +1188,7 @@ function Tuner:VehicleUpdate()
 		self.gui.veh.getters[18]:SetText("")
 	elseif self.timer and s > 100 / 3.6 then
 		self.time = self.timer:GetSeconds()
-		self.gui.veh.getters[18]:SetText( f(self.in_txt .. " %.3f " .. self.seconds_txt, self.time) )
+		self.gui.veh.getters[18]:SetText( f(self.locStrings["in_txt"] .. " %.3f " .. self.locStrings["seconds"], self.time) )
 		self.timer = nil
 	end
 end
@@ -1200,7 +1201,7 @@ function Tuner:OtherVehicleUpdate()
 	local s = self.veh:GetLinearVelocity():Length()
 
 	self.gui.veh.getters[7]:SetText( f("%i%s", self.veh:GetHealth() * 100, "%") )
-	self.gui.veh.getters[8]:SetText( f("%s " .. self.kg_txt, self.veh:GetMass()) )
+	self.gui.veh.getters[8]:SetText( f("%s " .. self.locStrings["kg_txt"], self.veh:GetMass()) )
 	self.gui.veh.getters[11]:SetText( f("%i", self.veh:GetRPM()) )
 	self.gui.veh.getters[12]:SetText( f("%i N", t) )
 
@@ -1210,12 +1211,12 @@ function Tuner:OtherVehicleUpdate()
 		self.gui.veh.getters[13]:SetText( f("%i N", self.peak_t) )
 	end
 
-	self.gui.veh.getters[16]:SetText( f("%i " .. self.ms_txt .. ", %i " .. self.kmh_txt .. ", %i " .. self.mph_txt, s, s * 3.6, s * 2.234) )
+	self.gui.veh.getters[16]:SetText( f("%i " .. self.locStrings["ms"] .. ", %i " .. self.locStrings["kmh"] .. ", %i " .. self.locStrings["mph"], s, s * 3.6, s * 2.234) )
 
 	self.peak_s = self.peak_s or 0
 	if s > self.peak_s then
 		self.peak_s = s
-		self.gui.veh.getters[17]:SetText( f("%i " .. self.ms_txt .. ", %i " .. self.kmh_txt .. ", %i " .. self.mph_txt, self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234) )
+		self.gui.veh.getters[17]:SetText( f("%i " .. self.locStrings["ms"] .. ", %i " .. self.locStrings["kmh"] .. ", %i " .. self.locStrings["mph"], self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234) )
 	end
 
 	if s < 0.1 then 
@@ -1223,7 +1224,7 @@ function Tuner:OtherVehicleUpdate()
 		self.gui.veh.getters[18]:SetText("")
 	elseif self.timer and s > 100 / 3.6 then
 		self.time = self.timer:GetSeconds()
-		self.gui.veh.getters[18]:SetText( f(self.in_txt .. " %.3f " .. self.seconds_txt, self.time) )
+		self.gui.veh.getters[18]:SetText( f(self.locStrings["in_txt"] .. " %.3f " .. self.locStrings["seconds"], self.time) )
 		self.timer = nil
 	end
 end
@@ -1301,25 +1302,8 @@ function Tuner:KeyUp( args )
 
 	if IsValid( self.veh ) then
 		if args.key == string.byte("N") then
-			self:SetWindowVisible( not self.active )
+			self:SetWindowVisible( not self.activeWindow, true )
 			self.timer = nil
-
-			if self.active then
-				local visibile = LocalPlayer:GetWorld() == DefaultWorld
-				self.gui.color.button:SetVisible( visibile )
-				if self.gui.trans.button then self.gui.trans.button:SetVisible( visibile ) end
-				if self.gui.susp.button then self.gui.susp.button:SetVisible( visibile ) end
-				self.gui.aero.button:SetVisible( visibile )
-
-				self.gui.tabs:SetCurrentTab( self.gui.veh.button )
-			end
-
-			local effect = ClientEffect.Create(AssetLocation.Game, {
-				effect_id = self.active and 382 or 383,
-
-				position = Camera:GetPosition(),
-				angle = Angle()
-			})
 		end
 
 		if self.trans and self.trans:GetManual() then
@@ -1327,27 +1311,17 @@ function Tuner:KeyUp( args )
 				if self.peredacha < self.trans:GetMaxGear() then
 					self.peredacha = self.peredacha + 1
 					self.trans:SetGear( self.peredacha )
-					Game:ShowPopup( self.gear_txt .. self.peredacha, false )
+					Game:ShowPopup( self.locStrings["gear"] .. self.peredacha, false )
 				end
 			elseif args.key == VirtualKey.Numpad2 then
 				if self.peredacha > 1 then
 					self.peredacha = self.peredacha - 1
 					self.trans:SetGear( self.peredacha )
-					Game:ShowPopup( self.gear_txt .. self.peredacha, false )
+					Game:ShowPopup( self.locStrings["gear"] .. self.peredacha, false )
 				end
 			end
 		end
 	end
-end
-
-function Tuner:WindowClosed()
-	self:SetWindowVisible( false )
-	local effect = ClientEffect.Create(AssetLocation.Game, {
-		effect_id = 383,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
 end
 
 function Tuner:CheckThrust()
@@ -1387,11 +1361,30 @@ function Tuner:LocalPlayerInput( args )
 	end
 end
 
-function Tuner:SetWindowVisible( visible )
-    if self.active ~= visible then
-		self.active = visible
+function Tuner:SetWindowVisible( visible, sound )
+    if self.activeWindow ~= visible then
+		self.activeWindow = visible
 		self.gui.window:SetVisible( visible )
 		Mouse:SetVisible( visible )
+	end
+
+	if self.activeWindow then
+		local pWorld = LocalPlayer:GetWorld() == DefaultWorld
+		self.gui.color.button:SetVisible( pWorld )
+		if self.gui.trans.button then self.gui.trans.button:SetVisible( pWorld ) end
+		if self.gui.susp.button then self.gui.susp.button:SetVisible( pWorld ) end
+		self.gui.aero.button:SetVisible( pWorld )
+
+		self.gui.tabs:SetCurrentTab( self.gui.veh.button )
+	end
+
+	if sound then
+		local effect = ClientEffect.Play( AssetLocation.Game, {
+			effect_id = self.activeWindow and 382 or 383,
+
+			position = Camera:GetPosition(),
+			angle = Angle()
+		} )
 	end
 end
 

@@ -26,7 +26,7 @@ function WhatsNew:Open( args )
 	self.background_clr = Color( 10, 10, 10, 200 )
 
 	if self.usepause then
-		local sound = ClientSound.Create(AssetLocation.Game, {
+		local sound = ClientSound.Create( AssetLocation.Game, {
 			bank_id = 13,
 			sound_id = 1,
 			position = Camera:GetPosition(),
@@ -77,7 +77,7 @@ function WhatsNew:LocalPlayerInput( args )
 end
 
 function WhatsNew:Render()
-	Game:FireEvent( "gui.hud.hide" )
+	Game:FireEvent( "gui.hud.hide.force" )
 
 	Mouse:SetVisible( true )
 	Chat:SetEnabled( false )
@@ -97,7 +97,7 @@ end
 function WhatsNew:Menu()
 	Network:Send( "Exit" )
 
-	local sound = ClientSound.Create(AssetLocation.Game, {
+	local sound = ClientSound.Create( AssetLocation.Game, {
 		bank_id = 35,
 		sound_id = 6,
 		position = Camera:GetPosition(),
@@ -130,11 +130,11 @@ function WhatsNew:Close()
 	self.text_clr = nil
 	self.background_clr = nil
 
-	Game:FireEvent( "gui.hud.show" )
+	Game:FireEvent( "gui.hud.show.force" )
 	Mouse:SetVisible( false )
 	Chat:SetEnabled( true )
 
-	local sound = ClientSound.Create(AssetLocation.Game, {
+	local sound = ClientSound.Create( AssetLocation.Game, {
 		bank_id = 35,
 		sound_id = 6,
 		position = Camera:GetPosition(),

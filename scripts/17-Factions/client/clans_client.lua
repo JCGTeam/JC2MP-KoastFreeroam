@@ -4,7 +4,7 @@ msgColors =
 	{
 		[ "err" ] = Color.DarkGray,
 		[ "info" ] = Color( 0, 255, 0 ),
-		[ "warn" ] = Color( 255, 100, 0 )
+		[ "warn" ] = Color( 185, 215, 255 )
 	}
 
 function ClanSystem:__init()
@@ -36,7 +36,6 @@ function ClanSystem:ModuleLoad()
 		[116] = true
 	}
 
-	self.active = false
 	self.LastTick = 0
 	self.creationdate = "03/08/17 00:00:00"
 	self.updateClanCdTime = 5
@@ -54,23 +53,161 @@ function ClanSystem:ModuleLoad()
 	self.sort_dir = false
 	self.last_column = -1
 
-	self.clanMenu.window = GUI:Window( "✽ Кланы", Vector2( 0.54, 0.4 ) - Vector2( 0.3, 0.45 ) / 2, Vector2( 0.6, 0.70 ) )
-	self.clanMenu.window:SetVisible( self.active )
-	self.clanMenu.window:Subscribe( "WindowClosed", self, self.WindowClosed )
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
+		self:Lang()
+	else
+		self.locStrings = {
+			clans = "✽ Кланы",
+			clan = "Клан",
+			yourclan = "★ Ваш клан ★",
+			myclan = "Мой клан",
+			player = "Игрок",
+			rank = "Ранг",
+			joindate = "Дата вступления",
+			founder = "Основатель",
+			type = "Тип",
+			members = "Участников",
+			clanlist = "Список кланов",
+			forplayers = "Игрокам",
+			jointoclan = "» Присоединиться к клану",
+			playerlist = "••• Список игроков •••",
+			players = "Игроки",
+			invitations = "Приглашения",
+			createclan = "Создать клан",
+			clancreation = "Создание клана",
+			info = "Информация",
+			search = "Поиск",
+			manage = "Управление",
+			requirestocreate = "Требуется $" .. formatNumber( Prices.CreateClan ) .. ", чтобы создать клан",
+			back = "< Назад",
+			clanname = "Название клана:",
+			maxchars = "(макс. 20 символов)",
+			clandescription = "Описание клана:",
+			nodescription = "Без описания",
+			color = "Цвет",
+			preview = "Предосмотр:",
+			clantype = "Тип клана:",
+			notice = "Сообщение дня",
+			loading = "Загрузка...",
+			leaveclan = "Покинуть клан",
+			membermanagement = "Управление участниками",
+			setrank = "Установить ранг",
+			kick = "Выгнать",
+			logs = "Логи",
+			action = "Действие",
+			date = "Дата",
+			clearlogs = "Очистить логи",
+			clansettings = "Настройка клана",
+			applychanges = "Применить изменения",
+			requirestochange = "Требуется $" .. formatNumber( Prices.ChangeClan ) .. ", чтобы изменить клан",
+			removeclan = "Удалить клан",
+			confirmaction = "Подтвердить действие",
+			areyousure = "Вы уверены, что хотите это сделать?",
+			yes = "Да",
+			inviteplayer = "» Пригласить игрока",
+			search = "Поиск",
+			public = "Публичный",
+			private = "По приглашению",
+			friend_txt = "Друг"
+		}
+	end
+
+	Network:Send( "Clans:RequestSyncList", LocalPlayer )
+	Network:Subscribe( "Clans:SyncPlayers", self, self.SyncPlayerClans )
+	Network:Subscribe( "Clans:ReceiveData", self, self.ReceiveData )
+	Network:Subscribe( "Clans:ReceiveInvitations", self, self.ReceiveInvitations )
+	Network:Subscribe( "Clans:ReceiveClans", self, self.ReceiveClans )
+
+	Events:Subscribe( "Lang", self, self.Lang )
+	Events:Subscribe( "PostTick", self, self.PostTick )
+	Events:Subscribe( "OpenClansMenu", self, self.OpenClansMenu )
+	Events:Subscribe( "CloseClansMenu", self, self.CloseClansMenu )
+	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
+	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
+
+	--self:addPlayerToList( LocalPlayer )
+	for player in Client:GetPlayers() do
+		self:addPlayerToList( player )
+	end
+end
+
+function ClanSystem:Lang()
+	self.locStrings = {
+		clans = "✽ Clans",
+		clan = "Clan",
+		yourclan = "★ Your Clan ★",
+		myclan = "My Clan",
+		player = "Player",
+		rank = "Rank",
+		joindate = "Join Date",
+		founder = "Founder",
+		type = "Type",
+		members = "Members",
+		clanlist = "Clan List",
+		forplayers = "For players",
+		jointoclan = "» Join to Clan",
+		playerlist = "••• Player List •••",
+		players = "Players",
+		invitations = "Invitations",
+		createclan = "Create Clan",
+		clancreation = "Clan Creation",
+		info = "Information",
+		search = "Search",
+		manage = "Manage",
+		requirestocreate = "Requires $" .. formatNumber( Prices.CreateClan ) .. " to create clan",
+		back = "< Back",
+		clanname = "Clan name:",
+		maxchars = "(max 20 characters)",
+		clandescription = "Clan description:",
+		nodescription = "No description",
+		color = "Color",
+		preview = "Preview:",
+		clantype = "Clan type:",
+		notice = "Notice",
+		loading = "Loading...",
+		leaveclan = "Leave from Clan",
+		membermanagement = "Member Management",
+		setrank = "Set Rank",
+		kick = "Kick",
+		logs = "Logs",
+		action = "Action",
+		date = "Date",
+		clearlogs = "Clear Logs",
+		clansettings = "Clan Settings",
+		applychanges = "Apply Changes",
+		requirestochange = "Requires $" .. formatNumber( Prices.ChangeClan ) .. " to change clan",
+		removeclan = "Remove Clan",
+		confirmaction = "Confirm Action",
+		areyousure = "Are you sure you want to do this?",
+		yes = "Yes",
+		inviteplayer = "» Invite Player",
+		search = "Search",
+		public = "Public",
+		private = "Private",
+		friend_txt = "Friend"
+	}
+end
+
+function ClanSystem:CreateWindow()
+	if self.clanMenu.window then return end
+
+	self.clanMenu.window = GUI:Window( self.locStrings["clans"], Vector2( 0.54, 0.4 ) - Vector2( 0.3, 0.45 ) / 2, Vector2( 0.6, 0.70 ) )
+	self.clanMenu.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false, true ) end )
 
 	self.clanMenu.tabs = TabControl.Create( self.clanMenu.window )
 	self.clanMenu.tabs:SetDock( GwenPosition.Fill )
 	self.clanMenu.tabs:SetVisible( true )
 
 	local clanslist = BaseWindow.Create( self.clanMenu.tabs )
-	self.clanMenu.tabs:AddPage( "Список кланов", clanslist )
+	self.clanMenu.tabs:AddPage( self.locStrings["clanlist"], clanslist )
 
 	self.clanMenu.list = SortedList.Create( clanslist )
 	self.clanMenu.list:SetDock( GwenPosition.Fill )
-	self.clanMenu.list:AddColumn( "Клан" )
-	self.clanMenu.list:AddColumn( "Основатель" )
-	self.clanMenu.list:AddColumn( "Тип" )
-	self.clanMenu.list:AddColumn( "Участников" )
+	self.clanMenu.list:AddColumn( self.locStrings["clan"] )
+	self.clanMenu.list:AddColumn( self.locStrings["founder"] )
+	self.clanMenu.list:AddColumn( self.locStrings["type"] )
+	self.clanMenu.list:AddColumn( self.locStrings["members"] )
 	self.clanMenu.list:SetSort( self, self.SortFunction )
 	self.clanMenu.list:Subscribe( "SortPress", function( button ) self.sort_dir = not self.sort_dir end )
 	self.clanMenu.list:Subscribe( "RowSelected", self, self.GetClanInfo )
@@ -109,7 +246,7 @@ function ClanSystem:ModuleLoad()
 	self.clanMenu.join:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
 	self.clanMenu.join:SetHeight( 35 )
 	self.clanMenu.join:SetTextSize( self.textSize )
-	self.clanMenu.join:SetTextHoveredColor( Color.SpringGreen )
+	self.clanMenu.join:SetTextHoveredColor( Color.LightGreen )
 	self.clanMenu.join:Subscribe( "Press", self, self.JoinClan )
 
 	self.clanMenu.playersList = Button.Create( self.clanMenu.pLabel )
@@ -163,7 +300,7 @@ function ClanSystem:ModuleLoad()
 	self.createClan.tabs:SetVisible( false )
 
 	local clancreate = BaseWindow.Create( self.createClan.tabs )
-	self.createClan.tabs:AddPage( "Создание клана", clancreate )
+	self.createClan.tabs:AddPage( self.locStrings["clancreation"], clancreate )
 
 	self.createClan.bkpanelsLabel = Label.Create( clancreate )
 	self.createClan.bkpanelsLabel:SetDock( GwenPosition.Right )
@@ -226,8 +363,8 @@ function ClanSystem:ModuleLoad()
 	self.createClan.type = ComboBox.Create( clancreate )
 	self.createClan.type:SetDock( GwenPosition.Top )
 	self.createClan.type:SetHeight( 20 )
-	self.createClan.type:AddItem( "Открытый" )
-	self.createClan.type:AddItem( "По приглашению" )
+	self.createClan.type:AddItem( self.locStrings["public"], "0" )
+	self.createClan.type:AddItem( self.locStrings["private"], "1" )
 
 	self.createClan.subcategory = GroupBox.Create( clancreate )
 	self.createClan.subcategory:SetDock( GwenPosition.Fill )
@@ -257,13 +394,13 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.mctabs:SetVisible( false )
 
 	local hometab = BaseWindow.Create( self.manageClan.mctabs )
-	self.manageClan.mctabs:AddPage( "Мой клан", hometab )
+	self.manageClan.mctabs:AddPage( self.locStrings["myclan"], hometab )
 
 	self.manageClan.mList = SortedList.Create( hometab )
 	self.manageClan.mList:SetDock( GwenPosition.Fill )
-	self.manageClan.mList:AddColumn( "Игрок" )
-	self.manageClan.mList:AddColumn( "Ранг" )
-	self.manageClan.mList:AddColumn( "Дата вступления" )
+	self.manageClan.mList:AddColumn( self.locStrings["player"] )
+	self.manageClan.mList:AddColumn( self.locStrings["rank"] )
+	self.manageClan.mList:AddColumn( self.locStrings["joindate"] )
 
 	self.manageClan.mBkpanelsLabel = Label.Create( hometab )
 	self.manageClan.mBkpanelsLabel:SetDock( GwenPosition.Right )
@@ -317,7 +454,7 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.leaveClan:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
 	self.manageClan.leaveClan:SetHeight( btnHeight )
 	self.manageClan.leaveClan:SetTextSize( self.textSize )
-	local btnColor = Color.DarkOrange
+	local btnColor = Color( 255, 150, 150 )
 	self.manageClan.leaveClan:SetTextHoveredColor( btnColor )
 	self.manageClan.leaveClan:SetTextPressedColor( btnColor )
 	self.manageClan.leaveClan:Subscribe( "Press", self, self.LeaveClan )
@@ -359,11 +496,11 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.kick:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
 	self.manageClan.kick:SetHeight( btnHeight )
 	self.manageClan.kick:SetTextSize( self.textSize )
-	self.manageClan.kick:SetTextHoveredColor( Color.DarkOrange )
+	self.manageClan.kick:SetTextHoveredColor( Color( 255, 150, 150 ) )
 	self.manageClan.kick:Subscribe( "Press", self, self.Kick )
 
 	local clanlogs = BaseWindow.Create( self.manageClan.mctabs )
-	self.manageClan.mctabs:AddPage( "Логи", clanlogs )
+	self.manageClan.mctabs:AddPage( self.locStrings["logs"], clanlogs )
 
 	self.log = {}
 	self.log.clear = Button.Create( clanlogs )
@@ -374,11 +511,11 @@ function ClanSystem:ModuleLoad()
 
 	self.log.list = SortedList.Create( clanlogs )
 	self.log.list:SetDock( GwenPosition.Fill )
-	self.log.list:AddColumn( "Действие" )
-	self.log.list:AddColumn( "Дата", 150 )
+	self.log.list:AddColumn( self.locStrings["action"] )
+	self.log.list:AddColumn( self.locStrings["date"], 150 )
 
 	local clansettings = BaseWindow.Create( self.manageClan.mctabs )
-	self.manageClan.mctabs:AddPage( "Настройка клана", clansettings )
+	self.manageClan.mctabs:AddPage( self.locStrings["clansettings"], clansettings )
 
 	self.manageClan.bkpanelsLabel = Label.Create( clansettings )
 	self.manageClan.bkpanelsLabel:SetDock( GwenPosition.Right )
@@ -426,7 +563,7 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.remove:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
 	self.manageClan.remove:SetHeight( btnHeight )
 	self.manageClan.remove:SetTextSize( self.textSize )
-	self.manageClan.remove:SetTextHoveredColor( Color.DarkOrange )
+	self.manageClan.remove:SetTextHoveredColor( Color( 255, 150, 150 ) )
 	self.manageClan.remove:Subscribe( "Press", self, self.Remove )
 
 	self.manageClan.tLabel = Label.Create( clansettings )
@@ -447,8 +584,8 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.type = ComboBox.Create( clansettings )
 	self.manageClan.type:SetDock( GwenPosition.Top )
 	self.manageClan.type:SetHeight( 20 )
-	self.manageClan.type:AddItem( "Открытый" )
-	self.manageClan.type:AddItem( "По приглашению" )
+	self.manageClan.type:AddItem( self.locStrings["public"], "0" )
+	self.manageClan.type:AddItem( self.locStrings["private"], "1" )
 
 	self.manageClan.subcategory = GroupBox.Create( clansettings )
 	self.manageClan.subcategory:SetDock( GwenPosition.Fill )
@@ -474,52 +611,52 @@ function ClanSystem:ModuleLoad()
 
 	self.confirm = {}
 	self.confirm.action = ""
-	self.confirm.window = GUI:Window( "Подтвердить действие", Vector2( 0.86, 0.65 ) - Vector2( 0.13, 0.13 ) / 2, Vector2( 0.19, 0.13 ) )
+	self.confirm.window = GUI:Window( self.locStrings["confirmaction"], Vector2( 0.86, 0.65 ) - Vector2( 0.13, 0.13 ) / 2, Vector2( 0.19, 0.13 ) )
 	self.confirm.window:SetVisible( false )
 	self.confirm.label = Label.Create( self.confirm.window )
 	self.confirm.label:SetDock( GwenPosition.Fill )
 	self.confirm.label:SetAlignment( GwenPosition.Center )
-	self.confirm.label:SetText( "Вы уверены, что хотите это сделать?" )
-	self.confirm.label:SetTextColor( Color.DarkOrange )
+	self.confirm.label:SetText( self.locStrings["areyousure"] )
+	self.confirm.label:SetTextColor( Color( 255, 150, 150 ) )
 	self.confirm.accept = Button.Create( self.confirm.window )
 	self.confirm.accept:SetDock( GwenPosition.Bottom )
-	self.confirm.accept:SetText( "Да" )
-	self.confirm.accept:SetTextHoveredColor( Color.DarkOrange )
+	self.confirm.accept:SetText( self.locStrings["yes"] )
+	self.confirm.accept:SetTextHoveredColor( Color( 255, 150, 150 ) )
 	self.confirm.accept:SetHeight( btnHeight )
 	self.confirm.accept:Subscribe( "Press", self, self.Confirm )
 
 	self.invitations = {}
 	self.invitations.rows = {}
-	self.invitations.window = GUI:Window( "Приглашения", Vector2( 0.26, 0.4 ) - Vector2( 0.25, 0.45 ) / 2, Vector2( 0.25, 0.7 ) )
+	self.invitations.window = GUI:Window( self.locStrings["invitations"], Vector2( 0.26, 0.4 ) - Vector2( 0.25, 0.45 ) / 2, Vector2( 0.25, 0.7 ) )
 	self.invitations.window:SetVisible( false )
 	self.invitations.list = SortedList.Create( self.invitations.window )
 	self.invitations.list:SetDock( GwenPosition.Fill )
-	self.invitations.list:AddColumn( "Клан" )
+	self.invitations.list:AddColumn( self.locStrings["clan"] )
 
 	self.invitations.join = Button.Create( self.invitations.window )
 	self.invitations.join:SetDock( GwenPosition.Bottom )
 	self.invitations.join:SetMargin( Vector2( 0, 5 ), Vector2.Zero )
 	self.invitations.join:SetHeight( 35 )
 	self.invitations.join:SetTextSize( self.textSize )
-	self.invitations.join:SetTextHoveredColor( Color.SpringGreen )
+	self.invitations.join:SetTextHoveredColor( Color.LightGreen )
 	self.invitations.join:Subscribe( "Press", self, self.AcceptInvite )
 
 	self.clanList = {}
 	self.clanList.rows = {}
-	self.clanList.window = GUI:Window( "••• Список игроков •••", Vector2( 0.26, 0.4 ) - Vector2( 0.25, 0.45 ) / 2, Vector2( 0.25, 0.7 ) )
+	self.clanList.window = GUI:Window( self.locStrings["playerlist"], Vector2( 0.26, 0.4 ) - Vector2( 0.25, 0.45 ) / 2, Vector2( 0.25, 0.7 ) )
 	self.clanList.window:SetVisible( false )
 
 	self.clanList.playersList = SortedList.Create( self.clanList.window )
 	self.clanList.playersList:SetDock( GwenPosition.Fill )
 	self.clanList.playersList:SetBackgroundVisible( false )
-	self.clanList.playersList:AddColumn( "Игроки:" )
+	self.clanList.playersList:AddColumn( self.locStrings["players"] )
 
 	self.clanList.invitePlayer = Button.Create( self.clanList.window )
 	self.clanList.invitePlayer:SetDock( GwenPosition.Bottom )
 	self.clanList.invitePlayer:SetMargin( Vector2( 0, 2 ), Vector2( 0, 2 ) )
 	self.clanList.invitePlayer:SetHeight( 35 )
 	self.clanList.invitePlayer:SetTextSize( self.textSize )
-	self.clanList.invitePlayer:SetTextHoveredColor( Color.SpringGreen )
+	self.clanList.invitePlayer:SetTextHoveredColor( Color.LightGreen )
 	self.clanList.invitePlayer:Subscribe( "Press", self, self.InvitePlayer )
 
 	self.clanList.searchEdit = TextBox.Create( self.clanList.window )
@@ -531,73 +668,53 @@ function ClanSystem:ModuleLoad()
 	self.clanList.searchEdit:Subscribe( "Blur", self, self.Blur )
 	self.clanList.searchEdit:Subscribe( "EscPressed", self, self.EscPressed )
 
-	Network:Send( "Clans:RequestSyncList", LocalPlayer )
-	Network:Subscribe( "Clans:SyncPlayers", self, self.SyncPlayerClans )
-	Network:Subscribe( "Clans:ReceiveData", self, self.ReceiveData )
-	Network:Subscribe( "Clans:ReceiveInvitations", self, self.ReceiveInvitations )
-	Network:Subscribe( "Clans:ReceiveClans", self, self.ReceiveClans )
-
-	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "PostTick", self, self.PostTick )
-	Events:Subscribe( "OpenClansMenu", self, self.OpenClansMenu )
-	Events:Subscribe( "CloseClansMenu", self, self.CloseClansMenu )
-	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
-	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
-
-	local lang = LocalPlayer:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		self:Lang()
-	else
-		self.friend_txt = "Друг"
-
-		self.clanMenu.cLabel:SetText( "Клан" )
-		self.clanMenu.manageClan:SetText( "★ Ваш клан ★" )
-		self.clanMenu.lClan:SetText( "Список кланов" )
-		self.clanMenu.pLabel:SetText( "Игрокам" )
-		self.clanMenu.join:SetText( "» Присоединиться к клану" )
-		self.clanMenu.playersList:SetText( "••• Список игроков •••" )
-		self.clanMenu.invitations:SetText( "Приглашения" )
-		self.clanMenu.create:SetText( "Создать клан" )
-		self.clanMenu.iLabel:SetText( "Информация" )
-		self.clanMenu.searchClansEdit:SetToolTip( "Поиск" )
-		self.createClan.pLabel:SetText( "Управление" )
-		self.createClan.dLabel:SetText( "Требуется $" .. formatNumber( Prices.CreateClan ) .. ", чтобы создать клан" )
-		self.createClan.create:SetText( "Создать клан" )
-		self.createClan.back:SetText( "< Назад" )
-		self.createClan.nLabel:SetText( "Название клана:" )
-		self.createClan.nEdit:SetToolTip( "(макс. 20 символов)" )
-		self.createClan.tLabel:SetText( "Описание клана:" )
-		self.createClan.subcategory:SetText( "Цвет" )
-		self.createClan.subcategory2:SetText( "Предосмотр:" )
-		self.createClan.ttLabel:SetText( "Тип клана:" )
-		self.manageClan.mcLabel:SetText( "Клан" )
-		self.manageClan.manageClan:SetText( "★ Ваш клан ★" )
-		self.manageClan.lClan:SetText( "Список кланов" )
-		self.manageClan.newsLabel:SetText( "Сообщение дня" )
-		self.manageClan.newstbLabel:SetText( "Загрузка..." )
-		self.manageClan.mpLabel:SetText( "Управление" )
-		self.manageClan.playersList:SetText( "••• Список игроков •••" )
-		self.manageClan.leaveClan:SetText( "Покинуть клан" )
-		self.manageClan.cInfoLabel:SetText( "Информация" )
-		self.manageClan.ciLabel:SetText( "Название клана:" )
-		self.manageClan.psettLabel:SetText( "Управление участниками" )
-		self.manageClan.setRank:SetText( "Установить ранг" )
-		self.manageClan.kick:SetText( "Выгнать" )
-		self.log.clear:SetText( "Очистить логи" )
-		self.manageClan.newsmngLabel:SetText( "Сообщение дня" )
-		self.manageClan.newsApply:SetText( "Применить изменения" )
-		self.manageClan.pLabel:SetText( "Управление" )
-		self.manageClan.dLabel:SetText( "Требуется $" .. formatNumber( Prices.ChangeClan ) .. ", чтобы изменить клан" )
-		self.manageClan.create:SetText( "Применить изменения" )
-		self.manageClan.remove:SetText( "Удалить клан" )
-		self.manageClan.tLabel:SetText( "Описание клана:" )
-		self.manageClan.subcategory:SetText( "Цвет" )
-		self.manageClan.subcategory2:SetText( "Предосмотр:" )
-		self.manageClan.ttLabel:SetText( "Тип клана:" )
-		self.invitations.join:SetText( "» Присоединиться к клану" )
-		self.clanList.invitePlayer:SetText( "» Пригласить игрока" )
-		self.clanList.searchEdit:SetToolTip( "Поиск" )
-	end
+	self.clanMenu.cLabel:SetText( self.locStrings["clan"] )
+	self.clanMenu.manageClan:SetText( self.locStrings["yourclan"] )
+	self.clanMenu.lClan:SetText( self.locStrings["clanlist"] )
+	self.clanMenu.pLabel:SetText( self.locStrings["forplayers"] )
+	self.clanMenu.join:SetText( self.locStrings["jointoclan"] )
+	self.clanMenu.playersList:SetText( self.locStrings["playerlist"] )
+	self.clanMenu.invitations:SetText( self.locStrings["invitations"] )
+	self.clanMenu.create:SetText( self.locStrings["createclan"] )
+	self.clanMenu.iLabel:SetText( self.locStrings["info"] )
+	self.clanMenu.searchClansEdit:SetToolTip( self.locStrings["search"] )
+	self.createClan.pLabel:SetText( self.locStrings["manage"] )
+	self.createClan.dLabel:SetText( self.locStrings["requirestocreate"] )
+	self.createClan.create:SetText( self.locStrings["createclan"] )
+	self.createClan.back:SetText( self.locStrings["back"] )
+	self.createClan.nLabel:SetText( self.locStrings["clanname"] )
+	self.createClan.nEdit:SetToolTip( self.locStrings["maxchars"] )
+	self.createClan.tLabel:SetText( self.locStrings["clandescription"] )
+	self.createClan.subcategory:SetText( self.locStrings["color"] )
+	self.createClan.subcategory2:SetText( self.locStrings["preview"] )
+	self.createClan.ttLabel:SetText( self.locStrings["clantype"] )
+	self.manageClan.mcLabel:SetText( self.locStrings["clan"] )
+	self.manageClan.manageClan:SetText( self.locStrings["yourclan"] )
+	self.manageClan.lClan:SetText( self.locStrings["clanlist"] )
+	self.manageClan.newsLabel:SetText( self.locStrings["notice"] )
+	self.manageClan.newstbLabel:SetText( self.locStrings["loading"] )
+	self.manageClan.mpLabel:SetText( self.locStrings["manage"] )
+	self.manageClan.playersList:SetText( self.locStrings["playerlist"] )
+	self.manageClan.leaveClan:SetText( self.locStrings["leaveclan"] )
+	self.manageClan.cInfoLabel:SetText( self.locStrings["info"] )
+	self.manageClan.ciLabel:SetText( self.locStrings["clanname"] )
+	self.manageClan.psettLabel:SetText( self.locStrings["membermanagement"] )
+	self.manageClan.setRank:SetText( self.locStrings["setrank"] )
+	self.manageClan.kick:SetText( self.locStrings["kick"] )
+	self.log.clear:SetText( self.locStrings["clearlogs"] )
+	self.manageClan.newsmngLabel:SetText( self.locStrings["notice"] )
+	self.manageClan.newsApply:SetText( self.locStrings["applychanges"] )
+	self.manageClan.pLabel:SetText( self.locStrings["manage"] )
+	self.manageClan.dLabel:SetText( self.locStrings["requirestochange"] )
+	self.manageClan.create:SetText( self.locStrings["applychanges"] )
+	self.manageClan.remove:SetText( self.locStrings["removeclan"] )
+	self.manageClan.tLabel:SetText( self.locStrings["clandescription"] )
+	self.manageClan.subcategory:SetText( self.locStrings["color"] )
+	self.manageClan.subcategory2:SetText( self.locStrings["preview"] )
+	self.manageClan.ttLabel:SetText( self.locStrings["clantype"] )
+	self.invitations.join:SetText( self.locStrings["jointoclan"] )
+	self.clanList.invitePlayer:SetText( self.locStrings["inviteplayer"] )
+	self.clanList.searchEdit:SetToolTip( self.locStrings["search"] )
 
 	self.createClan.dLabel:SizeToContents()
 	self.createClan.nLabel:SizeToContents()
@@ -611,70 +728,6 @@ function ClanSystem:ModuleLoad()
 	self.manageClan.ttLabel:SizeToContents()
 	self.manageClan.subcategory2:SizeToContents()
 	self.manageClan.clanColorPreview:SizeToContents()
-
-	--self:addPlayerToList( LocalPlayer )
-	for player in Client:GetPlayers() do
-		self:addPlayerToList( player )
-	end
-end
-
-function ClanSystem:Lang()
-	self.friend_txt = "Friend"
-
-	self.clanMenu.window:SetTitle( "✽ Clans" )
-	self.manageClan.mcLabel:SetText( "Clan" )
-	self.clanMenu.cLabel:SetText( "Clan" )
-	self.clanMenu.manageClan:SetText( "★ Your clan ★" )
-	self.clanMenu.lClan:SetText( "Clan list" )
-	self.clanMenu.pLabel:SetText( "For players" )
-	self.clanMenu.join:SetText( "» Join a clan" )
-	self.clanMenu.playersList:SetText( "••• List of players •••" )
-	self.clanMenu.invitations:SetText( "Invitations" )
-	self.clanMenu.create:SetText( "Create clan" )
-	self.clanMenu.iLabel:SetText( "Information" )
-	self.clanMenu.searchClansEdit:SetToolTip( "Search" )
-	self.createClan.pLabel:SetText( "Manage" )
-	self.createClan.dLabel:SetText( "Requires $" .. formatNumber( Prices.CreateClan ) .. " to create clan" )
-	self.createClan.create:SetText( "Create clan" )
-	self.createClan.back:SetText( "< Back" )
-	self.createClan.nLabel:SetText( "Clan name:" )
-	self.createClan.nEdit:SetToolTip( "(max 20 characters)" )
-	self.createClan.tLabel:SetText( "Clan description:" )
-	self.createClan.subcategory:SetText( "Color" )
-	self.createClan.subcategory2:SetText( "Preview:" )
-	self.createClan.ttLabel:SetText( "Clan type:" )
-	self.manageClan.mcLabel:SetText( "Clan" )
-	self.manageClan.manageClan:SetText( "★ Your clan ★" )
-	self.manageClan.lClan:SetText( "Clan list" )
-	self.manageClan.newsLabel:SetText( "Notice" )
-	self.manageClan.newstbLabel:SetText( "Loading..." )
-	self.manageClan.mpLabel:SetText( "Manage" )
-	self.manageClan.playersList:SetText( "••• List of players •••" )
-	self.manageClan.leaveClan:SetText( "Leave the clan" )
-	self.manageClan.cInfoLabel:SetText( "Information" )
-	self.manageClan.ciLabel:SetText( "Clan name:" )
-	self.manageClan.psettLabel:SetText( "Member management" )
-	self.manageClan.setRank:SetText( "Set rank" )
-	self.manageClan.kick:SetText( "Kick" )
-	self.log.clear:SetText( "Clear logs" )
-	self.manageClan.newsmngLabel:SetText( "Notice" )
-	self.manageClan.newsApply:SetText( "Apply changes" )
-	self.manageClan.pLabel:SetText( "Manage" )
-	self.manageClan.dLabel:SetText( "Requires $" .. formatNumber( Prices.ChangeClan ) .. " to change clan" )
-	self.manageClan.create:SetText( "Apply changes" )
-	self.manageClan.remove:SetText( "Remove clan" )
-	self.manageClan.tLabel:SetText( "Clan description:" )
-	self.manageClan.subcategory:SetText( "Color" )
-	self.manageClan.subcategory2:SetText( "Preview:" )
-	self.manageClan.ttLabel:SetText( "Clan type:" )
-	self.confirm.window:SetTitle( "Confirm action" )
-	self.confirm.label:SetText( "Are you sure you want to do this?" )
-	self.confirm.accept:SetText( "Yes" )
-	self.invitations.window:SetTitle( "Invitations" )
-	self.invitations.join:SetText( "» Join a clan" )
-	self.clanList.window:SetTitle( "••• List of players •••" )
-	self.clanList.invitePlayer:SetText( "» Invite player" )
-	self.clanList.searchEdit:SetToolTip( "Search" )
 end
 
 function ClanSystem:SortFunction( column, a, b )
@@ -718,20 +771,20 @@ function ClanSystem:GetClanInfo()
 	end
 end
 
-function ClanSystem:GetActive()
-	return self.active
-end
+function ClanSystem:SetWindowVisible( visible, sound )
+	self:CreateWindow()
 
-function ClanSystem:SetActive( state )
-	self.active = state
-	self.clanMenu.window:SetVisible( self.active )
-	Mouse:SetVisible( self.active )
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.clanMenu.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
 
-	if state then
+	if self.activeWindow then
 		Network:Send( "Clans:GetClans" )
 
 		if LocalPlayer:GetMoney() >= Prices.CreateClan then
-			local btnColor = Color.SpringGreen
+			local btnColor = Color.LightGreen
 			self.createClan.create:SetTextHoveredColor( btnColor )
 			self.createClan.create:SetTextNormalColor( btnColor )
 			self.createClan.create:SetTextPressedColor( btnColor )
@@ -742,52 +795,42 @@ function ClanSystem:SetActive( state )
 			self.createClan.create:SetTextPressedColor( btnColor )
 		end
 
-		if not self.LocalPlayerInputEvent then
-			self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-		end
-
-		if not self.RenderEvent then
-			self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-		end
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	else
 		self.confirm.window:SetVisible( false )
 		self.invitations.window:SetVisible( false )
 		self.clanList.window:SetVisible( false )
 		self.clanMenu.iLabel:SetVisible( false )
 
-		if self.LocalPlayerInputEvent then
-			Events:Unsubscribe( self.LocalPlayerInputEvent )
-			self.LocalPlayerInputEvent = nil
-		end
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+        if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	end
 
-        if self.RenderEvent then
-			Events:Unsubscribe( self.RenderEvent )
-			self.RenderEvent = nil
-        end
+	if sound then
+		local effect = ClientEffect.Play( AssetLocation.Game, {
+			effect_id = self.activeWindow and 382 or 383,
+
+			position = Camera:GetPosition(),
+			angle = Angle()
+		} )
 	end
 end
 
 function ClanSystem:OpenClansMenu()
-	local effect = ClientEffect.Play(AssetLocation.Game, {
-		effect_id = 382,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
-
-	self:SetActive( not self:GetActive() )
+	self:SetWindowVisible( not self.activeWindow, true )
 end
 
 function ClanSystem:CloseClansMenu()
-	if self.clanMenu.window:GetVisible() == true then
-		self:SetActive( false )
+	if self.clanMenu.window and self.clanMenu.window:GetVisible() then
+		self:SetWindowVisible( false )
 	end
 end
 
 function ClanSystem:LocalPlayerInput( args )
-	if ( self:GetActive() and Game:GetState() == GUIState.Game ) then
+	if self.activeWindow and Game:GetState() == GUIState.Game then
 		if args.input == Action.GuiPause then
-			self:SetActive( false )
+			self:SetWindowVisible( false )
 		end
 
 		if self.actions[args.input] then
@@ -806,17 +849,7 @@ end
 
 function ClanSystem:EscPressed()
 	self:Blur()
-	self:SetActive( false )
-end
-
-function ClanSystem:WindowClosed()
-	self:SetActive ( false )
-	local effect = ClientEffect.Create(AssetLocation.Game, {
-		effect_id = 383,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
+	self:SetWindowVisible( false )
 end
 
 function ClanSystem:ManageClan()
@@ -885,10 +918,10 @@ function ClanSystem:ReceiveClans( args )
 
 		local item = self.clanMenu.list:AddItem( tostring ( name ) )
 		item:SetCellText( 1, data.creator )
-		item:SetCellText( 2, ( data.type == "Открытый" and "Публичный" or "По приглашению" ) )
+		item:SetCellText( 2, ( data.type == "1" and self.locStrings["private"] or self.locStrings["public"] ) )
 		item:SetCellText( 3, tostring( membersCount ) )
 		item:SetDataObject( "creationDate", tostring( data.creationDate ) )
-		item:SetDataObject( "description", tostring( data.description ) )
+		item:SetDataObject( "description", data.description ~= "" and data.description or self.locStrings["nodescription"] )
 		item:SetTextColor( Color( tonumber( r ), tonumber( g ), tonumber( b ) ) )
 		table.insert( self.clanList.rows, item )
 		self.clansRow[ tostring( name ) ] = item
@@ -917,13 +950,9 @@ function ClanSystem:Create()
 	args.name = self.createClan.nEdit:GetText():sub( 0, 20 )
 	if self.createClan.nEdit:GetText():len() <= 20 then
 		if ( args.name ~= "" ) then
-			if self.createClan.tEdit:GetText() ~= "" then
-				args.description = self.createClan.tEdit:GetText():sub( 0, 5000 )
-			else
-				args.description = "Описание отсутствует."
-			end
+			args.description = self.createClan.tEdit:GetText():sub( 0, 5000 )
 			args.colour = table.concat( self.createClan.colour, ", " )
-			args.type = self.createClan.type:GetText()
+			args.type = self.createClan.type:GetSelectedItem():GetName()
 
 			Network:Send( "Clans:Create", args )
 			Network:Send( "Clans:GetClans" )
@@ -947,13 +976,13 @@ function ClanSystem:ReceiveData( args )
 	if lang and lang == "EN" then
 		self.manageClan.ciLabel:SetText(
 			"> Clan name: " .. tostring( args.clanData.name ) ..
-			"\n\n★ Clan type: " .. ( args.clanData.type == "Открытый" and "Публичный" or "По приглашению" ) ..
+			"\n\n★ Clan type: " .. ( args.clanData.type == "1" and self.locStrings["private"] or self.locStrings["public"] ) ..
 			"\n\nツ Members: " .. tostring( #args.members ) ..
 			"\n\n● Creation date: ".. tostring( args.clanData.creationDate ) )
 	else
 		self.manageClan.ciLabel:SetText(
 			"> Название клана: " .. tostring( args.clanData.name ) ..
-			"\n\n★ Тип клана: " .. ( args.clanData.type == "Открытый" and "Публичный" or "По приглашению" ) ..
+			"\n\n★ Тип клана: " .. ( args.clanData.type == "1" and self.locStrings["private"] or self.locStrings["public"] ) ..
 			"\n\nツ Участников: " .. tostring( #args.members ) ..
 			"\n\n● Дата создания: ".. tostring( args.clanData.creationDate ) )
 	end
@@ -1020,9 +1049,6 @@ function ClanSystem:Remove()
 	self.confirm.action = "remove"
 end
 
-function ClanSystem:Chat()
-end
-
 function ClanSystem:Confirm()
 	if ( self.confirm.action == "remove" ) then
 		Network:Send( "Clans:Remove" )
@@ -1041,7 +1067,7 @@ function ClanSystem:addPlayerToList( player )
 	local playerColor = player:GetColor()
 
 	if LocalPlayer:IsFriend( player ) then
-		item:SetToolTip( self.friend_txt )
+		item:SetToolTip( self.locStrings["friend_txt"] )
 	end
 
 	item:SetVisible( true )
@@ -1067,16 +1093,20 @@ function ClanSystem:SearchClans()
 	if ( text ~= "" and text:len() > 0 ) then
 		for _, item in pairs ( self.clansRow ) do
 			if item and ( type ( item ) == "userdata" ) then
-				item:SetVisible( false )
-				if item:GetCellText( 0 ):lower():find( text, 1, true ) then
-					item:SetVisible( true )
+				if IsValid( item ) then
+					item:SetVisible( false )
+					if item:GetCellText( 0 ):lower():find( text, 1, true ) then
+						item:SetVisible( true )
+					end
 				end
 			end
 		end
 	else
 		for _, item in pairs ( self.clansRow ) do
 			if ( type ( item ) == "userdata" ) then
-				item:SetVisible( true )
+				if IsValid( item ) then
+					item:SetVisible( true )
+				end
 			end
 		end
 	end
@@ -1137,16 +1167,12 @@ function ClanSystem:ChangeDescription()
 	local color = self.manageClan.picker:GetColor()
 	self.manageClan.colour = { color.r, color.g, color.b }
 	if not self.updateClanCd then
-		if self.manageClan.tEdit:GetText() ~= "" then
-			args.description = self.manageClan.tEdit:GetText():sub( 0, 5000 )
-			args.colour = table.concat( self.manageClan.colour, ", " )
-			args.type = self.manageClan.type:GetText()
-			Network:Send( "Clans:UpdateClanSettings", args )
-			self.updateClanCd = Timer()
-			self.manageClan.create:SetEnabled( false )
-		else
-			LocalPlayer:Message( "Описание клана отсутствует! Как так-то?", "err" )
-		end
+		args.description = self.manageClan.tEdit:GetText():sub( 0, 5000 )
+		args.colour = table.concat( self.manageClan.colour, ", " )
+		args.type = self.manageClan.type:GetSelectedItem():GetName()
+		Network:Send( "Clans:UpdateClanSettings", args )
+		self.updateClanCd = Timer()
+		self.manageClan.create:SetEnabled( false )
 	end
 end
 
@@ -1172,9 +1198,8 @@ function ClanSystem:Render()
 
 	if self.clanMenu.window:GetVisible() ~= is_visible then
 		self.clanMenu.window:SetVisible( is_visible )
+		Mouse:SetVisible( is_visible )
 	end
-
-	Mouse:SetVisible( is_visible )
 end
 
 clanSystem = ClanSystem()

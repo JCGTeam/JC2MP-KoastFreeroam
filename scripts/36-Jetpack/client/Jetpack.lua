@@ -1,14 +1,19 @@
 class "Jetpack"
 
 function Jetpack:__init()
-	self:initVars()
+	self.jetpacksBottom = {}
+	self.jetpacksTop = {}
+	self.timer = Timer()
+	self.impulse = Vector3.Zero
 
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.enable_txt = "Реактивный ранец включён"
-		self.disable_txt = "Реактивный ранец отключён"
+		self.locStrings = {
+			on = "Реактивный ранец включён",
+			off = "Реактивный ранец отключён"
+		}
 	end
 
 	if not LocalPlayer:InVehicle() then
@@ -24,8 +29,10 @@ function Jetpack:__init()
 end
 
 function Jetpack:Lang()
-	self.enable_txt = "Jetpack enabled"
-	self.disable_txt = "Jetpack disabled"
+	self.locStrings = {
+		on = "Jetpack enabled",
+		off = "Jetpack disabled"
+	}
 end
 
 function Jetpack:LocalPlayerEnterVehicle()
@@ -39,14 +46,7 @@ end
 function Jetpack:UseJetpack()
 	Network:Send( "EnableJetpack" )
 
-	Events:Fire( "CastCenterText", { text = LocalPlayer:GetValue( "JP" ) and self.disable_txt or self.enable_txt, time = 2 } )
-end
-
-function Jetpack:initVars()
-	self.jetpacksBottom = {}
-	self.jetpacksTop = {}
-	self.timer = Timer()
-	self.impulse = Vector3.Zero
+	Events:Fire( "CastCenterText", { text = LocalPlayer:GetValue( "JP" ) and self.locStrings["off"] or self.locStrings["on"], time = 2 } )
 end
 
 function Jetpack:onRender()

@@ -74,7 +74,7 @@ function Admin:__init()
 	self.permissionItems = {}
 	self.templateItems = {}
 	self.modules = {}
-	self.active = false
+	self.activeWindow = false
 	self.playerUpdateTimer = Timer()
 	self.serverUpdateTimer = Timer()
 	self.playerPermissionsTimer = Timer()
@@ -97,7 +97,9 @@ function Admin:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.friend_txt = "Друг"
+		self.locStrings = {
+			friend = "Друг"
+		}
 	end
 
 	self:LoadPanel()
@@ -125,7 +127,9 @@ function Admin:__init()
 end
 
 function Admin:Lang()
-	self.friend_txt = "Friend"
+	self.locStrings = {
+		friend = "Friend"
+	}
 end
 
 function Admin:LoadPanel()
@@ -444,27 +448,27 @@ function Admin:LoadPanel()
 	end
 end
 
-function Admin:setActive( state )
+function Admin:SetWindowVisible( state )
 	if ( state == true ) then
 		Network:Send( "admin.isAdmin" )
 	else
 		self.panel.main.window:SetVisible( false )
 		self.panel.main.update:SetEnabled( true )
 		Mouse:SetVisible ( false )
-		self.active = false
-		local effect = ClientEffect.Play(AssetLocation.Game, {
+		self.activeWindow = false
+		local effect = ClientEffect.Play( AssetLocation.Game, {
 			effect_id = 383,
 
 			position = Camera:GetPosition(),
 			angle = Angle()
-		})
+		} )
 		if self.updateDataEvent then Events:Unsubscribe( self.updateDataEvent )	 self.updateDataEvent = nil end
 	end
 end
 
 function Admin:KeyUp( args )
 	if args.key == string.byte('P') then
-		self:setActive( not self.active )
+		self:SetWindowVisible( not self.activeWindow )
 	end
 end
 
@@ -505,9 +509,9 @@ function Admin:LocalPlayerInput( args )
 		self.spec.angle.pitch = math.clamp(self.spec.angle.pitch, -1.5, -0.4)
 	end
 
-	if self.active then
+	if self.activeWindow then
 		if args.input == Action.GuiPause then
-			self:setActive( false )
+			self:SetWindowVisible( false )
 		end
 
 		if self.actions[args.input] then
@@ -517,7 +521,7 @@ function Admin:LocalPlayerInput( args )
 end
 
 function Admin:onPanelClose()
-	self:setActive( false )
+	self:SetWindowVisible( false )
 end
 
 function Admin:updateACL( data )
@@ -527,7 +531,7 @@ end
 function Admin:showPanel( data )
 	self.panel.main.window:SetVisible( true )
 	Mouse:SetVisible( true )
-	self.active = true
+	self.activeWindow = true
 
 	self.players[ LocalPlayer:GetId() ]:SetTextColor( LocalPlayer:GetColor() )
 	for p in Client:GetPlayers() do
@@ -540,7 +544,7 @@ function Admin:showPanel( data )
 	Network:Send( "admin.getChat" )
 	self:displayBans( data.bans )
 	self:displayModules( data.modules )
-	local effect = ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play( AssetLocation.Game, {
 		effect_id = 382,
 
 		position = Camera:GetPosition(),
@@ -566,7 +570,7 @@ function Admin:addPlayerToList( player )
 	local tcolor = player:GetColor()
 
 	if LocalPlayer:IsFriend( player ) then
-		item:SetToolTip( self.friend_txt )
+		item:SetToolTip( self.locStrings["friend"] )
 	end
 
 	item:SetTextColor ( tcolor )
@@ -645,7 +649,7 @@ function Admin:displayServerInfo( info )
 end
 
 function Admin:updateData()
-	if self.active then
+	if self.activeWindow then
 		if ( self.serverUpdateTimer:GetSeconds() >= 10 ) then
 			Network:Send ( "admin.getServerInfo" )
 			self.serverUpdateTimer:Restart()
