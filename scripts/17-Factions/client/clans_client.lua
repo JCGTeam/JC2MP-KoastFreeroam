@@ -125,11 +125,6 @@ function ClanSystem:ModuleLoad()
 	Events:Subscribe( "CloseClansMenu", self, self.CloseClansMenu )
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
-
-	--self:addPlayerToList( LocalPlayer )
-	for player in Client:GetPlayers() do
-		self:addPlayerToList( player )
-	end
 end
 
 function ClanSystem:Lang()
@@ -728,6 +723,11 @@ function ClanSystem:CreateWindow()
 	self.manageClan.ttLabel:SizeToContents()
 	self.manageClan.subcategory2:SizeToContents()
 	self.manageClan.clanColorPreview:SizeToContents()
+
+	--self:addPlayerToList( LocalPlayer )
+	for player in Client:GetPlayers() do
+		self:addPlayerToList( player )
+	end
 end
 
 function ClanSystem:SortFunction( column, a, b )
@@ -1062,6 +1062,8 @@ function ClanSystem:Confirm()
 end
 
 function ClanSystem:addPlayerToList( player )
+	if not self.clanList then return end
+
 	local item = self.clanList.playersList:AddItem( player:GetName() )
 	local playerId = player:GetId()
 	local playerColor = player:GetColor()
