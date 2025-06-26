@@ -191,8 +191,6 @@ function Settings:__init()
 	Events:Subscribe( "OpenSettingsMenu", self, self.OpenSettingsMenu )
 	Events:Subscribe( "CloseSettingsMenu", self, self.CloseSettingsMenu )
 	Events:Subscribe( "KeyUp", self, self.KeyUp )
-	Events:Subscribe( "PromocodeFound", function() self.promocode:SetTextColor( Color.Green ) self.getBonusBtn:SetText( "Промокод активирован!" ) end )
-	Events:Subscribe( "PromocodeNotFound", function() self.promocode:SetTextColor( Color.Red ) self.getBonusBtn:SetText( self.locStrings["activatePromocode"] ) end )
 
 	self:GameLoad()
 end
@@ -972,6 +970,9 @@ function Settings:CreateWindow()
 		customFireEvent:Subscribe( "EscPressed", self, self.EscPressed )
 	end
 	]]--
+
+	Events:Subscribe( "PromocodeFound", function() self.promocode:SetTextColor( Color.Green ) self.getBonusBtn:SetText( "Промокод активирован!" ) end )
+	Events:Subscribe( "PromocodeNotFound", function() self.promocode:SetTextColor( Color.Red ) self.getBonusBtn:SetText( self.locStrings["activatePromocode"] ) end )
 end
 
 function Settings:Focus()
