@@ -33,10 +33,21 @@ function Grenades:__init()
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "KeyUp", self, self.KeyUp )
-	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	Events:Subscribe( "Render", self, self.Render )
+	Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
+end
 
+function Grenades:Lang()
+	self.locStrings = {
+		fragmentation = "Fragmentation Grenade",
+		triggered = "Triggered Explosive",
+		claymore = "Claymore Mine",
+		firework = "Firework Grenade",
+		nuclear = "Nuclear Grenade",
+		supernuclear = "SUPER Nuclear Grenade"
+	}
+end
+
+function Grenades:ModuleLoad()
 	self.weaponsImage = Image.Create( AssetLocation.Game, "hud_weapons_a_dif.dds" )
 
 	self.uvs = {
@@ -56,17 +67,10 @@ function Grenades:__init()
 	self.stars4 = Image.Create( AssetLocation.Resource, "Stars4" )
 	self.stars5 = Image.Create( AssetLocation.Resource, "Stars5" )
 ]]--
-end
 
-function Grenades:Lang()
-	self.locStrings = {
-		fragmentation = "Fragmentation Grenade",
-		triggered = "Triggered Explosive",
-		claymore = "Claymore Mine",
-		firework = "Firework Grenade",
-		nuclear = "Nuclear Grenade",
-		supernuclear = "SUPER Nuclear Grenade"
-	}
+	Events:Subscribe( "KeyUp", self, self.KeyUp )
+	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+	Events:Subscribe( "Render", self, self.Render )
 end
 
 function Grenades:CheckList( tableList, modelID )
