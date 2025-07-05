@@ -43,7 +43,7 @@ function BloozeMod:CalcView()
 
             if bs == 6 or bs == 7 or bs == 9 and not LocalPlayer:GetVehicle() then
                 local animations = { bs, AnimationState.SSkydive, bs }
-                LocalPlayer:SetBaseState( animations[math.random(#animations)] )
+                LocalPlayer:SetBaseState( table.randomvalue( animations ) )
 
                 if bs == AnimationState.SSkydive then
                     Game:FireEvent( "ply.reacthitfly" )

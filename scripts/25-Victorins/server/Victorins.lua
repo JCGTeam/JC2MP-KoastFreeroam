@@ -20,7 +20,7 @@ function Victorins:PostTick()
 
 	local first, second = math.random( 100, 999 ), math.random( 100, 999 )
 	self.quizAnswer = first + second
-	self.reward = self.rewards[math.random(#self.rewards)]
+	self.reward = table.randomvalue( self.rewards )
 
 	for p in Server:GetPlayers() do
 		if p:GetValue( "Lang" ) == "EN" then

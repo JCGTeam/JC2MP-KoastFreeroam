@@ -9,7 +9,7 @@ function Load:__init()
 		Image.Create( AssetLocation.Resource, "BackgroundImageFi" )
 	}
 
-	self.BackgroundImage = self.BackgroundImages[math.random(#self.BackgroundImages)]
+	self.BackgroundImage = table.randomvalue( self.BackgroundImages )
 	self.LoadingCircle_Outer = Image.Create( AssetLocation.Game, "fe_initial_load_icon_dif.dds" )
 
 	self.BackgroundImage:SetSize( Render.Size )
@@ -65,7 +65,7 @@ function Load:GameLoad()
 end
 
 function Load:LocalPlayerDeath()
-	self.BackgroundImage = self.BackgroundImages[math.random(#self.BackgroundImages)]
+	self.BackgroundImage = table.randomvalue( self.BackgroundImages )
 	self.FadeInTimer = Timer()
 end
 

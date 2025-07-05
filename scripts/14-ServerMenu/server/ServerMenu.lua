@@ -20,7 +20,7 @@ end
 
 function Settings:Cash( args, sender )
 	if sender:GetValue( "MoneyBonus" ) then
-		sender:SetMoney( sender:GetMoney() + self.rewards[math.random(#self.rewards)] )
+		sender:SetMoney( sender:GetMoney() + table.randomvalue( self.rewards ) )
 	end
 end
 

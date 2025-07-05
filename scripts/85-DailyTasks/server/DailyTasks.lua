@@ -8,13 +8,13 @@ function DailyTasks:__init()
     self.fireworksneeded = math.random( 5, 30 )
 
     local flyingrecordneeded = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300 }
-    self.flyingrecordneeded = flyingrecordneeded[math.random(#flyingrecordneeded)]
+    self.flyingrecordneeded = table.randomvalue( flyingrecordneeded )
 
     local tetrisrecordneeded = { 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500 }
-    self.tetrisrecordneeded = tetrisrecordneeded[math.random(#tetrisrecordneeded)]
+    self.tetrisrecordneeded = table.randomvalue( tetrisrecordneeded )
 
     local driftrecordneeded = { 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000 }
-    self.driftrecordneeded = driftrecordneeded[math.random(#driftrecordneeded)]
+    self.driftrecordneeded = table.randomvalue( driftrecordneeded )
 
     self.tronwinsneeded = math.random( 2, 4 )
 

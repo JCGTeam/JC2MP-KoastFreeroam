@@ -11,7 +11,7 @@ function Lobby:__init( config )
 	self.startingTime = 0
 	self.waitingTime = 30
 
-	self.bonus = values[math.random(#values)]
+	self.bonus = table.randomvalue( values )
 
 	self.name = config.name
 	self.position = config.position
@@ -329,7 +329,7 @@ function Lobby:Disband( winner )
 		player:SetNetworkValue( "GameMode", "FREEROAM" )
 	end
 
-	self.bonus = values[math.random(#values)]
+	self.bonus = table.randomvalue( values )
 end
 
 function Lobby:Remove()

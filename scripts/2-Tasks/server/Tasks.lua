@@ -14,17 +14,17 @@ function Tasks:__init()
 	self.jobp_ru = "[Задания] "
 	self.jobp_en = "[Tasks] "
 
-	self.groundVehicles = {66, 12, 54, 23, 33, 68, 78, 8, 35, 44, 2, 7, 29, 70, 55, 15, 91, 21, 83, 32, 79, 22, 9, 4, 41, 49, 71, 42, 76, 31}
-	self.offroadVehicles = {11, 36, 72, 73, 26, 63, 86, 77, 48, 84, 46, 10, 52, 13, 60, 87, 74, 43, 89, 90, 61, 47, 18, 56, 40}
-	self.waterVehicles = {80, 38, 88, 45, 6, 19, 5, 27, 28, 25, 69, 16, 50}
-	self.heliVehicles = {64, 65, 14, 67, 3, 37, 57, 62}
-	self.jetVehicles = {39, 85, 34}
-	self.planeVehicles = {51, 59, 81, 30}
+	self.groundVehicles = { 66, 12, 54, 23, 33, 68, 78, 8, 35, 44, 2, 7, 29, 70, 55, 15, 91, 21, 83, 32, 79, 22, 9, 4, 41, 49, 71, 42, 76, 31 }
+	self.offroadVehicles = { 11, 36, 72, 73, 26, 63, 86, 77, 48, 84, 46, 10, 52, 13, 60, 87, 74, 43, 89, 90, 61, 47, 18, 56, 40 }
+	self.waterVehicles = { 80, 38, 88, 45, 6, 19, 5, 27, 28, 25, 69, 16, 50 }
+	self.heliVehicles = { 64, 65, 14, 67, 3, 37, 57, 62 }
+	self.jetVehicles = { 39, 85, 34 }
+	self.planeVehicles = { 51, 59, 81, 30 }
 	--vehicle "difficulty" tables
-	self.easyVehicles = {81, 64, 14, 67, 3, 37, 57, 62, 80, 88, 27, 54, 72, 73, 23, 33, 63, 26, 68, 78, 86, 35, 77, 2, 84, 46, 7, 10, 52, 29, 70, 55, 15, 13, 91, 60, 87, 74, 21, 43, 89, 90, 61, 18, 56, 76, 31}
-	self.mediumVehicles = {51, 34, 30, 65, 45, 6, 19, 28, 69, 16, 11, 36, 44, 48, 83, 32, 47, 79, 22, 9, 4, 41, 49, 71, 42}
-	self.hardVehicles = {59, 38, 5, 25, 66, 12, 8, 1, 40}
-	self.harderVehicles = {39, 75, 85, 50}
+	self.easyVehicles = { 81, 64, 14, 67, 3, 37, 57, 62, 80, 88, 27, 54, 72, 73, 23, 33, 63, 26, 68, 78, 86, 35, 77, 2, 84, 46, 7, 10, 52, 29, 70, 55, 15, 13, 91, 60, 87, 74, 21, 43, 89, 90, 61, 18, 56, 76, 31 }
+	self.mediumVehicles = { 51, 34, 30, 65, 45, 6, 19, 28, 69, 16, 11, 36, 44, 48, 83, 32, 47, 79, 22, 9, 4, 41, 49, 71, 42 }
+	self.hardVehicles = { 59, 38, 5, 25, 66, 12, 8, 1, 40 }
+	self.harderVehicles = { 39, 75, 85, 50 }
 
 	self.easy = 0.20
 	self.medium = 0.21
@@ -199,21 +199,21 @@ function Tasks:GetRandomVehicleOfType( vehicleType )
 	math.random()
 	math.random()
 	if (vehicleType == "G") then
-		return self.groundVehicles[math.random(#self.groundVehicles)]
+		return table.randomvalue( self.groundVehicles )
 	elseif (vehicleType == "O") then
-		return self.offroadVehicles[math.random(#self.offroadVehicles)]	
+		return table.randomvalue( self.offroadVehicles )
 	elseif (vehicleType == "W") then
-		return self.waterVehicles[math.random(#self.waterVehicles)]
+		return table.randomvalue( self.waterVehicles )
 	elseif (vehicleType == "H") then
-		return self.heliVehicles[math.random(#self.heliVehicles)]
+		return table.randomvalue( self.heliVehicles )
 	elseif (vehicleType == "J") then
-		return self.jetVehicles[math.random(#self.jetVehicles)]
+		return table.randomvalue( self.jetVehicles )
 	elseif (vehicleType == "P") then
-		return self.planeVehicles[math.random(#self.planeVehicles)]
+		return table.randomvalue( self.planeVehicles )
 	elseif (vehicleType == "X") then
-		return self.offroadVehicles[math.random(#self.offroadVehicles)]
+		return table.randomvalue( self.offroadVehicles )
 	elseif (vehicleType == "D") then
-		return self.offroadVehicles[math.random(#self.offroadVehicles)]		
+		return table.randomvalue( self.offroadVehicles )	
 	else 
 		print( "tried to spawn invalid vehicle type. Made tractor instead" )
 		return 1

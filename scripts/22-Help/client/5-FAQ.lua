@@ -37,7 +37,7 @@ function HFAQ:EngHelp()
 			"    To fix this, you need to re-enter the game. Or have fun with it :3\n \n" ..
 			"> How to become an administrator?\n" ..
 			"    We will decide it on our own :)\n \n" ..
-			"> Other problems with JC2MP:\n    wiki.jc-mp.com/Troubleshooting\n \n" ..
+			"> Other problems with JC2MP:\n    jc2mpwiki.miraheze.org/wiki/Troubleshooting\n \n" ..
 			"Enjoy the game on the Russian server! :D"
 	} )
 end
@@ -81,7 +81,7 @@ function HFAQ:RusHelp()
 			"    Любой игрок может вас убить до тех пор, пока вы не будете находиться в мирном режиме.\n \n" ..
 			"> Как стать админом?\n" ..
 			"    Мы сами решим :)\n \n" ..
-			"> Решение других проблем связанных с JC2MP:\n    wiki.jc-mp.com/Troubleshooting\n \n" ..
+			"> Решение других проблем связанных с JC2MP:\n    jc2mpwiki.miraheze.org/wiki/Troubleshooting\n \n" ..
 			"Надеюсь, после прочтения этой вкладки у вас будет меньше вопросов.\n" ..
 			"(Кто-то это читает? O_o)"
 	} )

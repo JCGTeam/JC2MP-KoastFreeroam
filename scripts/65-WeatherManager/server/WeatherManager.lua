@@ -6,13 +6,13 @@ function WeatherManager:__init()
 	Events:Subscribe( "PostTick", self, self.PostTick )
 
 	self.timer = Timer()
-	self.weather = self.weathers[math.random(#self.weathers)]
+	self.weather = table.randomvalue( self.weathers )
 end
 
 function WeatherManager:PostTick()
 	if self.timer:GetHours() <= 1 then return end
 
-	local weathers = self.weathers[math.random(#self.weathers)]
+	local weathers = table.randomvalue( self.weathers )
 
 	if weathers == self.weather then
 		self.weather = 0
