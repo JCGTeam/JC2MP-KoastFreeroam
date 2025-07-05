@@ -24,15 +24,17 @@ function Derby:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.nameT = "Игроки"
-		self.lobbyplayers_txt = "Игроки: "
-		self.lobbymap_txt = "Карта: "
-		self.loading_txt = "Загрузка..."
-		self.pleasewait_txt = "Пожалуйста, подождите."
-		self.arenaleave_txt = "Вы покидаете арену!"
-		self.vehicledamaged_txt = "% здоровья у транспорта потеряно. Вернитесь на Арену!"
-		self.novehicle_txt = "     Эй, вернулся!\nИначе проиграешь."
-		self.cdgo_txt = "Го!"
+		self.locStrings = {
+			nameT = "Игроки",
+			lobbyplayers = "Игроки: ",
+			lobbymap = "Карта: ",
+			loading = "Загрузка...",
+			pleasewait = "Пожалуйста, подождите.",
+			arenaleave = "Вы покидаете арену!",
+			vehicledamaged = "% здоровья у транспорта потеряно. Вернитесь на Арену!",
+			novehicle = "     Эй, вернулся!\nИначе проиграешь.",
+			cdgo = "Го!"
+		}
 	end
 
 	self.state = "Inactive"
@@ -56,15 +58,17 @@ function DrawCenteredShadowedText( position, text, color, textsize )
 end
 
 function Derby:Lang()
-	self.nameT = "Players"
-	self.lobbyplayers_txt = "Players: "
-	self.lobbymap_txt = "Map: "
-	self.loading_txt = "Loading..."
-	self.pleasewait_txt = "Please wait."
-	self.arenaleave_txt = "You are leaving the arena!"
-	self.vehicledamaged_txt = "% of the vehicle's health is lost. Return to the Arena!"
-	self.novehicle_txt = "     Come back!\nOtherwise you will lose."
-	self.cdgo_txt = "Go!"
+	self.locStrings = {
+		nameT = "Players",
+		lobbyplayers = "Players: ",
+		lobbymap = "Map: ",
+		loading = "Loading...",
+		pleasewait = "Please wait.",
+		arenaleave = "You are leaving the arena!",
+		vehicledamaged = "% of the vehicle's health is lost. Return to the Arena!",
+		novehicle = "     Come back!\nOtherwise you will lose.",
+		cdgo = "Go!"
+	}
 end
 
 function Derby:SetState( newstate )
@@ -164,21 +168,21 @@ function Derby:Render()
 	end
 
 	if self.state == "Lobby" then
-		local text = self.lobbyplayers_txt .. self.playerCount
+		local text = self.locStrings["lobbyplayers"] .. self.playerCount
 		local textinfo = self:TextPos( text, TextSize.Large, 0, -Render.Height + 150 )
 		Render:DrawShadowedText( textinfo, text, color, colorShadow, TextSize.Large )
 
-		text = self.lobbymap_txt .. self.courseName
+		text = self.locStrings["lobbymap"] .. self.courseName
 		textinfo = self:TextPos( text, 25, 0, -Render.Height + 215 )
 		Render:DrawShadowedText( textinfo, text, Color( 165, 165, 165 ), colorShadow, 25 )
 	end
 
 	if self.state == "Setup" then
-        local text = self.loading_txt
+        local text = self.locStrings["loading"]
         local textinfo = self:TextPos( text, TextSize.VeryLarge, 0, -200 )
         Render:DrawShadowedText( textinfo, text, color, colorShadow, TextSize.VeryLarge )
 
-        text = self.pleasewait_txt
+        text = self.locStrings["pleasewait"]
         textinfo = self:TextPos( text, TextSize.Default, 0, -140 )
         Render:DrawShadowedText( textinfo, text, Color( 165, 165, 165 ), colorShadow, TextSize.Default )
 
@@ -192,10 +196,10 @@ function Derby:Render()
 			DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - (k * 20) ), player:GetName(), color_players )
 		end
 
-		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.nameT, color, 20 )
+		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.locStrings["nameT"], color, 20 )
 	elseif self.state == "Countdown" then
 		local time = 3 - math.floor( math.clamp( self.countdownTimer:GetSeconds(), 0, 3 ) )
-		local message = {self.cdgo_txt, "1", "2", "3"}
+		local message = {self.locStrings["cdgo"], "1", "2", "3"}
 		local text = message[time + 1]
         local textinfo = self:TextPos( text, TextSize.Huge, 0, -200 )
         Render:DrawShadowedText( textinfo, text, color, colorShadow, TextSize.Huge )
@@ -210,9 +214,9 @@ function Derby:Render()
 			DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - (k * 20) ), player:GetName(), color_players )
 		end
 
-		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.nameT, color, 20 )
+		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.locStrings["nameT"], color, 20 )
 	elseif self.state == "Running" then
-		local text = self.lobbyplayers_txt .. self.playerCount
+		local text = self.locStrings["lobbyplayers"] .. self.playerCount
 		local textinfo = self:TextPos( text, TextSize.Large, 0, -Render.Height + 215 )
 		Render:DrawShadowedText( textinfo, text, color, colorShadow, TextSize.Large )
 
@@ -226,14 +230,14 @@ function Derby:Render()
 			DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - (k * 20) ), player:GetName(), color_players )
 		end
 
-		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.nameT, color, 20 )
+		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.locStrings["nameT"], color, 20 )
 		if self.outOfArena then
-			local text = self.arenaleave_txt
+			local text = self.locStrings["arenaleave"]
 			local text_width = Render:GetTextWidth( text, TextSize.VeryLarge )
 			local text_height = Render:GetTextHeight( text, TextSize.VeryLarge )
 			local pos = Vector2( ( Render.Width - text_width ) / 2, ( Render.Height - text_height - 200 ) / 2 )
 			Render:DrawShadowedText( pos, text, Color( 255, 69, 0 ), colorShadow, TextSize.VeryLarge )
-			local text = self.vehicleHealthLost .. self.vehicledamaged_txt
+			local text = self.vehicleHealthLost .. self.locStrings["vehicledamaged"]
 			pos.y = pos.y + 45
 			pos.x = ( Render.Width - Render:GetTextWidth( text, TextSize.Default ) ) / 2
 			Render:DrawShadowedText( pos, text, color, colorShadow, TextSize.Default )
@@ -250,7 +254,7 @@ function Derby:Render()
             Render:DrawText( pos, text, Color( 255, 69, 0 ), TextSize.Huge )
             pos.y = pos.y + 70
             pos.x = Render.Width - 98
-            Render:DrawText( pos, self.novehicle_txt, color, 12 )
+            Render:DrawText( pos, self.locStrings["novehicle"], color, 12 )
 		end
 	end
 end

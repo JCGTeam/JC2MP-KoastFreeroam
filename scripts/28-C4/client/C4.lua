@@ -7,7 +7,6 @@ C4Controller.PlantingOffset = Vector3( -0.3, -0.1, 0 )
 C4Controller.DetonationOffset = Vector3( -0.30, -0.03, 0 )
 
 function C4Controller:__init()
-	self.cd = nil
 	self.dummies = {}
 	self.planted = true
 	self.crouched = false

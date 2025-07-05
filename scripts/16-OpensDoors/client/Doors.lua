@@ -9,7 +9,9 @@ function Doors:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.ptext = "Нажмите «L», чтобы открыть ворота крепости"
+		self.locStrings = {
+			ptext = "Нажмите «L», чтобы открыть ворота крепости"
+		}
 	end
 
 	self.cooldown = 2
@@ -24,7 +26,9 @@ function Doors:__init()
 end
 
 function Doors:Lang()
-	self.ptext = "Press «L» to open stronghold doors"
+	self.locStrings = {
+		ptext = "Press «L» to open stronghold doors"
+	}
 end
 
 function Doors:Places( args )
@@ -47,7 +51,7 @@ function Doors:DrawHotspot( v, dist )
 
 	local textSize = 50
 
-	local getTextSize = Render:GetTextSize( self.ptext, textSize )
+	local getTextSize = Render:GetTextSize( self.locStrings["ptext"], textSize )
 
 	local t = Transform3()
 	t:Translate( v[2] )
@@ -60,7 +64,7 @@ function Doors:DrawHotspot( v, dist )
 	local normalizedDist = dist / ( LocalPlayer:InVehicle() and self.tipDistance * 3 or self.tipDistance )
  	local alpha_factor = 255 - math.clamp( normalizedDist * 255 * 2.25, 0, 255 )
 
-	self:DrawShadowedText( Vector3.Zero, self.ptext, Color( 255, 255, 255, alpha_factor ), textSize )
+	self:DrawShadowedText( Vector3.Zero, self.locStrings["ptext"], Color( 255, 255, 255, alpha_factor ), textSize )
 end
 
 function Doors:GameRender()

@@ -32,8 +32,10 @@ function Reports:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.sendbuttonsending_txt = "Отправка..."
-		self.messageSuccessfullySended_txt = "Ваше сообщение успешно отправлено!"
+		self.locStrings = {
+			sendbuttonsending = "Отправка...",
+			messageSuccessfullySended = "Ваше сообщение успешно отправлено!"
+		}
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
@@ -138,8 +140,11 @@ end
 
 function Reports:Lang()
 	self.sendbutton_txt = "SEND"
-	self.sendbuttonsending_txt = "SENDING..."
-	self.messageSuccessfullySended_txt = "Your message was successfully sent!"
+
+	self.locStrings = {
+		sendbuttonsending = "SENDING...",
+		messageSuccessfullySended = "Your message was successfully sent!"
+	}
 
 	if self.window then
 		self.window:SetTitle( "▧ Feedback" )
@@ -162,7 +167,7 @@ function Reports:ReportSend()
 		Network:Send( "SendReport", { reportmessage = self.messageTextBox:GetText(), reportemail = self.eMailTextBox:GetText(), category = self.categoryComboBox:GetSelectedItem():GetText() } )
 
 		self.sendButton:SetEnabled( false )
-		self.sendButton:SetText( self.sendbuttonsending_txt )
+		self.sendButton:SetText( self.locStrings["sendbuttonsending"] )
 
 		self.sending = true
 	end
@@ -178,7 +183,7 @@ function Reports:SuccessfullySended()
 
 	self.sending = nil
 
-	Events:Fire( "CastCenterText", { text = self.messageSuccessfullySended_txt, time = 3, color = Color( 255, 255, 255 ) } )
+	Events:Fire( "CastCenterText", { text = self.locStrings["messageSuccessfullySended"], time = 3, color = Color( 255, 255, 255 ) } )
 end
 
 function Reports:ChangelLText()
@@ -237,12 +242,12 @@ function Reports:OpenReportMenu()
     if self.window:GetVisible() then
         self:WindowClosed()
     else
-		local effect = ClientEffect.Play(AssetLocation.Game, {
+		local effect = ClientEffect.Play( AssetLocation.Game, {
 			effect_id = 382,
 
 			position = Camera:GetPosition(),
 			angle = Angle()
-		})
+		} )
 
         self.window:SetVisible( true )
         Mouse:SetVisible( true )
@@ -277,9 +282,8 @@ function Reports:Render()
 
 	if self.window:GetVisible() ~= is_visible then
 		self.window:SetVisible( is_visible )
+		Mouse:SetVisible( is_visible )
 	end
-
-	Mouse:SetVisible( is_visible )
 end
 
 function Reports:WindowClosed()

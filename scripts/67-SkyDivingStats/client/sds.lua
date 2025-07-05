@@ -28,24 +28,22 @@ function SkydivingStats:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.name = " м/с"
-		self.nameTw = " км/ч"
-		self.nameTh = " миль"
-		self.nameFo = " м"
-		self.nameFi = " секунд"
+		self.locStrings = {
+			ms = "м/с",
+			kmh = "км/ч",
+			mph = "миль",
+			nameFo = " м",
+			nameFi = " секунд",
+			title = "Настройка спидометра",
+			enabled = "Включено"
+		}
 	end
 
 	self.flight_timer = Timer()
 	self.last_state = 0
 
-	self.average_speed = nil
-	self.average_angle = nil
-	self.average_distance = nil
-
 	self.text_size = TextSize.VeryLarge
 	self.x_offset = 1
-
-	self:CreateSettings()
 
 	self.text_clr = Color.White
 	self.text_clr2 = Color.DarkGray
@@ -61,7 +59,7 @@ function SkydivingStats:__init()
 
 	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
 	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
-	Events:Subscribe( "OpenSkydivingStatsMenu", self, self.Active )
+	Events:Subscribe( "OpenSkydivingStatsMenu", self, self.ToggleWindowVisible )
 end
 
 function SkydivingStats:LocalPlayerEnterVehicle()
@@ -73,30 +71,33 @@ function SkydivingStats:LocalPlayerExitVehicle()
 end
 
 function SkydivingStats:Lang()
-	self.name = " m/s"
-	self.nameTw = " km/h"
-	self.nameTh = " mph"
-	self.nameFo = " m"
-	self.nameFi = " seconds"
+	self.locStrings = {
+		ms = "m/s",
+		kmh = "km/h",
+		mph = "mph",
+		nameFo = " m",
+		nameFi = " seconds",
+		title = "Skydiving Settings",
+		enabled = "Enabled"
+	}
 end
 
-function SkydivingStats:CreateSettings()
-	self.window_open = false
+function SkydivingStats:CreateWindow()
+	if self.window then return end
 
 	self.window = Window.Create()
 	self.window:SetSize( Vector2( 300, 70 ) )
 	self.window:SetPosition( (Render.Size - self.window:GetSize())/2 )
 
-	self.window:SetTitle( "Настройка спидометра" )
-	self.window:SetVisible( self.window_open )
-	self.window:Subscribe( "WindowClosed", function() self:SetWindowOpen( false ) end )
+	self.window:SetTitle( self.locStrings["title"] )
+	self.window:Subscribe( "WindowClosed", function() self:SetWindowVisible( false ) end )
 
 	self.widgets = {}
 
 	local enabled_checkbox = LabeledCheckBox.Create( self.window )
 	enabled_checkbox:SetSize( Vector2( 300, 20 ) )
 	enabled_checkbox:SetDock( GwenPosition.Top )
-	enabled_checkbox:GetLabel():SetText( "Включено" )
+	enabled_checkbox:GetLabel():SetText( self.locStrings["enabled"] )
 	enabled_checkbox:GetCheckBox():SetChecked( self.enabled )
 	enabled_checkbox:GetCheckBox():Subscribe( "CheckChanged", 
 		function() self.enabled = enabled_checkbox:GetCheckBox():GetChecked() end )
@@ -105,7 +106,7 @@ function SkydivingStats:CreateSettings()
 	rbc:SetSize( Vector2( 300, 20 ) )
 	rbc:SetDock( GwenPosition.Top )
 
-	local units = { "м/с", "км/ч", "миль" }
+	local units = { self.locStrings["ms"], self.locStrings["kmh"], self.locStrings["mph"] }
 	for i, v in ipairs( units ) do
 		local option = rbc:AddOption( v )
 		option:SetSize( Vector2( 100, 20 ) )
@@ -122,14 +123,14 @@ function SkydivingStats:CreateSettings()
 	end
 end
 
-function SkydivingStats:GetWindowOpen()
-	return self.window_open
-end
+function SkydivingStats:SetWindowVisible( visible )
+	self:CreateWindow()
 
-function SkydivingStats:SetWindowOpen( state )
-	self.window_open = state
-	self.window:SetVisible( self.window_open )
-	Mouse:SetVisible( self.window_open )
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
 end
 
 function SkydivingStats:GetMultiplier()
@@ -144,11 +145,11 @@ end
 
 function SkydivingStats:GetUnitString()
 	if self.unit == 0 then
-		return self.name
+		return self.locStrings["ms"]
 	elseif self.unit == 1 then
-		return self.nameTw
+		return self.locStrings["kmh"]
 	elseif self.unit == 2 then
-		return self.nameTh
+		return self.locStrings["mph"]
 	end
 end
 
@@ -167,8 +168,8 @@ function SkydivingStats:DrawSpeedometer( t )
 		self.average_speed = (self.average_speed + speed)/2
 	end
 
-	local text = string.format( "%.02f", speed * self:GetMultiplier(), self:GetUnitString() )
-	local textTw = self.nameTw
+	local text = string.format( "%.02f", speed * self:GetMultiplier() )
+	local textTw = " " .. self:GetUnitString()
 	local text_vsize = Render:GetTextSize( text, self.text_size )
 	local text_vsize_3d = Vector3( text_vsize.x, text_vsize.y, 0 )
 	local ang = Camera:GetAngle()
@@ -215,7 +216,7 @@ function SkydivingStats:DrawDistance( t )
 	local distance = pos.y - ( math.max( 200, Physics:GetTerrainHeight(pos) ) )
 
 	local text = string.format( "%.02f", distance )
-	local textTw = self.nameFo
+	local textTw = self.locStrings["nameFo"]
 	local text_vsize = Render:GetTextSize( text, self.text_size )
 	local text_vsize_3d = Vector3( text_vsize.x, text_vsize.y, 0 )
 	local ang = Camera:GetAngle()
@@ -232,7 +233,7 @@ end
 
 function SkydivingStats:DrawTimer( t )
 	local text = string.format( "%.02f", self.flight_timer:GetSeconds() )
-	local textTw = self.nameFi
+	local textTw = self.locStrings["nameFi"]
 	local text_vsize = Render:GetTextSize( text, self.text_size )
 	local text_vsize_3d = Vector3( text_vsize.x, text_vsize.y, 0 )
 	local ang = Camera:GetAngle()
@@ -275,15 +276,20 @@ function SkydivingStats:PostTick()
 	if not LocalPlayer:GetValue( "IsPigeonMod" ) then
 		self.flight_timer:Restart()
 	end
+
 	last_bs = LocalPlayer:GetBaseState()
 end
 
-function SkydivingStats:Active()
-	self:SetWindowOpen( not self:GetWindowOpen() )
+function SkydivingStats:ToggleWindowVisible()
+	self:SetWindowVisible( not self.activeWindow )
 end
 
 function SkydivingStats:LocalPlayerInput( args )
-	if self:GetWindowOpen() and Game:GetState() == GUIState.Game then
+	if args.input == Action.GuiPause then
+		self:SetWindowVisible( false )
+	end
+
+	if self.activeWindow and Game:GetState() == GUIState.Game then
 		if self.actions[args.input] then
 			return false
 		end

@@ -50,9 +50,11 @@ function PDA:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		MTSetWp = "[СКМ] / [1] - поставить точку назначения"
-		MTPToggle = "[ПКМ] - показать/скрыть имена игроков"
-		MTExtract = "[R] - телепортация"
+		locStrings = {
+			MTSetWp = "[СКМ] / [1] - поставить точку назначения",
+			MTPToggle = "[ПКМ] - показать/скрыть имена игроков",
+			MTExtract = "[R] - телепортация"
+		}
 	end
 
 	labels = 0
@@ -65,9 +67,11 @@ function PDA:__init()
 end
 
 function PDA:Lang()
-	MTSetWp = "[Middle Click] / [1] - Set Waypoint"
-	MTPToggle = "[Right Click] - Show/Hide players names"
-	MTExtract = "[R] - Teleportation"
+	locStrings = {
+		MTSetWp = "[Middle Click] / [1] - Set Waypoint",
+		MTPToggle = "[Right Click] - Show/Hide players names",
+		MTExtract = "[R] - Teleportation"
+	}
 end
 
 function PDA:PlayerUpdate( args )

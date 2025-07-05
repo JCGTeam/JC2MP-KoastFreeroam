@@ -249,15 +249,18 @@ function Tetris:__init()
 		self:Lang()
 	else
 		self.window:SetTitle( "▧ Тетрис - Список лидеров" )
-		self.tRecord = "Личный рекорд по тетрису: "
-		self.tDied = "ПОТРАЧЕНО!\n\n\n"
-		self.tScores = "Счёт: "
-		self.tSetHelp = "SPACE - Запустить игру"
-		self.tSetHelp2 = " \n\n\nCTRL - Список лидеров"
-		self.tSetGOver = "Финальный счёт: "
-		self.tSetGOver2 = " \n\n\n\nSPACE - Повторить попытку"
-		self.tSetGOver3 = " \n\n\n\n\n\n\nCTRL - Список лидеров"
-		self.controltip = "[←→] - Перемещение фигуры\n[↑] - Повернуть фигуру\n[↓] - Опустить фигуру ниже\n[END] - Опустить фигуру вниз\n[ESC] - Закрыть тетрис"
+
+		self.locStrings = {
+			tRecord = "Личный рекорд по тетрису: ",
+			tDied = "ПОТРАЧЕНО!\n\n\n",
+			tScores = "Счёт: ",
+			tSetHelp = "[Space] - Запустить игру",
+			tSetHelp2 = " \n\n\n[Ctrl] - Список лидеров",
+			tSetGOver = "Финальный счёт: ",
+			tSetGOver2 = " \n\n\n\n[Space] - Повторить попытку",
+			tSetGOver3 = " \n\n\n\n\n\n\n[Ctrl] - Список лидеров",
+			controltip = "[←→] - Перемещение фигуры\n[↑] - Повернуть фигуру\n[↓] - Опустить фигуру ниже\n[End] - Опустить фигуру вниз\n[Esc] - Закрыть тетрис"
+		}
 	end
 
 	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
@@ -271,15 +274,18 @@ end
 
 function Tetris:Lang()
 	self.window:SetTitle( "▧ Tetris - Leaderboard" )
-	self.tRecord = "Personal tetris record: "
-	self.tDied = "GAME OVER\n\n\n"
-	self.tScores = "Score: "
-	self.tSetHelp = "SPACE - Start the game"
-	self.tSetHelp2 = " \n\n\nCTRL - Leaderboard"
-	self.tSetGOver = "Final score: "
-	self.tSetGOver2 = " \n\n\n\nSPACE - Try again"
-	self.tSetGOver3 = " \n\n\n\n\n\n\nCTRL - Leaderboard"
-	self.controltip = "[←→] - Move block\n[↑] - Rotate block\n[↓] - Soft drop block\n[END] - Hard drop block\n[ESC] - Close tetris"
+
+	self.locStrings = {
+		tRecord = "Personal tetris record: ",
+		tDied = "GAME OVER\n\n\n",
+		tScores = "Score: ",
+		tSetHelp = "[Space] - Start Game",
+		tSetHelp2 = " \n\n\n[Ctrl] - Leaderboard",
+		tSetGOver = "Final Score: ",
+		tSetGOver2 = " \n\n\n\n[Space] - Try again",
+		tSetGOver3 = " \n\n\n\n\n\n\n[Ctrl] - Leaderboard",
+		controltip = "[←→] - Move block\n[↑] - Rotate block\n[↓] - Soft drop block\n[End] - Hard drop block\n[Esc] - Close tetris"
+	}
 end
 
 function Tetris:LocalPlayerChat( args )
@@ -487,37 +493,37 @@ function Tetris:ShowScore()
 		local text_size = 32
 
 		if self.firstGo then
-			local pos = ( Render.Size - Render:GetTextSize( self.tSetHelp, text_size ) ) / 2
-			Render:DrawShadowedText( pos, self.tSetHelp, text_clr, shadow_clr, text_size )
-			pos = ( Render.Size - Render:GetTextSize( self.tSetHelp2, text_size ) ) / 2
-			Render:DrawShadowedText( pos, self.tSetHelp2, text_clr, shadow_clr, text_size )
+			local pos = ( Render.Size - Render:GetTextSize( self.locStrings["tSetHelp"], text_size ) ) / 2
+			Render:DrawShadowedText( pos, self.locStrings["tSetHelp"], text_clr, shadow_clr, text_size )
+			pos = ( Render.Size - Render:GetTextSize( self.locStrings["tSetHelp2"], text_size ) ) / 2
+			Render:DrawShadowedText( pos, self.locStrings["tSetHelp2"], text_clr, shadow_clr, text_size )
 		else
-			local pos = ( Render.Size - Render:GetTextSize( self.tDied, text_size ) ) / 2
-			Render:DrawShadowedText( pos, self.tDied, Color.Red, shadow_clr, text_size )
-			local msg = self.tSetGOver .. totalScore
+			local pos = ( Render.Size - Render:GetTextSize( self.locStrings["tDied"], text_size ) ) / 2
+			Render:DrawShadowedText( pos, self.locStrings["tDied"], Color.Red, shadow_clr, text_size )
+			local msg = self.locStrings["tSetGOver"] .. totalScore
 			pos = ( Render.Size - Render:GetTextSize( msg, text_size ) ) / 2
 			Render:DrawShadowedText( pos, msg, text_clr, shadow_clr, text_size )
-			pos = ( Render.Size - Render:GetTextSize( self.tSetGOver2, text_size ) ) / 2
-			Render:DrawShadowedText( pos, self.tSetGOver2, text_clr, shadow_clr, text_size )
-			pos = ( Render.Size - Render:GetTextSize( self.tSetGOver3, text_size ) ) / 2
-			Render:DrawShadowedText( pos, self.tSetGOver3, text_clr, shadow_clr, text_size )
+			pos = ( Render.Size - Render:GetTextSize( self.locStrings["tSetGOver2"], text_size ) ) / 2
+			Render:DrawShadowedText( pos, self.locStrings["tSetGOver2"], text_clr, shadow_clr, text_size )
+			pos = ( Render.Size - Render:GetTextSize( self.locStrings["tSetGOver3"], text_size ) ) / 2
+			Render:DrawShadowedText( pos, self.locStrings["tSetGOver3"], text_clr, shadow_clr, text_size )
 		end
 	end
 
-	local score = self.tScores .. totalScore
+	local score = self.locStrings["tScores"] .. totalScore
 	local pos = Vector2( self.offset.x + 11.5 * self.tileWidthV.x, self.offset.y - self.tileHeightV.y + 40 )
 	local text_size = 20
 	local text_size2 = 15
 	local padding = 10
 
-	Render:FillArea( pos, Vector2( Render:GetTextWidth( self.controltip, text_size2 ) * 1.15, ( Render:GetTextHeight( score, text_size ) + 5 + Render:GetTextHeight( self.controltip, text_size2 ) ) + padding * 2 ), self.backgroundCol )
+	Render:FillArea( pos, Vector2( Render:GetTextWidth( self.locStrings["controltip"], text_size2 ) * 1.15, ( Render:GetTextHeight( score, text_size ) + 5 + Render:GetTextHeight( self.locStrings["controltip"], text_size2 ) ) + padding * 2 ), self.backgroundCol )
 
 	pos = pos + Vector2( padding, padding )
-	Render:DrawShadowedText( pos, self.tScores, text_clr, shadow_clr, text_size )
-	Render:DrawShadowedText( pos + Vector2( Render:GetTextWidth( self.tScores, text_size ), 0 ), totalScore, Color( 185, 215, 255 ), shadow_clr, text_size )
+	Render:DrawShadowedText( pos, self.locStrings["tScores"], text_clr, shadow_clr, text_size )
+	Render:DrawShadowedText( pos + Vector2( Render:GetTextWidth( self.locStrings["tScores"], text_size ), 0 ), totalScore, Color( 185, 215, 255 ), shadow_clr, text_size )
 
 	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
-	Render:DrawShadowedText( pos + Vector2( 0, Render:GetTextHeight( score, text_size ) + 5 ), self.controltip, text_clr, shadow_clr, text_size2 )
+	Render:DrawShadowedText( pos + Vector2( 0, Render:GetTextHeight( score, text_size ) + 5 ), self.locStrings["controltip"], text_clr, shadow_clr, text_size2 )
 end
 
 function Tetris:GameOver()
@@ -540,7 +546,7 @@ function Tetris:GameOver()
 	local shared = SharedObject.Create("Tetris")
 	if totalScore > (shared:GetValue("Record") or 0) then
 		shared:SetValue( "Record", totalScore )
-		Game:ShowPopup( self.tRecord .. totalScore, true )
+		Game:ShowPopup( self.locStrings["tRecord"] .. totalScore, true )
 	end
 
 	Network:Send( "NewScore" )
@@ -572,12 +578,12 @@ function Tetris:KeyDown( args )
 		self.settingsVisible = true
 		Mouse:SetVisible( self.settingsVisible )
 
-		local effect = ClientEffect.Play(AssetLocation.Game, {
+		local effect = ClientEffect.Play( AssetLocation.Game, {
 			effect_id = 382,
 
 			position = Camera:GetPosition(),
 			angle = Angle()
-		})
+		} )
 	end
 end
 
@@ -585,7 +591,7 @@ function Tetris:Close()
 	self.settingsVisible = false
 	Mouse:SetVisible( self.settingsVisible )
 
-	local effect = ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play( AssetLocation.Game, {
 		effect_id = 383,
 
 		position = Camera:GetPosition(),

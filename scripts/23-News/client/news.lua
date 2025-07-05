@@ -21,13 +21,13 @@ function News:__init()
 		[16] = true
 	}
 
-	self.HelpActive = false
+	self.activeWindow = false
 
 	self.window = Window.Create()
 	self.window:SetSizeRel( Vector2( 0.57, 0.86 ) )
 	self.window:SetPositionRel( Vector2( 0.69, 0.5 ) - self.window:GetSizeRel()/2 )
-	self.window:SetVisible( self.HelpActive )
-	self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
+	self.window:SetVisible( self.activeWindow )
+	self.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false, true ) end )
 
 	self.tab_control = TabControl.Create( self.window )
 	self.tab_control:SetDock( GwenPosition.Fill )
@@ -46,7 +46,7 @@ function News:__init()
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "OpenNewsMenu", self, self.OpenNewsMenu )
-	Events:Subscribe( "CloseNewsMenu", self, self.CloseNewsMenu )
+	Events:Subscribe( "CloseNewsMenu", self, function() self:SetWindowVisible( false ) end )
 	Events:Subscribe( "NewsAddItem", self, self.AddItem )
 	Events:Subscribe( "NewsRemoveItem", self, self.RemoveItem )
 
@@ -59,70 +59,53 @@ function News:Lang()
 	Network:Send( "GetNews", { file = "newsEN.txt" } )
 end
 
-function News:GetActive()
-	return self.HelpActive
-end
+function News:SetWindowVisible( visible, sound )
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
 
-function News:SetActive( state )
-	self.HelpActive = state
-	self.window:SetVisible( self.HelpActive )
-	Mouse:SetVisible( self.HelpActive )
-
-	if self.HelpActive then
+	if self.activeWindow then
 		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalHelpInput ) end
-		--if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	else
 		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
+
+	if sound then
+		local effect = ClientEffect.Play( AssetLocation.Game, {
+			effect_id = self.activeWindow and 382 or 383,
+
+			position = Camera:GetPosition(),
+			angle = Angle()
+		} )
+	end
 end
 
 function News:OpenNewsMenu()
-	local effect = ClientEffect.Create(AssetLocation.Game, {
-		effect_id = self.HelpActive and 383 or 382,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
-
-	self:SetActive( not self:GetActive() )
+	self:SetWindowVisible( not self.activeWindow, true )
 end
 
 function News:Render()
-	local is_visible = Game:GetState() == GUIState.Game
+	local is_visible = Game:GetState() ~= GUIState.PDA
 
 	if self.window:GetVisible() ~= is_visible then
 		self.window:SetVisible( is_visible )
-	end
-
-	Mouse:SetVisible( is_visible )
-end
-
-function News:CloseNewsMenu()
-	if self:GetActive() then
-		self:SetActive( false )
+		Mouse:SetVisible( is_visible )
 	end
 end
 
 function News:LocalHelpInput( args )
-	if self:GetActive() and Game:GetState() == GUIState.Game then
+	if self.activeWindow and Game:GetState() == GUIState.Game then
 		if args.input == Action.GuiPause then
-			self:SetActive( false )
+			self:SetWindowVisible( false )
 		end
 		if self.actions[args.input] then
 			return false
 		end
 	end
-end
-
-function News:WindowClosed()
-	self:SetActive( false )
-	local effect = ClientEffect.Create(AssetLocation.Game, {
-		effect_id = 383,
-
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
 end
 
 function News:AddItem( args )

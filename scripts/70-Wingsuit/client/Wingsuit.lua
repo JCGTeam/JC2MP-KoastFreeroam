@@ -10,11 +10,13 @@ function Pigeon:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.name = "Нажмите Shift или RB чтобы ускориться. Нажмите Ctrl чтобы сбавить скорость."
-		self.nameTh = "%i км/ч %i метров\n"
-		self.tip = "Нажмите Q, чтобы раскрыть вингсьют."
-		self.tRecord = "Личный рекорд полета на вингсьюте: "
-		self.pvpblock = "Вы не можете использовать это во время боя!"
+		self.locStrings = {
+			name = "Нажмите Shift или RB чтобы ускориться. Нажмите Ctrl чтобы сбавить скорость.",
+			nameTh = "%i км/ч %i метров\n",
+			tip = "Нажмите Q, чтобы раскрыть вингсьют.",
+			tRecord = "Личный рекорд полета на вингсьюте: ",
+			pvpblock = "Вы не можете использовать это во время боя!"
+		}
 	end
 
 	self.default_speed = 50
@@ -91,11 +93,13 @@ function Pigeon:onFlyingAttempt( data )
 end
 
 function Pigeon:Lang()
-	self.name = "Press Shift or RB to boost. Press Ctrl to slow down."
-	self.nameTh = "%i km/h %i m\n"
-	self.tip = "Press Q to use wingsuit."
-	self.tRecord = "Personal flying record: "
-	self.pvpblock = "You cannot use this during combat!"
+	self.locStrings = {
+		name = "Press Shift or RB to boost. Press Ctrl to slow down.",
+		nameTh = "%i km/h %i m\n",
+		tip = "Press Q to use wingsuit.",
+		tRecord = "Personal flying record: ",
+		pvpblock = "You cannot use this during combat!"
+	}
 end
 
 function Pigeon:LocalPlayerInput()
@@ -118,7 +122,7 @@ function Pigeon:LocalPlayerInput()
 				if not self.RCtimer then self.RCtimer = Timer() end
 
 				if LocalPlayer:GetValue( "PigeonMod" ) and LocalPlayer:GetValue( "PVPMode" ) then
-					Events:Fire( "CastCenterText", { text = self.pvpblock, time = 3, color = Color.Red } )
+					Events:Fire( "CastCenterText", { text = self.locStrings["pvpblock"], time = 3, color = Color.Red } )
 					return
 				end
 
@@ -163,21 +167,19 @@ function Pigeon:Activate( args )
 	if Game:GetState() ~= GUIState.Game then return end
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-	if self.activ then
-		if args.key == VirtualKey.Control and self.subs.camera and not self.timers.camera_start and not self.timers.camera_stop then
-			if not self.timers.activate or self.timers.activate:GetMilliseconds() > 300 then
-				self.timers.activate = Timer()
-			elseif self.timers.activate:GetMilliseconds() < 500 then
-				local ray = Physics:Raycast( LocalPlayer:GetPosition(), LocalPlayer:GetAngle() * Vector3( 0, -1, -1 ), 0, 50 )
-				LocalPlayer:SetBaseState( ( ray.distance < 50 ) and AnimationState.SFall or AnimationState.SSkydive )
-				self.timers.camera_stop = Timer()
-			end
-		elseif args.key == string.byte("C") and self.subs.camera then
-			if self.camera < 5 then
-				self.camera = self.camera + 1
-			else
-				self.camera = 1
-			end
+	if args.key == VirtualKey.Control and self.subs.camera and not self.timers.camera_start and not self.timers.camera_stop then
+		if not self.timers.activate or self.timers.activate:GetMilliseconds() > 300 then
+			self.timers.activate = Timer()
+		elseif self.timers.activate:GetMilliseconds() < 500 then
+			local ray = Physics:Raycast( LocalPlayer:GetPosition(), LocalPlayer:GetAngle() * Vector3( 0, -1, -1 ), 0, 50 )
+			LocalPlayer:SetBaseState( ( ray.distance < 50 ) and AnimationState.SFall or AnimationState.SSkydive )
+			self.timers.camera_stop = Timer()
+		end
+	elseif args.key == string.byte("C") and self.subs.camera then
+		if self.camera < 5 then
+			self.camera = self.camera + 1
+		else
+			self.camera = 1
 		end
 	end
 end
@@ -297,7 +299,7 @@ function Pigeon:SetVelocity()
 	local player_pos = LocalPlayer:GetPosition()
 	local altitude = player_pos.y - ( math.max( 200, Physics:GetTerrainHeight(player_pos) ) )
 	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
-	local hud_str = string.format( self.nameTh, speed, altitude )
+	local hud_str = string.format( self.locStrings["nameTh"], speed, altitude )
 	local screen_pos = Vector2( 0.5 * Render.Width - 0.5 * Render:GetTextWidth( hud_str, TextSize.Large ), Render.Height - Render:GetTextHeight( hud_str, TextSize.Large) )
 
 	Render:DrawShadowedText( screen_pos, hud_str, self.BoostColor, Color( 0, 0, 0, 100 ), TextSize.Large )
@@ -305,10 +307,10 @@ function Pigeon:SetVelocity()
 	Render:SetFont( AssetLocation.SystemFont, "Impact" )
 
 	local textSize = 15
-	local size = Render:GetTextSize( self.name, textSize )
+	local size = Render:GetTextSize( self.locStrings["name"], textSize )
 	local pos = Vector2( ( Render.Width - size.x ) / 2, Render.Height - size.y - 10 )
 
-	Render:DrawShadowedText( pos, self.name, Color.White, Color( 0, 0, 0, 180 ), textSize )
+	Render:DrawShadowedText( pos, self.locStrings["name"], Color.White, Color( 0, 0, 0, 180 ), textSize )
 end
 
 function Pigeon:Glide()
@@ -433,7 +435,7 @@ function Pigeon:Abort()
 		shared:SetValue( "Record", self.score )
 		Network:Send( "FlyingRecordTask", self.score )
 		Network:Send( "UpdateMaxRecord", self.score )
-		Game:ShowPopup( self.tRecord .. self.score, true )
+		Game:ShowPopup( self.locStrings["tRecord"] .. self.score, true )
 	end
 
 	if self.RCtimer then self.RCtimer = nil end

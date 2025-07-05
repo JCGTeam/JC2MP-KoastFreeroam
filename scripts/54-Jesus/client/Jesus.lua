@@ -5,11 +5,13 @@ function Jesus:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.name = "Иисус"
-		self.nameSizer = "Мирный"
-		self.disabletxt = " отключён"
-		self.enabletxt = " включён"
-		self.notusable = "Невозможно использовать это здесь!"
+		self.locStrings = {
+			name = "Иисус",
+			nameSizer = "Мирный",
+			disable = " отключён",
+			enable = " включён",
+			notusable = "Невозможно использовать это здесь!"
+		}
 	end
 
 	self.SurfaceHeight = 199.8
@@ -35,11 +37,13 @@ function Jesus:__init()
 end
 
 function Jesus:Lang()
-	self.name = "Jesus"
-	self.nameSizer = "Passive"
-	self.disabletxt = " disabled"
-	self.enabletxt = " enabled"
-	self.notusable = "You cannot use it here!"
+	self.locStrings = {
+		name = "Jesus",
+		nameSizer = "Passive",
+		disable = " disabled",
+		enable = " enabled",
+		notusable = "You cannot use it here!"
+	}
 end
 
 function Jesus:PlayerQuit( args )
@@ -175,8 +179,8 @@ function Jesus:Render()
 	if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 	local text_size = 18
-    local text_width = Render:GetTextWidth( self.nameSizer, text_size )
-	local text_height = Render:GetTextHeight( self.nameSizer, text_size )
+    local text_width = Render:GetTextWidth( self.locStrings["nameSizer"], text_size )
+	local text_height = Render:GetTextHeight( self.locStrings["nameSizer"], text_size )
 	local posY = math.lerp( -text_height - 2, 0, self.animationValue )
     local text_pos = Vector2( Render.Width / 1.3 - text_width / 1.8 + text_width / 5.5, posY + 2 )
 	local sett_alpha = math.lerp( 0, Game:GetSetting(4) * 2.25, self.animationValue )
@@ -187,7 +191,7 @@ function Jesus:Render()
 	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 - 10 ), posY ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), posY ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 ), posY + text_height + 2 ), background_clr )
 	Render:FillTriangle( Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 15 ), posY ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), posY ), Vector2( ( Render.Width / 1.3 - text_width / 1.8 + text_width + 5 ), posY + text_height + 2 ), background_clr )
 
-	Render:DrawShadowedText( text_pos, self.name, Color( 185, 215, 255, sett_alpha ), Color( 0, 0, 0, sett_alpha ), text_size )
+	Render:DrawShadowedText( text_pos, self.locStrings["name"], Color( 185, 215, 255, sett_alpha ), Color( 0, 0, 0, sett_alpha ), text_size )
 end
 
 function Jesus:LocalPlayerChat( args )
@@ -200,12 +204,12 @@ function Jesus:ToggleJesus()
 	if not LocalPlayer:GetValue( "JesusModeEnabled" ) then return end
 
 	if LocalPlayer:GetWorld() ~= DefaultWorld then
-		Events:Fire( "CastCenterText", { text = self.notusable, time = 3, color = Color.Red } )
+		Events:Fire( "CastCenterText", { text = self.locStrings["notusable"], time = 3, color = Color.Red } )
 		return
 	end
 
 	LocalPlayer:SetSystemValue( "WaterWalk", not LocalPlayer:GetValue( "WaterWalk" ) )
-	Events:Fire( "CastCenterText", { text = self.name .. ( LocalPlayer:GetValue( "WaterWalk" ) and self.disabletxt or self.enabletxt ), time = 2, color = Color( 185, 215, 255 ) } )
+	Events:Fire( "CastCenterText", { text = self.locStrings["name"] .. ( LocalPlayer:GetValue( "WaterWalk" ) and self.locStrings["disable"] or self.locStrings["enable"] ), time = 2, color = Color( 185, 215, 255 ) } )
 end
 
 function LocalPlayer:SetSystemValue( valueName, value )

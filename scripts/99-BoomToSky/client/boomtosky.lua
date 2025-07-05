@@ -49,7 +49,7 @@ function BoomToSky:StartBoomToSky( args )
 
 				Network:Send( "EffectPlay" )
 
-				local effect = ClientEffect.Play(AssetLocation.Game, {
+				local effect = ClientEffect.Play( AssetLocation.Game, {
 					effect_id = 20,
 					position = LocalPlayer:GetPosition(),
 					angle = Angle()
@@ -62,7 +62,7 @@ function BoomToSky:StartBoomToSky( args )
 end
 
 function BoomToSky:BoomToSkyEffect( args )
-	local effect = ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play( AssetLocation.Game, {
 		effect_id = 20,
 		position = args.targerp:GetPosition(),
 		angle = Angle()

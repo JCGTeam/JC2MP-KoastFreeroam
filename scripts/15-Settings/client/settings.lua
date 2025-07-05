@@ -50,131 +50,135 @@ function Settings:__init()
 	self.AnimeImage1 = Image.Create( AssetLocation.Resource, "Anime1" )
 	self.AnimeImage2 = Image.Create( AssetLocation.Resource, "Anime2" )
 
-	self.active = false
 	self.actvCH = LocalPlayer:GetValue( "CustomCrosshair" )
 	self.actvSn = false
 
 	self.aim = true
 
-	self.longerGrapple_txt = "Дальний крюк"
-	self.meters = "м"
-	self.unavailable_txt = "[НЕДОСТУПНО]"
-
 	self.textSize = 15
 	self.textSize2 = self.textSize - 1
-
-	self:LoadCategories()
 
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.window:SetTitle( "▧ Настройки" )
-		self.subcategory6:SetText( "Основные опции:" )
-		self.hidetexttip:SetText( "Нажмите F11, чтобы скрыть/показать интерфейс" )
-		self.hidetext:SetText( "Используется скрытие серверного интерфейса" )
-		self.buttonBoost:SetText( "Настройка супер-ускорения (для ТС)" )
-		self.buttonSpeedo:SetText( "Настройка спидометра" )
-		self.buttonSDS:SetText( "Настройка скайдайвинга" )
-		self.buttonTags:SetText( "Настройка тегов" )
-		self.buttonChatSett:SetText( "Настройка чата" )
-		self.subcategory:SetText( "Сохранения:" )
-		self.buttonSPOff:SetText( "Сбросить сохраненную позицию" )
-
-		self.posreset_txt = "Позиция сброшена. Перезайдите в игру."
-
-		self.jpviptip:SetText( "★ Доступно только для VIP" )
-		self.buttonJP:SetText( "Использовать реактивный ранец" )
-
-		self.setweather_txt = "Установлена погода: "
-		self.subcategory2:SetText( "Погода:" )
-		self.button:SetText( "Ясно" )
-		self.buttonTw:SetText( "Облачно" )
-		self.buttonTh:SetText( "Гроза" )
-
-		self.rollbutton:GetLabel():SetText( "Бочка" )
-		self.spinbutton:GetLabel():SetText( "Спиннер" )
-		self.flipbutton:GetLabel():SetText( "Кувырок" )
-
-		self.subcategory3:SetText( "Транспортные трюки (кнопка Y):" )
-
-		self.subcategory4:SetText( "Предосмотр:" )
-		self.setPlayerColorBtn:SetText( "Установить цвет »" )
-
-		self.skyOption:GetLabel():SetText( "Ahhh" )
-		self.skyOption2:GetLabel():SetText( "Хоррор" )
-		self.skyOption3:GetLabel():SetText( "Пахом" )
-		self.skyOption4:GetLabel():SetText( "Мастер подземелий" )
-		self.skyOption5:GetLabel():SetText( "Аниме" )
-		self.skyOption6:GetLabel():SetText( "Цвет ↓" )
-		self.skyOptionRnb:GetLabel():SetText( "Переливания цветов неба" )
-
-		self.unknown_txt = "Отсутствует"
-		self.onfoot_txt = "Ноги"
-		self.timeFormat = "%02d час(ов), %02d минут(ы), %02d секунд(ы)"
-
-		self.subcategory7:SetText( "Аккаунт" )
-		self.accountInfo1_txt = "\nДата первого подключения: "
-		self.accountInfo2_txt = "\nПроведено времени на сервере: "
-		self.accountInfo3_txt = "\nСтрана: "
-		self.accountInfo4_txt = "\nУровень: "
-		self.accountInfo5_txt = "\nБаланс: $"
-
-		self.subcategory8:SetText( "Другие данные" )
-		self.accountInfo6_txt = "Время текущей сессии: "
-		self.accountInfo7_txt = "\nКлан: "
-		self.accountInfo8_txt = "\nТекущий ID: "
-		self.accountInfo9_txt = "\nЦвет имени: "
-		self.accountInfo10_txt = "\nID персонажа: "
-		self.accountInfo11_txt = "\nТекущий транспорт: "
-
-		self.subcategory9:SetText( "Глобальная статистика" )
-		self.accountInfo12_txt = "Отправленных сообщений в чате: "
-		self.accountInfo13_txt = "\nУбийств: "
-		self.accountInfo14_txt = "\nСобранных ящиков: "
-		self.accountInfo15_txt = "\nВыполненных заданий: "
-		self.accountInfo16_txt = "\nВыполненных ежедневных заданий: "
-		self.accountInfo17_txt = "\nЛучший счет в хорошечном дрифте: "
-		self.accountInfo18_txt = "\nЛучший счет в хорошечном тетрисе: "
-		self.accountInfo19_txt = "\nЛучший счет в хорошечном полете: "
-		self.accountInfo20_txt = "\nПобед в гонках: "
-		self.accountInfo21_txt = "\nПобед в троне: "
-		self.accountInfo22_txt = "\nПобед в царь горы: "
-		self.accountInfo23_txt = "\nПобед в дерби: "
-		self.accountInfo24_txt = "\nПобед в понге: "
-		self.accountInfo25_txt = "\nПравильных ответов в викторинах: "
-
-		self.subcategory10:SetText( "Приглашения" )
-		self.subcategory12:SetText(
-			"За каждую активацию, вы получаете бонус $" .. formatNumber( InviteBonuses.Bonus1 ) .. ", а новый игрок получит дополнительные $" .. formatNumber( InviteBonuses.Bonus2 ) .. "." ..
-			"\nБонус зачисляется после того, как активировавший промокод игрок проведет на сервере более 2-х часов."
-			)
-		self.invitePromocode:SetToolTip( "Выделите и зажмите Ctrl + C, чтобы скопировать промокод" )
-		self.togglePromocodeBtn:SetText( "Сгенерировать промокод" )
-		self.getInviteBonusBtn:SetText( "Получить вознаграждение за активированный промокод ($" .. formatNumber( LocalPlayer:GetValue( "ActivePromocode" ) or InviteBonuses.Bonus2 ) .. ")" )
-		self.subcategory13:SetText( "Активация промокода" )
-		self.uses_txt = "Использований: "
-		self.activations = "Активаций: "
-		self.promocodeGenerationDate_txt = "Дата генерации промокода: "
-		self.getInvitationsBonus_txt = "Получить вознаграждение за приглашения"
-		self.activatePromocode_txt = "Активировать промокод"
-		self.getBonusBtn:SetText( self.activatePromocode_txt )
-
-		--self.subcategory5:SetText( "Выполнить консольную команду на сервере:" )
+		self.locStrings = {
+			title = "▧ Настройки",
+			main = "Основное",
+			abilities = "Способности",
+			nickcolor = "Цвет ника",
+			sky = "Небо",
+			infoandstats = "Информация и статистика",
+			promocodes = "Промокоды",
+			subcategory6 = "Основные опции:",
+			option1 = "Отображать часы",
+			option2 = "12-часовой формат",
+			option3 = 'Отображать "Мирный" вверху экрана',
+			option4 = 'Отображать "Иисус" вверху экрана',
+			option5 = "Отображать хорошечные рекорды",
+			option6 = "Отображать чат убийств",
+			option7 = "Отображать подсказку под чатом",
+			option8 = "Отображать фон чата",
+			option9 = "Отображать маркеры игроков",
+			option10 = "Отображать маркеры заданий",
+			option11 = "Отображать прицел",
+			option12 = "Серверный прицел",
+			option13 = "Индикатор дальнего крюка",
+			option14 = "Jet HUD (для авиации)",
+			option15 = "Отображать задания",
+			option24 = "Отображать подсказки открытия ворот",
+			option17 = "Не выбрасывать персонажа из транспорта",
+			option26 = "Управляемость в полете на транспорте",
+			option23 = "Дрифт-конфигурация управления",
+			option25 = "Прыжок на транспорте",
+			option19 = "Гидравлика",
+			option18 = "Вингсьют",
+			hidetexttip = "Нажмите F11, чтобы скрыть/показать интерфейс",
+			hidetext = "Используется скрытие серверного интерфейса",
+			buttonBoost = "Настройка супер-ускорения (для ТС)",
+			buttonSpeedo = "Настройка спидометра",
+			buttonSDS = "Настройка скайдайвинга",
+			buttonTags = "Настройка тегов",
+			buttonChatSett = "Настройка чата",
+			subcategory = "Сохранения:",
+			buttonSPOff = "Сбросить сохраненную позицию",
+			jpviptip = "★ Доступно только для VIP",
+			buttonJP = "Использовать реактивный ранец",
+			subcategory2 = "Погода:",
+			button = "Ясно",
+			buttonTw = "Облачно",
+			buttonTh = "Гроза",
+			rollbutton = "Бочка",
+			spinbutton = "Спиннер",
+			flipbutton = "Кувырок",
+			subcategory3 = "Транспортные трюки (кнопка Y):",
+			subcategory4 = "Предосмотр:",
+			setPlayerColorBtn = "Установить цвет »",
+			skyOption = "Ahhh",
+			skyOption2 = "Хоррор",
+			skyOption3 = "Пахом",
+			skyOption4 = "Мастер подземелий",
+			skyOption5 = "Аниме",
+			skyOption6 = "Цвет ↓",
+			skyOptionRnb = "Переливание цветов неба",
+			color = "▨ Цвет",
+			subcategory7 = "Аккаунт",
+			subcategory8 = "Другие данные",
+			subcategory9 = "Глобальная статистика",
+			subcategory10 = "Приглашения",
+			subcategory12 =
+				"За каждую активацию, вы получаете бонус $" .. formatNumber( InviteBonuses.Bonus1 ) .. ", а новый игрок получит дополнительные $" .. formatNumber( InviteBonuses.Bonus2 ) .. "." ..
+				"\nБонус зачисляется после того, как активировавший промокод игрок проведет на сервере более 2-х часов.",
+			invitePromocode = "Выделите и зажмите Ctrl + C, чтобы скопировать промокод",
+			togglePromocodeBtn = "Сгенерировать промокод",
+			getInviteBonusBtn = "Получить вознаграждение за активированный промокод ($" .. formatNumber( LocalPlayer:GetValue( "ActivePromocode" ) or InviteBonuses.Bonus2 ) .. ")",
+			subcategory13 = "Активация промокода",
+			--[[
+			option20 = "Отображать отладочные сообщения",
+			option21 = "Отображать информацию игрока",
+			option22 = "Отображать информацию транспорта",
+			subcategory5 = "Выполнить консольную команду на сервере:",
+			--]]
+			longerGrapple = "Дальний крюк",
+			posreset = "Позиция сброшена. Перезайдите в игру.",
+			setweather = "Установлена погода: ",
+			meters = "м",
+			unavailable = "[НЕДОСТУПНО]",
+			unknown = "Отсутствует",
+			onfoot = "Ноги",
+			timeFormat = "%02d час(ов), %02d минут(ы), %02d секунд(ы)",
+			accountInfo1 = "\nДата первого подключения: ",
+			accountInfo2 = "\nПроведено времени на сервере: ",
+			accountInfo3 = "\nСтрана: ",
+			accountInfo4 = "\nУровень: ",
+			accountInfo5 = "\nБаланс: $",
+			accountInfo6 = "Время текущей сессии: ",
+			accountInfo7 = "\nКлан: ",
+			accountInfo8 = "\nТекущий ID: ",
+			accountInfo9 = "\nЦвет имени: ",
+			accountInfo10 = "\nID персонажа: ",
+			accountInfo11 = "\nТекущий транспорт: ",
+			accountInfo12 = "Отправленных сообщений в чате: ",
+			accountInfo13 = "\nУбийств: ",
+			accountInfo14 = "\nСобранных ящиков: ",
+			accountInfo15 = "\nВыполненных заданий: ",
+			accountInfo16 = "\nВыполненных ежедневных заданий: ",
+			accountInfo17 = "\nЛучший счет в хорошечном дрифте: ",
+			accountInfo18 = "\nЛучший счет в хорошечном тетрисе: ",
+			accountInfo19 = "\nЛучший счет в хорошечном полете: ",
+			accountInfo20 = "\nПобед в гонках: ",
+			accountInfo21 = "\nПобед в троне: ",
+			accountInfo22 = "\nПобед в царь горы: ",
+			accountInfo23 = "\nПобед в дерби: ",
+			accountInfo24 = "\nПобед в понге: ",
+			accountInfo25 = "\nПравильных ответов в викторинах: ",
+			uses = "Использований: ",
+			activations = "Активаций: ",
+			promocodeGenerationDate = "Дата генерации промокода: ",
+			getInvitationsBonus = "Получить вознаграждение за приглашения",
+			activatePromocode = "Активировать промокод"
+		}
 	end
-
-	self.hidetext:SizeToContents()
-	self.hidetexttip:SizeToContents()
-	self.subcategory:SizeToContents()
-	self.subcategory3:SizeToContents()
-	self.subcategory4:SizeToContents()
-	--self.subcategory5:SizeToContents()
-	self.subcategory6:SizeToContents()
-	self.jpviptip:SizeToContents()
-	self.subcategory2:SizeToContents()
-	self.nicknameColorPreview:SizeToContents()
-	self.statsName:SizeToContents()
-	self.subcategory12:SizeToContents()
 
 	Network:Subscribe( "ResetDone", self, self.ResetDone )
 	Network:Subscribe( "UpdateStats", self, self.UpdateStats )
@@ -187,158 +191,148 @@ function Settings:__init()
 	Events:Subscribe( "OpenSettingsMenu", self, self.OpenSettingsMenu )
 	Events:Subscribe( "CloseSettingsMenu", self, self.CloseSettingsMenu )
 	Events:Subscribe( "KeyUp", self, self.KeyUp )
-	Events:Subscribe( "PromocodeFound", function() self.promocode:SetTextColor( Color.Green ) self.getBonusBtn:SetText( "Промокод активирован!" ) end )
-	Events:Subscribe( "PromocodeNotFound", function() self.promocode:SetTextColor( Color.Red ) self.getBonusBtn:SetText( self.activatePromocode_txt ) end )
 
 	self:GameLoad()
 end
 
 function Settings:Lang()
-	self.window:SetTitle( "▧ Settings" )
-	self.hidetexttip:SetText( "Press F11 to hide/show server UI" )
-	self.hidetext:SetText( "Used server UI hiding" )
-	self.buttonBoost:SetText( "Boost Setting (for vehicles)" )
-	self.buttonSpeedo:SetText( "Speedometer Setting" )
-	self.buttonSDS:SetText( "Skydiving Settings" )
-	self.buttonTags:SetText( "Tags Settings" )
-	self.buttonChatSett:SetText( "Chat Settings" )
-	self.subcategory:SetText( "Saves:" )
-	self.buttonSPOff:SetText( "Reset Saved Position" )
-
-	self.longerGrapple_txt = "Longer grapple"
-	self.meters = "m"
-	self.unavailable_txt = "[UNAVAILABLE]"
-
-	self.subcategory6:SetText( "Main options:" )
-	self.option1:GetLabel():SetText( "Display clock" )
-	self.option2:GetLabel():SetText( "12-hour format" )
-	self.option3:GetLabel():SetText( 'Display "Passive" at the top of the screen' )
-	self.option4:GetLabel():SetText( 'Display "Jesus" at the top of the screen' )
-	self.option5:GetLabel():SetText( "Display fantastic records" )
-	self.option6:GetLabel():SetText( "Display killfeed" )
-	self.option7:GetLabel():SetText( "Display tooltip below chat" )
-	self.option8:GetLabel():SetText( "Display chat background" )
-	self.option9:GetLabel():SetText( "Display player markers" )
-	self.option10:GetLabel():SetText( "Display task markers" )
-	self.option11:GetLabel():SetText( "Display crosshair" )
-	self.option12:GetLabel():SetText( "Server crosshair" )
-	self.option13:GetLabel():SetText( "Longer grapple indicator" )
-	self.option14:GetLabel():SetText( "Jet HUD (for aviation)" )
-	self.option15:GetLabel():SetText( "Display tasks" )
-	self.option24:GetLabel():SetText( "Display door opening tips" )
-
-	self.posreset_txt = "Position has been reset. Restart the game."
-
-	self.option17:GetLabel():SetText( "Keep the character in vehicle" )
-	self.option26:GetLabel():SetText( "Air control" )
-	self.option23:GetLabel():SetText( "Drift control configuration" )
-	self.option25:GetLabel():SetText( "Vehicle jump" )
-	self.option19:GetLabel():SetText( "Hydraulics" )
-	self.option18:GetLabel():SetText( "Wingsuit" )
-
-	self.rollbutton:GetLabel():SetText( "Barrel" )
-	self.spinbutton:GetLabel():SetText( "Spinner" )
-	self.flipbutton:GetLabel():SetText( "Somersault" )
-
-	self.subcategory3:SetText( "Vehicle tricks (Y button):" )
-
-	self.jpviptip:SetText( "★ Available only for VIP" )
-	self.buttonJP:SetText( "Use Jetpack" )
-
-	self.setweather_txt = "Weather set: "
-	self.subcategory2:SetText( "Weather:" )
-	self.button:SetText( "Clear" )
-	self.buttonTw:SetText( "Cloudy" )
-	self.buttonTh:SetText( "Thunderstorm" )
-
-	self.subcategory4:SetText( "Preview:" )
-	self.setPlayerColorBtn:SetText( "Set color »" )
-
-	self.skyOption:GetLabel():SetText( "Ahhh" )
-	self.skyOption2:GetLabel():SetText( "Horror" )
-	self.skyOption3:GetLabel():SetText( "Pakhom" )
-	self.skyOption4:GetLabel():SetText( "Dungeon Master" )
-	self.skyOption5:GetLabel():SetText( "Anime" )
-	self.skyOption6:GetLabel():SetText( "Color ↓" )
-	self.skyOptionRnb:GetLabel():SetText( "Rainbow sky" )
-
-	self.unknown_txt = "Unknown"
-	self.onfoot_txt = "On foot"
-	self.timeFormat = "%02d hour(s), %02d minute(s), %02d second(s)"
-
-	self.subcategory7:SetText( "Account" )
-	self.accountInfo1_txt = "\nDate of first connection: "
-	self.accountInfo2_txt = "\nTime spent on server: "
-	self.accountInfo3_txt = "\nCountry: "
-	self.accountInfo4_txt = "\nLevel: "
-	self.accountInfo5_txt = "\nBalance: $"
-
-	self.subcategory8:SetText( "Other information" )
-	self.accountInfo6_txt = "Current session time: "
-	self.accountInfo7_txt = "\nClan: "
-	self.accountInfo8_txt = "\nCurrent ID: "
-	self.accountInfo9_txt = "\nNickname color: "
-	self.accountInfo10_txt = "\nCharacter ID "
-	self.accountInfo11_txt = "\nCurrent vehicle: "
-
-	self.subcategory9:SetText( "Global statistics" )
-	self.accountInfo12_txt = "Sent chat messages: "
-	self.accountInfo13_txt = "\nKills: "
-	self.accountInfo14_txt = "\nCrates collected: "
-	self.accountInfo15_txt = "\nCompleted tasks: "
-	self.accountInfo16_txt = "\nCompleted daily tasks: "
-	self.accountInfo17_txt = "\nBest score in fantastic drift: "
-	self.accountInfo18_txt = "\nBest score in fantastic tetris: "
-	self.accountInfo19_txt = "\nBest score in fantastic flight: "
-	self.accountInfo20_txt = "\nRace wins: "
-	self.accountInfo21_txt = "\nTron wins: "
-	self.accountInfo22_txt = "\nKing of the hill wins: "
-	self.accountInfo23_txt = "\nDerby wins: "
-	self.accountInfo24_txt = "\nPong wins: "
-	self.accountInfo25_txt = "\nQuiz answers correct: "
-
-	self.subcategory10:SetText( "Invitations" )
-	self.subcategory12:SetText(
-		"For each activation, you receive a bonus of $" .. formatNumber( InviteBonuses.Bonus1 ) .. ", and the new player will receive an additional $" .. formatNumber( InviteBonuses.Bonus2 ) .. "." ..
-		"\nThe bonus is credited after the player who activated the promo code spends more than 2 hours on the server."
-		)
-	self.invitePromocode:SetToolTip( "Highlight and hold Ctrl + C to copy the promo code" )
-	self.togglePromocodeBtn:SetText( "Generate promo code" )
-	self.getInviteBonusBtn:SetText( "Claim reward for activated promo code ($" .. formatNumber( LocalPlayer:GetValue( "ActivePromocode" ) or InviteBonuses.Bonus2 ) .. ")" )
-	self.subcategory13:SetText( "Promo code activation" )
-	self.uses_txt = "Uses: "
-	self.activations = "Activations: "
-	self.promocodeGenerationDate_txt = "Promo code generation date: "
-	self.getInvitationsBonus_txt = "Get rewarded for invitations"
-	self.activatePromocode_txt = "Activate promo code"
-	self.getBonusBtn:SetText( self.activatePromocode_txt )
-
-	--[[
-	self.option20:GetLabel():SetText( "Display debug messages" )
-	self.option21:GetLabel():SetText( "Display player information" )
-	self.option22:GetLabel():SetText( "Display vehicle information" )
-
-	self.subcategory5:SetText( "Run console command on the server:" )
-	]]--
+	self.locStrings = {
+		title = "▧ Settings",
+		main = "General",
+		abilities = "Abilities",
+		nickcolor = "Nickname Color",
+		sky = "Sky",
+		infoandstats = "Info and Stats",
+		promocodes = "Promo Codes",
+		subcategory6 = "Main options:",
+		option1 = "Show clock",
+		option2 = "12-hour format",
+		option3 = 'Show "Passive" at the top of the screen',
+		option4 = 'Show "Jesus" at the top of the screen',
+		option5 = "Show fantastic records",
+		option6 = "Show killfeed",
+		option7 = "Show tooltip below chat",
+		option8 = "Show chat background",
+		option9 = "Show player markers",
+		option10 = "Show task markers",
+		option11 = "Show crosshair",
+		option12 = "Server crosshair",
+		option13 = "Longer grapple indicator",
+		option14 = "Jet HUD (for aviation)",
+		option15 = "Show tasks",
+		option24 = "Show door opening tips",
+		option17 = "Keep the character in vehicle",
+		option26 = "Vehicle air control",
+		option23 = "Drift control configuration",
+		option25 = "Vehicle jump",
+		option19 = "Hydraulics",
+		option18 = "Wingsuit",
+		hidetexttip = "Press F11 to toggle server UI",
+		hidetext = "Used server UI hiding",
+		buttonBoost = "Boost Settings (vehicles)",
+		buttonSpeedo = "Speedometer Settings",
+		buttonSDS = "Skydiving Settings",
+		buttonTags = "Tags Settings",
+		buttonChatSett = "Chat Settings",
+		subcategory = "Saves:",
+		buttonSPOff = "Reset Saved Position",
+		jpviptip ="★ Available only for VIP",
+		buttonJP = "Use Jetpack",
+		subcategory2 = "Weather:",
+		button = "Clear",
+		buttonTw = "Cloudy",
+		buttonTh = "Thunderstorm",
+		rollbutton = "Barrel",
+		spinbutton = "Spinner",
+		flipbutton = "Somersault",
+		subcategory3 = "Vehicle tricks (Y button):",
+		subcategory4 = "Preview:",
+		setPlayerColorBtn = "Set color »",
+		skyOption = "Ahhh",
+		skyOption2 = "Horror",
+		skyOption3 = "Pakhom",
+		skyOption4 = "Dungeon Master",
+		skyOption5 = "Anime",
+		skyOption6 = "Color ↓",
+		skyOptionRnb = "Rainbow sky",
+		color = "▨ Color",
+		subcategory7 = "Account",
+		subcategory8 = "Other information",
+		subcategory9 = "Global statistics",
+		subcategory10 = "Invitations",
+		subcategory12 =
+			"For each activation, you receive a bonus of $" .. formatNumber( InviteBonuses.Bonus1 ) .. ", and the new player will receive an additional $" .. formatNumber( InviteBonuses.Bonus2 ) .. "." ..
+			"\nThe bonus is credited after the player who activated the promo code spends more than 2 hours on the server.",
+		invitePromocode = "Highlight and hold Ctrl + C to copy the promo code",
+		togglePromocodeBtn = "Generate promo code",
+		getInviteBonusBtn = "Claim reward for activated promo code ($" .. formatNumber( LocalPlayer:GetValue( "ActivePromocode" ) or InviteBonuses.Bonus2 ) .. ")",
+		subcategory13 = "Promo code activation",
+		--[[
+		option20 = "Show debug messages",
+		option21 = "Show player information",
+		option22 = "Show vehicle information",
+		subcategory5 = "Run console command on the server:",
+		]]--
+		longerGrapple = "Longer grapple",
+		posreset = "Position has been reset. Restart the game.",
+		setweather = "Weather set: ",
+		meters = "m",
+		unavailable = "[UNAVAILABLE]",
+		unknown = "Unknown",
+		onfoot = "On foot",
+		timeFormat = "%02d hour(s), %02d minute(s), %02d second(s)",
+		accountInfo1 = "\nDate of first connection: ",
+		accountInfo2 = "\nTime spent on server: ",
+		accountInfo3 = "\nCountry: ",
+		accountInfo4 = "\nLevel: ",
+		accountInfo5 = "\nBalance: $",
+		accountInfo6 = "Current session time: ",
+		accountInfo7 = "\nClan: ",
+		accountInfo8 = "\nCurrent ID: ",
+		accountInfo9 = "\nNickname color: ",
+		accountInfo10 = "\nCharacter ID ",
+		accountInfo11 = "\nCurrent vehicle: ",
+		accountInfo12 = "Sent chat messages: ",
+		accountInfo13 = "\nKills: ",
+		accountInfo14 = "\nCrates collected: ",
+		accountInfo15 = "\nCompleted tasks: ",
+		accountInfo16 = "\nCompleted daily tasks: ",
+		accountInfo17 = "\nBest score in fantastic drift: ",
+		accountInfo18 = "\nBest score in fantastic tetris: ",
+		accountInfo19 = "\nBest score in fantastic flight: ",
+		accountInfo20 = "\nRace wins: ",
+		accountInfo21 = "\nTron wins: ",
+		accountInfo22 = "\nKing of the hill wins: ",
+		accountInfo23 = "\nDerby wins: ",
+		accountInfo24 = "\nPong wins: ",
+		accountInfo25 = "\nQuiz answers correct: ",
+		uses = "Uses: ",
+		activations = "Activations: ",
+		promocodeGenerationDate = "Promo code generation date: ",
+		getInvitationsBonus = "Get rewarded for invitations",
+		activatePromocode = "Activate promo code"
+	}
 end
 
 function Settings:LoadUI()
 	self:GameLoad()
 end
 
-function Settings:LoadCategories()
+function Settings:CreateWindow()
+	if self.window then return end
+
 	self.window = Window.Create()
 	self.window:SetSizeRel( Vector2( 0.5, 0.5 ) )
 	self.window:SetMinimumSize( Vector2( 680, 442 ) )
 	self.window:SetPositionRel( Vector2( 0.73, 0.5 ) - self.window:GetSizeRel()/2 )
-	self.window:SetVisible( self.active )
-	self.window:Subscribe( "WindowClosed", self, self.Open )
+	self.window:SetTitle( self.locStrings["title"] )
+	self.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false, true ) end )
 
 	local tab = TabControl.Create( self.window )
 	tab:SetDock( GwenPosition.Fill )
 
 	local widgets = BaseWindow.Create( self.window )
-	tab:AddPage( "Основное", widgets )
+	tab:AddPage( self.locStrings["main"], widgets )
 
 	local scroll_control = ScrollControl.Create( widgets )
 	scroll_control:SetScrollable( false, true )
@@ -348,59 +342,61 @@ function Settings:LoadCategories()
 	self.subcategory6 = Label.Create( scroll_control )
 	self.subcategory6:SetDock( GwenPosition.Top )
 	self.subcategory6:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+	self.subcategory6:SetText( self.locStrings["subcategory6"] )
+	self.subcategory6:SizeToContents()
 
-	self.option1 = self:OptionCheckBox( scroll_control, "Отображать часы", LocalPlayer:GetValue( "ClockVisible" ) or false )
+	self.option1 = self:OptionCheckBox( scroll_control, self.locStrings["option1"], LocalPlayer:GetValue( "ClockVisible" ) or false )
 	self.option1:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 1 , boolean = not LocalPlayer:GetValue( "ClockVisible" ) } ) end )
 
-	self.option2 = self:OptionCheckBox( scroll_control, "12-часовой формат", LocalPlayer:GetValue( "ClockPendosFormat" ) or false )
+	self.option2 = self:OptionCheckBox( scroll_control, self.locStrings["option2"], LocalPlayer:GetValue( "ClockPendosFormat" ) or false )
 	self.option2:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 2 , boolean = not LocalPlayer:GetValue( "ClockPendosFormat" ) } ) end )
 
-	self.option3 = self:OptionCheckBox( scroll_control, 'Отображать "Мирный" вверху экрана', LocalPlayer:GetValue( "PassiveModeVisible" ) or false )
+	self.option3 = self:OptionCheckBox( scroll_control, self.locStrings["option3"], LocalPlayer:GetValue( "PassiveModeVisible" ) or false )
 	self.option3:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 4 , boolean = not LocalPlayer:GetValue( "PassiveModeVisible" ) } ) end )
 	self.option3:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
 
-	self.option4 = self:OptionCheckBox( scroll_control, 'Отображать "Иисус" вверху экрана', LocalPlayer:GetValue( "JesusModeVisible" ) or false )
+	self.option4 = self:OptionCheckBox( scroll_control, self.locStrings["option4"], LocalPlayer:GetValue( "JesusModeVisible" ) or false )
 	self.option4:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 5 , boolean = not LocalPlayer:GetValue( "JesusModeVisible" ) } ) end )
 
-	self.option5 = self:OptionCheckBox( scroll_control, "Отображать хорошечные рекорды", LocalPlayer:GetValue( "BestRecordVisible" ) or false )
+	self.option5 = self:OptionCheckBox( scroll_control, self.locStrings["option5"], LocalPlayer:GetValue( "BestRecordVisible" ) or false )
 	self.option5:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 3 , boolean = not LocalPlayer:GetValue( "BestRecordVisible" ) } ) end )
 	self.option5:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
 
-	self.option6 = self:OptionCheckBox( scroll_control, "Отображать чат убийств", LocalPlayer:GetValue( "KillFeedVisible" ) or false )
+	self.option6 = self:OptionCheckBox( scroll_control, self.locStrings["option6"], LocalPlayer:GetValue( "KillFeedVisible" ) or false )
 	self.option6:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 6 , boolean = not LocalPlayer:GetValue( "KillFeedVisible" ) } ) end )
 
-	self.option7 = self:OptionCheckBox( scroll_control, "Отображать подсказку под чатом", LocalPlayer:GetValue( "ChatTipsVisible" ) or false )
+	self.option7 = self:OptionCheckBox( scroll_control, self.locStrings["option7"], LocalPlayer:GetValue( "ChatTipsVisible" ) or false )
 	self.option7:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 7 , boolean = not LocalPlayer:GetValue( "ChatTipsVisible" ) } ) end )
 	self.option7:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
 
-	self.option8 = self:OptionCheckBox( scroll_control, "Отображать фон чата", LocalPlayer:GetValue( "ChatBackgroundVisible" ) or false )
+	self.option8 = self:OptionCheckBox( scroll_control, self.locStrings["option8"], LocalPlayer:GetValue( "ChatBackgroundVisible" ) or false )
 	self.option8:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 8 , boolean = not LocalPlayer:GetValue( "ChatBackgroundVisible" ) } ) end )
 
-	self.option9 = self:OptionCheckBox( scroll_control, "Отображать маркеры игроков", LocalPlayer:GetValue( "PlayersMarkersVisible" ) or false )
+	self.option9 = self:OptionCheckBox( scroll_control, self.locStrings["option9"], LocalPlayer:GetValue( "PlayersMarkersVisible" ) or false )
 	self.option9:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 9 , boolean = not LocalPlayer:GetValue( "PlayersMarkersVisible" ) } ) end )
 	self.option9:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
 
-	self.option10 = self:OptionCheckBox( scroll_control, "Отображать маркеры заданий", LocalPlayer:GetValue( "JobsMarkersVisible" ) or false )
+	self.option10 = self:OptionCheckBox( scroll_control, self.locStrings["option10"], LocalPlayer:GetValue( "JobsMarkersVisible" ) or false )
 	self.option10:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 10 , boolean = not LocalPlayer:GetValue( "JobsMarkersVisible" ) } ) end )
 
-	self.option11 = self:OptionCheckBox( scroll_control, "Отображать прицел", self.aim )
+	self.option11 = self:OptionCheckBox( scroll_control, self.locStrings["option11"], self.aim )
 	self.option11:GetCheckBox():Subscribe( "CheckChanged", self, self.ToggleAim )
 	self.option11:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
 
-	self.option12 = self:OptionCheckBox( scroll_control, "Серверный прицел", LocalPlayer:GetValue( "CustomCrosshair" ) or false )
+	self.option12 = self:OptionCheckBox( scroll_control, self.locStrings["option12"], LocalPlayer:GetValue( "CustomCrosshair" ) or false )
 	self.option12:GetCheckBox():Subscribe( "CheckChanged", function() self.actvCH = not LocalPlayer:GetValue( "CustomCrosshair" ) self:GameLoad() Network:Send( "UpdateParameters", { parameter = 11 , boolean = not LocalPlayer:GetValue( "CustomCrosshair" ) } ) end )
 
-	self.option13 = self:OptionCheckBox( scroll_control, "Индикатор дальнего крюка", LocalPlayer:GetValue( "LongerGrappleVisible" ) or false )
+	self.option13 = self:OptionCheckBox( scroll_control, self.locStrings["option13"], LocalPlayer:GetValue( "LongerGrappleVisible" ) or false )
 	self.option13:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 13 , boolean = not LocalPlayer:GetValue( "LongerGrappleVisible" ) } ) end )
 
-	self.option15 = self:OptionCheckBox( scroll_control, "Отображать задания", LocalPlayer:GetValue( "JobsVisible" ) or false )
+	self.option15 = self:OptionCheckBox( scroll_control, self.locStrings["option15"], LocalPlayer:GetValue( "JobsVisible" ) or false )
 	self.option15:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 14 , boolean = not LocalPlayer:GetValue( "JobsVisible" ) } ) end )
 	self.option15:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
 
-	self.option24 = self:OptionCheckBox( scroll_control, "Отображать подсказки открытия ворот", LocalPlayer:GetValue( "OpenDoorsTipsVisible" ) or false )
+	self.option24 = self:OptionCheckBox( scroll_control, self.locStrings["option24"], LocalPlayer:GetValue( "OpenDoorsTipsVisible" ) or false )
 	self.option24:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 20 , boolean = not LocalPlayer:GetValue( "OpenDoorsTipsVisible" ) } ) end )
 
-	self.option14 = self:OptionCheckBox( scroll_control, "Jet HUD (для авиации)", LocalPlayer:GetValue( "JetHUD" ) or false )
+	self.option14 = self:OptionCheckBox( scroll_control, self.locStrings["option14"], LocalPlayer:GetValue( "JetHUD" ) or false )
 	self.option14:GetCheckBox():Subscribe( "CheckChanged", function() Events:Fire( "JHudActive" ) Network:Send( "UpdateParameters", { parameter = 12 , boolean = not LocalPlayer:GetValue( "JetHUD" ) } ) end )
 	self.option14:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
 
@@ -417,16 +413,21 @@ function Settings:LoadCategories()
 	self.hidetexttip = Label.Create( bkpanelsContainer )
 	self.hidetexttip:SetDock( GwenPosition.Bottom )
 	self.hidetexttip:SetMargin( Vector2( 5, 5 ), Vector2( 5, 4 ) )
+	self.hidetexttip:SetText( self.locStrings["hidetexttip"] )
+	self.hidetexttip:SizeToContents()
 
 	self.hidetext = Label.Create( bkpanelsContainer )
-	self.hidetext:SetVisible( false )
+	self.hidetext:SetVisible( LocalPlayer:GetValue( "HiddenHUD" ) or false )
 	self.hidetext:SetTextColor( Color.Yellow )
 	self.hidetext:SetDock( GwenPosition.Bottom )
 	self.hidetext:SetMargin( Vector2( 5, 5 ), Vector2( 5, 0 ) )
+	self.hidetext:SetText( self.locStrings["hidetext"] )
+	self.hidetext:SizeToContents()
 
 	local btnHeight = 30
 	self.buttonBoost = Button.Create( scroll_bkpanels )
 	self.buttonBoost:SetHeight( btnHeight )
+	self.buttonBoost:SetText( self.locStrings["buttonBoost"] )
 	self.buttonBoost:SetTextSize( self.textSize2 )
 	self.buttonBoost:SetDock( GwenPosition.Top )
 	self.buttonBoost:SetMargin( Vector2( 0, 3 ), Vector2( 0, 3 ) )
@@ -434,6 +435,7 @@ function Settings:LoadCategories()
 
 	self.buttonSpeedo = Button.Create( scroll_bkpanels )
 	self.buttonSpeedo:SetHeight( btnHeight )
+	self.buttonSpeedo:SetText( self.locStrings["buttonSpeedo"] )
 	self.buttonSpeedo:SetTextSize( self.textSize2 )
 	self.buttonSpeedo:SetDock( GwenPosition.Top )
 	self.buttonSpeedo:SetMargin( Vector2( 0, 3 ), Vector2( 0, 3 ) )
@@ -441,6 +443,7 @@ function Settings:LoadCategories()
 
 	self.buttonSDS = Button.Create( scroll_bkpanels )
 	self.buttonSDS:SetHeight( btnHeight )
+	self.buttonSDS:SetText( self.locStrings["buttonSDS"] )
 	self.buttonSDS:SetTextSize( self.textSize2 )
 	self.buttonSDS:SetDock( GwenPosition.Top )
 	self.buttonSDS:SetMargin( Vector2( 0, 3 ), Vector2( 0, 3 ) )
@@ -448,6 +451,7 @@ function Settings:LoadCategories()
 
 	self.buttonTags = Button.Create( scroll_bkpanels )
 	self.buttonTags:SetHeight( btnHeight )
+	self.buttonTags:SetText( self.locStrings["buttonTags"] )
 	self.buttonTags:SetTextSize( self.textSize2 )
 	self.buttonTags:SetDock( GwenPosition.Top )
 	self.buttonTags:SetMargin( Vector2( 0, 3 ), Vector2( 0, 3 ) )
@@ -455,24 +459,28 @@ function Settings:LoadCategories()
 
 	self.buttonChatSett = Button.Create( scroll_bkpanels )
 	self.buttonChatSett:SetHeight( btnHeight )
+	self.buttonChatSett:SetText( self.locStrings["buttonChatSett"] )
 	self.buttonChatSett:SetTextSize( self.textSize2 )
 	self.buttonChatSett:SetDock( GwenPosition.Top )
 	self.buttonChatSett:SetMargin( Vector2( 0, 3 ), Vector2( 0, 3 ) )
-	self.buttonChatSett:Subscribe( "Press", self, function() Events:Fire( "OpenChatMenu" ) self:Open() end )
+	self.buttonChatSett:Subscribe( "Press", self, function() Events:Fire( "OpenChatMenu" ) self:SetWindowVisible( false, true ) end )
 
 	self.subcategory = Label.Create( scroll_bkpanels )
 	self.subcategory:SetDock( GwenPosition.Top )
 	self.subcategory:SetMargin( Vector2( 0, 10 ), Vector2( 0, 4 ) )
+	self.subcategory:SetText( self.locStrings["subcategory"] )
+	self.subcategory:SizeToContents()
 
 	self.buttonSPOff = Button.Create( scroll_bkpanels )
 	self.buttonSPOff:SetHeight( btnHeight )
+	self.buttonSPOff:SetText( self.locStrings["buttonSPOff"] )
 	self.buttonSPOff:SetTextSize( self.textSize2 )
 	self.buttonSPOff:SetDock( GwenPosition.Top )
 	self.buttonSPOff:SetMargin( Vector2( 0, 3 ), Vector2( 0, 3 ) )
 	self.buttonSPOff:Subscribe( "Press", self, function() Network:Send( "SPOff" ) end )
 
 	local powers = BaseWindow.Create( self.window )
-	tab:AddPage( "Способности", powers )
+	tab:AddPage( self.locStrings["abilities"], powers )
 
 	local bkpanelsContainer = BaseWindow.Create( powers )
 	bkpanelsContainer:SetVisible( true )
@@ -485,32 +493,32 @@ function Settings:LoadCategories()
 	scroll_control:SetDock( GwenPosition.Fill )
 	scroll_control:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
 
-	self.option17 = self:OptionCheckBox( scroll_control, "Не выбрасывать персонажа из транспорта", LocalPlayer:GetValue( "VehicleEjectBlocker" ) or false )
+	self.option17 = self:OptionCheckBox( scroll_control, self.locStrings["option17"], LocalPlayer:GetValue( "VehicleEjectBlocker" ) or false )
 	self.option17:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 16 , boolean = not LocalPlayer:GetValue( "VehicleEjectBlocker" ) } ) end )
 
-	self.option26 = self:OptionCheckBox( scroll_control, "Управляемость в полете", LocalPlayer:GetValue( "AirControl" ) or false )
+	self.option26 = self:OptionCheckBox( scroll_control, self.locStrings["option26"], LocalPlayer:GetValue( "AirControl" ) or false )
 	self.option26:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 22 , boolean = not LocalPlayer:GetValue( "AirControl" ) } ) end )
 
-	self.option23 = self:OptionCheckBox( scroll_control, "Дрифт-конфигурация управления", LocalPlayer:GetValue( "DriftPhysics" ) or false )
+	self.option23 = self:OptionCheckBox( scroll_control, self.locStrings["option23"], LocalPlayer:GetValue( "DriftPhysics" ) or false )
 	self.option23:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 19 , boolean = not LocalPlayer:GetValue( "DriftPhysics" ) } ) end )
 
-	self.option25 = self:OptionCheckBox( scroll_control, "Прыжок на транспорте", LocalPlayer:GetValue( "VehicleJump" ) or false )
+	self.option25 = self:OptionCheckBox( scroll_control, self.locStrings["option25"], LocalPlayer:GetValue( "VehicleJump" ) or false )
 	self.option25:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 21 , boolean = not LocalPlayer:GetValue( "VehicleJump" ) } ) end )
 
-	self.option19 = self:OptionCheckBox( scroll_control, "Гидравлика", LocalPlayer:GetValue( "HydraulicsEnabled" ) or false )
+	self.option19 = self:OptionCheckBox( scroll_control, self.locStrings["option19"], LocalPlayer:GetValue( "HydraulicsEnabled" ) or false )
 	self.option19:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 18 , boolean = not LocalPlayer:GetValue( "HydraulicsEnabled" ) } ) end )
 
-	self.option18 = self:OptionCheckBox( scroll_control, "Вингсьют", LocalPlayer:GetValue( "WingsuitEnabled" ) or false )
+	self.option18 = self:OptionCheckBox( scroll_control, self.locStrings["option18"], LocalPlayer:GetValue( "WingsuitEnabled" ) or false )
 	self.option18:GetCheckBox():Subscribe( "CheckChanged", function() Network:Send( "UpdateParameters", { parameter = 17 , boolean = not LocalPlayer:GetValue( "WingsuitEnabled" ) } ) end )
 	self.option18:SetMargin( Vector2( 0, 20 ), Vector2.Zero )
 
 	self.buttonLH = LabeledCheckBox.Create( scroll_control )
 	if LocalPlayer:GetValue( "LongerGrapple" ) then
-		self.buttonLH:GetLabel():SetText( self.longerGrapple_txt .. " (" .. LocalPlayer:GetValue( "LongerGrapple" ) .. "м)" )
+		self.buttonLH:GetLabel():SetText( self.locStrings["longerGrapple"] .. " (" .. LocalPlayer:GetValue( "LongerGrapple" ) .. "м)" )
 		self.buttonLH:GetLabel():SetEnabled( true )
 		self.buttonLH:GetCheckBox():SetEnabled( true )
 	else
-		self.buttonLH:GetLabel():SetText( self.longerGrapple_txt .. " (150м) | [НЕДОСТУПНО]" )
+		self.buttonLH:GetLabel():SetText( self.locStrings["longerGrapple"] .. " (150м) | [НЕДОСТУПНО]" )
 		self.buttonLH:GetLabel():SetEnabled( false )
 		self.buttonLH:GetCheckBox():SetEnabled( false )
 	end
@@ -525,6 +533,7 @@ function Settings:LoadCategories()
 
 	self.rollbutton:GetCheckBox():SetEnabled( false )
 	self.rollbutton:SetDock( GwenPosition.Bottom )
+	self.rollbutton:GetLabel():SetText( self.locStrings["rollbutton"] )
 	self.rollbutton:GetCheckBox():SetChecked( LocalPlayer:GetValue( "EnhancedWoet" ) == "Roll" )
 	self.rollbutton:GetCheckBox():Subscribe( "CheckChanged", 
 		function()
@@ -543,6 +552,7 @@ function Settings:LoadCategories()
 
 	self.spinbutton:GetCheckBox():SetEnabled( false )
 	self.spinbutton:SetDock( GwenPosition.Bottom )
+	self.spinbutton:GetLabel():SetText( self.locStrings["spinbutton"] )
 	self.spinbutton:GetCheckBox():SetChecked( LocalPlayer:GetValue( "EnhancedWoet" ) == "Spin" )
 	self.spinbutton:GetCheckBox():Subscribe( "CheckChanged", 
 		function()
@@ -561,6 +571,7 @@ function Settings:LoadCategories()
 
 	self.flipbutton:GetCheckBox():SetEnabled( false )
 	self.flipbutton:SetDock( GwenPosition.Bottom )
+	self.flipbutton:GetLabel():SetText( self.locStrings["flipbutton"] )
 	self.flipbutton:GetCheckBox():SetChecked( LocalPlayer:GetValue( "EnhancedWoet" ) == "Flip" )
 	self.flipbutton:GetCheckBox():Subscribe( "CheckChanged", 
 		function()
@@ -580,6 +591,8 @@ function Settings:LoadCategories()
 	self.subcategory3 = Label.Create( bkpanelsContainer )
 	self.subcategory3:SetDock( GwenPosition.Bottom )
 	self.subcategory3:SetMargin( Vector2.Zero, Vector2( 0, 5 ) )
+	self.subcategory3:SetText( self.locStrings["subcategory3"] )
+	self.subcategory3:SizeToContents()
 
 	local bkpanelsContainer = BaseWindow.Create( powers )
 	bkpanelsContainer:SetVisible( true )
@@ -596,10 +609,13 @@ function Settings:LoadCategories()
 	self.jpviptip:SetTextColor( Color.DarkGray )
 	self.jpviptip:SetDock( GwenPosition.Top )
 	self.jpviptip:SetMargin( Vector2( 0, 3 ), Vector2( 0, 5 ) )
+	self.jpviptip:SetText( self.locStrings["jpviptip"] )
+	self.jpviptip:SizeToContents()
 
 	self.buttonJP = Button.Create( scroll_bkpanels )
 	self.buttonJP:SetEnabled( false )
 	self.buttonJP:SetHeight( btnHeight )
+	self.buttonJP:SetText( self.locStrings["buttonJP"] )
 	self.buttonJP:SetTextSize( self.textSize2 )
 	self.buttonJP:SetDock( GwenPosition.Top )
 	self.buttonJP:SetMargin( Vector2( 0, 3 ), Vector2( 0, 5 ) )
@@ -609,6 +625,8 @@ function Settings:LoadCategories()
 	self.subcategory2:SetVisible( false )
 	self.subcategory2:SetDock( GwenPosition.Top )
 	self.subcategory2:SetMargin( Vector2( 0, 10 ), Vector2( 0, 5 ) )
+	self.subcategory2:SetText( self.locStrings["subcategory2"] )
+	self.subcategory2:SizeToContents()
 
 	local weathertabsContainer = BaseWindow.Create( scroll_bkpanels )
 	weathertabsContainer:SetVisible( true )
@@ -617,12 +635,14 @@ function Settings:LoadCategories()
 
 	self.button = Button.Create( weathertabsContainer )
 	self.button:SetVisible( false )
+	self.button:SetText( self.locStrings["button"] )
 	self.button:SetTextSize( self.textSize )
 	self.button:SetDock( GwenPosition.Left )
 	self.button:Subscribe( "Press", self, function() self:ChangeWeather( 0, self.button:GetText() ) end )
 
 	self.buttonTw = Button.Create( weathertabsContainer )
 	self.buttonTw:SetVisible( false )
+	self.buttonTw:SetText( self.locStrings["buttonTw"] )
 	self.buttonTw:SetTextSize( self.textSize )
 	self.buttonTw:SetDock( GwenPosition.Fill )
 	self.buttonTw:SetMargin( Vector2( 5, 0 ), Vector2( 5, 0 ) )
@@ -630,12 +650,13 @@ function Settings:LoadCategories()
 
 	self.buttonTh = Button.Create( weathertabsContainer )
 	self.buttonTh:SetVisible( false )
+	self.buttonTh:SetText( self.locStrings["buttonTh"] )
 	self.buttonTh:SetTextSize( self.textSize )
 	self.buttonTh:SetDock( GwenPosition.Right )
 	self.buttonTh:Subscribe( "Press", self, function() self:ChangeWeather( 2, self.buttonTh:GetText() ) end )
 
 	local nickcolor = BaseWindow.Create( self.window )
-	tab:AddPage( "Цвет ника", nickcolor )
+	tab:AddPage( self.locStrings["nickcolor"], nickcolor )
 
 	local tab_control = TabControl.Create( nickcolor )
 	tab_control:SetDock( GwenPosition.Fill )
@@ -645,6 +666,8 @@ function Settings:LoadCategories()
 	self.subcategory4 = Label.Create( nickcolor )
 	self.subcategory4:SetDock( GwenPosition.Top )
 	self.subcategory4:SetMargin( Vector2( 5, 10 ), Vector2.Zero )
+	self.subcategory4:SetText( self.locStrings["subcategory4"] )
+	self.subcategory4:SizeToContents()
 
 	self.nicknameColorPreview = Label.Create( nickcolor )
 	self.nicknameColorPreview:SetText( LocalPlayer:GetName() )
@@ -652,6 +675,7 @@ function Settings:LoadCategories()
 	self.nicknameColorPreview:SetTextColor( self.lpColor )
 	self.nicknameColorPreview:SetDock( GwenPosition.Top )
 	self.nicknameColorPreview:SetMargin( Vector2( 5, 0 ), Vector2( 0, 4 ) )
+	self.nicknameColorPreview:SizeToContents()
 
 	self.pcolorPicker = HSVColorPicker.Create( tab_control )
 	self.pcolorPicker:SetColor( self.lpColor )
@@ -664,7 +688,8 @@ function Settings:LoadCategories()
 	end )
 
 	self.setPlayerColorBtn = Button.Create( nickcolor )
-	local btnColor = Color.GreenYellow
+	self.setPlayerColorBtn:SetText( self.locStrings["setPlayerColorBtn"] )
+	local btnColor = Color.LightGreen
 	self.setPlayerColorBtn:SetTextHoveredColor( btnColor )
 	self.setPlayerColorBtn:SetTextPressedColor( btnColor )
 	self.setPlayerColorBtn:SetTextSize( self.textSize )
@@ -673,19 +698,19 @@ function Settings:LoadCategories()
 	self.setPlayerColorBtn:SetMargin( Vector2( 0, 5 ), Vector2.Zero )
 	self.setPlayerColorBtn:Subscribe( "Up", function()
 		Network:Send( "SetPlyColor", { pcolor = self.lpColor } )
-		local sound = ClientSound.Create(AssetLocation.Game, {
+		local sound = ClientSound.Create( AssetLocation.Game, {
 				bank_id = 20,
 				sound_id = 22,
 				position = LocalPlayer:GetPosition(),
 				angle = Angle()
-		})
+		} )
 
 		sound:SetParameter(0,1)	
 		Game:FireEvent( "bm.savecheckpoint.go" )
 	end )
 
 	local skyOptions = BaseWindow.Create( self.window )
-	tab:AddPage( "Небо", skyOptions )
+	tab:AddPage( self.locStrings["sky"], skyOptions )
 
 	local scroll_control = ScrollControl.Create( skyOptions )
 	scroll_control:SetScrollable( false, true )
@@ -701,32 +726,32 @@ function Settings:LoadCategories()
 	self.skyOptionRnb = LabeledCheckBox.Create( scroll_control )
 
 	self.skyOption:SetDock( GwenPosition.Top )
-	self.skyOption:GetLabel():SetText( "Ahhh" )
+	self.skyOption:GetLabel():SetText( self.locStrings["skyOption"] )
 	self.skyOption:GetLabel():SetTextSize( self.textSize )
 	self.skyOption:GetCheckBox():Subscribe( "CheckChanged", function() self.skyTw = self.skyOption:GetCheckBox():GetChecked() end )
 
 	self.skyOption2:SetDock( GwenPosition.Top )
-	self.skyOption2:GetLabel():SetText( "Хоррор" )
+	self.skyOption2:GetLabel():SetText( self.locStrings["skyOption2"] )
 	self.skyOption2:GetLabel():SetTextSize( self.textSize )
 	self.skyOption2:GetCheckBox():Subscribe( "CheckChanged", function() self.skyFi = self.skyOption2:GetCheckBox():GetChecked() end )
 
 	self.skyOption3:SetDock( GwenPosition.Top )
-	self.skyOption3:GetLabel():SetText( "Пахом" )
+	self.skyOption3:GetLabel():SetText( self.locStrings["skyOption3"] )
 	self.skyOption3:GetLabel():SetTextSize( self.textSize )
 	self.skyOption3:GetCheckBox():Subscribe( "CheckChanged", function() self.skyTh = self.skyOption3:GetCheckBox():GetChecked() end )
 
 	self.skyOption4:SetDock( GwenPosition.Top )
-	self.skyOption4:GetLabel():SetText( "Мастер подземелий" )
+	self.skyOption4:GetLabel():SetText( self.locStrings["skyOption4"] )
 	self.skyOption4:GetLabel():SetTextSize( self.textSize )
 	self.skyOption4:GetCheckBox():Subscribe( "CheckChanged", function() self.skySi = self.skyOption4:GetCheckBox():GetChecked() end )
 
 	self.skyOption5:SetDock( GwenPosition.Top )
-	self.skyOption5:GetLabel():SetText( "Аниме" )
+	self.skyOption5:GetLabel():SetText( self.locStrings["skyOption5"] )
 	self.skyOption5:GetLabel():SetTextSize( self.textSize )
 	self.skyOption5:GetCheckBox():Subscribe( "CheckChanged", function() self.skySe = self.skyOption5:GetCheckBox():GetChecked() if self.skySe then self.timer = Timer() else self.timer = nil end end )
 
 	self.skyOption6:SetDock( GwenPosition.Top )
-	self.skyOption6:GetLabel():SetText( "Цвет ↓" )
+	self.skyOption6:GetLabel():SetText( self.locStrings["skyOption6"] )
 	self.skyOption6:GetLabel():SetTextSize( self.textSize )
 	self.skyOption6:GetCheckBox():Subscribe( "CheckChanged", function() self.skyColor = self.skyOption6:GetCheckBox():GetChecked() end )
 
@@ -734,17 +759,17 @@ function Settings:LoadCategories()
 	tab_control:SetDock( GwenPosition.Fill )
 
 	self.toneS1Picker = HSVColorPicker.Create()
-	tab_control:AddPage( "▨ Цвет", self.toneS1Picker )
+	tab_control:AddPage( self.locStrings["color"], self.toneS1Picker )
 	tab_control:SetMargin( Vector2( 0, 5 ), Vector2( 0, 5 ) )
 	self.toneS1Picker:SetDock( GwenPosition.Fill )
 
 	self.skyOptionRnb:SetDock( GwenPosition.Bottom )
-	self.skyOptionRnb:GetLabel():SetText( "Переливания цветов неба" )
+	self.skyOptionRnb:GetLabel():SetText( self.locStrings["skyOptionRnb"] )
 	self.skyOptionRnb:GetLabel():SetTextSize( 13 )
 	self.skyOptionRnb:GetCheckBox():Subscribe( "CheckChanged", function() self.skyRainbow = self.skyOptionRnb:GetCheckBox():GetChecked() if self.skyRainbow then self.rT = Timer() else self.rT = nil end end )
 
 	local stats = BaseWindow.Create( self.window )
-	local statsText = "Информация и статистика"
+	local statsText = self.locStrings["infoandstats"]
 	tab:AddPage( statsText, stats )
 	tab:Subscribe( "TabSwitch", function() if tab:GetCurrentTab():GetText() == statsText then Network:Send( "RequestStats" ) end end )
 
@@ -756,6 +781,7 @@ function Settings:LoadCategories()
 	self.subcategory7 = GroupBox.Create( scroll_control )
 	self.subcategory7:SetDock( GwenPosition.Top )
 	self.subcategory7:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+	self.subcategory7:SetText( self.locStrings["subcategory7"] )
 
 	local accountInfo = BaseWindow.Create( self.subcategory7 )
 	accountInfo:SetDock( GwenPosition.Fill )
@@ -782,6 +808,7 @@ function Settings:LoadCategories()
 	self.subcategory8 = GroupBox.Create( scroll_control )
 	self.subcategory8:SetDock( GwenPosition.Top )
 	self.subcategory8:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+	self.subcategory8:SetText( self.locStrings["subcategory8"] )
 
 	self.moreInfoText = Label.Create( self.subcategory8 )
 	self.moreInfoText:SetDock( GwenPosition.Fill )
@@ -793,6 +820,7 @@ function Settings:LoadCategories()
 	self.subcategory9 = GroupBox.Create( scroll_control )
 	self.subcategory9:SetDock( GwenPosition.Top )
 	self.subcategory9:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+	self.subcategory9:SetText( self.locStrings["subcategory9"] )
 
 	self.statsText = Label.Create( self.subcategory9 )
 	self.statsText:SetDock( GwenPosition.Fill )
@@ -802,7 +830,7 @@ function Settings:LoadCategories()
 	self.subcategory9:SetHeight( ( self.statsText:GetSize().y + 4 * 4 ) )
 
 	local promocodes = BaseWindow.Create( self.window )
-	local promocodesText = "Промокоды"
+	local promocodesText = self.locStrings["promocodes"]
 	tab:AddPage( promocodesText, promocodes )
 	tab:Subscribe( "TabSwitch", function() if tab:GetCurrentTab():GetText() == promocodesText then Network:Send( "RequestPromocodes" ) end end )
 
@@ -814,6 +842,7 @@ function Settings:LoadCategories()
 	self.subcategory10 = GroupBox.Create( scroll_control )
 	self.subcategory10:SetDock( GwenPosition.Top )
 	self.subcategory10:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+	self.subcategory10:SetText( self.locStrings["subcategory10"] )
 	self.subcategory10:SetHeight( ( Render:GetTextHeight( "", self.textSize - 4 ) + btnHeight ) * 4.75 )
 
 	self.subcategory11 = Label.Create( self.subcategory10 )
@@ -823,11 +852,14 @@ function Settings:LoadCategories()
 	self.subcategory12 = Label.Create( self.subcategory10 )
 	self.subcategory12:SetDock( GwenPosition.Top )
 	self.subcategory12:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
+	self.subcategory12:SetText( self.locStrings["subcategory12"] )
+	self.subcategory12:SizeToContents()
 
 	self.invitePromocode = TextBox.Create( self.subcategory10 )
 	self.invitePromocode:SetDock( GwenPosition.Top )
 	self.invitePromocode:SetMargin( Vector2( 0, 4 ), Vector2( 0, 8 ) )
 	self.invitePromocode:SetHeight( btnHeight )
+	self.invitePromocode:SetToolTip( self.locStrings["invitePromocode"] )
 	self.invitePromocode:Subscribe( "Focus", self, self.Focus )
 	self.invitePromocode:Subscribe( "Blur", self, self.Blur )
 	self.invitePromocode:Subscribe( "EscPressed", self, self.EscPressed )
@@ -835,6 +867,7 @@ function Settings:LoadCategories()
 
 	self.togglePromocodeBtn = Button.Create( self.subcategory10 )
 	self.togglePromocodeBtn:SetVisible( false )
+	self.togglePromocodeBtn:SetText( self.locStrings["togglePromocodeBtn"] )
 	self.togglePromocodeBtn:SetTextSize( self.textSize )
 	self.togglePromocodeBtn:SetDock( GwenPosition.Top )
 	self.togglePromocodeBtn:SetMargin( Vector2( 0, 4 ), Vector2( 0, 8 ) )
@@ -855,6 +888,7 @@ function Settings:LoadCategories()
 
 	self.getInviteBonusBtn = Button.Create( self.subcategory10 )
 	self.getInviteBonusBtn:SetEnabled( false )
+	self.getInviteBonusBtn:SetText( self.locStrings["getInviteBonusBtn"] )
 	self.getInviteBonusBtn:SetTextSize( self.textSize )
 	self.getInviteBonusBtn:SetDock( GwenPosition.Top )
 	self.getInviteBonusBtn:SetHeight( btnHeight )
@@ -867,6 +901,7 @@ function Settings:LoadCategories()
 	self.subcategory13:SetDock( GwenPosition.Top )
 	self.subcategory13:SetMargin( Vector2( 0, 4 ), Vector2( 0, 4 ) )
 	self.subcategory13:SetHeight( ( Render:GetTextHeight( "", self.textSize - 8 ) + 85 ) )
+	self.subcategory13:SetText( self.locStrings["subcategory13"] )
 
 	self.promocode = TextBox.Create( self.subcategory13 )
 	self.promocode:SetDock( GwenPosition.Top )
@@ -881,9 +916,11 @@ function Settings:LoadCategories()
 
 	self.getBonusBtn = Button.Create( self.subcategory13 )
 	self.getBonusBtn:SetEnabled( false )
+	self.getBonusBtn:SetText( self.locStrings["activatePromocode"] )
 	self.getBonusBtn:SetTextSize( self.textSize )
 	self.getBonusBtn:SetDock( GwenPosition.Top )
 	self.getBonusBtn:SetHeight( btnHeight )
+	self.getBonusBtn:SetText( self.locStrings["activatePromocode"] )
 	self.getBonusBtn:Subscribe( "Press", function() Events:Fire( "ApplyPromocode", { type = 0, name = self.promocode:GetText() } ) end )
 
 	--[[
@@ -898,18 +935,20 @@ function Settings:LoadCategories()
 		scroll_control:SetDock( GwenPosition.Fill )
 		scroll_control:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
 
-		self.option20 = self:OptionCheckBox( scroll_control, "Отображать отладочные сообщения", LocalPlayer:GetValue( "DEBUGShowOSD" ) or false )
+		self.option20 = self:OptionCheckBox( scroll_control, self.locStrings["option20"], LocalPlayer:GetValue( "DEBUGShowOSD" ) or false )
 		self.option20:GetCheckBox():Subscribe( "CheckChanged", function() LocalPlayer:SetValue( "DEBUGShowOSD", not LocalPlayer:GetValue( "DEBUGShowOSD" ) ) end )
 
-		self.option21 = self:OptionCheckBox( scroll_control, "Отображать информацию игрока", LocalPlayer:GetValue( "DEBUGShowPlayerInfo" ) or false )
+		self.option21 = self:OptionCheckBox( scroll_control, self.locStrings["option21"], LocalPlayer:GetValue( "DEBUGShowPlayerInfo" ) or false )
 		self.option21:GetCheckBox():Subscribe( "CheckChanged", function() LocalPlayer:SetValue( "DEBUGShowPlayerInfo", not LocalPlayer:GetValue( "DEBUGShowPlayerInfo" ) ) end )
 
-		self.option22 = self:OptionCheckBox( scroll_control, "Отображать информацию транспорта", LocalPlayer:GetValue( "DEBUGShowVehicleInfo" ) or false )
+		self.option22 = self:OptionCheckBox( scroll_control, self.locStrings["option22"], LocalPlayer:GetValue( "DEBUGShowVehicleInfo" ) or false )
 		self.option22:GetCheckBox():Subscribe( "CheckChanged", function() LocalPlayer:SetValue( "DEBUGShowVehicleInfo", not LocalPlayer:GetValue( "DEBUGShowVehicleInfo" ) ) end )
 
 		self.subcategory5 = Label.Create( scroll_control )
 		self.subcategory5:SetDock( GwenPosition.Top )
 		self.subcategory5:SetMargin( Vector2( 0, 10 ), Vector2( 0, 4 ) )
+		self.subcategory5:SetText( self.locStrings["subcategory5"] )
+		self.subcategory5:SizeToContents()
 
 		local consoleCommand = TextBox.Create( scroll_control )
 		consoleCommand:SetDock( GwenPosition.Top )
@@ -931,6 +970,9 @@ function Settings:LoadCategories()
 		customFireEvent:Subscribe( "EscPressed", self, self.EscPressed )
 	end
 	]]--
+
+	Events:Subscribe( "PromocodeFound", function() self.promocode:SetTextColor( Color.Green ) self.getBonusBtn:SetText( "Промокод активирован!" ) end )
+	Events:Subscribe( "PromocodeNotFound", function() self.promocode:SetTextColor( Color.Red ) self.getBonusBtn:SetText( self.locStrings["activatePromocode"] ) end )
 end
 
 function Settings:Focus()
@@ -947,9 +989,10 @@ function Settings:EscPressed()
 end
 
 function Settings:ChangeWeather( value, name )
-	Events:Fire( "CastCenterText", { text = self.setweather_txt .. name, time = 2 } )
+	Events:Fire( "CastCenterText", { text = self.locStrings["setweather"] .. name, time = 2 } )
 	Network:Send( "SetWeather", { severity = value } )
-	self:Open()
+
+	self:SetWindowVisible( false, true )
 end
 
 function Settings:OptionCheckBox( tab, title, checked )
@@ -1035,11 +1078,11 @@ function Settings:UpdateStats( args )
 		self.accountInfoTextRenderEvent = self.accountInfoText:Subscribe( "Render", function()
 			self.accountInfoText:SetText(
 				"Steam ID: " .. tostring( steamId ) .. " / Steam64 ID: " .. tostring( steamId.id ) ..
-				self.accountInfo1_txt .. joinDate ..
-				self.accountInfo2_txt .. self:ConvertSecondsToTimeFormat( LocalPlayer:GetValue( "TotalTime" ) or "0" ) ..
-				self.accountInfo3_txt .. country ..
-				self.accountInfo4_txt .. tostring( LocalPlayer:GetValue( "PlayerLevel" ) ) ..
-				self.accountInfo5_txt .. formatNumber( LocalPlayer:GetMoney() )
+				self.locStrings["accountInfo1"] .. joinDate ..
+				self.locStrings["accountInfo2"] .. self:ConvertSecondsToTimeFormat( LocalPlayer:GetValue( "TotalTime" ) or "0" ) ..
+				self.locStrings["accountInfo3"] .. country ..
+				self.locStrings["accountInfo4"] .. tostring( LocalPlayer:GetValue( "PlayerLevel" ) ) ..
+				self.locStrings["accountInfo5"] .. formatNumber( LocalPlayer:GetMoney() )
 			)
 		end )
 	end
@@ -1055,12 +1098,12 @@ function Settings:UpdateStats( args )
 			local vehicle = LocalPlayer:GetVehicle()
 
 			self.moreInfoText:SetText(
-				self.accountInfo6_txt .. self:ConvertSecondsToTimeFormat( LocalPlayer:GetValue( "SessionTime" ) or "0" ) ..
-				self.accountInfo7_txt .. tostring( LocalPlayer:GetValue( "ClanTag" ) or self.unknown_txt ) ..
-				self.accountInfo8_txt .. pId ..
-				self.accountInfo9_txt .. "rgba(" .. tostring( LocalPlayer:GetColor() ) .. ")" ..
-				self.accountInfo10_txt .. args.modelId ..
-				self.accountInfo11_txt .. ( vehicle and tostring( vehicle ) .. " (ID: " .. tostring( vehicle:GetModelId() ) .. ")" or self.onfoot_txt )
+				self.locStrings["accountInfo6"] .. self:ConvertSecondsToTimeFormat( LocalPlayer:GetValue( "SessionTime" ) or "0" ) ..
+				self.locStrings["accountInfo7"] .. tostring( LocalPlayer:GetValue( "ClanTag" ) or self.locStrings["unknown"] ) ..
+				self.locStrings["accountInfo8"] .. pId ..
+				self.locStrings["accountInfo9"] .. "rgba(" .. tostring( LocalPlayer:GetColor() ) .. ")" ..
+				self.locStrings["accountInfo10"] .. args.modelId ..
+				self.locStrings["accountInfo11"] .. ( vehicle and tostring( vehicle ) .. " (ID: " .. tostring( vehicle:GetModelId() ) .. ")" or self.locStrings["onfoot"] )
 			)
 		end )
 	end
@@ -1073,20 +1116,20 @@ function Settings:UpdateStats( args )
 
 		self.statsTextRenderEvent = self.statsText:Subscribe( "Render", function()
 			self.statsText:SetText(
-				self.accountInfo12_txt .. tostring( LocalPlayer:GetValue( "ChatMessagesCount" ) or defaultValue ) ..
-				self.accountInfo13_txt .. tostring( LocalPlayer:GetValue( "KillsCount" ) or defaultValue ) ..
-				self.accountInfo14_txt .. tostring( LocalPlayer:GetValue( "CollectedResourceItemsCount" ) or defaultValue ) ..
-				self.accountInfo15_txt .. tostring( LocalPlayer:GetValue( "CompletedTasksCount" ) or defaultValue ) ..
-				self.accountInfo16_txt .. tostring( LocalPlayer:GetValue( "CompletedDailyTasksCount" ) or defaultValue ) ..
-				self.accountInfo17_txt .. tostring( LocalPlayer:GetValue( "MaxRecordInBestDrift" ) or defaultValue ) ..
-				self.accountInfo18_txt .. tostring( LocalPlayer:GetValue( "MaxRecordInBestTetris" ) or defaultValue ) ..
-				self.accountInfo19_txt .. tostring( LocalPlayer:GetValue( "MaxRecordInBestFlight" ) or defaultValue ) ..
-				self.accountInfo20_txt .. tostring( LocalPlayer:GetValue( "RaceWinsCount" ) or defaultValue ) ..
-				self.accountInfo21_txt.. tostring( LocalPlayer:GetValue( "TronWinsCount" ) or defaultValue ) ..
-				self.accountInfo22_txt .. tostring( LocalPlayer:GetValue( "KingHillWinsCount" ) or defaultValue ) ..
-				self.accountInfo23_txt .. tostring( LocalPlayer:GetValue( "DerbyWinsCount" ) or defaultValue ) ..
-				self.accountInfo24_txt .. tostring( LocalPlayer:GetValue( "PongWinsCount" ) or defaultValue ) ..
-				self.accountInfo25_txt .. tostring( LocalPlayer:GetValue( "VictorinsCorrectAnswers" ) or defaultValue )
+				self.locStrings["accountInfo12"] .. tostring( LocalPlayer:GetValue( "ChatMessagesCount" ) or defaultValue ) ..
+				self.locStrings["accountInfo13"] .. tostring( LocalPlayer:GetValue( "KillsCount" ) or defaultValue ) ..
+				self.locStrings["accountInfo14"] .. tostring( LocalPlayer:GetValue( "CollectedResourceItemsCount" ) or defaultValue ) ..
+				self.locStrings["accountInfo15"] .. tostring( LocalPlayer:GetValue( "CompletedTasksCount" ) or defaultValue ) ..
+				self.locStrings["accountInfo16"] .. tostring( LocalPlayer:GetValue( "CompletedDailyTasksCount" ) or defaultValue ) ..
+				self.locStrings["accountInfo17"] .. tostring( LocalPlayer:GetValue( "MaxRecordInBestDrift" ) or defaultValue ) ..
+				self.locStrings["accountInfo18"] .. tostring( LocalPlayer:GetValue( "MaxRecordInBestTetris" ) or defaultValue ) ..
+				self.locStrings["accountInfo19"] .. tostring( LocalPlayer:GetValue( "MaxRecordInBestFlight" ) or defaultValue ) ..
+				self.locStrings["accountInfo20"] .. tostring( LocalPlayer:GetValue( "RaceWinsCount" ) or defaultValue ) ..
+				self.locStrings["accountInfo21"].. tostring( LocalPlayer:GetValue( "TronWinsCount" ) or defaultValue ) ..
+				self.locStrings["accountInfo22"] .. tostring( LocalPlayer:GetValue( "KingHillWinsCount" ) or defaultValue ) ..
+				self.locStrings["accountInfo23"] .. tostring( LocalPlayer:GetValue( "DerbyWinsCount" ) or defaultValue ) ..
+				self.locStrings["accountInfo24"] .. tostring( LocalPlayer:GetValue( "PongWinsCount" ) or defaultValue ) ..
+				self.locStrings["accountInfo25"] .. tostring( LocalPlayer:GetValue( "VictorinsCorrectAnswers" ) or defaultValue )
 			)	
 		end )
 	end
@@ -1097,8 +1140,8 @@ end
 
 function Settings:UpdatePromocodes( args )
 	self.subcategory11:SetText(
-		self.uses_txt .. tostring( LocalPlayer:GetValue( "PromoCodeUses" ) or 0 ) .. " | " .. self.activations .. tostring( LocalPlayer:GetValue( "PromoCodeActivations" ) or 0 ) ..
-		"\n" .. self.promocodeGenerationDate_txt .. tostring( LocalPlayer:GetValue( "PromoCodeCreationDate" ) or self.unknown_txt )
+		self.locStrings["uses"] .. tostring( LocalPlayer:GetValue( "PromoCodeUses" ) or 0 ) .. " | " .. self.locStrings["activations"] .. tostring( LocalPlayer:GetValue( "PromoCodeActivations" ) or 0 ) ..
+		"\n" .. self.locStrings["promocodeGenerationDate"] .. tostring( LocalPlayer:GetValue( "PromoCodeCreationDate" ) or self.locStrings["unknown"] )
 	)
 	self.subcategory11:SizeToContents()
 
@@ -1116,24 +1159,63 @@ function Settings:UpdatePromocodes( args )
 	local isActive = LocalPlayer:GetValue( "PromoCodeRewards" ) and tonumber( LocalPlayer:GetValue( "PromoCodeRewards" ) ) >= 1
 	self.getInvitationsBonusBtn:SetEnabled( isActive and true or false )
 
-	self.getInvitationsBonusBtn:SetText( self.getInvitationsBonus_txt .. " ($" .. formatNumber( ( LocalPlayer:GetValue( "PromoCodeRewards" ) or 0 ) * InviteBonuses.Bonus1 ) .. ")" )
+	self.getInvitationsBonusBtn:SetText( self.locStrings["getInvitationsBonus"] .. " ($" .. formatNumber( ( LocalPlayer:GetValue( "PromoCodeRewards" ) or 0 ) * InviteBonuses.Bonus1 ) .. ")" )
 
 	self.getInviteBonusBtn:SetEnabled( LocalPlayer:GetValue( "ActivePromocode" ) and true or false )
 end
 
-function Settings:Open()
-	self:SetWindowVisible( not self.active )
+function Settings:LocalPlayerInput( args )
+	if args.input == Action.GuiPause then
+		self:SetWindowVisible( false )
+	end
 
-	if self.active then
+	if self.actions[args.input] then
+		return false
+	end
+end
+
+function Settings:OpenSettingsMenu()
+	if Game:GetState() ~= GUIState.Game then return end
+
+	self:SetWindowVisible( not self.activeWindow, true )
+end
+
+function Settings:CloseSettingsMenu()
+	if Game:GetState() ~= GUIState.Game then return end
+
+	if self.window and self.window:GetVisible() then
+		self:SetWindowVisible( false )
+	end
+end
+
+function Settings:Render()
+	local is_visible = Game:GetState() == GUIState.Game
+
+	if self.window:GetVisible() ~= is_visible then
+		self.window:SetVisible( is_visible )
+		Mouse:SetVisible( is_visible )
+	end
+end
+
+function Settings:SetWindowVisible( visible, sound )
+	self:CreateWindow()
+
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
+
+	if self.activeWindow then
 		self.option4:SetVisible( LocalPlayer:GetValue( "JesusModeEnabled" ) and true or false )
 
 		local longerGrapple = LocalPlayer:GetValue( "LongerGrapple" )
 		if longerGrapple then
-			self.buttonLH:GetLabel():SetText( self.longerGrapple_txt .. " (" .. longerGrapple .. self.meters .. ")" )
+			self.buttonLH:GetLabel():SetText( self.locStrings["longerGrapple"] .. " (" .. longerGrapple .. self.locStrings["meters"] .. ")" )
 			self.buttonLH:GetLabel():SetEnabled( true )
 			self.buttonLH:GetCheckBox():SetEnabled( true )
 		else
-			self.buttonLH:GetLabel():SetText( self.longerGrapple_txt .. " (150" .. self.meters .. ") | " .. self.unavailable_txt )
+			self.buttonLH:GetLabel():SetText( self.locStrings["longerGrapple"] .. " (150" .. self.locStrings["meters"] .. ") | " .. self.locStrings["unavailable"] )
 			self.buttonLH:GetLabel():SetEnabled( false )
 			self.buttonLH:GetCheckBox():SetEnabled( false )
 		end
@@ -1180,61 +1262,19 @@ function Settings:Open()
 		Network:Send( "RequestStats" )
 
 		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
-        if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
 	else
 		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 		if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
 	end
 
-	local effect = ClientEffect.Play(AssetLocation.Game, {
-		effect_id = self.active and 382 or 383,
+	if sound then
+		local effect = ClientEffect.Play( AssetLocation.Game, {
+			effect_id = self.activeWindow and 382 or 383,
 
-		position = Camera:GetPosition(),
-		angle = Angle()
-	})
-end
-
-function Settings:LocalPlayerInput( args )
-	if args.input == Action.GuiPause then
-		self:CloseSettingsMenu()
-	end
-
-	if self.actions[args.input] then
-		return false
-	end
-end
-
-function Settings:OpenSettingsMenu()
-	if Game:GetState() ~= GUIState.Game then return end
-	self:Open()
-end
-
-function Settings:CloseSettingsMenu()
-	if Game:GetState() ~= GUIState.Game then return end
-
-	if self.window:GetVisible() == true then
-		self:SetWindowVisible( false )
-
-		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-        if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
-	end
-end
-
-function Settings:Render()
-	local is_visible = Game:GetState() == GUIState.Game
-
-	if self.window:GetVisible() ~= is_visible then
-		self.window:SetVisible( is_visible )
-	end
-
-	Mouse:SetVisible( is_visible )
-end
-
-function Settings:SetWindowVisible( visible )
-    if self.active ~= visible then
-		self.active = visible
-		self.window:SetVisible( visible )
-		Mouse:SetVisible( visible )
+			position = Camera:GetPosition(),
+			angle = Angle()
+		} )
 	end
 end
 
@@ -1265,12 +1305,12 @@ end
 
 function Settings:GetJetpack()
 	Events:Fire( "UseJetpack" )
-	self:Open()
+	self:SetWindowVisible( false, true )
 end
 
 function Settings:ResetDone()
 	self.buttonSPOff:SetEnabled( false )
-	self.buttonSPOff:SetText( self.posreset_txt )
+	self.buttonSPOff:SetText( self.locStrings["posreset"] )
 end
 
 function Settings:KeyUp( args )
@@ -1279,7 +1319,10 @@ function Settings:KeyUp( args )
 	if args.key == VirtualKey.F11 then
 		local hiddenHUD = LocalPlayer:GetValue( "HiddenHUD" )
 
-		self.hidetext:SetVisible( not hiddenHUD )
+		if self.hidetext then
+			self.hidetext:SetVisible( not hiddenHUD )
+		end
+
 		LocalPlayer:SetValue( "HiddenHUD", not hiddenHUD )
 
 		self:GameLoad()
@@ -1290,7 +1333,7 @@ function Settings:ConvertSecondsToTimeFormat( seconds )
     local hours = math.floor( seconds / 3600 )
     local minutes = math.floor( ( seconds % 3600 ) / 60 )
     local seconds = seconds % 60
-    return string.format( self.timeFormat, hours, minutes, seconds )
+    return string.format( self.locStrings["timeFormat"], hours, minutes, seconds )
 end
 
 settings = Settings()

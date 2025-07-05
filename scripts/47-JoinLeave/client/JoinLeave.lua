@@ -9,9 +9,11 @@ function JoinLeave:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.tag = "[Сервер] "
-		self.join_txt = " присоединился(лась) к серверу!"
-		self.left_txt = " покинул(а) нас("
+		self.locStrings = {
+			tag = "[Сервер] ",
+			join = " присоединился(лась) к серверу!",
+			left = " покинул(а) нас("
+		}
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
@@ -21,9 +23,11 @@ function JoinLeave:__init()
 end
 
 function JoinLeave:Lang()
-	self.tag = "[Server] "
-	self.join_txt = " joined to the server!"
-	self.left_txt = " left the server :("
+	self.locStrings = {
+		tag = "[Server] ",
+		join = " joined to the server!",
+		left = " left the server :("
+	}
 end
 
 function JoinLeave:PlayerJoin( args )
@@ -34,10 +38,10 @@ function JoinLeave:PlayerJoin( args )
 
 	if visibleJoinMessages and visibleJoinMessages == 1 then
 		if LocalPlayer:IsFriend( args.player ) then
-			Chat:Print( self.tag, self.tag_clr, args.player:GetName(), args.player:GetColor(), self.join_txt, self.join_clr )
+			Chat:Print( self.locStrings["tag"], self.tag_clr, args.player:GetName(), args.player:GetColor(), self.locStrings["join"], self.join_clr )
 		end
 	elseif not visibleJoinMessages then
-		Chat:Print( self.tag, self.tag_clr, args.player:GetName(), args.player:GetColor(), self.join_txt, self.join_clr )
+		Chat:Print( self.locStrings["tag"], self.tag_clr, args.player:GetName(), args.player:GetColor(), self.locStrings["join"], self.join_clr )
 	end
 end
 
@@ -49,10 +53,10 @@ function JoinLeave:PlayerQuit( args )
 
 	if visibleJoinMessages and visibleJoinMessages == 1 then
 		if LocalPlayer:IsFriend( args.player ) then
-			Chat:Print( self.tag, self.tag_clr, args.player:GetName() .. self.left_txt, self.left_clr )
+			Chat:Print( self.locStrings["tag"], self.tag_clr, args.player:GetName() .. self.locStrings["left"], self.left_clr )
 		end
 	elseif not visibleJoinMessages then
-		Chat:Print( self.tag, self.tag_clr, args.player:GetName() .. self.left_txt, self.left_clr )
+		Chat:Print( self.locStrings["tag"], self.tag_clr, args.player:GetName() .. self.locStrings["left"], self.left_clr )
 	end
 end
 

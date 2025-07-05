@@ -36,8 +36,6 @@ function Nametags:__init()
 
 	self.size = TextSize.Default
 
-	self:CreateSettings()
-
 	self.visible = LocalPlayer:GetValue( "TagHide" )
 	self.animationValue = self.visible and 1 or 0
 
@@ -45,18 +43,36 @@ function Nametags:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.name = "Мирный"
+		self.locStrings = {
+			name = "Мирный",
+			title = "Настройка тегов",
+			enabled = "Включено",
+			ptags = "Теги игроков",
+			ctags = "Теги кланов",
+			vtags = "Названия транспорта",
+			pdist = "Расстояние игрока (м)",
+			vdist = "Расстояние до транспорта (м)"
+		}
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "NetworkObjectValueChange", self, self.NetworkObjectValueChange )
 	Events:Subscribe( "Render", self, self.Render )
 	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	Events:Subscribe( "OpenNametagsMenu", self, self.Active )
+	Events:Subscribe( "OpenNametagsMenu", self, self.ToggleWindowVisible )
 end
 
 function Nametags:Lang()
-	self.name = "Passive"
+	self.locStrings = {
+		name = "Passive",
+		title = "Tags Settings",
+		enabled = "Enabled",
+		ptags = "Player tags",
+		ctags = "Clan tags",
+		vtags = "Vehicle names",
+		pdist = "Player distance (m)",
+		vdist = "Vehicle distance (m)"
+	}
 end
 
 function Nametags:UpdateLimits()
@@ -66,48 +82,47 @@ function Nametags:UpdateLimits()
 	self.vehicle_max	= self.vehicle_limit * 1.5
 end
 
-function Nametags:CreateSettings()
-	self.window_open = false
+function Nametags:CreateWindow()
+	if self.window then return end
 
 	self.window = Window.Create()
 	self.window:SetSize( Vector2( 200, 246 ) )
 	self.window:SetPosition( ( Render.Size - self.window:GetSize() ) / 2 )
-	self.window:SetTitle( "Настройка тегов" )
-	self.window:SetVisible( self.window_open )
-	self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
+	self.window:SetTitle( self.locStrings["title"] )
+	self.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false ) end )
 
 	local enabled_checkbox = LabeledCheckBox.Create( self.window )
 	enabled_checkbox:SetSize( Vector2( 320, 20 ) )
 	enabled_checkbox:SetDock( GwenPosition.Top )
-	enabled_checkbox:GetLabel():SetText( "Включено" )
+	enabled_checkbox:GetLabel():SetText( self.locStrings["enabled"] )
 	enabled_checkbox:GetCheckBox():SetChecked( self.enabled )
 	enabled_checkbox:GetCheckBox():Subscribe( "CheckChanged", function() self.enabled = enabled_checkbox:GetCheckBox():GetChecked() end )
 
 	local player_checkbox = LabeledCheckBox.Create( self.window )
 	player_checkbox:SetSize( Vector2( 320, 20 ) )
 	player_checkbox:SetDock( GwenPosition.Top )
-	player_checkbox:GetLabel():SetText( "Теги игроков" )
+	player_checkbox:GetLabel():SetText( self.locStrings["ptags"] )
 	player_checkbox:GetCheckBox():SetChecked( self.player_enabled )
 	player_checkbox:GetCheckBox():Subscribe( "CheckChanged", function() self.player_enabled = player_checkbox:GetCheckBox():GetChecked() end )
 
 	local playerClanTag_checkbox = LabeledCheckBox.Create( self.window )
 	playerClanTag_checkbox:SetSize( Vector2( 320, 20 ) )
 	playerClanTag_checkbox:SetDock( GwenPosition.Top )
-	playerClanTag_checkbox:GetLabel():SetText( "Теги кланов" )
+	playerClanTag_checkbox:GetLabel():SetText( self.locStrings["ctags"] )
 	playerClanTag_checkbox:GetCheckBox():SetChecked( self.player_enabled )
 	playerClanTag_checkbox:GetCheckBox():Subscribe( "CheckChanged", function() self.playerClanTag_enabled = playerClanTag_checkbox:GetCheckBox():GetChecked() end )
 
 	local vehicle_checkbox = LabeledCheckBox.Create( self.window )
 	vehicle_checkbox:SetSize( Vector2( 320, 20 ) )
 	vehicle_checkbox:SetDock( GwenPosition.Top )
-	vehicle_checkbox:GetLabel():SetText( "Названия транспорта" )
+	vehicle_checkbox:GetLabel():SetText( self.locStrings["vtags"] )
 	vehicle_checkbox:GetCheckBox():SetChecked( self.vehicle_enabled )
 	vehicle_checkbox:GetCheckBox():Subscribe( "CheckChanged", function() self.vehicle_enabled = vehicle_checkbox:GetCheckBox():GetChecked() end )
 
 	local player_text = Label.Create( self.window )
 	player_text:SetSize( Vector2( 160, 32 ) )
 	player_text:SetDock( GwenPosition.Top )
-	player_text:SetText( "Расстояние игрока (м)" )
+	player_text:SetText( self.locStrings["pdist"] )
 	player_text:SetAlignment( GwenPosition.CenterV )
 
 	local player_numeric = Numeric.Create( self.window )
@@ -120,7 +135,7 @@ function Nametags:CreateSettings()
 	local vehicle_text = Label.Create( self.window )
 	vehicle_text:SetSize( Vector2( 160, 32 ) )
 	vehicle_text:SetDock( GwenPosition.Top )
-	vehicle_text:SetText( "Расстояние до транспорта (м)" )
+	vehicle_text:SetText( self.locStrings["vdist"] )
 	vehicle_text:SetAlignment( GwenPosition.CenterV )
 
 	local vehicle_numeric = Numeric.Create( self.window )
@@ -131,14 +146,14 @@ function Nametags:CreateSettings()
 	vehicle_numeric:Subscribe( "Changed", function() self.vehicle_limit = vehicle_numeric:GetValue() self:UpdateLimits() end )
 end
 
-function Nametags:GetWindowOpen()
-	return self.window_open
-end
+function Nametags:SetWindowVisible( visible )
+	self:CreateWindow()
 
-function Nametags:SetWindowOpen( state )
-	self.window_open = state
-	self.window:SetVisible( self.window_open )
-	Mouse:SetVisible( self.window_open )
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
 end
 
 -- Determines whether the following position is being aimed at
@@ -229,12 +244,12 @@ function Nametags:DrawNametag( pos_3d, player, colour, scale, alpha, health, dra
 			-- Move the draw position down
 			pos_2d.y = pos_2d.y - height - 2
 
-			local actual_width = Render:GetTextWidth( self.name, self.size, scale )
+			local actual_width = Render:GetTextWidth( self.locStrings["name"], self.size, scale )
 
 			local offset = ( actual_width - width ) / 2
 
 			pos_2d.x = pos_2d.x - offset
-			self:DrawShadowedText( pos_2d, self.name, self.passiveColor, scale, alpha )
+			self:DrawShadowedText( pos_2d, self.locStrings["name"], self.passiveColor, scale, alpha )
 		end
 
 		if self.playerClanTag_enabled and player:GetValue( "ClanTag" ) then
@@ -348,15 +363,15 @@ function Nametags:DrawVehicle( vehicle_data )
 end
 
 function Nametags:LocalPlayerInput( args )
-	if self:GetWindowOpen() and Game:GetState() == GUIState.Game then
+	if args.input == Action.GuiPause then
+		self:SetWindowVisible( false )
+	end
+
+	if self.activeWindow and Game:GetState() == GUIState.Game then
 		if self.actions[args.input] then
 			return false
 		end
 	end
-end
-
-function Nametags:WindowClosed()
-	self:SetWindowOpen( false )
 end
 
 function Nametags:NetworkObjectValueChange( args )
@@ -457,8 +472,8 @@ function Nametags:Render()
 	end
 end
 
-function Nametags:Active()
-	self:SetWindowOpen( not self:GetWindowOpen() )
+function Nametags:ToggleWindowVisible()
+	self:SetWindowVisible( not self.activeWindow )
 end
 
 script = Nametags()

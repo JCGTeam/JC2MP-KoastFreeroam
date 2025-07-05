@@ -62,7 +62,7 @@ end
 function QuickTP:MouseDown( args )
 	if type( self.menu[self.selection + 2] ) == "table" then
 		self.menu = self.menu[self.selection + 2]
-		self.sound = ClientSound.Create(AssetLocation.Game, {
+		self.sound = ClientSound.Create( AssetLocation.Game, {
 					bank_id = 18,
 					sound_id = 1,
 					position = Camera:GetPosition(),

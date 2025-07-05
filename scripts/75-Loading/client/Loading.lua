@@ -14,18 +14,17 @@ function Load:__init()
 
 	self.BackgroundImage:SetSize( Render.Size )
 
-	self.text_clr = Color.White
-	self.text_shadow = Color( 0, 0, 0 )
-	self.background_clr = Color( 0, 0, 0, 150 )
+	self.background_clr = Color.Black
 
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.name = "СОВЕТ: Нажмите [ B ], чтобы открыть меню сервера."
-		self.wtitle = "ОШИБКА :С"
-		self.wtext = "Возможно, вы застряли на экране загрузки. \nЖелаете покинуть сервер?"
-		self.wbutton = "Покинуть сервер"
+		self.locStrings = {
+			wtitle = "ОШИБКА :С",
+			wtext = "Возможно, вы застряли на экране загрузки. \nЖелаете покинуть сервер?",
+			wbutton = "Покинуть сервер"
+		}
 	end
 
 	Events:Subscribe( "Lang", self, self.Lang )
@@ -36,15 +35,14 @@ function Load:__init()
 	self.PostRenderEvent = Events:Subscribe( "PostRender", self, self.PostRender )
 
 	self.IsJoining = false
-
-	self.border_width = Vector2( Render.Size.x, 25 )
 end
 
 function Load:Lang()
-	self.name = "TIP: Press [ B ] to open Server Menu."
-	self.wtitle = "ERROR :С"
-	self.wtext = "You maybe stuck on the loading screen. \nWant to leave the server?"
-	self.wbutton = "Leave Server"
+	self.locStrings = {
+		wtitle = "ERROR :С",
+		wtext = "You maybe stuck on the loading screen. \nWant to leave the server?",
+		wbutton = "Leave Server"
+	}
 end
 
 function Load:ModuleLoad()
@@ -73,24 +71,15 @@ end
 
 function Load:PostRender()
 	if Game:GetState() == GUIState.Loading then
-		local TxtSizePos = Render.Size.x / 0.55 / Render:GetTextWidth( "BTextResoliton" )
-		local TxtSize = Render:GetTextSize( self.name, TxtSizePos )
 		local CircleSize = Vector2( 70, 70 )
-		local TxtPos = Vector2( ( Render.Size.x / 2 ) - ( TxtSize.x / 2 ), Render.Size.y / 1.100 )
 		local Rotation = self:GetRotation()
-		local Pos = Vector2( 40, Render.Size.y / 1.075 )
-		local PosTw = Vector2( Render.Size.x - 60, 60 )
+		local Pos = Vector2( Render.Size.x - 80, Render.Size.y - 80 )
 
+		Render:FillArea( Vector2.Zero, Render.Size, self.background_clr )
 		self.BackgroundImage:Draw()
 
-		Render:FillArea( TxtPos - self.border_width, Vector2( Render.Size.x, 100 ) + self.border_width * 2, self.background_clr )
-
-		if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
-
-		Render:DrawShadowedText( Pos, self.name, self.text_clr, self.text_shadow, TxtSizePos )
-
 		local TransformOuter = Transform2()
-		TransformOuter:Translate( PosTw )
+		TransformOuter:Translate( Pos )
 		TransformOuter:Rotate( math.pi * Rotation )
 
 		Render:SetTransform( TransformOuter )
@@ -115,19 +104,19 @@ function Load:ExitWindow()
 	self.window:SetMinimumSize( Vector2( 500, 200 ) )
 	self.window:SetPositionRel( Vector2( 0.7, 0.5 ) - self.window:GetSizeRel()/2 )
 	self.window:SetVisible( true )
-	self.window:SetTitle( self.wtitle )
+	self.window:SetTitle( self.locStrings["wtitle"] )
 	self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
 
 	self.errorText = Label.Create( self.window )
 	self.errorText:SetPosition( Vector2( 20, 30 ) )
 	self.errorText:SetSize( Vector2( 450, 100 ) )
-	self.errorText:SetText( self.wtext )
+	self.errorText:SetText( self.locStrings["wtext"] )
 	self.errorText:SetTextSize( 20 )
 
 	self.leaveButton = Button.Create( self.window )
 	self.leaveButton:SetSize( Vector2( 100, 40 ) )
 	self.leaveButton:SetDock( GwenPosition.Bottom )
-	self.leaveButton:SetText( self.wbutton )
+	self.leaveButton:SetText( self.locStrings["wbutton"] )
 	self.leaveButton:Subscribe( "Press", self, self.Exit )
 end
 

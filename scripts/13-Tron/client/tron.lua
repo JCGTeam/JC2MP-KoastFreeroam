@@ -11,18 +11,20 @@ function Tron:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.nameT = "Игроки"
-		self.nameTTw = "Очередь"
-		self.nameTTh = "Ожидание других игроков..."
-		self.nameTFo = "Самоуничтожиться через "
-		self.nameTFi = "За границами "
-		self.lobbyneeds_txt = "Нужно на "
-		self.lobbymore_txt = " больше"
-		self.lobbyplayer_txt = "игроков)"
-		self.tip1_txt = "Нажмите RB, чтобы заморозить свой след."
-		self.tip2_txt = "Нажмите правой кнопкой мыши, чтобы заморозить свой след."
-		self.tip3_txt = "Вы проиграли. Нажмите LB или RB, чтобы начать слежку за другим игроком."
-		self.tip4_txt = "Вы проиграли. Нажмите левой или правой кнопкой мыши, чтобы начать слежку за другим игроком."
+		self.locStrings = {
+			nameT = "Игроки",
+			nameTTw = "Очередь",
+			nameTTh = "Ожидание других игроков...",
+			nameTFo = "Самоуничтожиться через ",
+			nameTFi = "За границами ",
+			lobbyneeds = "Нужно на ",
+			lobbymore = " больше",
+			lobbyplayer = "игроков)",
+			tip1 = "Нажмите RB, чтобы заморозить свой след.",
+			tip2 = "Нажмите правой кнопкой мыши, чтобы заморозить свой след.",
+			tip3 = "Вы проиграли. Нажмите LB или RB, чтобы начать слежку за другим игроком.",
+			tip4 = "Вы проиграли. Нажмите левой или правой кнопкой мыши, чтобы начать слежку за другим игроком."
+		}
 	end
 
 	self.spec = {
@@ -51,18 +53,20 @@ function Tron:__init()
 end
 
 function Tron:Lang()
-	self.nameT = "Players"
-	self.nameTTw = "Current Queue"
-	self.nameTTh = "Waiting for other players..."
-	self.nameTFo = "Self-destruct in "
-	self.nameTFi = "Out of bounds "
-	self.lobbyneeds_txt = "We need "
-	self.lobbymore_txt = " more"
-	self.lobbyplayer_txt = "players)"
-	self.tip1_txt = "Press RB to freeze your trail."
-	self.tip2_txt = "Right click to freeze your trail."
-	self.tip3_txt = "You lose. Press LB or RB to spectate another player."
-	self.tip4_txt = "You lose. Click the left or right mouse button to start spying on another player."
+	self.locStrings = {
+		nameT = "Players",
+		nameTTw = "Current Queue",
+		nameTTh = "Waiting for other players...",
+		nameTFo = "Self-destruct in ",
+		nameTFi = "Out of bounds ",
+		lobbyneeds = "We need ",
+		lobbymore = " more",
+		lobbyplayer = "players)",
+		tip1 = "Press RB to freeze your trail.",
+		tip2 = "Right click to freeze your trail.",
+		tip3 = "You lose. Press LB or RB to spectate another player.",
+		tip4 = "You lose. Click the left or right mouse button to start spying on another player."
+	}
 end
 
 function Tron:AddSegment( segments, segment )
@@ -423,7 +427,7 @@ function Tron:Render()
 		DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 ), #self.queue .. ' / ' .. self.queueMax, Color.White, TextSize.Large )
 
 		if playersNeeded > 0 then
-			DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 + TextSize.Large ), '(' .. self.lobbyneeds_txt .. playersNeeded .. self.lobbymore_txt .. (playersNeeded ~= 1 and self.lobbyplayer_txt or " " .. self.lobbyplayer_txt), Color( 165, 165, 165 ), 25 )
+			DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 + TextSize.Large ), '(' .. self.locStrings["lobbyneeds"] .. playersNeeded .. self.locStrings["lobbymore"] .. (playersNeeded ~= 1 and self.locStrings["lobbyplayer"] or " " .. self.locStrings["lobbyplayer"]), Color( 165, 165, 165 ), 25 )
 		end
 
 		if self.queue then
@@ -431,25 +435,25 @@ function Tron:Render()
 				DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - (k * 20) ), player:GetName(), player:GetColor() )
 			end
 
-			DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#self.queue + 1) * 20) ), self.nameTTw, Color.White, 20 )
+			DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#self.queue + 1) * 20) ), self.locStrings["nameTTw"], Color.White, 20 )
 		end
 	elseif self.state == GamemodeState.PREPARING then
-		DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 ), self.nameTTh, Color.White, TextSize.Large )
+		DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 ), self.locStrings["nameTTh"], Color.White, TextSize.Large )
 	elseif self.state == GamemodeState.COUNTDOWN then
 		DrawCenteredShadowedText( Vector2( Render.Width / 2, 70 ), math.max(math.ceil(3 - self.timer:GetSeconds()), 1) .. "", Color( 255, 255, 255 ), TextSize.Huge )
 	elseif self.state == GamemodeState.INPROGRESS then
 
 		if LocalPlayer:InVehicle() then
 			if gamepad then
-				DrawCenteredShadowedText( Vector2( Render.Width / 2, Render.Height - 35 ), self.tip1_txt, Color.Yellow )
+				DrawCenteredShadowedText( Vector2( Render.Width / 2, Render.Height - 35 ), self.locStrings["tip1"], Color.Yellow )
 			else
-				DrawCenteredShadowedText( Vector2( Render.Width / 2, Render.Height - 35 ), self.tip2_txt, Color.Yellow )
+				DrawCenteredShadowedText( Vector2( Render.Width / 2, Render.Height - 35 ), self.locStrings["tip2"], Color.Yellow )
 			end
 		else
 			if gamepad then
-				DrawCenteredShadowedText( Vector2( Render.Width / 2, Render.Height - 35 ), self.tip3_txt, Color.Yellow )
+				DrawCenteredShadowedText( Vector2( Render.Width / 2, Render.Height - 35 ), self.locStrings["tip3"], Color.Yellow )
 			else
-				DrawCenteredShadowedText( Vector2( Render.Width / 2, Render.Height - 35 ), self.tip4_txt, Color.Yellow )
+				DrawCenteredShadowedText( Vector2( Render.Width / 2, Render.Height - 35 ), self.locStrings["tip4"], Color.Yellow )
 			end
 		end
 
@@ -457,9 +461,9 @@ function Tron:Render()
 			local distance = LocalPlayer:GetPosition():Distance(self.stateArgs.position)
 
 			if self.timer:GetSeconds() > 2 and distance < self.stateArgs.maxRadius then
-				DrawCenteredShadowedText( Render.Size / 2, self.nameTFo .. math.max(math.ceil(5 - self.timer:GetSeconds()), 1) .. "...", Color.Red, TextSize.Huge )
+				DrawCenteredShadowedText( Render.Size / 2, self.locStrings["nameTFo"] .. math.max(math.ceil(5 - self.timer:GetSeconds()), 1) .. "...", Color.Red, TextSize.Huge )
 			elseif self.timer:GetSeconds() > 0 and distance >= self.stateArgs.maxRadius then
-				DrawCenteredShadowedText( Render.Size / 2, self.nameTFi .. math.max(math.ceil(5 - self.timer:GetSeconds()), 1) .. "...", Color.Red, TextSize.Huge )
+				DrawCenteredShadowedText( Render.Size / 2, self.locStrings["nameTFi"] .. math.max(math.ceil(5 - self.timer:GetSeconds()), 1) .. "...", Color.Red, TextSize.Huge )
 			end
 		end
 
@@ -498,7 +502,7 @@ function Tron:Render()
 			DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - (k * 20) ), player:GetName(), color )
 		end
 
-		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.nameT, Color.White, 20 )
+		DrawCenteredShadowedText( Vector2( Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20) ), self.locStrings["nameT"], Color.White, 20 )
 	end
 end
 

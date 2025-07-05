@@ -7,8 +7,10 @@ function Tips:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.tipText = "Чат: T  I Меню сервера: B I Меню действий: V"
-		self.adsTag = "[Реклама] "
+		self.locStrings = {
+			tip = "Чат: T  I Меню сервера: B I Меню действий: V",
+			adstag = "[Реклама] "
+		}
 
 		Network:Send( "GetAds", { file = "adsRU.txt" } )
 	end
@@ -21,8 +23,10 @@ function Tips:__init()
 end
 
 function Tips:Lang()
-	self.tipText = "Chat: T  I Server Menu: B I Actions Menu: V"
-	self.adsTag = "[Advertising] "
+	self.locStrings = {
+		tip = "Chat: T  I Server Menu: B I Actions Menu: V",
+		adstag = "[Advertising] "
+	}
 
 	Network:Send( "GetAds", { file = "adsEN.txt" } )
 end
@@ -40,11 +44,11 @@ function Tips:Render()
 	end
 
 	if Chat:GetEnabled() and Chat:GetUserEnabled() and not Chat:GetActive() then
-		local text_width = Render:GetTextWidth( self.tipText )
+		local text_width = Render:GetTextWidth( self.locStrings["tip"] )
 		local chatPos = Chat:GetPosition()
 
 		if LocalPlayer:GetValue( "ChatBackgroundVisible" ) then
-			Render:FillArea( chatPos + Vector2( -4, 0 ), Vector2( 508, - Render:GetTextHeight( self.tipText ) * 13.5 ), Color( 0, 0, 0, 80 ) )
+			Render:FillArea( chatPos + Vector2( -4, 0 ), Vector2( 508, - Render:GetTextHeight( self.locStrings["tip"] ) * 13.5 ), Color( 0, 0, 0, 80 ) )
 		end
 
 		if LocalPlayer:GetValue( "ChatTipsVisible" ) then
@@ -58,7 +62,7 @@ function Tips:Render()
 			if LocalPlayer:GetValue( "SystemFonts" ) then Render:SetFont( AssetLocation.SystemFont, "Impact" ) end
 
 			local textpos = chatPos + Vector2( 1, 11 )
-			Render:DrawShadowedText( textpos, self.tipText, color, Color( 25, 25, 25, 150 ), 14 )
+			Render:DrawShadowedText( textpos, self.locStrings["tip"], color, Color( 25, 25, 25, 150 ), 14 )
 		end
 	end
 end
@@ -77,7 +81,7 @@ function Tips:SendMessage()
 
 	local defaultValue = 1
 
-	Chat:Print( self.adsTag, Color.White, self.ads[ math.random( defaultValue, self.adCount or defaultValue ) ], Color.DarkGray )
+	Chat:Print( self.locStrings["adstag"], Color.White, self.ads[ math.random( defaultValue, self.adCount or defaultValue ) ], Color.DarkGray )
 end
 
 tips = Tips()

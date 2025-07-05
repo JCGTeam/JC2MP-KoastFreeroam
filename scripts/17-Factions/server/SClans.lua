@@ -3,8 +3,8 @@ class "ClanSystem"
 msgColors =
 	{
 		[ "err" ] = Color.DarkGray,
-		[ "info" ] = Color ( 0, 255, 0 ),
-		[ "warn" ] = Color ( 255, 100, 0 )
+		[ "info" ] = Color( 0, 255, 0 ),
+		[ "warn" ] = Color( 185, 215, 255 )
 	}
 
 function ClanSystem:__init()
@@ -220,15 +220,15 @@ function ClanSystem:AddClan( args, player )
 		return false
 	end
 
-	local money = player:GetMoney()
-	if money >= Prices.CreateClan then
-		player:SetMoney( money - Prices.CreateClan )
-	else
-		player:Message( "Требуется $" .. formatNumber( Prices.CreateClan ) .. ", чтобы создать клан.", "err" )
-		return false
-	end	
-
 	if ( not self:Exists ( args.name ) ) then
+		local money = player:GetMoney()
+		if money >= Prices.CreateClan then
+			player:SetMoney( money - Prices.CreateClan )
+		else
+			player:Message( "Требуется $" .. formatNumber( Prices.CreateClan ) .. ", чтобы создать клан.", "err" )
+			return false
+		end
+
 		local steamId = player:GetSteamId().id
 		local theDate = os.date( "%d/%m/%y %X" )
 		local newsdefault = "Поздравляем, клан успешно создан! Здесь будут отображаться новости для всех участников клана. Зайдите в настройки клана, чтобы изменить это сообщение."
@@ -499,7 +499,7 @@ function ClanSystem:JoinClan( clan, player )
 	if self:Exists ( clan ) then
 		local pClan = self:GetPlayerClan ( player )
 		if ( not pClan ) then
-			if ( self.clans [ clan ].type == "Открытый" ) or player:GetValue( "Tag" ) == "Creator" or player:GetValue( "Tag" ) == "GlAdmin" or player:GetValue( "Tag" ) == "Admin" then
+			if ( self.clans [ clan ].type == "0" ) or player:GetValue( "Tag" ) == "Creator" or player:GetValue( "Tag" ) == "GlAdmin" or player:GetValue( "Tag" ) == "Admin" then
 				if player:GetValue( "Tag" ) == "Creator" or player:GetValue( "Tag" ) == "GlAdmin" or player:GetValue( "Tag" ) == "Admin" then
 					self:AddMember (
 						{

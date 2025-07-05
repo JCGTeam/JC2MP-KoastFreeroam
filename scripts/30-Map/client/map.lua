@@ -502,7 +502,7 @@ function Map:ToggleWaypoint( position )
 			self.soundRemove:Play()
 			self.soundRemove:SetParameter(0,1)
 		else
-			self.soundRemove = ClientSound.Create(AssetLocation.Game, {
+			self.soundRemove = ClientSound.Create( AssetLocation.Game, {
 						bank_id = 20,
 						sound_id = 13,
 						position = Camera:GetPosition(),
@@ -517,7 +517,7 @@ function Map:ToggleWaypoint( position )
 			self.soundSet:Play()
 			self.soundSet:SetParameter(0,1)
 		else
-			self.soundSet = ClientSound.Create(AssetLocation.Game, {
+			self.soundSet = ClientSound.Create( AssetLocation.Game, {
 				bank_id = 20,
 				sound_id = 12,
 				position = Camera:GetPosition(),
@@ -653,7 +653,7 @@ function Map:Draw()
 		local height = Render:GetTextHeight("A") * 2.5
 		tips_pos.y = tips_pos.y + height
 
-		Render:DrawShadowedText( tips_pos - Vector2.One, MTSetWp .. "\n" .. MTPToggle .. "\n" .. MTExtract, text_clr, text_shadow, 15 )
+		Render:DrawShadowedText( tips_pos - Vector2.One, locStrings["MTSetWp"] .. "\n" .. locStrings["MTPToggle"] .. "\n" .. locStrings["MTExtract"], text_clr, text_shadow, 15 )
 	end
 
 	if extraction_timer then

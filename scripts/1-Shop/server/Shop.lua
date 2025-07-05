@@ -208,13 +208,13 @@ function Shop:PlayerFired( args, player )
 
     local success, err    
 
-    if category_id == self.types["Транспорт"] then
+    if category_id == self.types.vehicles then
         success, err = self:BuyVehicle( player, item, tone1, tone2 )
-    elseif category_id == self.types["Оружие"] then
+    elseif category_id == self.types.weapon then
         success, err = self:BuyWeapon( player, item )
-    elseif category_id == self.types["Персонаж"] then
+    elseif category_id == self.types.character then
         success, err = self:BuyModel( player, item )
-	elseif category_id == self.types["Внешность"] then
+	elseif category_id == self.types.appearance then
         success, err = self:BuyAppearance( player, item )
     end
 

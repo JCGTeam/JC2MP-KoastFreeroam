@@ -17,28 +17,32 @@ function Drift:__init()
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.tDriftTw = "Дрифт: "
-		self.tDrift3 = "Продолжай! "
-		self.tDrift4 = "Малаца! "
-		self.tDrift5 = "Отличный дрифт! "
-		self.tDrift6 = "Грациозно! "
-		self.tDrift7 = "Мастер! "
-		self.tDrift8 = "Бог дрифта! "
-		self.tDrift9 = "АСТАНАВИСЬ!!! "
-		self.tRecord = "Личный дрифт рекорд: "
+		self.locStrings = {
+			tDriftTw = "Дрифт: ",
+			tDrift3 = "Продолжай! ",
+			tDrift4 = "Малаца! ",
+			tDrift5 = "Отличный дрифт! ",
+			tDrift6 = "Грациозно! ",
+			tDrift7 = "Мастер! ",
+			tDrift8 = "Бог дрифта! ",
+			tDrift9 = "АСТАНАВИСЬ!!! ",
+			tRecord = "Личный дрифт рекорд: "
+		}
 	end
 end
 
 function Drift:Lang()
-	self.tDriftTw = "Drift: "
-	self.tDrift3 = "Well done! "
-	self.tDrift4 = "Do not stop! "
-	self.tDrift5 = "Great drift! "
-	self.tDrift6 = "Gracefully! "
-	self.tDrift7 = "Drift Master! "
-	self.tDrift8 = "Lord of drift! "
-	self.tDrift9 = "STOP PLS!!! "
-	self.tRecord = "Personal drift record: "
+	self.locStrings = {
+		tDriftTw = "Drift: ",
+		tDrift3 = "Well done! ",
+		tDrift4 = "Do not stop! ",
+		tDrift5 = "Great drift! ",
+		tDrift6 = "Gracefully! ",
+		tDrift7 = "Drift Master! ",
+		tDrift8 = "Lord of drift! ",
+		tDrift9 = "STOP PLS!!! ",
+		tRecord = "Personal drift record: "
+	}
 end
 
 function Drift:ResetMass()
@@ -108,8 +112,8 @@ function Drift:Render()
 		self.sscore = self.score
 
 		local scoreMult = math.ceil( self.score * self.multipler )
-		local btext = self.tDriftTw
-		local text = self.tDriftTw .. tostring( scoreMult )
+		local btext = self.locStrings["tDriftTw"]
+		local text = self.locStrings["tDriftTw"] .. tostring( scoreMult )
 		local text_mult = "x" .. tostring( self.multipler )
 
 		if self.anim_tick < 30 then
@@ -119,32 +123,32 @@ function Drift:Render()
 		end
 
 		if scoreMult > 5000 then
-			btext = self.tDrift3
-			text = self.tDrift3 .. scoreMult
+			btext = self.locStrings["tDrift3"]
+			text = self.locStrings["tDrift3"] .. scoreMult
 		end
 		if scoreMult > 10000 then
-			btext = self.tDrift4
-			text = self.tDrift4 .. scoreMult
+			btext = self.locStrings["tDrift4"]
+			text = self.locStrings["tDrift4"] .. scoreMult
 		end
 		if scoreMult > 50000 then
-			btext = self.tDrift5
-			text = self.tDrift5 .. scoreMult
+			btext = self.locStrings["tDrift5"]
+			text = self.locStrings["tDrift5"] .. scoreMult
 		end
 		if scoreMult > 100000 then
-			btext = self.tDrift6
-			text = self.tDrift6 .. scoreMult
+			btext = self.locStrings["tDrift6"]
+			text = self.locStrings["tDrift6"] .. scoreMult
 		end
 		if scoreMult > 500000 then
-			btext = self.tDrift7
-			text = self.tDrift7 .. scoreMult
+			btext = self.locStrings["tDrift7"]
+			text = self.locStrings["tDrift7"] .. scoreMult
 		end
 		if scoreMult > 1000000 then
-			btext = self.tDrift8
-			text = self.tDrift8 .. scoreMult
+			btext = self.locStrings["tDrift8"]
+			text = self.locStrings["tDrift8"] .. scoreMult
 		end
 		if scoreMult > 10000000 then
-			btext = self.tDrift9
-			text = self.tDrift9 .. scoreMult
+			btext = self.locStrings["tDrift9"]
+			text = self.locStrings["tDrift9"] .. scoreMult
 		end
 
 		if LocalPlayer:GetValue( "BestRecordVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) and Game:GetState() == GUIState.Game then
@@ -177,7 +181,7 @@ function Drift:Render()
 				shared:SetValue( "Record", scoreMult )
 				Network:Send( "DriftRecordTask", scoreMult )
 				Network:Send( "UpdateMaxRecord", scoreMult )
-				Game:ShowPopup( self.tRecord .. scoreMult, true )
+				Game:ShowPopup( self.locStrings["tRecord"] .. scoreMult, true )
 			end
 
 			self.slide = nil
@@ -228,8 +232,8 @@ function Drift:Render()
 	self.anim_tick = self.anim_tick + 1
 
 	local scoreMult = math.ceil( self.score * self.multipler )
-	local btext = self.tDriftTw
-	local text = self.tDriftTw .. tostring( scoreMult )
+	local btext = self.locStrings["tDriftTw"]
+	local text = self.locStrings["tDriftTw"] .. tostring( scoreMult )
 	local text_mult = "x" .. tostring( self.multipler )
 
 	self.angular = vehicle:GetAngularVelocity()
@@ -244,32 +248,32 @@ function Drift:Render()
 		self.multipler = 10
 	end
 	if scoreMult > 5000 then
-		btext = self.tDrift3
-		text = self.tDrift3 .. scoreMult
+		btext = self.locStrings["tDrift3"]
+		text = self.locStrings["tDrift3"] .. scoreMult
 	end
 	if scoreMult > 10000 then
-		btext = self.tDrift4
-		text = self.tDrift4 .. scoreMult
+		btext = self.locStrings["tDrift4"]
+		text = self.locStrings["tDrift4"] .. scoreMult
 	end
 	if scoreMult > 50000 then
-		btext = self.tDrift5
-		text = self.tDrift5 .. scoreMult
+		btext = self.locStrings["tDrift5"]
+		text = self.locStrings["tDrift5"] .. scoreMult
 	end
 	if scoreMult > 100000 then
-		btext = self.tDrift6
-		text = self.tDrift6 .. scoreMult
+		btext = self.locStrings["tDrift6"]
+		text = self.locStrings["tDrift6"] .. scoreMult
 	end
 	if scoreMult > 500000 then
-		btext = self.tDrift7
-		text = self.tDrift7 .. scoreMult
+		btext = self.locStrings["tDrift7"]
+		text = self.locStrings["tDrift7"] .. scoreMult
 	end
 	if scoreMult > 1000000 then
-		btext = self.tDrift8
-		text = self.tDrift8 .. scoreMult
+		btext = self.locStrings["tDrift8"]
+		text = self.locStrings["tDrift8"] .. scoreMult
 	end
 	if scoreMult > 10000000 then
-		btext = self.tDrift9
-		text = self.tDrift9 .. scoreMult
+		btext = self.locStrings["tDrift9"]
+		text = self.locStrings["tDrift9"] .. scoreMult
 	end
 
 	if LocalPlayer:GetValue( "BestRecordVisible" ) and not LocalPlayer:GetValue( "HiddenHUD" ) and Game:GetState() == GUIState.Game then

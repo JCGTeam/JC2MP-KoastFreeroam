@@ -108,7 +108,7 @@ function RaceMenu:SetEnabled( enabled )
 		Events:Fire( "RaceMenuClosed" )
 	end
 
-	local effect = ClientEffect.Play(AssetLocation.Game, {
+	local effect = ClientEffect.Play( AssetLocation.Game, {
 		effect_id = self.isEnabled and 382 or 383,
 
 		position = Camera:GetPosition(),

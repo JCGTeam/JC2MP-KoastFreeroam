@@ -164,7 +164,7 @@ function Menu:GameLoad()
 end
 
 function Menu:Render()
-    Game:FireEvent( "gui.hud.hide" )
+    Game:FireEvent( "gui.hud.hide.force" )
     Game:FireEvent( "gui.minimap.hide" )
 
     Render:FillArea( Vector2.Zero, Render.Size, self.backgroundColor )
@@ -339,7 +339,7 @@ function Menu:ChangeStep( step )
     elseif step == 1 then
         Mouse:SetVisible( false )
 
-        local sound = ClientSound.Create(AssetLocation.Game, {
+        local sound = ClientSound.Create( AssetLocation.Game, {
             bank_id = 18,
             sound_id = 1,
             position = Camera:GetPosition(),
@@ -368,7 +368,7 @@ function Menu:ChangeStep( step )
         self.PromocodeNotFoundEvent = Events:Subscribe( "PromocodeNotFound", function()
             self.promocodes.textBox:SetTextColor( Color.Red )
 
-            local sound = ClientSound.Create(AssetLocation.Game, {
+            local sound = ClientSound.Create( AssetLocation.Game, {
                 bank_id = 18,
                 sound_id = 7,
                 position = Camera:GetPosition(),
@@ -457,7 +457,7 @@ function Menu:ChangeStep( step )
     elseif step == 3 then
         Mouse:SetVisible( true )
 
-        local sound = ClientSound.Create(AssetLocation.Game, {
+        local sound = ClientSound.Create( AssetLocation.Game, {
             bank_id = 18,
             sound_id = 1,
             position = Camera:GetPosition(),
@@ -544,7 +544,7 @@ function Menu:ChangeStep( step )
     elseif step == 4 then
         Mouse:SetVisible( true )
 
-        local sound = ClientSound.Create(AssetLocation.Game, {
+        local sound = ClientSound.Create( AssetLocation.Game, {
             bank_id = 18,
             sound_id = 1,
             position = Camera:GetPosition(),
@@ -590,7 +590,7 @@ function Menu:ChangeStep( step )
     elseif step == 5 then
         Mouse:SetVisible( true )
 
-        local sound = ClientSound.Create(AssetLocation.Game, {
+        local sound = ClientSound.Create( AssetLocation.Game, {
             bank_id = 18,
             sound_id = 1,
             position = Camera:GetPosition(),
@@ -629,7 +629,7 @@ function Menu:ChangeStep( step )
     elseif step == 6 then
         Mouse:SetVisible( false )
 
-        local sound = ClientSound.Create(AssetLocation.Game, {
+        local sound = ClientSound.Create( AssetLocation.Game, {
             bank_id = 18,
             sound_id = 1,
             position = Camera:GetPosition(),
@@ -724,7 +724,7 @@ end
 function Menu:ModuleUnload()
     Chat:SetEnabled( true )
 
-    Game:FireEvent( "gui.hud.show" )
+    Game:FireEvent( "gui.hud.show.force" )
     Game:FireEvent( "gui.minimap.show" )
     Game:FireEvent( "ply.unpause" )
 end

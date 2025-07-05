@@ -21,26 +21,32 @@ function Bank:__init()
 		[16] = true
 	}
 
-	self.MenuActive = false
-
-	self.rows = {}
-	self:CreateWindow()
+	self.activeWindow = false
 
 	local lang = LocalPlayer:GetValue( "Lang" )
 	if lang and lang == "EN" then
 		self:Lang()
 	else
-		self.friend_txt = "Друг"
-		self.money = "Баланс: $"
-		self.nomoney_txt = "У вас нет столько денег!"
-		self.playernotselected_txt = "Игрок не выбран!"
+		self.locStrings = {
+			title = "▧ Отправить деньги",
+			amounttosend = "Укажите отправляемую сумму:",
+			send = "Отправить",
+			friend = "Друг",
+			search = "Поиск",
+			player = "Игрок",
+			balance = "Баланс: $",
+			playernotselected = "Игрок не выбран!"
+		}
 	end
+
+	self.rows = {}
+	self:CreateWindow()
 
 	Events:Subscribe( "Lang", self, self.Lang )
 	Events:Subscribe( "PlayerJoin", self, self.PlayerJoin )
 	Events:Subscribe( "PlayerQuit", self, self.PlayerQuit )
 	Events:Subscribe( "OpenSendMoneyMenu", self, self.OpenSendMoneyMenu )
-	Events:Subscribe( "CloseSendMoney", self, self.CloseSendMoneyMenu )
+	Events:Subscribe( "CloseSendMoney", self, function() self:SetWindowVisible( false ) end )
 	Events:Subscribe( "LocalPlayerMoneyChange", self, self.MoneyChange )
 
 	self.timer = Timer()
@@ -54,30 +60,34 @@ function Bank:__init()
 end
 
 function Bank:Lang()
-	if self.plist.window then
-		self.plist.window:SetTitle( "▧ Send money" )
-		self.plist.balance:SetText( "Balance: " .. formatNumber( LocalPlayer:GetMoney() ) )
-		self.plist.text:SetText( "Specify the amount to be sent:" )
-		self.plist.okay:SetText( "Send" )
-		self.plist.filter:SetToolTip( "Search" )
+	self.locStrings = {
+		title = "▧ Send Money",
+		amounttosend = "Specify the amount to be sent:",
+		send = "Send",
+		friend = "Friend",
+		search = "Search",
+		player = "Player",
+		balance = "Balance: $",
+		playernotselected = "Player is not selected!"
+	}
+
+	if self.plist then
+		self.plist.window:SetTitle( self.locStrings["title"] )
+		self.plist.balance:SetText( self.locStrings["balance"] .. formatNumber( LocalPlayer:GetMoney() ) )
+		self.plist.text:SetText( self.locStrings["amounttosend"] )
+		self.plist.okay:SetText( self.locStrings["send"] )
+		self.plist.filter:SetToolTip( self.locStrings["send"] )
+	end
+end
+
+function Bank:SetWindowVisible( visible, sound )
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.plist.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
 	end
 
-	self.friend_txt = "Friend"
-	self.money = "Balance: $"
-	self.nomoney_txt = "You don't have that much money!"
-	self.playernotselected_txt = "Player is not selected!"
-end
-
-function Bank:GetActive()
-	return self.MenuActive
-end
-
-function Bank:SetActive( state )
-	self.MenuActive = state
-	self.plist.window:SetVisible( self.MenuActive )
-	Mouse:SetVisible( self.MenuActive )
-
-	if self.MenuActive then
+	if self.activeWindow then
 		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
 		if not self.WindowRenderEvent then self.WindowRenderEvent = Events:Subscribe( "Render", self, self.WindowRender ) end
 
@@ -94,16 +104,19 @@ function Bank:SetActive( state )
 		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
 		if self.WindowRenderEvent then Events:Unsubscribe( self.WindowRenderEvent ) self.WindowRenderEvent = nil end
 	end
+
+	if sound then
+		local effect = ClientEffect.Play( AssetLocation.Game, {
+			effect_id = self.activeWindow and 382 or 383,
+
+			position = Camera:GetPosition(),
+			angle = Angle()
+		} )
+	end
 end
 
 function Bank:OpenSendMoneyMenu()
-	self:SetActive( not self:GetActive() )
-end
-
-function Bank:CloseSendMoneyMenu()
-	if self:GetActive() then
-		self:SetActive( false )
-	end
+	self:SetWindowVisible( not self.activeWindow, true )
 end
 
 function Bank:CreateWindow()
@@ -113,22 +126,22 @@ function Bank:CreateWindow()
     self.plist.window:SetSizeRel( Vector2( 0.25, 0.42 ) )
     self.plist.window:SetMinimumSize( Vector2( 370, 240 ) )
     self.plist.window:SetPositionRel( Vector2( 0.85, 0.5 ) - self.plist.window:GetSizeRel()/2 )
-	self.plist.window:SetVisible( self.MenuActive )
-	self.plist.window:SetTitle( "▧ Отправить деньги" )
-	self.plist.window:Subscribe( "WindowClosed", self, self.WindowClosed )
+	self.plist.window:SetVisible( self.activeWindow )
+	self.plist.window:SetTitle( self.locStrings["title"] )
+	self.plist.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false, true ) end )
 
 	self.plist.balance = Label.Create( self.plist.window )
 	self.plist.balance:SetDock( GwenPosition.Top )
 	self.plist.balance:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
 	self.plist.balance:SetTextSize( 20 )
-	self.plist.balance:SetText( "Баланс: $" .. formatNumber( LocalPlayer:GetMoney() ) )
+	self.plist.balance:SetText( self.locStrings["balance"] .. formatNumber( LocalPlayer:GetMoney() ) )
 	self.plist.balance:SetTextColor( Color( 251, 184, 41 ) )
 	self.plist.balance:SizeToContents()
 
 	self.plist.text = Label.Create( self.plist.window )
 	self.plist.text:SetDock( GwenPosition.Top )
 	self.plist.text:SetMargin( Vector2( 5, 5 ), Vector2( 5, 5 ) )
-	self.plist.text:SetText( "Укажите отправляемую сумму:" )
+	self.plist.text:SetText( self.locStrings["amounttosend"] )
 	self.plist.text:SizeToContents()
 	
 	self.plist.moneytosend = Numeric.Create( self.plist.window )
@@ -143,29 +156,25 @@ function Bank:CreateWindow()
 	self.plist.playerList = SortedList.Create( self.plist.window )
 	self.plist.playerList:SetMargin( Vector2.Zero, Vector2( 0, 4 ) )
 	self.plist.playerList:SetBackgroundVisible( false )
-	self.plist.playerList:AddColumn( "Игрок" )
+	self.plist.playerList:AddColumn( self.locStrings["player"] )
 	self.plist.playerList:SetButtonsVisible( true )
 	self.plist.playerList:SetDock( GwenPosition.Fill )
 
 	self.plist.okay = Button.Create( self.plist.window )
 	self.plist.okay:SetDock( GwenPosition.Bottom )
 	self.plist.okay:SetHeight( 35 )
-	self.plist.okay:SetText( "Отправить" )
+	self.plist.okay:SetText( self.locStrings["send"] )
 	self.plist.okay:Subscribe( "Press", self, self.SendToPlayer )
 
 	self.plist.filter = TextBox.Create( self.plist.window )
 	self.plist.filter:SetDock( GwenPosition.Bottom )
 	self.plist.filter:SetMargin( Vector2( 0, 5 ), Vector2( 0, 5 ) )
 	self.plist.filter:SetHeight( 25 )
-	self.plist.filter:SetToolTip( "Поиск" )
+	self.plist.filter:SetToolTip( self.locStrings["search"] )
 	self.plist.filter:Subscribe( "TextChanged", self, self.TextChanged )
 	self.plist.filter:Subscribe( "Focus", self, self.Focus )
 	self.plist.filter:Subscribe( "Blur", self, self.Blur )
 	self.plist.filter:Subscribe( "EscPressed", self, self.EscPressed )
-end
-
-function Bank:WindowClosed()
-	self:SetActive( false )
 end
 
 function Bank:PlayerJoin( args )
@@ -192,7 +201,7 @@ function Bank:AddPlayer( player )
 	local item = self.plist.playerList:AddItem( playerName )
 
 	if LocalPlayer:IsFriend( player ) then
-		item:SetToolTip( self.friend_txt )
+		item:SetToolTip( self.locStrings["friend"] )
 	end
 
 	item:SetTextColor( playerColor )
@@ -206,14 +215,14 @@ function Bank:SendToPlayer()
 	if row then
 		Network:Send( "SendMoney", { selectedplayer = row:GetDataObject( "id" ), money = self.plist.moneytosend:GetValue() } )
 	else
-		Events:Fire( "CastCenterText", { text = self.playernotselected_txt, time = 2, color = Color( 255, 0, 0 ) } )
+		Events:Fire( "CastCenterText", { text = self.locStrings["playernotselected"], time = 2, color = Color( 255, 0, 0 ) } )
 	end
-	self:SetActive( false )
+	self:SetWindowVisible( false )
 end
 
 function Bank:LocalPlayerInput( args )
 	if args.input == Action.GuiPause then
-		self:SetActive( false )
+		self:SetWindowVisible( false )
 	end
 
 	if self.actions[args.input] then
@@ -226,9 +235,8 @@ function Bank:WindowRender()
 
 	if self.plist.window:GetVisible() ~= is_visible then
 		self.plist.window:SetVisible( is_visible )
+		Mouse:SetVisible( is_visible )
 	end
-
-    Mouse:SetVisible( is_visible )
 end
 
 --  Player search
@@ -256,7 +264,7 @@ end
 
 function Bank:EscPressed()
 	self:Blur()
-	self:SetActive( false )
+	self:SetWindowVisible( false )
 end
 
 function Bank:Render()
@@ -297,10 +305,7 @@ function Bank:MoneyChange( args )
         args.new_money = LocalPlayer:GetMoney()
     end
 
-	local lang = LocalPlayer:GetValue( "Lang" )
-    if lang then
-		self.plist.balance:SetText( lang == "EN" and "Balance: $" .. formatNumber( args.new_money ) or "Баланс: $" .. formatNumber( args.new_money ) )
-    end
+	self.plist.balance:SetText( self.locStrings["balance"] .. formatNumber( args.new_money ) )
 
 	if Game:GetState() ~= GUIState.Game then return end
 
@@ -315,7 +320,7 @@ function Bank:MoneyChange( args )
 
 		self.message_timer = Timer()
         self.message = ( diff > 0 and "+" or "-" ) .. " $" .. formatNumber( math.abs( diff ) )
-        self.submessage = self.money .. formatNumber( args.new_money )
+        self.submessage = self.locStrings["balance"] .. formatNumber( args.new_money )
         self.color = diff > 0 and Color( 251, 184, 41 ) or Color.OrangeRed
 		self.shadowColor = Color( 0, 0, 0, 100 )
     end

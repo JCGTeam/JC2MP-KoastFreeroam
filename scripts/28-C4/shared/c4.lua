@@ -122,7 +122,7 @@ function C4:PostTick()
 			self.WNO:Remove()
 		end
 	elseif self.timer:GetSeconds() - self.lastFlash > C4.FlashDelay then
-		local effect = ClientEffect.Play(AssetLocation.Game, {
+		local effect = ClientEffect.Play( AssetLocation.Game, {
 			effect_id = 280,
 			position = self:GetPosition(),
 			angle = self:GetAngle()
@@ -150,7 +150,7 @@ function C4:Detonate()
 	if Server then
 		self.WNO:SetNetworkValue("detonated", true)
 	else
-		local effect = ClientEffect.Play(AssetLocation.Game, {
+		local effect = ClientEffect.Play( AssetLocation.Game, {
 			effect_id = 377,
 			position = self:GetPosition(),
 			angle = self:GetAngle()
@@ -166,7 +166,7 @@ function C4:Detonate()
 		})
 
 		if self:GetPosition().y < 200 then
-			local effect = ClientEffect.Play(AssetLocation.Game, {
+			local effect = ClientEffect.Play( AssetLocation.Game, {
 				effect_id = 112,
 				position = Vector3(self:GetPosition().x, 200, self:GetPosition().z),
 				angle = Angle()

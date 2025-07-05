@@ -1,35 +1,6 @@
 class 'ActionsMenu'
 
 function ActionsMenu:__init()
-	local lang = LocalPlayer:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		self:Lang()
-	else
-        self.title = "▧ Меню действий"
-        self.healme_txt = "Вылечить себя"
-        self.killme_txt = "Убить себя"
-        self.clearinv_txt = "Очистить инвентарь"
-        self.sendmoney_txt = "Отправить деньги"
-        self.bloozing_txt = "Бухнуть"
-        self.seat_txt = "Сесть"
-        self.lezat_txt = "Лечь"
-		self.vehiclerepair_txt = "Починить транспорт (Не визуально)"
-		self.vehicledriverseatlock_txt = "Заблокировать водительскую дверь"
-		self.vehicledriverseatunlock_txt = "Разблокировать водительскую дверь"
-		self.vehicleboom_txt = "Взорвать транспорт"
-		self.sky_txt = "Взлететь в небо"
-		self.down_txt = "Опуститься вниз"
-		self.pvpblock = "Вы не можете использовать это во время боя!"
-		self.novehicle = "Вы должны находиться за водительским местом!"
-		self.noVipText = "У вас отсутствует VIP-статус :("
-		self.healtxt = "++ Восстановление ++"
-		self.healnotneededtxt = "Восстановление не требуется"
-		self.seatlocked_txt = "Водительская дверь заблокирована"
-		self.seatunlocked_txt = "Водительская дверь разблокирована"
-		self.ltext1 = "Игрок:"
-		self.ltext2 = "Транспорт:"
-	end
-
     self.actions = {
 		[3] = true,
 		[4] = true,
@@ -61,38 +32,100 @@ function ActionsMenu:__init()
 		["VIP"] = true
     }
 
+	local lang = LocalPlayer:GetValue( "Lang" )
+	if lang and lang == "EN" then
+		self:Lang()
+	else
+		self.locStrings = {
+			title = "▧ Меню действий",
+			healme = "Вылечить себя",
+			killme = "Убить себя",
+			clearinv = "Очистить инвентарь",
+			sendmoney_txt = "Отправить деньги",
+			bloozing = "Бухнуть",
+			seat = "Сесть",
+			lezat = "Лечь",
+			vehiclerepair = "Починить транспорт (Не визуально)",
+			vehicledriverseatlock = "Заблокировать водительскую дверь",
+			vehicledriverseatunlock = "Разблокировать водительскую дверь",
+			vehicleboom = "Взорвать транспорт",
+			sky = "Взлететь в небо",
+			down = "Опуститься вниз",
+			pvpblock = "Вы не можете использовать это во время боя!",
+			novehicle = "Вы должны находиться за водительским местом!",
+			novip = "У вас отсутствует VIP-статус :(",
+			heal = "++ Восстановление ++",
+			healnotneeded = "Восстановление не требуется",
+			seatlocked = "Водительская дверь заблокирована",
+			seatunlocked = "Водительская дверь разблокирована",
+			ltext1 = "Игрок:",
+			ltext2 = "Транспорт:"
+		}
+	end
+
 	self.textSize = 15
 
     Events:Subscribe( "Lang", self, self.Lang )
     Events:Subscribe( "KeyUp", self, self.KeyUp )
 	Events:Subscribe( "LocalPlayerChat", self, self.LocalPlayerChat )
-	Events:Subscribe( "LocalPlayerWorldChange", self, self.LocalPlayerWorldChange )
+	Events:Subscribe( "LocalPlayerWorldChange", self, function() self:SetWindowVisible( false ) end )
 end
 
 function ActionsMenu:Lang()
-    self.title = "▧ Actions Menu"
-    self.healme_txt = "Heal yourself"
-    self.killme_txt = "Kill yourself"
-    self.clearinv_txt = "Clear inventory"
-    self.sendmoney_txt = "Send money"
-    self.bloozing_txt = "Drink"
-    self.seat_txt = "Sit"
-    self.lezat_txt = "Lie"
-	self.vehiclerepair_txt = "Repair a vehicle (Not visually)"
-	self.vehicledriverseatlock_txt = "Lock driver's door"
-	self.vehicledriverseatunlock_txt = "Unlock driver's door"
-	self.vehicleboom_txt = "Blow up a vehicle"
-	self.sky_txt = "Take to the sky"
-	self.down_txt = "Going down"
-	self.pvpblock = "You cannot use this during combat!"
-	self.novehicle = "You must be behind the driver's seat!"
-	self.noVipText = "Required VIP status :("
-	self.healtxt = "++ Healing ++"
-	self.healnotneededtxt = "Healing is not required"
-	self.seatlocked_txt = "Driver's door is locked"
-	self.seatunlocked_txt = "Driver's door is unlocked"
-	self.ltext1 = "Player:"
-	self.ltext2 = "Vehicle:"
+	self.locStrings = {
+		title = "▧ Actions Menu",
+		healme = "Heal yourself",
+		killme = "Kill yourself",
+		clearinv = "Clear inventory",
+		sendmoney_txt = "Send money",
+		bloozing = "Drink",
+		seat = "Sit",
+		lezat = "Lie",
+		vehiclerepair = "Repair a vehicle (Not visually)",
+		vehicledriverseatlock = "Lock driver's door",
+		vehicledriverseatunlock = "Unlock driver's door",
+		vehicleboom = "Blow up a vehicle",
+		sky = "Take to the sky",
+		down = "Going down",
+		pvpblock = "You cannot use this during combat!",
+		novehicle = "You must be behind the driver's seat!",
+		novip = "Required VIP status :(",
+		heal = "++ Healing ++",
+		healnotneeded = "Healing is not required",
+		seatlocked = "Driver's door is locked",
+		seatunlocked = "Driver's door is unlocked",
+		ltext1 = "Player:",
+		ltext2 = "Vehicle:"
+	}
+end
+
+function ActionsMenu:SetWindowVisible( visible, sound )
+	self:CreateWindow()
+
+	if self.activeWindow ~= visible then
+		self.activeWindow = visible
+		self.window:SetVisible( visible )
+		Mouse:SetVisible( visible )
+	end
+
+	if self.activeWindow then
+		if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+		if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
+
+		Events:Fire( "CloseSendMoney" )
+	else
+		if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+    	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
+	end
+
+	if sound then
+		local effect = ClientEffect.Play( AssetLocation.Game, {
+			effect_id = self.activeWindow and 382 or 383,
+
+			position = Camera:GetPosition(),
+			angle = Angle()
+		} )
+	end
 end
 
 function ActionsMenu:KeyUp( args )
@@ -100,25 +133,7 @@ function ActionsMenu:KeyUp( args )
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
     if args.key == 86 then
-        if self.window and self.window:GetVisible() then
-            self:WindowClosed()
-        else
-            self:CreateWindow()
-            self.window:SetVisible( true )
-            Mouse:SetVisible( true )
-
-            if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
-            if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
-
-            Events:Fire( "CloseSendMoney" )
-
-            local effect = ClientEffect.Play(AssetLocation.Game, {
-                effect_id = 382,
-    
-                position = Camera:GetPosition(),
-                angle = Angle()
-            })
-        end
+        self:SetWindowVisible( not self.activeWindow, true )
     end
 end
 
@@ -134,12 +149,6 @@ function ActionsMenu:LocalPlayerChat( args )
 	if cmd_args[1] == "/boom" then self:VehicleBoom() end
 	if cmd_args[1] == "/sky" then self:Sky() end
 	if cmd_args[1] == "/down" then self:Down() end
-end
-
-function ActionsMenu:LocalPlayerWorldChange()
-	if self.window and self.window:GetVisible() then
-		self:WindowClosed()
-	end
 end
 
 function ActionsMenu:CreateActionButton( title, event, color )
@@ -168,42 +177,42 @@ function ActionsMenu:CreateWindow()
 	self.greenColor = Color( 192, 255, 192 )
 
     self.window = Window.Create()
-    self.window:SetSize( Vector2( Render:GetTextWidth( self.vehiclerepair_txt, self.textSize ) + 90, 430 ) )
+    self.window:SetSize( Vector2( Render:GetTextWidth( self.locStrings["vehiclerepair"], self.textSize ) + 90, 430 ) )
     self.window:SetMinimumSize( Vector2( 300, 315 ) )
     self.window:SetPosition( Vector2( Render.Size.x - self.window:GetSize().x - 45, Render.Size.y / 2 - self.window:GetSize().y / 2 ) )
     self.window:SetVisible( false )
-    self.window:SetTitle( self.title )
-    self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
+    self.window:SetTitle( self.locStrings["title"] )
+    self.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false, true ) end )
 
 	self.scroll = ScrollControl.Create( self.window )
     self.scroll:SetDock( GwenPosition.Fill )
 	self.scroll:SetScrollable( false, true )
 
-	self.SendMoneyBtn = self:CreateActionButton( self.sendmoney_txt, function() Events:Fire( "OpenSendMoneyMenu" ) self:WindowClosed() end )
+	self.SendMoneyBtn = self:CreateActionButton( self.locStrings["sendmoney_txt"], function() Events:Fire( "OpenSendMoneyMenu" ) self:SetWindowVisible( false ) end )
 
 	self.label1 = Label.Create( self.scroll )
     self.label1:SetDock( GwenPosition.Top )
-	self.label1:SetText( self.ltext1 )
+	self.label1:SetText( self.locStrings["ltext1"] )
 	self.label1:SetMargin( Vector2( 5, 5 ), Vector2( 5, 0 ) )
 	self.label1:SizeToContents()
 
-	self.HealMeBtn = self:CreateActionButton( self.healme_txt, self.Heal, self.greenColor )
-    self.KillMeBtn = self:CreateActionButton( self.killme_txt, function() Network:Send( "KillMe" ) self:WindowClosed() end )
-    self.ClearInvBtn = self:CreateActionButton( self.clearinv_txt, function() Network:Send( "ClearInv") self:WindowClosed() end )
-    self.BloozingBtn = self:CreateActionButton( self.bloozing_txt, function() Events:Fire( "BloozingStart" ) self:WindowClosed() end )
-    self.SeatBtn = self:CreateActionButton( self.seat_txt, self.Seat )
-    self.LezatBtn = self:CreateActionButton( self.lezat_txt, self.Sleep )
+	self.HealMeBtn = self:CreateActionButton( self.locStrings["healme"], self.Heal, self.greenColor )
+    self.KillMeBtn = self:CreateActionButton( self.locStrings["killme"], function() Network:Send( "KillMe" ) self:SetWindowVisible( false ) end )
+    self.ClearInvBtn = self:CreateActionButton( self.locStrings["clearinv"], function() Network:Send( "ClearInv") self:SetWindowVisible( false ) end )
+    self.BloozingBtn = self:CreateActionButton( self.locStrings["bloozing"], function() Events:Fire( "BloozingStart" ) self:SetWindowVisible( false ) end )
+    self.SeatBtn = self:CreateActionButton( self.locStrings["seat"], self.Seat )
+    self.LezatBtn = self:CreateActionButton( self.locStrings["lezat"], self.Sleep )
 
 	self.label2 = Label.Create( self.scroll )
     self.label2:SetDock( GwenPosition.Top )
-	self.label2:SetText( self.ltext2 )
+	self.label2:SetText( self.locStrings["ltext2"] )
 	self.label2:SetMargin( Vector2( 5, 5 ), Vector2( 5, 0 ) )
 	self.label2:SizeToContents()
 
-	self.VehicleRepairBtn = self:CreateActionButton( self.vehiclerepair_txt, self.VehicleRepair, self.greenColor )
+	self.VehicleRepairBtn = self:CreateActionButton( self.locStrings["vehiclerepair"], self.VehicleRepair, self.greenColor )
 	local vehicle = LocalPlayer:GetVehicle()
-	self.VehicleDriverSeatLockBtn = self:CreateActionButton( ( vehicle and vehicle:GetSeatLocked( VehicleSeat.Driver ) ) and self.vehicledriverseatunlock_txt or self.vehicledriverseatlock_txt, self.VehicleToggleDriverSeatLock )
-	self.VehicleBoomBtn = self:CreateActionButton( self.vehicleboom_txt, self.VehicleBoom )
+	self.VehicleDriverSeatLockBtn = self:CreateActionButton( ( vehicle and vehicle:GetSeatLocked( VehicleSeat.Driver ) ) and self.locStrings["vehicledriverseatunlock"] or self.locStrings["vehicledriverseatlock"], self.VehicleToggleDriverSeatLock )
+	self.VehicleBoomBtn = self:CreateActionButton( self.locStrings["vehicleboom"], self.VehicleBoom )
 
 	self.label3 = Label.Create( self.scroll )
     self.label3:SetDock( GwenPosition.Top )
@@ -211,35 +220,21 @@ function ActionsMenu:CreateWindow()
 	self.label3:SetMargin( Vector2( 5, 5 ), Vector2( 5, 0 ) )
 	self.label3:SizeToContents()
 
-	self.SkyBtn = self:CreateActionButton( self.sky_txt, self.Sky )
-	self.DownBtn = self:CreateActionButton( self.down_txt, self.Down )
-
-	self.healme_txt = nil
-    self.killme_txt = nil
-    self.clearinv_txt = nil
-    self.sendmoney_txt = nil
-    self.bloozing_txt = nil
-    self.seat_txt = nil
-    self.lezat_txt = nil
-	self.vehiclerepair_txt = nil
-	self.vehicleboom_txt = nil
-	self.sky_txt = nil
-	self.down_txt = nil
-	self.ltext1 = nil
-	self.ltext2 = nil
+	self.SkyBtn = self:CreateActionButton( self.locStrings["sky"], self.Sky )
+	self.DownBtn = self:CreateActionButton( self.locStrings["down"], self.Down )
 end
 
 function ActionsMenu:Heal()
 	if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
 	if LocalPlayer:GetValue( "PVPMode" ) then
-		Events:Fire( "CastCenterText", { text = self.pvpblock, time = 6, color = Color.Red } )
+		Events:Fire( "CastCenterText", { text = self.locStrings["pvpblock"], time = 6, color = Color.Red } )
 	else
 		if LocalPlayer:GetHealth() >= 1 then
-			Events:Fire( "CastCenterText", { text = self.healnotneededtxt, time = 1 } )
+			Events:Fire( "CastCenterText", { text = self.locStrings["healnotneeded"], time = 1 } )
 		else
 			Network:Send( "HealMe" )
-			local sound = ClientSound.Create(AssetLocation.Game, {
+			local sound = ClientSound.Create( AssetLocation.Game, {
 				bank_id = 19,
 				sound_id = 30,
 				position = LocalPlayer:GetPosition(),
@@ -247,14 +242,15 @@ function ActionsMenu:Heal()
 			})
 
 			sound:SetParameter(0,1)
-			Events:Fire( "CastCenterText", { text = self.healtxt, time = 1, color = self.greenColor } )
+			Events:Fire( "CastCenterText", { text = self.locStrings["heal"], time = 1, color = self.greenColor } )
 		end
 	end
-	self:WindowClosed()
+
+	self:SetWindowVisible( false )
 end
 
 function ActionsMenu:Seat()
-	if LocalPlayer:GetVehicle() then self:WindowClosed() return end
+	if LocalPlayer:GetVehicle() then self:SetWindowVisible( false ) return end
 
 	local bs = LocalPlayer:GetBaseState()
 
@@ -265,7 +261,7 @@ function ActionsMenu:Seat()
 
 		LocalPlayer:SetBaseState( AnimationState.SIdlePassengerVehicle )
 
-		self:WindowClosed()
+		self:SetWindowVisible( false )
 	elseif bs == AnimationState.SIdlePassengerVehicle then
 		LocalPlayer:SetBaseState( AnimationState.SUprightIdle )
 
@@ -273,7 +269,7 @@ function ActionsMenu:Seat()
 		if self.CalcViewEvent then Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil end
 		if self.LocalPlayerEnterVehicleEvent then Events:Unsubscribe( self.LocalPlayerEnterVehicleEvent ) self.LocalPlayerEnterVehicleEvent = nil end
 
-		self:WindowClosed()
+		self:SetWindowVisible( false )
 	end
 end
 
@@ -297,7 +293,8 @@ function ActionsMenu:Sleep()
 			LocalPlayer:SetBaseState( AnimationState.SUprightIdle )
 		end
 	end
-	self:WindowClosed()
+
+	self:SetWindowVisible( false )
 end
 
 function ActionsMenu:VehicleRepair()
@@ -307,14 +304,14 @@ function ActionsMenu:VehicleRepair()
 
 	if vehicle and vehicle:GetDriver() == LocalPlayer then
 		if LocalPlayer:GetValue( "PVPMode" ) then
-			Events:Fire( "CastCenterText", { text = self.pvpblock, time = 6, color = Color.Red } )
+			Events:Fire( "CastCenterText", { text = self.locStrings["pvpblock"], time = 6, color = Color.Red } )
 		else
 			if vehicle:GetHealth() >= 1 then
-				Events:Fire( "CastCenterText", { text = self.healnotneededtxt, time = 1 } )
+				Events:Fire( "CastCenterText", { text = self.locStrings["healnotneeded"], time = 1 } )
 			else
 				Network:Send( "VehicleRepair" )
 
-				local sound = ClientSound.Create(AssetLocation.Game, {
+				local sound = ClientSound.Create( AssetLocation.Game, {
 					bank_id = 19,
 					sound_id = 30,
 					position = LocalPlayer:GetPosition(),
@@ -322,13 +319,14 @@ function ActionsMenu:VehicleRepair()
 				})
 
 				sound:SetParameter(0,1)
-				Events:Fire( "CastCenterText", { text = self.healtxt, time = 1, color = self.greenColor } )
+				Events:Fire( "CastCenterText", { text = self.locStrings["heal"], time = 1, color = self.greenColor } )
 			end
 		end
 	else
-		Events:Fire( "CastCenterText", { text = self.novehicle, time = 3, color = Color.Red } )
+		Events:Fire( "CastCenterText", { text = self.locStrings["novehicle"], time = 3, color = Color.Red } )
 	end
-	self:WindowClosed()
+
+	self:SetWindowVisible( false )
 end
 
 function ActionsMenu:VehicleToggleDriverSeatLock()
@@ -340,14 +338,14 @@ function ActionsMenu:VehicleToggleDriverSeatLock()
 		local seat = VehicleSeat.Driver
 
 		if vehicle:GetSeatLocked( seat ) then
-			Events:Fire( "CastCenterText", { text = self.seatunlocked_txt, time = 1.5 } )
+			Events:Fire( "CastCenterText", { text = self.locStrings["seatunlocked"], time = 1.5 } )
 
 			self:LocalPlayerExitVehicle( { vehicle = vehicle } )
 		else
-			Events:Fire( "CastCenterText", { text = self.seatlocked_txt, time = 1.5 } )
+			Events:Fire( "CastCenterText", { text = self.locStrings["seatlocked"], time = 1.5 } )
 
 			if self.VehicleDriverSeatLockBtn then
-				self.VehicleDriverSeatLockBtn:SetText( self.vehicledriverseatunlock_txt )
+				self.VehicleDriverSeatLockBtn:SetText( self.locStrings["vehicledriverseatunlock"] )
 			end
 
 			Events:Fire( "SetVehicleSeatLocked", { vehicle = vehicle, seat = seat, locked = true } )
@@ -355,9 +353,10 @@ function ActionsMenu:VehicleToggleDriverSeatLock()
 			if not self.LocalPlayerExitVehicleEvent then self.LocalPlayerExitVehicleEvent = Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle ) end
 		end
 	else
-		Events:Fire( "CastCenterText", { text = self.novehicle, time = 3, color = Color.Red } )
+		Events:Fire( "CastCenterText", { text = self.locStrings["novehicle"], time = 3, color = Color.Red } )
 	end
-	self:WindowClosed()
+
+	self:SetWindowVisible( false )
 end
 
 function ActionsMenu:VehicleBoom()
@@ -368,9 +367,10 @@ function ActionsMenu:VehicleBoom()
 	if vehicle and vehicle:GetDriver() == LocalPlayer then
 		Network:Send( "VehicleBoom" )
 	else
-		Events:Fire( "CastCenterText", { text = self.novehicle, time = 3, color = Color.Red } )
+		Events:Fire( "CastCenterText", { text = self.locStrings["novehicle"], time = 3, color = Color.Red } )
 	end
-	self:WindowClosed()
+
+	self:SetWindowVisible( false )
 end
 
 function ActionsMenu:Sky()
@@ -379,9 +379,10 @@ function ActionsMenu:Sky()
 	if self.permissions[gettag] then
 		Network:Send( "Sky" )
 	else
-		Events:Fire( "CastCenterText", { text = self.noVipText, time = 3, color = Color.Red } )
+		Events:Fire( "CastCenterText", { text = self.locStrings["novip"], time = 3, color = Color.Red } )
 	end
-	self:WindowClosed()
+
+	self:SetWindowVisible( false )
 end
 
 function ActionsMenu:Down()
@@ -390,9 +391,10 @@ function ActionsMenu:Down()
 	if self.permissions[gettag] then
 		Network:Send( "Down" )
 	else
-		Events:Fire( "CastCenterText", { text = self.noVipText, time = 3, color = Color.Red } )
+		Events:Fire( "CastCenterText", { text = self.locStrings["novip"], time = 3, color = Color.Red } )
 	end
-	self:WindowClosed()
+
+	self:SetWindowVisible( false )
 end
 
 function ActionsMenu:LocalPlayerInput( args )
@@ -400,11 +402,9 @@ function ActionsMenu:LocalPlayerInput( args )
         return false
     end
 
-    if self.window:GetVisible() == true then
-		if args.input == Action.GuiPause then
-            self:WindowClosed()
-        end
-    end
+	if args.input == Action.GuiPause then
+		self:SetWindowVisible( false )
+	end
 end
 
 function ActionsMenu:Render()
@@ -412,26 +412,8 @@ function ActionsMenu:Render()
 
 	if self.window:GetVisible() ~= is_visible then
 		self.window:SetVisible( is_visible )
+		Mouse:SetVisible( is_visible )
 	end
-
-	Mouse:SetVisible( is_visible )
-end
-
-function ActionsMenu:WindowClosed()
-	if not self.window then return end
-
-    self.window:SetVisible( false )
-	Mouse:SetVisible( false )
-
-    if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
-    if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
-
-    local effect = ClientEffect.Play(AssetLocation.Game, {
-        effect_id = 383,
-
-        position = Camera:GetPosition(),
-        angle = Angle()
-    })
 end
 
 function ActionsMenu:SeatInput( args )
@@ -457,7 +439,7 @@ function ActionsMenu:LocalPlayerExitVehicle( args )
 	Events:Fire( "SetVehicleSeatLocked", { vehicle = args.vehicle, seat = VehicleSeat.Driver, locked = false } )
 
 	if self.VehicleDriverSeatLockBtn then
-		self.VehicleDriverSeatLockBtn:SetText( self.vehicledriverseatlock_txt )
+		self.VehicleDriverSeatLockBtn:SetText( self.locStrings["vehicledriverseatlock"] )
 	end
 
 	if self.LocalPlayerExitVehicleEvent then Events:Unsubscribe( self.LocalPlayerExitVehicleEvent ) self.LocalPlayerExitVehicleEvent = nil end
