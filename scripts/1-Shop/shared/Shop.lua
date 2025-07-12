@@ -1,11 +1,11 @@
 class 'Shop'
 class 'BuyMenuEntry'
 
-function BuyMenuEntry:__init( model_id, entry_type, template, decal )
+function BuyMenuEntry:__init(model_id, entry_type, template, decal)
     self.model_id = model_id
     self.entry_type = entry_type
-	self.template = template
-	self.decal = decal
+    self.template = template
+    self.decal = decal
 end
 
 function BuyMenuEntry:GetModelId()
@@ -24,30 +24,30 @@ function BuyMenuEntry:GetListboxItem()
     return self.listbox_item
 end
 
-function BuyMenuEntry:SetListboxItem( item )
+function BuyMenuEntry:SetListboxItem(item)
     self.listbox_item = item
 end
 
-class 'VehicleBuyMenuEntry' ( BuyMenuEntry )
+class 'VehicleBuyMenuEntry'(BuyMenuEntry)
 
-function VehicleBuyMenuEntry:__init( model_id, template, decal, name, rank )
-    BuyMenuEntry.__init( self, model_id, 1, template, decal )
+function VehicleBuyMenuEntry:__init(model_id, template, decal, name, rank)
+    BuyMenuEntry.__init(self, model_id, 1, template, decal)
     self.name = name
-	self.rank = rank
+    self.rank = rank
 end
 
 function VehicleBuyMenuEntry:GetName()
-	local modelName = Vehicle.GetNameByModelId( self.model_id )
-	local DisplayName = modelName
-	if self.name ~= nil and self.name ~= "" then
-		DisplayName = modelName .. " - " .. self.name
-	end
-	if self.template ~= nil and self.template ~= "" then
-		DisplayName = DisplayName .. " [" .. self.template .. "]"
-	end
-	if self.decal ~= nil and self.decal ~= "" then
-		DisplayName = DisplayName .. " (" .. self.decal .. ")"
-	end
+    local modelName = Vehicle.GetNameByModelId(self.model_id)
+    local DisplayName = modelName
+    if self.name ~= nil and self.name ~= "" then
+        DisplayName = modelName .. " - " .. self.name
+    end
+    if self.template ~= nil and self.template ~= "" then
+        DisplayName = DisplayName .. " [" .. self.template .. "]"
+    end
+    if self.decal ~= nil and self.decal ~= "" then
+        DisplayName = DisplayName .. " (" .. self.decal .. ")"
+    end
     return DisplayName
 end
 
@@ -55,13 +55,13 @@ function VehicleBuyMenuEntry:GetRank()
     return self.rank
 end
 
-class 'WeaponBuyMenuEntry' ( BuyMenuEntry )
+class 'WeaponBuyMenuEntry'(BuyMenuEntry)
 
-function WeaponBuyMenuEntry:__init( model_id, slot, name, rank )
-    BuyMenuEntry.__init( self, model_id, 2 )
+function WeaponBuyMenuEntry:__init(model_id, slot, name, rank)
+    BuyMenuEntry.__init(self, model_id, 2)
     self.slot = slot
     self.name = name
-	self.rank = rank
+    self.rank = rank
 end
 
 function WeaponBuyMenuEntry:GetSlot()
@@ -76,12 +76,12 @@ function WeaponBuyMenuEntry:GetRank()
     return self.rank
 end
 
-class 'ModelBuyMenuEntry' ( BuyMenuEntry )
+class 'ModelBuyMenuEntry'(BuyMenuEntry)
 
-function ModelBuyMenuEntry:__init( model_id, name, rank )
-    BuyMenuEntry.__init( self, model_id, 2 )
+function ModelBuyMenuEntry:__init(model_id, name, rank)
+    BuyMenuEntry.__init(self, model_id, 2)
     self.name = name
-	self.rank = rank
+    self.rank = rank
 end
 
 function ModelBuyMenuEntry:GetName()
@@ -92,13 +92,13 @@ function ModelBuyMenuEntry:GetRank()
     return self.rank
 end
 
-class 'AppearanceBuyMenuEntry' ( BuyMenuEntry )
+class 'AppearanceBuyMenuEntry'(BuyMenuEntry)
 
-function AppearanceBuyMenuEntry:__init( model_id, itemtype, name, rank )
-    BuyMenuEntry.__init( self, model_id, itemtype, 2 )
+function AppearanceBuyMenuEntry:__init(model_id, itemtype, name, rank)
+    BuyMenuEntry.__init(self, model_id, itemtype, 2)
     self.name = name
     self.itemtype = itemtype
-	self.rank = rank
+    self.rank = rank
 end
 
 function AppearanceBuyMenuEntry:GetName()
@@ -113,12 +113,12 @@ function AppearanceBuyMenuEntry:GetRank()
     return self.rank
 end
 
-class 'ParachutesBuyMenuEntry' ( BuyMenuEntry )
+class 'ParachutesBuyMenuEntry'(BuyMenuEntry)
 
-function ParachutesBuyMenuEntry:__init( model_id, name, rank )
-    BuyMenuEntry.__init( self, model_id, event, 2 )
+function ParachutesBuyMenuEntry:__init(model_id, name, rank)
+    BuyMenuEntry.__init(self, model_id, event, 2)
     self.name = name
-	self.rank = rank
+    self.rank = rank
 end
 
 function ParachutesBuyMenuEntry:GetName()
@@ -134,18 +134,18 @@ function Shop:CreateItems()
         vehicles = 1,
         weapon = 2,
         character = 3,
-		appearance = 4
+        appearance = 4
     }
 
     self.id_types = {}
 
-    for k, v in pairs( self.types ) do
+    for k, v in pairs(self.types) do
         self.id_types[v] = k
     end
 
     self.items = {
-         [self.types.vehicles] = {
-            { "cars", "bikes", "jeeps", "pickups", "buses", "heavy", "tractors", "helicopters", "planes", "boats", "DLC" },
+        [self.types.vehicles] = {
+            {"cars", "bikes", "jeeps", "pickups", "buses", "heavy", "tractors", "helicopters", "planes", "boats", "DLC"},
 
 			["cars"] = {
 				VehicleBuyMenuEntry( 44, "Softtop", nil, "" ),
@@ -454,7 +454,7 @@ function Shop:CreateItems()
         },
 
         [self.types.weapon] = {
-            { "righthand", "lefthand" , "primary", "★ VIP" },
+            {"righthand", "lefthand" , "primary", "★ VIP"},
             ["righthand"] = {
 				WeaponBuyMenuEntry( Weapon.BubbleGun, 1, "Пузырьковая Пушка" ),
                 WeaponBuyMenuEntry( Weapon.Handgun, 1, "Пистолетик" ),
@@ -500,7 +500,7 @@ function Shop:CreateItems()
         },
 
         [self.types.character] = {
-            { "boys", "girls", "roaches", "ulars", "reapers", "gov", "agency", "misc", "★ VIP" },
+            {"boys", "girls", "roaches", "ulars", "reapers", "gov", "agency", "misc", "★ VIP"},
             ["boys"] = {
 				ModelBuyMenuEntry( 54, "Русский телохранитель" ),
                 ModelBuyMenuEntry( 96, "Японский телохранитель" ),
@@ -624,7 +624,7 @@ function Shop:CreateItems()
         },
 
         [self.types.appearance] = {
-            { "hats", "capshelmets", "shawls", "wigs", "face", "neck", "accessories", "parachutes", "★ VIP" },
+            {"hats", "capshelmets", "shawls", "wigs", "face", "neck", "accessories", "parachutes", "★ VIP"},
 
             ["hats"] = {
 				AppearanceBuyMenuEntry( "Clear", "Head", "ОЧИСТИТЬ" ),

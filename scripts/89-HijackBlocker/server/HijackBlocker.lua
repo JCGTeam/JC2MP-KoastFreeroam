@@ -1,19 +1,19 @@
 class 'HijackBlocker'
 
 function HijackBlocker:__init()
-	Network:Subscribe( "EnterPassenger", self, self.PassengerFunction )
+    Network:Subscribe("EnterPassenger", self, self.PassengerFunction)
 end
 
-function HijackBlocker:PassengerFunction( args, sender )
-	if args.vehicle then
-		if args.vehicle:GetOccupants() ~= nil then
-			local players = args.vehicle:GetOccupants()
+function HijackBlocker:PassengerFunction(args, sender)
+	local vehicle = args.vehicle
 
-			if (#players == 1) then
-				sender:EnterVehicle( args.vehicle, VehicleSeat.Passenger )
-			end
+	if vehicle and vehicle:GetOccupants() ~= nil then
+		local players = vehicle:GetOccupants()
+
+		if #players == 1 then
+			sender:EnterVehicle(vehicle, VehicleSeat.Passenger)
 		end
 	end
 end
 
-hijackblocker = HijackBlocker()
+local hijackblocker = HijackBlocker()

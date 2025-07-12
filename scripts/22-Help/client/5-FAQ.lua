@@ -1,14 +1,14 @@
 class 'HFAQ'
 
 function HFAQ:__init()
-	Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
-	Events:Subscribe( "Lang", self, self.EngHelp )
+    Events:Subscribe("ModuleLoad", self, self.ModuleLoad)
+    Events:Subscribe("Lang", self, self.EngHelp)
 end
 
 function HFAQ:EngHelp()
-	Events:Fire( "HelpRemoveItem", { name = "Часто задаваемые вопросы (FAQ)" } )
+	Events:Fire("HelpRemoveItem", {name = "Часто задаваемые вопросы (FAQ)"})
 
-	Events:Fire( "HelpAddItem",
+	Events:Fire("HelpAddItem",
 	{
 		name = "FAQ",
 		text =
@@ -39,13 +39,13 @@ function HFAQ:EngHelp()
 			"    We will decide it on our own :)\n \n" ..
 			"> Other problems with JC2MP:\n    jc2mpwiki.miraheze.org/wiki/Troubleshooting\n \n" ..
 			"Enjoy the game on the Russian server! :D"
-	} )
+	})
 end
 
 function HFAQ:RusHelp()
-	Events:Fire( "HelpRemoveItem", { name = "FAQ" } )
+	Events:Fire("HelpRemoveItem", {name = "FAQ"})
 
-	Events:Fire( "HelpAddItem",
+	Events:Fire("HelpAddItem",
 	{
 		name = "Часто задаваемые вопросы (FAQ)",
 		text =
@@ -84,16 +84,16 @@ function HFAQ:RusHelp()
 			"> Решение других проблем связанных с JC2MP:\n    jc2mpwiki.miraheze.org/wiki/Troubleshooting\n \n" ..
 			"Надеюсь, после прочтения этой вкладки у вас будет меньше вопросов.\n" ..
 			"(Кто-то это читает? O_o)"
-	} )
+	})
 end
 
 function HFAQ:ModuleLoad()
-	local lang = LocalPlayer:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		self:EngHelp()
-	else
-		self:RusHelp()
-	end
+    local lang = LocalPlayer:GetValue("Lang")
+    if lang and lang == "EN" then
+        self:EngHelp()
+    else
+        self:RusHelp()
+    end
 end
 
-hfaq = HFAQ()
+local hfaq = HFAQ()

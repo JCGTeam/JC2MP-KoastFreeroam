@@ -1,8 +1,8 @@
 class 'Mapping'
 
 function Mapping:__init()
-	Events:Subscribe( "ModuleLoad", self, self.CreateStaticObjects )
-	Events:Subscribe( "ModuleUnload", self, self.DestroyStaticObjects )
+    Events:Subscribe("ModuleLoad", self, self.CreateStaticObjects)
+    Events:Subscribe("ModuleUnload", self, self.DestroyStaticObjects)
 
 	self.objects = {
 		{
@@ -92,21 +92,21 @@ function Mapping:__init()
 	}
 end
 
-function Mapping:CreateStaticObjects( args )
-	for _, obj in ipairs(self.objects) do
-		local objArgs = {}
-		objArgs.position  = obj.position
-		objArgs.angle     = obj.angle
-		objArgs.model     = obj.model
-		objArgs.collision = obj.collision
-		obj.object = StaticObject.Create(objArgs)
-	end
+function Mapping:CreateStaticObjects(args)
+    for _, obj in ipairs(self.objects) do
+        local objArgs = {}
+        objArgs.position = obj.position
+        objArgs.angle = obj.angle
+        objArgs.model = obj.model
+        objArgs.collision = obj.collision
+        obj.object = StaticObject.Create(objArgs)
+    end
 end
 
 function Mapping:DestroyStaticObjects()
-	for _, obj in ipairs(self.objects) do
-		obj.object:Remove()
-	end
+    for _, obj in ipairs(self.objects) do
+        obj.object:Remove()
+    end
 end
 
-mapping = Mapping()
+local mapping = Mapping()

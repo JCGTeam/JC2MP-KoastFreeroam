@@ -1,431 +1,422 @@
 class 'Speedometer'
 
 function Speedometer:__init()
-	self.actions = {
-		[3] = true,
-		[4] = true,
-		[5] = true,
-		[6] = true,
-		[11] = true,
-		[12] = true,
-		[13] = true,
-		[14] = true,
-		[17] = true,
-		[18] = true,
-		[105] = true,
-		[137] = true,
-		[138] = true,
-		[139] = true,
-		[51] = true,
-		[52] = true,
-		[16] = true
-	}
+    self.actions = {
+        [3] = true,
+        [4] = true,
+        [5] = true,
+        [6] = true,
+        [11] = true,
+        [12] = true,
+        [13] = true,
+        [14] = true,
+        [17] = true,
+        [18] = true,
+        [105] = true,
+        [137] = true,
+        [138] = true,
+        [139] = true,
+        [51] = true,
+        [52] = true,
+        [16] = true
+    }
 
-	self.enabled = true
-	self.peredacha = false
-	self.bottom_aligned = false
-	self.center_aligned = false
-	self.speedFill = true
-	self.unit = 1
-	self.position = LocalPlayer:GetPosition()
+    self.enabled = true
+    self.peredacha = false
+    self.bottom_aligned = false
+    self.center_aligned = false
+    self.speedFill = true
+    self.unit = 1
+    self.position = LocalPlayer:GetPosition()
 
-	local lang = LocalPlayer:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		self:Lang()
-	else
-		self.locStrings = {
-			ms = "м/с",
-			kmh = "км/ч",
-			mph = "миль",
-			title = "Настройка спидометра",
-			enabled = "Включено",
-			gear = "Показывать передачу",
-			onscreenmode = "Экранный режим",
-			firstpersonmode = "Режим от 1-го лица"
-		}
-	end
+    local lang = LocalPlayer:GetValue("Lang")
+    if lang and lang == "EN" then
+        self:Lang()
+    else
+        self.locStrings = {
+            ms = "м/с",
+            kmh = "км/ч",
+            mph = "миль",
+            title = "Настройка спидометра",
+            enabled = "Включено",
+            gear = "Показывать передачу",
+            onscreenmode = "Экранный режим",
+            firstpersonmode = "Режим от 1-го лица"
+        }
+    end
 
-	self.speedScale = 120
-	self.speedFactor = 3.6
+    self.speedScale = 120
+    self.speedFactor = 3.6
 
-	self.speed_text_size = TextSize.Gigantic
-	self.unit_text_size = TextSize.Huge
+    self.speed_text_size = TextSize.Gigantic
+    self.unit_text_size = TextSize.Huge
 
-	self.bHealth = Color( 100, 100, 100 )
-	self.zHealth = Color( 255, 150, 150 )
-	self.fHealth = Color( 100, 150, 100 )
-	self.text_shadow = Color( 0, 0, 0, 100 )
+    self.bHealth = Color(100, 100, 100)
+    self.zHealth = Color(255, 150, 150)
+    self.fHealth = Color(100, 150, 100)
+    self.text_shadow = Color(0, 0, 0, 100)
 
-	if LocalPlayer:InVehicle() then
-		self.PreTickEvent = Events:Subscribe( "PreTick", self, self.PreTick )
-		self.RenderEvent = Events:Subscribe( "Render", self, self.Render )
-		self.GameRenderEvent = Events:Subscribe( "Render", self, self.GameRender )
+    if LocalPlayer:InVehicle() then
+        self.PreTickEvent = Events:Subscribe("PreTick", self, self.PreTick)
+        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+        self.GameRenderEvent = Events:Subscribe("Render", self, self.GameRender)
 
-		self.animationValue = 1
-	end
+        self.animationValue = 1
+    end
 
-	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+    Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
 
-	Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
-	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
-	Events:Subscribe( "OpenSpeedometerMenu", self, self.ToggleWindowVisible )
+    Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
+    Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
+    Events:Subscribe("OpenSpeedometerMenu", self, self.ToggleWindowVisible)
 end
 
 function Speedometer:LocalPlayerEnterVehicle()
-	if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe( "PreTick", self, self.PreTick ) end
-	if not self.RenderEvent then self.RenderEvent = Events:Subscribe( "Render", self, self.Render ) end
-	if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe( "Render", self, self.GameRender ) end
+    if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe("PreTick", self, self.PreTick) end
+    if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
+    if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe("Render", self, self.GameRender) end
 
-	self.animationValue = 1
-	--Animation:Play( 0, 1, 0.25, easeIOnut, function( value ) self.animationValue = value end )
+    self.animationValue = 1
+    -- Animation:Play( 0, 1, 0.25, easeIOnut, function( value ) self.animationValue = value end )
 end
 
 function Speedometer:LocalPlayerExitVehicle()
-	if self.PreTickEvent then Events:Unsubscribe( self.PreTickEvent ) self.PreTickEvent = nil end
-	if self.RenderEvent then Events:Unsubscribe( self.RenderEvent ) self.RenderEvent = nil end
-	if self.GameRenderEvent then Events:Unsubscribe( self.GameRenderEvent ) self.GameRenderEvent = nil end
+    if self.PreTickEvent then Events:Unsubscribe(self.PreTickEvent) self.PreTickEvent = nil end
+    if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+    if self.GameRenderEvent then Events:Unsubscribe(self.GameRenderEvent) self.GameRenderEvent = nil end
 
-	self.animationValue = nil
+    self.animationValue = nil
 end
 
 function Speedometer:Lang()
-	self.locStrings = {
-		ms = "m/s",
-		kmh = "km/h",
-		mph = "mph",
-		title = "Speedometer Settings",
-		enabled = "Enabled",
-		gear = "Show current gear",
-		onscreenmode = "On-screen mode",
-		firstpersonmode = "First-person mode"
-	}
+    self.locStrings = {
+        ms = "m/s",
+        kmh = "km/h",
+        mph = "mph",
+        title = "Speedometer Settings",
+        enabled = "Enabled",
+        gear = "Show current gear",
+        onscreenmode = "On-screen mode",
+        firstpersonmode = "First-person mode"
+    }
 end
 
 function Speedometer:CreateWindow()
-	if self.window then return end
+    if self.window then return end
 
-	self.window = Window.Create()
-	self.window:SetSize( Vector2( 300, 135 ) )
-	self.window:SetPosition( (Render.Size - self.window:GetSize())/2 )
+    self.window = Window.Create()
+    self.window:SetSize(Vector2(300, 135))
+    self.window:SetPosition((Render.Size - self.window:GetSize()) / 2)
 
-	self.window:SetTitle( self.locStrings["title"] )
-	self.window:Subscribe( "WindowClosed", self, function() self:SetWindowVisible( false ) end )
+    self.window:SetTitle(self.locStrings["title"])
+    self.window:Subscribe("WindowClosed", self, function() self:SetWindowVisible(false) end)
 
-	self.widgets = {}
+    self.widgets = {}
 
-	local enabled_checkbox = LabeledCheckBox.Create( self.window )
-	local peredacha_checkbox = LabeledCheckBox.Create( self.window )
-	local bottom_checkbox = LabeledCheckBox.Create( self.window )
-	local center_checkbox = LabeledCheckBox.Create( self.window )
+    local enabled_checkbox = LabeledCheckBox.Create(self.window)
+    local peredacha_checkbox = LabeledCheckBox.Create(self.window)
+    local bottom_checkbox = LabeledCheckBox.Create(self.window)
+    local center_checkbox = LabeledCheckBox.Create(self.window)
 
-	enabled_checkbox:SetSize( Vector2( 300, 20 ) )
-	enabled_checkbox:SetDock( GwenPosition.Top )
-	enabled_checkbox:GetLabel():SetText( self.locStrings["enabled"] )
-	enabled_checkbox:GetCheckBox():SetChecked( self.enabled )
-	enabled_checkbox:GetCheckBox():Subscribe( "CheckChanged", 
-		function() self.enabled = enabled_checkbox:GetCheckBox():GetChecked() end )
-	
-	peredacha_checkbox:SetSize( Vector2( 300, 20 ) )
-	peredacha_checkbox:SetDock( GwenPosition.Top )
-	peredacha_checkbox:GetLabel():SetText( self.locStrings["gear"] )
-	peredacha_checkbox:GetCheckBox():SetChecked( self.peredacha )
-	peredacha_checkbox:GetCheckBox():Subscribe( "CheckChanged", 
-		function() self.peredacha = peredacha_checkbox:GetCheckBox():GetChecked() end )
+    enabled_checkbox:SetSize(Vector2(300, 20))
+    enabled_checkbox:SetDock(GwenPosition.Top)
+    enabled_checkbox:GetLabel():SetText(self.locStrings["enabled"])
+    enabled_checkbox:GetCheckBox():SetChecked(self.enabled)
+    enabled_checkbox:GetCheckBox():Subscribe("CheckChanged", function() self.enabled = enabled_checkbox:GetCheckBox():GetChecked() end)
 
-	bottom_checkbox:SetSize( Vector2( 300, 20 ) )
-	bottom_checkbox:SetDock( GwenPosition.Top )
-	bottom_checkbox:GetLabel():SetText( self.locStrings["onscreenmode"] )
-	bottom_checkbox:GetCheckBox():SetChecked( self.bottom_aligned )
-	bottom_checkbox:GetCheckBox():Subscribe( "CheckChanged", 
-		function()
-			self.bottom_aligned = bottom_checkbox:GetCheckBox():GetChecked()
+    peredacha_checkbox:SetSize(Vector2(300, 20))
+    peredacha_checkbox:SetDock(GwenPosition.Top)
+    peredacha_checkbox:GetLabel():SetText(self.locStrings["gear"])
+    peredacha_checkbox:GetCheckBox():SetChecked(self.peredacha)
+    peredacha_checkbox:GetCheckBox():Subscribe("CheckChanged", function() self.peredacha = peredacha_checkbox:GetCheckBox():GetChecked() end)
 
-			if self.bottom_aligned then
-				self.speed_text_size = TextSize.VeryLarge
-				self.unit_text_size = TextSize.Large
-			else
-				self.speed_text_size = TextSize.Gigantic
-				self.unit_text_size = TextSize.Huge
-			end
+    bottom_checkbox:SetSize(Vector2(300, 20))
+    bottom_checkbox:SetDock(GwenPosition.Top)
+    bottom_checkbox:GetLabel():SetText(self.locStrings["onscreenmode"])
+    bottom_checkbox:GetCheckBox():SetChecked(self.bottom_aligned)
+    bottom_checkbox:GetCheckBox():Subscribe("CheckChanged", function()
+        self.bottom_aligned = bottom_checkbox:GetCheckBox():GetChecked()
 
-			if self.bottom_aligned then
-				center_checkbox:GetCheckBox():SetChecked( false )
-			end
-		end
-	)
+        if self.bottom_aligned then
+            self.speed_text_size = TextSize.VeryLarge
+            self.unit_text_size = TextSize.Large
+        else
+            self.speed_text_size = TextSize.Gigantic
+            self.unit_text_size = TextSize.Huge
+        end
 
-	center_checkbox:SetSize( Vector2( 300, 20 ) )
-	center_checkbox:SetDock( GwenPosition.Top )
-	center_checkbox:GetLabel():SetText( self.locStrings["firstpersonmode"] )
-	center_checkbox:GetCheckBox():SetChecked( self.center_aligned )
-	center_checkbox:GetCheckBox():Subscribe( "CheckChanged", 
-		function()
-			self.center_aligned = center_checkbox:GetCheckBox():GetChecked()
+        if self.bottom_aligned then
+            center_checkbox:GetCheckBox():SetChecked(false)
+        end
+    end)
 
-			if self.center_aligned then
-				bottom_checkbox:GetCheckBox():SetChecked( false )
-			end
-		end
-	)
+    center_checkbox:SetSize(Vector2(300, 20))
+    center_checkbox:SetDock(GwenPosition.Top)
+    center_checkbox:GetLabel():SetText(self.locStrings["firstpersonmode"])
+    center_checkbox:GetCheckBox():SetChecked(self.center_aligned)
+    center_checkbox:GetCheckBox():Subscribe("CheckChanged", function()
+        self.center_aligned = center_checkbox:GetCheckBox():GetChecked()
 
-	local rbc = RadioButtonController.Create( self.window )
-	rbc:SetSize( Vector2( 300, 20 ) )
-	rbc:SetDock( GwenPosition.Top )
+        if self.center_aligned then
+            bottom_checkbox:GetCheckBox():SetChecked(false)
+        end
+    end)
 
-	local units = { self.locStrings["ms"], self.locStrings["kmh"], self.locStrings["mph"] }
-	for i, v in ipairs( units ) do
-		local option = rbc:AddOption( v )
-		option:SetSize( Vector2( 100, 20 ) )
-		option:SetDock( GwenPosition.Left )
+    local rbc = RadioButtonController.Create(self.window)
+    rbc:SetSize(Vector2(300, 20))
+    rbc:SetDock(GwenPosition.Top)
 
-		if i-1 == self.unit then
-			option:Select()
-		end
+    local units = {self.locStrings["ms"], self.locStrings["kmh"], self.locStrings["mph"]}
+    for i, v in ipairs(units) do
+        local option = rbc:AddOption(v)
+        option:SetSize(Vector2(100, 20))
+        option:SetDock(GwenPosition.Left)
 
-		option:GetRadioButton():Subscribe( "Checked",
-			function()
-				self.unit = i-1
-			end )
-	end
+        if i - 1 == self.unit then
+            option:Select()
+        end
+
+        option:GetRadioButton():Subscribe("Checked", function() self.unit = i - 1 end)
+    end
 end
 
-function Speedometer:SetWindowVisible( visible )
-	self:CreateWindow()
+function Speedometer:SetWindowVisible(visible)
+    self:CreateWindow()
 
-	if self.activeWindow ~= visible then
-		self.activeWindow = visible
-		self.window:SetVisible( visible )
-		Mouse:SetVisible( visible )
-	end
+    if self.activeWindow ~= visible then
+        self.activeWindow = visible
+        self.window:SetVisible(visible)
+        Mouse:SetVisible(visible)
+    end
 end
 
-function Speedometer:GetSpeed( vehicle )
-	local speed = vehicle:GetLinearVelocity():Length()
+function Speedometer:GetSpeed(vehicle)
+    local speed = vehicle:GetLinearVelocity():Length()
 
-	if self.unit == 0 then
-		return speed
-	elseif self.unit == 1 then
-		return speed * 3.6
-	elseif self.unit == 2 then
-		return speed * 2.237
-	end
+    if self.unit == 0 then
+        return speed
+    elseif self.unit == 1 then
+        return speed * 3.6
+    elseif self.unit == 2 then
+        return speed * 2.237
+    end
 end
 
 function Speedometer:GetUnitString()
-	if self.unit == 0 then
-		return self.locStrings["ms"]
-	elseif self.unit == 1 then
-		return self.locStrings["kmh"]
-	elseif self.unit == 2 then
-		return self.locStrings["mph"]
-	end
+    if self.unit == 0 then
+        return self.locStrings["ms"]
+    elseif self.unit == 1 then
+        return self.locStrings["kmh"]
+    elseif self.unit == 2 then
+        return self.locStrings["mph"]
+    end
 end
 
-function Speedometer:DrawShadowedText3( pos, text, colour, size, scale )
-	if not scale then scale = 1.0 end
-	if not size then size = TextSize.Default end
+function Speedometer:DrawShadowedText3(pos, text, colour, size, scale)
+    if not scale then scale = 1.0 end
+    if not size then size = TextSize.Default end
 
-	local shadow_colour = Color( 0, 0, 0, 150 )
-	shadow_colour = shadow_colour * 0.4
+    local shadow_colour = Color(0, 0, 0, 150)
+    shadow_colour = shadow_colour * 0.4
 
-	Render:DrawText( pos + Vector3( 5, 5, 3 ), text, shadow_colour, size, scale )
-	Render:DrawText( pos, text, colour, size, scale )
+    Render:DrawText(pos + Vector3(5, 5, 3), text, shadow_colour, size, scale)
+    Render:DrawText(pos, text, colour, size, scale)
 end
 
-function Speedometer:DrawShadowedText2( pos, text, colour, size, scale )
-	if not scale then scale = 1.0 end
-	if not size then size = TextSize.Default end
+function Speedometer:DrawShadowedText2(pos, text, colour, size, scale)
+    if not scale then scale = 1.0 end
+    if not size then size = TextSize.Default end
 
-	local shadow_colour = Color( 0, 0, 0, 255 )
-	shadow_colour = shadow_colour * 0.4
+    local shadow_colour = Color(0, 0, 0, 255)
+    shadow_colour = shadow_colour * 0.4
 
-	Render:DrawShadowedText( pos, text, colour, shadow_colour, size, scale )
+    Render:DrawShadowedText(pos, text, colour, shadow_colour, size, scale)
 end
 
 function Speedometer:PreTick()
-	if LocalPlayer:InVehicle() then
-		self.position = LocalPlayer:GetPosition()
-	end
+    if LocalPlayer:InVehicle() then
+        self.position = LocalPlayer:GetPosition()
+    end
 end
 
 function Speedometer:Render()
-	if Game:GetState() ~= GUIState.Game or not self.enabled or LocalPlayer:GetValue( "HiddenHUD" ) then return end
-	if not self.bottom_aligned then return end
-	if not LocalPlayer:InVehicle() then return end
+    if Game:GetState() ~= GUIState.Game or not self.enabled or LocalPlayer:GetValue("HiddenHUD") then return end
+    if not self.bottom_aligned then return end
+    if not LocalPlayer:InVehicle() then return end
 
-	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
+    Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
 
-	local vehicle = LocalPlayer:GetVehicle()
+    local vehicle = LocalPlayer:GetVehicle()
 
-	local speed = self:GetSpeed( vehicle )
-	local speed_text = string.format( "%.f", speed )
-	local speed_size = Render:GetTextSize( speed_text, self.speed_text_size )
+    local speed = self:GetSpeed(vehicle)
+    local speed_text = string.format("%.f", speed)
+    local speed_size = Render:GetTextSize(speed_text, self.speed_text_size)
 
-	local vehicleAngle = vehicle:GetAngle()
-	local vehicleVelocity = -vehicleAngle * vehicle:GetLinearVelocity()
-	local currentGear = vehicle:GetTransmission():GetGear()
+    local vehicleAngle = vehicle:GetAngle()
+    local vehicleVelocity = -vehicleAngle * vehicle:GetLinearVelocity()
+    local currentGear = vehicle:GetTransmission():GetGear()
 
-	local gearString = "1"
+    local gearString = "1"
 
-	if self.peredacha then
-		if currentGear >= 4 then        
-			gearString = tostring(currentGear)
-		elseif currentGear == 3 then
-			gearString= "3"
-		elseif vehicle:GetTransmission():GetGear() == 2 then
-			gearString = "2"
-		elseif vehicleVelocity.z > 1 then
-			gearString = "R"
-		end
-	end
+    if self.peredacha then
+        if currentGear >= 4 then
+            gearString = tostring(currentGear)
+        elseif currentGear == 3 then
+            gearString = "3"
+        elseif vehicle:GetTransmission():GetGear() == 2 then
+            gearString = "2"
+        elseif vehicleVelocity.z > 1 then
+            gearString = "R"
+        end
+    end
 
-	local unit_text = self:GetUnitString()
-	local unit_size = Render:GetTextSize( unit_text, self.unit_text_size )
-	local angle = vehicleAngle * Angle( math.pi, 0, math.pi )
+    local unit_text = self:GetUnitString()
+    local unit_size = Render:GetTextSize(unit_text, self.unit_text_size)
+    local angle = vehicleAngle * Angle(math.pi, 0, math.pi)
 
-	local factor = math.clamp( vehicle:GetHealth() - 0.4, 0.0, 0.6 ) * 2.5
+    local factor = math.clamp(vehicle:GetHealth() - 0.4, 0.0, 0.6) * 2.5
 
-	local vehBrake = LocalPlayer:GetValue( "VehBrake" )
-	local col = math.lerp( vehBrake and self.bHealth or self.zHealth, vehBrake and self.bHealth or self.fHealth, factor )
-	local textcol = col
+    local vehBrake = LocalPlayer:GetValue("VehBrake")
+    local col = math.lerp(vehBrake and self.bHealth or self.zHealth, vehBrake and self.bHealth or self.fHealth, factor)
+    local textcol = col
 
-	local text_col = Color.White
-	local text_size = speed_size + Vector2( unit_size.x + 16, 0 )
+    local text_col = Color.White
+    local text_size = speed_size + Vector2(unit_size.x + 16, 0)
 
-	local speed_position = Vector2( Render.Width / 2, Render.Height )
+    local speed_position = Vector2(Render.Width / 2, Render.Height)
 
-	speed_position.y = speed_position.y - (speed_size.y + 40)
-	speed_position.x = speed_position.x - (text_size.x / 2)
+    speed_position.y = speed_position.y - (speed_size.y + 40)
+    speed_position.x = speed_position.x - (text_size.x / 2)
 
-	local unit_position = Vector2()
+    local unit_position = Vector2()
 
-	unit_position.x = speed_position.x + speed_size.x + 10
-	unit_position.y = speed_position.y + (( speed_size.y - unit_size.y ) / 2)
+    unit_position.x = speed_position.x + speed_size.x + 10
+    unit_position.y = speed_position.y + ((speed_size.y - unit_size.y) / 2)
 
-	self:DrawShadowedText2( speed_position, speed_text, textcol, self.speed_text_size )
-	self:DrawShadowedText2( unit_position, unit_text, text_col, self.unit_text_size )
+    self:DrawShadowedText2(speed_position, speed_text, textcol, self.speed_text_size)
+    self:DrawShadowedText2(unit_position, unit_text, text_col, self.unit_text_size)
 
-	local bar_len = 300
-	local bar_start = (Render.Width - bar_len) / 2
+    local bar_len = 300
+    local bar_start = (Render.Width - bar_len) / 2
 
-	local bar_pos = Vector2( bar_start, speed_position.y + text_size.y )
-	local final_pos = Vector2( bar_len, 6 )
-	if self.peredacha then
-		self:DrawShadowedText2( bar_pos - Vector2( 30, 20 ), gearString, text_col, self.unit_text_size )
-	end
+    local bar_pos = Vector2(bar_start, speed_position.y + text_size.y)
+    local final_pos = Vector2(bar_len, 6)
+    if self.peredacha then
+        self:DrawShadowedText2(bar_pos - Vector2(30, 20), gearString, text_col, self.unit_text_size)
+    end
 
-	bar_len = bar_len * vehicle:GetHealth()
-	Render:FillArea( bar_pos, final_pos, self.text_shadow )
-	Render:FillArea( bar_pos, Vector2(bar_len, 5), col)
+    bar_len = bar_len * vehicle:GetHealth()
+    Render:FillArea(bar_pos, final_pos, self.text_shadow)
+    Render:FillArea(bar_pos, Vector2(bar_len, 5), col)
 end
 
 function Speedometer:GameRender()
-	if Game:GetState() ~= GUIState.Game or not self.enabled or LocalPlayer:GetValue( "HiddenHUD" ) then return end
-	if self.bottom_aligned then return end
-	if not LocalPlayer:InVehicle() then return end
+    if Game:GetState() ~= GUIState.Game or not self.enabled or LocalPlayer:GetValue("HiddenHUD") then return end
+    if self.bottom_aligned then return end
+    if not LocalPlayer:InVehicle() then return end
 
-	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
+    Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
 
-	local vehicle = LocalPlayer:GetVehicle()
+    local vehicle = LocalPlayer:GetVehicle()
 
-	local speed = self:GetSpeed( vehicle )
-	local speed_text = string.format( "%.f", speed )
-	local speed_size = Render:GetTextSize( speed_text, self.speed_text_size )
+    local speed = self:GetSpeed(vehicle)
+    local speed_text = string.format("%.f", speed)
+    local speed_size = Render:GetTextSize(speed_text, self.speed_text_size)
 
-	local vehicleAngle = vehicle:GetAngle()
-	local vehicleVelocity = -vehicleAngle * vehicle:GetLinearVelocity()
-	local currentGear = vehicle:GetTransmission():GetGear()
+    local vehicleAngle = vehicle:GetAngle()
+    local vehicleVelocity = -vehicleAngle * vehicle:GetLinearVelocity()
+    local currentGear = vehicle:GetTransmission():GetGear()
 
-	local gearString = "1"
+    local gearString = "1"
 
-	if self.peredacha then
-		if currentGear >= 4 then        
-			gearString = tostring(currentGear)
-		elseif currentGear == 3 then
-			gearString= "3"
-		elseif vehicle:GetTransmission():GetGear() == 2 then
-			gearString = "2"
-		elseif vehicleVelocity.z > 1 then
-			gearString = "R"
-		end
-	end
+    if self.peredacha then
+        if currentGear >= 4 then
+            gearString = tostring(currentGear)
+        elseif currentGear == 3 then
+            gearString = "3"
+        elseif vehicle:GetTransmission():GetGear() == 2 then
+            gearString = "2"
+        elseif vehicleVelocity.z > 1 then
+            gearString = "R"
+        end
+    end
 
-	local unit_text = self:GetUnitString()
-	local unit_size = Render:GetTextSize( unit_text, self.unit_text_size )
-	local angle = vehicleAngle * Angle( math.pi, 0, math.pi )
+    local unit_text = self:GetUnitString()
+    local unit_size = Render:GetTextSize(unit_text, self.unit_text_size)
+    local angle = vehicleAngle * Angle(math.pi, 0, math.pi)
 
-	local factor = math.clamp( vehicle:GetHealth() - 0.4, 0.0, 0.6 ) * 2.5
+    local factor = math.clamp(vehicle:GetHealth() - 0.4, 0.0, 0.6) * 2.5
 
-	local vehBrake = LocalPlayer:GetValue( "VehBrake" )
-	local alpha = math.lerp( 0, 255, self.animationValue )
-	local zHealth = Color( self.zHealth.r, self.zHealth.g, self.zHealth.b, alpha )
-	local fHealth = Color( self.fHealth.r, self.fHealth.g, self.fHealth.b, alpha )
-	local bHealth = Color( self.bHealth.r, self.bHealth.g, self.bHealth.b, alpha )
-	local col = math.lerp( vehBrake and bHealth or zHealth, vehBrake and bHealth or fHealth, factor )
-	local textcol = col
+    local vehBrake = LocalPlayer:GetValue("VehBrake")
+    local alpha = math.lerp(0, 255, self.animationValue)
+    local zHealth = Color(self.zHealth.r, self.zHealth.g, self.zHealth.b, alpha)
+    local fHealth = Color(self.fHealth.r, self.fHealth.g, self.fHealth.b, alpha)
+    local bHealth = Color(self.bHealth.r, self.bHealth.g, self.bHealth.b, alpha)
+    local col = math.lerp(vehBrake and bHealth or zHealth, vehBrake and bHealth or fHealth, factor)
+    local textcol = col
 
-	local text_col = Color( 255, 255, 255, alpha )
-	local text_size = speed_size + Vector2( unit_size.x + 24, 0 )
-	local text_shadow = Color( self.text_shadow.r, self.text_shadow.g, self.text_shadow.b, math.lerp( 0, self.text_shadow.a, self.animationValue ) )
+    local text_col = Color(255, 255, 255, alpha)
+    local text_size = speed_size + Vector2(unit_size.x + 24, 0)
+    local text_shadow = Color(self.text_shadow.r, self.text_shadow.g, self.text_shadow.b, math.lerp(0, self.text_shadow.a, self.animationValue))
 
-	local t = Transform3()
+    local t = Transform3()
 
-	if self.center_aligned then
-		local pos_3d = vehicle:GetPosition()
-		pos_3d.y = LocalPlayer:GetBonePosition( "ragdoll_Head" ).y
+    if self.center_aligned then
+        local pos_3d = vehicle:GetPosition()
+        pos_3d.y = LocalPlayer:GetBonePosition("ragdoll_Head").y
 
-		local scale = 1
+        local scale = 1
 
-		t:Translate( pos_3d )
-		t:Scale( 0.0050 * scale )
-		t:Rotate( angle )
-		t:Translate( Vector3( 0, 0, 2000 ) )
-		t:Translate( -Vector3( text_size.x, text_size.y, 0 )/2 )
-	else
-		local pos_3d = self.position
-		angle = angle * Angle( -math.rad(20), 0, 0 )
+        t:Translate(pos_3d)
+        t:Scale(0.0050 * scale)
+        t:Rotate(angle)
+        t:Translate(Vector3(0, 0, 2000))
+        t:Translate(-Vector3(text_size.x, text_size.y, 0) / 2)
+    else
+        local pos_3d = self.position
+        angle = angle * Angle(-math.rad(20), 0, 0)
 
-		local scale = math.clamp( Camera:GetPosition():Distance( pos_3d ), 0, 500 )
-		scale = scale / 20
+        local scale = math.clamp(Camera:GetPosition():Distance(pos_3d), 0, 500)
+        scale = scale / 20
 
-		t = Transform3()
-		t:Translate( pos_3d )
-		t:Scale( 0.0050 * scale )
-		t:Rotate( angle )
-		t:Translate( Vector3( text_size.x + 50, text_size.y, -250 ) * -1.5 )
-	end
+        t = Transform3()
+        t:Translate(pos_3d)
+        t:Scale(0.0050 * scale)
+        t:Rotate(angle)
+        t:Translate(Vector3(text_size.x + 50, text_size.y, -250) * -1.5)
+    end
 
-	Render:SetTransform( t )
+    Render:SetTransform(t)
 
-	self:DrawShadowedText3( Vector3.Zero, speed_text, textcol, self.speed_text_size )
-	self:DrawShadowedText3( Vector3( speed_size.x + 24, (speed_size.y - unit_size.y)/2, 0), unit_text, text_col, self.unit_text_size )
+    self:DrawShadowedText3(Vector3.Zero, speed_text, textcol, self.speed_text_size)
+    self:DrawShadowedText3(Vector3(speed_size.x + 24, (speed_size.y - unit_size.y) / 2, 0), unit_text, text_col, self.unit_text_size)
 
-	local bar_pos = Vector3( 0, text_size.y + 4, 0 )
-	local bar_len = text_size.x * vehicle:GetHealth()
-	if self.peredacha then
-		self:DrawShadowedText3( Vector3( bar_pos.x - 60, (speed_size.y - unit_size.y)/0.5, 0), gearString, text_col, self.unit_text_size )
-	end
+    local bar_pos = Vector3(0, text_size.y + 4, 0)
+    local bar_len = text_size.x * vehicle:GetHealth()
+    if self.peredacha then
+        self:DrawShadowedText3(Vector3(bar_pos.x - 60, (speed_size.y - unit_size.y) / 0.5, 0), gearString, text_col, self.unit_text_size)
+    end
 
-	Render:FillArea( bar_pos + Vector3( 1, 1, 4 ), Vector3( bar_len, 16, 0 ), col )
-	Render:FillArea( bar_pos + Vector3( 1, 1, 3 ), Vector3( text_size.x, 20, 0 ), text_shadow )
-	Render:FillArea( bar_pos, Vector3( bar_len, 16, 0 ), col )
+    Render:FillArea(bar_pos + Vector3(1, 1, 4), Vector3(bar_len, 16, 0), col)
+    Render:FillArea(bar_pos + Vector3(1, 1, 3), Vector3(text_size.x, 20, 0), text_shadow)
+    Render:FillArea(bar_pos, Vector3(bar_len, 16, 0), col)
 end
 
 function Speedometer:ToggleWindowVisible()
-	self:SetWindowVisible( not self.activeWindow )
+    self:SetWindowVisible(not self.activeWindow)
 end
 
-function Speedometer:LocalPlayerInput( args )
-	if args.input == Action.GuiPause then
-		self:SetWindowVisible( false )
-	end
+function Speedometer:LocalPlayerInput(args)
+    if args.input == Action.GuiPause then
+        self:SetWindowVisible(false)
+    end
 
-	if self.activeWindow and Game:GetState() == GUIState.Game then
-		if self.actions[args.input] then
-			return false
-		end
-	end
+    if self.activeWindow and Game:GetState() == GUIState.Game then
+        if self.actions[args.input] then
+            return false
+        end
+    end
 end
 
-speedometer = Speedometer()
+local speedometer = Speedometer()

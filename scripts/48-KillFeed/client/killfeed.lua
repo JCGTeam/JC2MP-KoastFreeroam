@@ -1,55 +1,56 @@
 class 'Killfeed'
 
 function Killfeed:__init()
-	self.list = {}
-	self.removal_time = 18
+    self.list = {}
+    self.removal_time = 18
 
-	local lang = LocalPlayer:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		self:Lang()
-	else
-		self:CreateKillStringsRUS()
-	end
+    local lang = LocalPlayer:GetValue("Lang")
+    if lang and lang == "EN" then
+        self:Lang()
+    else
+        self:CreateKillStringsRUS()
+    end
 
-	Network:Subscribe( "PlayerDeath", self, self.PlayerDeath )
+    Network:Subscribe("PlayerDeath", self, self.PlayerDeath)
 
-	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "Render", self, self.Render )
+    Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("Render", self, self.Render)
 end
 
 function Killfeed:Lang()
-	self:CreateKillStringsENG()
+    self:CreateKillStringsENG()
 end
 
-function Killfeed:PlayerDeath( args )
-	if not IsValid( args.player ) then return end
-	local reason = args.reason
+function Killfeed:PlayerDeath(args)
+    if not IsValid(args.player) then return end
 
-	if args.killer then
-		if not self.killer_msg[reason] then
-			reason = DamageEntity.None
-		end
-	else
-		if not self.no_killer_msg[reason] then
-			reason = DamageEntity.None
-		end
-	end
+    local reason = args.reason
 
-	if args.killer then
-		args.message = string.format( self.killer_msg[reason][args.id], args.player:GetName(), args.killer:GetName() )
+    if args.killer then
+        if not self.killer_msg[reason] then
+            reason = DamageEntity.None
+        end
+    else
+        if not self.no_killer_msg[reason] then
+            reason = DamageEntity.None
+        end
+    end
 
-		args.killer_name   = args.killer:GetName()
-		args.killer_colour = args.killer:GetColor()
-	else
-		args.message = string.format( self.no_killer_msg[reason][args.id], args.player:GetName() )
-	end
+    if args.killer then
+        args.message = string.format(self.killer_msg[reason][args.id], args.player:GetName(), args.killer:GetName())
 
-	args.player_name   = args.player:GetName()
-	args.player_colour = args.player:GetColor()
+        args.killer_name = args.killer:GetName()
+        args.killer_colour = args.killer:GetColor()
+    else
+        args.message = string.format(self.no_killer_msg[reason][args.id], args.player:GetName())
+    end
 
-	args.time = os.clock()
+    args.player_name = args.player:GetName()
+    args.player_colour = args.player:GetColor()
 
-	table.insert( self.list, args )
+    args.time = os.clock()
+
+    table.insert(self.list, args)
 end
 
 function Killfeed:CreateKillStringsRUS()
@@ -184,58 +185,58 @@ function Killfeed:CreateKillStringsENG()
 	}
 end
 
-function Killfeed:CalculateAlpha( time )
-	local difftime = os.clock() - time
-	local removal_time_gap = self.removal_time - 1
+function Killfeed:CalculateAlpha(time)
+    local difftime = os.clock() - time
+    local removal_time_gap = self.removal_time - 1
 
-	if difftime < removal_time_gap then
-		return 255
-	elseif difftime >= removal_time_gap and difftime < self.removal_time then
-		local interval = difftime - removal_time_gap
-		return 255 * (1 - interval)
-	else
-		return 1
-	end
+    if difftime < removal_time_gap then
+        return 255
+    elseif difftime >= removal_time_gap and difftime < self.removal_time then
+        local interval = difftime - removal_time_gap
+        return 255 * (1 - interval)
+    else
+        return 1
+    end
 end
 
 function Killfeed:Render()
-	if Game:GetState() ~= GUIState.Game then return end
-	if not LocalPlayer:GetValue( "KillFeedVisible" ) or LocalPlayer:GetValue( "HiddenHUD" ) then return end
+    if Game:GetState() ~= GUIState.Game then return end
+    if not LocalPlayer:GetValue("KillFeedVisible") or LocalPlayer:GetValue("HiddenHUD") then return end
 
-	local center_hint = Vector2( Render.Width - 25, Render.Height / 4.8 )
-	local height_offset = 0
+    local center_hint = Vector2(Render.Width - 25, Render.Height / 4.8)
+    local height_offset = 0
 
-	for i,v in ipairs( self.list ) do
-		if os.clock() - v.time < self.removal_time then
-			local pos = center_hint + Vector2( -Render:GetTextWidth( v.message ), height_offset )
-			local alpha = self:CalculateAlpha( v.time )
+    for i, v in ipairs(self.list) do
+        if os.clock() - v.time < self.removal_time then
+            local pos = center_hint + Vector2(-Render:GetTextWidth(v.message), height_offset)
+            local alpha = self:CalculateAlpha(v.time)
 
-			local color = Color( 255, 255, 255, alpha )
-			local shadow = Color( 20, 20, 20, alpha * 0.5 )
+            local color = Color(255, 255, 255, alpha)
+            local shadow = Color(20, 20, 20, alpha * 0.5)
 
-			local pattern = v.killer_name and ( v.player_name .. "(.-)" .. v.killer_name ) or ( v.player_name .. "(.-)$" )
-			local post_player_text = string.match( v.message, pattern ) or ""
+            local pattern = v.killer_name and (v.player_name .. "(.-)" .. v.killer_name) or (v.player_name .. "(.-)$")
+            local post_player_text = string.match(v.message, pattern) or ""
 
-			local player_colour = v.player_colour
-			player_colour.a = alpha
-			Render:DrawShadowedText( pos, v.player_name, v.player_colour, shadow )
+            local player_colour = v.player_colour
+            player_colour.a = alpha
+            Render:DrawShadowedText(pos, v.player_name, v.player_colour, shadow)
 
-			pos = pos + Vector2( Render:GetTextWidth( v.player_name ), 0 )
-			Render:DrawShadowedText( pos, post_player_text, color, shadow )
+            pos = pos + Vector2(Render:GetTextWidth(v.player_name), 0)
+            Render:DrawShadowedText(pos, post_player_text, color, shadow)
 
-			if v.killer_name then
-				local killer_colour = v.killer_colour
-				killer_colour.a = alpha
+            if v.killer_name then
+                local killer_colour = v.killer_colour
+                killer_colour.a = alpha
 
-				pos = pos + Vector2( Render:GetTextWidth( post_player_text ), 0 )
-				Render:DrawShadowedText( pos, v.killer_name, v.killer_colour, shadow )
-			end
+                pos = pos + Vector2(Render:GetTextWidth(post_player_text), 0)
+                Render:DrawShadowedText(pos, v.killer_name, v.killer_colour, shadow)
+            end
 
-			height_offset = height_offset + Render:GetTextHeight( v.message ) + 4
-		else
-			table.remove( self.list, i )
-		end
-	end
+            height_offset = height_offset + Render:GetTextHeight(v.message) + 4
+        else
+            table.remove(self.list, i)
+        end
+    end
 end
 
-killfeed = Killfeed()
+local killfeed = Killfeed()

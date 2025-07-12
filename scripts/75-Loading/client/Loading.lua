@@ -1,141 +1,144 @@
 class 'Load'
 
 function Load:__init()
-	self.BackgroundImages = {
-		Image.Create( AssetLocation.Resource, "BackgroundImage" ),
-		Image.Create( AssetLocation.Resource, "BackgroundImageTw" ),
-		Image.Create( AssetLocation.Resource, "BackgroundImageTh" ),
-		Image.Create( AssetLocation.Resource, "BackgroundImageFo" ) ,
-		Image.Create( AssetLocation.Resource, "BackgroundImageFi" )
+    self.BackgroundImages = {
+		Image.Create(AssetLocation.Resource, "BackgroundImage"),
+		Image.Create(AssetLocation.Resource, "BackgroundImageTw"),
+		Image.Create(AssetLocation.Resource, "BackgroundImageTh"),
+		Image.Create(AssetLocation.Resource, "BackgroundImageFo"),
+		Image.Create(AssetLocation.Resource, "BackgroundImageFi")
 	}
 
-	self.BackgroundImage = table.randomvalue( self.BackgroundImages )
-	self.LoadingCircle_Outer = Image.Create( AssetLocation.Game, "fe_initial_load_icon_dif.dds" )
+    self.BackgroundImage = table.randomvalue(self.BackgroundImages)
+    self.LoadingCircle_Outer = Image.Create(AssetLocation.Game, "fe_initial_load_icon_dif.dds")
 
-	self.BackgroundImage:SetSize( Render.Size )
+    self.BackgroundImage:SetSize(Render.Size)
 
-	self.background_clr = Color.Black
+    self.background_clr = Color.Black
 
-	local lang = LocalPlayer:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		self:Lang()
-	else
-		self.locStrings = {
-			wtitle = "ОШИБКА :С",
-			wtext = "Возможно, вы застряли на экране загрузки. \nЖелаете покинуть сервер?",
-			wbutton = "Покинуть сервер"
-		}
-	end
+    local lang = LocalPlayer:GetValue("Lang")
+    if lang and lang == "EN" then
+        self:Lang()
+    else
+        self.locStrings = {
+            wtitle = "ОШИБКА :С",
+            wtext = "Возможно, вы застряли на экране загрузки. \nЖелаете покинуть сервер?",
+            wbutton = "Покинуть сервер"
+        }
+    end
 
-	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
-	Events:Subscribe( "ResolutionChange", self, self.ResolutionChange )
-	Events:Subscribe( "GameLoad", self, self.GameLoad )
-	Events:Subscribe( "LocalPlayerDeath", self, self.LocalPlayerDeath )
-	self.PostRenderEvent = Events:Subscribe( "PostRender", self, self.PostRender )
+    Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("ModuleLoad", self, self.ModuleLoad)
+    Events:Subscribe("ResolutionChange", self, self.ResolutionChange)
+    Events:Subscribe("GameLoad", self, self.GameLoad)
+    Events:Subscribe("LocalPlayerDeath", self, self.LocalPlayerDeath)
+    self.PostRenderEvent = Events:Subscribe("PostRender", self, self.PostRender)
 
-	self.IsJoining = false
+    self.IsJoining = false
 end
 
 function Load:Lang()
-	self.locStrings = {
-		wtitle = "ERROR :С",
-		wtext = "You maybe stuck on the loading screen. \nWant to leave the server?",
-		wbutton = "Leave Server"
-	}
+    self.locStrings = {
+        wtitle = "ERROR :С",
+        wtext = "You maybe stuck on the loading screen. \nWant to leave the server?",
+        wbutton = "Leave Server"
+    }
 end
 
 function Load:ModuleLoad()
-	if Game:GetState() ~= GUIState.Loading then
-		self.IsJoining = false
-	else
-		self.IsJoining = true
-		self.FadeInTimer = Timer()
-	end
+    if Game:GetState() ~= GUIState.Loading then
+        self.IsJoining = false
+    else
+        self.IsJoining = true
+        self.FadeInTimer = Timer()
+    end
 end
 
-function Load:ResolutionChange( args )
-	self.BackgroundImage:SetSize( args.size )
+function Load:ResolutionChange(args)
+    self.BackgroundImage:SetSize(args.size)
 end
 
 function Load:GameLoad()
-	self.FadeInTimer = nil
+    self.FadeInTimer = nil
 
-	if not self.PostRenderEvent then self.PostRenderEvent = Events:Subscribe( "PostRender", self, self.PostRender ) self:WindowClosed() end
+    if not self.PostRenderEvent then
+        self.PostRenderEvent = Events:Subscribe("PostRender", self, self.PostRender)
+        self:WindowClosed()
+    end
 end
 
 function Load:LocalPlayerDeath()
-	self.BackgroundImage = table.randomvalue( self.BackgroundImages )
-	self.FadeInTimer = Timer()
+    self.BackgroundImage = table.randomvalue(self.BackgroundImages)
+    self.FadeInTimer = Timer()
 end
 
 function Load:PostRender()
-	if Game:GetState() == GUIState.Loading then
-		local CircleSize = Vector2( 70, 70 )
-		local Rotation = self:GetRotation()
-		local Pos = Vector2( Render.Size.x - 80, Render.Size.y - 80 )
+    if Game:GetState() == GUIState.Loading then
+        local CircleSize = Vector2(70, 70)
+        local Rotation = self:GetRotation()
+        local Pos = Vector2(Render.Size.x - 80, Render.Size.y - 80)
 
-		Render:FillArea( Vector2.Zero, Render.Size, self.background_clr )
-		self.BackgroundImage:Draw()
+        Render:FillArea(Vector2.Zero, Render.Size, self.background_clr)
+        self.BackgroundImage:Draw()
 
-		local TransformOuter = Transform2()
-		TransformOuter:Translate( Pos )
-		TransformOuter:Rotate( math.pi * Rotation )
+        local TransformOuter = Transform2()
+        TransformOuter:Translate(Pos)
+        TransformOuter:Rotate(math.pi * Rotation)
 
-		Render:SetTransform( TransformOuter )
-		self.LoadingCircle_Outer:Draw( -( CircleSize / 2 ), CircleSize, Vector2.Zero, Vector2.One )
-		Render:ResetTransform()
+        Render:SetTransform(TransformOuter)
+        self.LoadingCircle_Outer:Draw(-(CircleSize / 2), CircleSize, Vector2.Zero, Vector2.One)
+        Render:ResetTransform()
 
-		if self.FadeInTimer and self.FadeInTimer:GetMinutes() >= 1 then
-			if self.PostRenderEvent then Events:Unsubscribe( self.PostRenderEvent ) self.PostRenderEvent = nil end
-			self:ExitWindow()
-		end
-	end
+        if self.FadeInTimer and self.FadeInTimer:GetMinutes() >= 1 then
+            if self.PostRenderEvent then Events:Unsubscribe(self.PostRenderEvent) self.PostRenderEvent = nil end
+            self:ExitWindow()
+        end
+    end
 end
 
 function Load:ExitWindow()
-	self.FadeInTimer = nil
-	Mouse:SetVisible( true )
+    self.FadeInTimer = nil
+    Mouse:SetVisible(true)
 
-	if self.window then return end
+    if self.window then return end
 
-	self.window = Window.Create()
-	self.window:SetSizeRel( Vector2( 0.2, 0.2 ) )
-	self.window:SetMinimumSize( Vector2( 500, 200 ) )
-	self.window:SetPositionRel( Vector2( 0.7, 0.5 ) - self.window:GetSizeRel()/2 )
-	self.window:SetVisible( true )
-	self.window:SetTitle( self.locStrings["wtitle"] )
-	self.window:Subscribe( "WindowClosed", self, self.WindowClosed )
+    self.window = Window.Create()
+    self.window:SetSizeRel(Vector2(0.2, 0.2))
+    self.window:SetMinimumSize(Vector2(500, 200))
+    self.window:SetPositionRel(Vector2(0.7, 0.5) - self.window:GetSizeRel() / 2)
+    self.window:SetVisible(true)
+    self.window:SetTitle(self.locStrings["wtitle"])
+    self.window:Subscribe("WindowClosed", self, self.WindowClosed)
 
-	self.errorText = Label.Create( self.window )
-	self.errorText:SetPosition( Vector2( 20, 30 ) )
-	self.errorText:SetSize( Vector2( 450, 100 ) )
-	self.errorText:SetText( self.locStrings["wtext"] )
-	self.errorText:SetTextSize( 20 )
+    self.errorText = Label.Create(self.window)
+    self.errorText:SetPosition(Vector2(20, 30))
+    self.errorText:SetSize(Vector2(450, 100))
+    self.errorText:SetText(self.locStrings["wtext"])
+    self.errorText:SetTextSize(20)
 
-	self.leaveButton = Button.Create( self.window )
-	self.leaveButton:SetSize( Vector2( 100, 40 ) )
-	self.leaveButton:SetDock( GwenPosition.Bottom )
-	self.leaveButton:SetText( self.locStrings["wbutton"] )
-	self.leaveButton:Subscribe( "Press", self, self.Exit )
+    self.leaveButton = Button.Create(self.window)
+    self.leaveButton:SetSize(Vector2(100, 40))
+    self.leaveButton:SetDock(GwenPosition.Bottom)
+    self.leaveButton:SetText(self.locStrings["wbutton"])
+    self.leaveButton:Subscribe("Press", self, self.Exit)
 end
 
 function Load:WindowClosed()
-	if self.window then self.window:Remove() self.window = nil end
-	if self.errorText then self.errorText:Remove() self.errorText = nil end
-	if self.leaveButton then self.leaveButton:Remove() self.leaveButton = nil end
+    if self.window then self.window:Remove() self.window = nil end
+    if self.errorText then self.errorText:Remove() self.errorText = nil end
+    if self.leaveButton then self.leaveButton:Remove() self.leaveButton = nil end
 
-	Mouse:SetVisible( false )
+    Mouse:SetVisible(false)
 end
 
 function Load:Exit()
-	self:WindowClosed()
-	Network:Send( "KickPlayer" )
+    self:WindowClosed()
+    Network:Send("KickPlayer")
 end
 
 function Load:GetRotation()
-	local RotationValue = Client:GetElapsedSeconds() * 3
-	return RotationValue
+    local RotationValue = Client:GetElapsedSeconds() * 3
+    return RotationValue
 end
 
-load = Load()
+local load = Load()

@@ -1,11 +1,11 @@
 class 'MGAnimationFix'
 
 function MGAnimationFix:__init()
-    if LocalPlayer:GetValue( "UsedMinigun" ) then
-        LocalPlayer:SetValue( "UsedMinigun", nil )
+    if LocalPlayer:GetValue("UsedMinigun") then
+        LocalPlayer:SetValue("UsedMinigun", nil)
     end
 
-    self.whitelist = { 
+    self.whitelist = {
         [AnimationState.SUprightIdle] = true,
         [AnimationState.SUprightBasicNavigation] = true,
         [AnimationState.SUprightStop] = true,
@@ -20,31 +20,31 @@ function MGAnimationFix:__init()
         [AnimationState.SUnfoldParachuteHorizontal] = true
     }
 
-    self.mglist = { 
+    self.mglist = {
         [AnimationState.SIdleMg] = true,
         [AnimationState.SWalkMg] = true
     }
 
     if not LocalPlayer:InVehicle() then
         self.checkTimer = Timer()
-        self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick )
-        self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
+        self.PostTickEvent = Events:Subscribe("PostTick", self, self.PostTick)
+        self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
     end
 
-    Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
-	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
+    Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
+    Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
 end
 
 function MGAnimationFix:LocalPlayerEnterVehicle()
     if self.checkTimer then self.checkTimer = nil end
-	if self.PostTickEvent then Events:Unsubscribe( self.PostTickEvent ) self.PostTickEvent = nil end
-    if self.LocalPlayerInputEvent then Events:Unsubscribe( self.LocalPlayerInputEvent ) self.LocalPlayerInputEvent = nil end
+    if self.PostTickEvent then Events:Unsubscribe(self.PostTickEvent) self.PostTickEvent = nil end
+    if self.LocalPlayerInputEvent then Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil end
 end
 
 function MGAnimationFix:LocalPlayerExitVehicle()
     if not self.checkTimer then self.checkTimer = Timer() end
-    if not self.PostTickEvent then self.PostTickEvent = Events:Subscribe( "PostTick", self, self.PostTick ) end
-    if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput ) end
+    if not self.PostTickEvent then self.PostTickEvent = Events:Subscribe("PostTick", self, self.PostTick) end
+    if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
 end
 
 function MGAnimationFix:CheckMinigun()
@@ -53,15 +53,15 @@ function MGAnimationFix:CheckMinigun()
 
     if not LocalPlayer:GetVehicle() then
         if self.whitelist[bs] then
-            if LocalPlayer:GetEquippedWeapon() == Weapon( Weapon.Minigun ) and bs ~= minigunstate then
-                LocalPlayer:SetBaseState( minigunstate )
-                LocalPlayer:SetValue( "UsedMinigun", 1 )
+            if LocalPlayer:GetEquippedWeapon() == Weapon(Weapon.Minigun) and bs ~= minigunstate then
+                LocalPlayer:SetBaseState(minigunstate)
+                LocalPlayer:SetValue("UsedMinigun", 1)
             end
         else
-            if LocalPlayer:GetValue( "UsedMinigun" ) then
-                if LocalPlayer:GetEquippedWeapon() ~= Weapon( Weapon.Minigun ) and self.mglist[bs] then
-                    LocalPlayer:SetBaseState( AnimationState.SDash )
-                    LocalPlayer:SetValue( "UsedMinigun", nil )
+            if LocalPlayer:GetValue("UsedMinigun") then
+                if LocalPlayer:GetEquippedWeapon() ~= Weapon(Weapon.Minigun) and self.mglist[bs] then
+                    LocalPlayer:SetBaseState(AnimationState.SDash)
+                    LocalPlayer:SetValue("UsedMinigun", nil)
                 end
             end
         end
@@ -76,7 +76,7 @@ function MGAnimationFix:PostTick()
     end
 end
 
-function MGAnimationFix:LocalPlayerInput( args )
+function MGAnimationFix:LocalPlayerInput(args)
     if Game:GetState() ~= GUIState.Game then return end
 
     if args.input == Action.FireRight then
@@ -84,4 +84,4 @@ function MGAnimationFix:LocalPlayerInput( args )
     end
 end
 
-mganimationfix = MGAnimationFix()
+local mganimationfix = MGAnimationFix()

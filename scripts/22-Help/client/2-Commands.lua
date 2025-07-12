@@ -1,14 +1,14 @@
 class 'HCommands'
 
 function HCommands:__init()
-	Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
-	Events:Subscribe( "Lang", self, self.EngHelp )
+    Events:Subscribe("ModuleLoad", self, self.ModuleLoad)
+    Events:Subscribe("Lang", self, self.EngHelp)
 end
 
 function HCommands:EngHelp()
-	Events:Fire( "HelpRemoveItem", { name = "Команды" } )
+	Events:Fire("HelpRemoveItem", {name = "Команды"})
 
-	Events:Fire( "HelpAddItem",
+	Events:Fire("HelpAddItem",
 	{
 		name = "Commands",
 		text =
@@ -42,13 +42,13 @@ function HCommands:EngHelp()
 			"    /tetris             Play Tetris.\n" ..
 			"    /pong <difficulty> Play Pong.\n" ..
 			"       *difficulties: Noob, Easy, Medium, Hard, Extreme"
-	} )
+	})
 end
 
 function HCommands:RusHelp()
-	Events:Fire( "HelpRemoveItem", { name = "Commands" } )
+	Events:Fire("HelpRemoveItem", { name = "Commands" })
 
-	Events:Fire( "HelpAddItem",
+	Events:Fire("HelpAddItem",
 	{
 		name = "Команды",
 		text =
@@ -82,16 +82,16 @@ function HCommands:RusHelp()
 			"    /tetris             Открыть тетрис.\n" ..
 			"    /pong <сложность> Играть в понг.\n" ..
 			"       *сложности: Noob, Easy, Medium, Hard, Extreme"
-	} )
+	})
 end
 
 function HCommands:ModuleLoad()
-	local lang = LocalPlayer:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		self:EngHelp()
-	else
-		self:RusHelp()
-	end
+    local lang = LocalPlayer:GetValue("Lang")
+    if lang and lang == "EN" then
+        self:EngHelp()
+    else
+        self:RusHelp()
+    end
 end
 
-hcommands = HCommands()
+local hcommands = HCommands()

@@ -3,30 +3,30 @@ class 'BloozeMod'
 function BloozeMod:__init()
     self.default_fov = Camera:GetFOV()
 
-    Events:Subscribe( "BloozingStart", self, self.BloozingStart )
+    Events:Subscribe("BloozingStart", self, self.BloozingStart)
 end
 
 function BloozeMod:InputPoll()
-	if Input:GetValue( Action.TurnRight ) == 0 and Input:GetValue( Action.TurnLeft ) == 0 then
-		if self.timer:GetSeconds() <= 5 then
-			Input:SetValue( Action.TurnRight, self.num )
-		else
-			Input:SetValue( Action.TurnLeft, self.num )
-		end
-	end
+    if Input:GetValue(Action.TurnRight) == 0 and Input:GetValue(Action.TurnLeft) == 0 then
+        if self.timer:GetSeconds() <= 5 then
+            Input:SetValue(Action.TurnRight, self.num)
+        else
+            Input:SetValue(Action.TurnLeft, self.num)
+        end
+    end
 end
 
 function BloozeMod:CalcView()
     if not LocalPlayer:InVehicle() then
-        Camera:SetFOV( self.default_fov + 0.2 )
+        Camera:SetFOV(self.default_fov + 0.2)
     end
 
     local bs = LocalPlayer:GetBaseState()
     if bs ~= 208 then
         if self.naklon == 1 then
-            Camera:SetAngle( Camera:GetAngle() * Angle( self.value, self.value, self.value ) )
+            Camera:SetAngle(Camera:GetAngle() * Angle(self.value, self.value, self.value))
         else
-            Camera:SetAngle( Camera:GetAngle() * Angle( - self.value, -self.value, - self.value ) )
+            Camera:SetAngle(Camera:GetAngle() * Angle(-self.value, -self.value, -self.value))
             self.naklon = 0
         end
     end
@@ -42,11 +42,11 @@ function BloozeMod:CalcView()
             self.naklon = self.naklon + 1
 
             if bs == 6 or bs == 7 or bs == 9 and not LocalPlayer:GetVehicle() then
-                local animations = { bs, AnimationState.SSkydive, bs }
-                LocalPlayer:SetBaseState( table.randomvalue( animations ) )
+                local animations = {bs, AnimationState.SSkydive, bs}
+                LocalPlayer:SetBaseState(table.randomvalue(animations))
 
                 if bs == AnimationState.SSkydive then
-                    Game:FireEvent( "ply.reacthitfly" )
+                    Game:FireEvent("ply.reacthitfly")
                 end
             end
         end
@@ -58,25 +58,25 @@ function BloozeMod:CalcView()
 end
 
 function BloozeMod:BloozingStart()
-    Network:Send( "MinusHP" )
+    Network:Send("MinusHP")
 
-	local sound = ClientSound.Create( AssetLocation.Game, {
+    local sound = ClientSound.Create(AssetLocation.Game, {
         bank_id = 12,
         sound_id = 19,
         position = LocalPlayer:GetPosition(),
         angle = LocalPlayer:GetAngle()
     })
 
-    sound:SetParameter(0,1)
+    sound:SetParameter(0, 1)
 
-    local sound = ClientSound.Create( AssetLocation.Game, {
+    local sound = ClientSound.Create(AssetLocation.Game, {
         bank_id = 12,
         sound_id = 1,
         position = LocalPlayer:GetPosition(),
         angle = LocalPlayer:GetAngle()
     })
 
-    sound:SetParameter(2,1)
+    sound:SetParameter(2, 1)
 
     if not self.bloozingtimer then
         self.backfov = Camera:GetFOV()
@@ -88,11 +88,11 @@ function BloozeMod:BloozingStart()
 
         self.bloozingtimer = Timer()
 
-        self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll )
-        self.CalcViewEvent = Events:Subscribe( "CalcView", self, self.CalcView )
-        self.LocalPlayerDeathEvent = Events:Subscribe( "LocalPlayerDeath", function() self:BloozingStop() end )
-        self.LocalPlayerWorldChangeEvent = Events:Subscribe( "LocalPlayerWorldChange", function() self:BloozingStop() end )
-        self.ModuleUnloadEvent = Events:Subscribe( "ModuleUnload", function() self:BloozingStop() end )
+        self.InputPollEvent = Events:Subscribe("InputPoll", self, self.InputPoll)
+        self.CalcViewEvent = Events:Subscribe("CalcView", self, self.CalcView)
+        self.LocalPlayerDeathEvent = Events:Subscribe("LocalPlayerDeath", function() self:BloozingStop() end)
+        self.LocalPlayerWorldChangeEvent = Events:Subscribe("LocalPlayerWorldChange", function() self:BloozingStop() end)
+        self.ModuleUnloadEvent = Events:Subscribe("ModuleUnload", function() self:BloozingStop() end)
     else
         self.bloozingtimer:Restart()
     end
@@ -103,22 +103,22 @@ function BloozeMod:BloozingStop()
         self.bloozingtimer = nil
 
         if self.backfov then
-            Camera:SetFOV( self.backfov )
+            Camera:SetFOV(self.backfov)
         end
 
         self.backfov = nil
-    
+
         self.num = nil
         self.timer = nil
         self.value = nil
         self.naklon = nil
 
-        if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
-        if self.CalcViewEvent then Events:Unsubscribe( self.CalcViewEvent ) self.CalcViewEvent = nil end
-        if self.LocalPlayerDeathEvent then Events:Unsubscribe( self.LocalPlayerDeathEvent ) self.LocalPlayerDeathEvent = nil end
-        if self.LocalPlayerWorldChangeEvent then Events:Unsubscribe( self.LocalPlayerWorldChangeEvent ) self.LocalPlayerWorldChangeEvent = nil end
-        if self.ModuleUnloadEvent then Events:Unsubscribe( self.ModuleUnloadEvent ) self.ModuleUnloadEvent = nil end
+        if self.InputPollEvent then Events:Unsubscribe(self.InputPollEvent) self.InputPollEvent = nil end
+        if self.CalcViewEvent then Events:Unsubscribe(self.CalcViewEvent) self.CalcViewEvent = nil end
+        if self.LocalPlayerDeathEvent then Events:Unsubscribe(self.LocalPlayerDeathEvent) self.LocalPlayerDeathEvent = nil end
+        if self.LocalPlayerWorldChangeEvent then Events:Unsubscribe(self.LocalPlayerWorldChangeEvent) self.LocalPlayerWorldChangeEvent = nil end
+        if self.ModuleUnloadEvent then Events:Unsubscribe(self.ModuleUnloadEvent) self.ModuleUnloadEvent = nil end
     end
 end
 
-bloozemod = BloozeMod()
+local bloozemod = BloozeMod()

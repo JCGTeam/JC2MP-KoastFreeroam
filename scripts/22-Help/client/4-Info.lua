@@ -114,4 +114,4 @@ function HInfo:ModuleLoad()
 	end
 end
 
-hinfo = HInfo()
+local hinfo = HInfo()

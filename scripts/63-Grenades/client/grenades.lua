@@ -2,13 +2,13 @@ class "Grenades"
 
 Grenades.OverThrowTime = 0.36
 Grenades.UnderThrowTime = 0.48
-Grenades.GrenadeOffset = Vector3( 0.3, -0.06, -0.02 )
+Grenades.GrenadeOffset = Vector3(0.3, -0.06, -0.02)
 
 function Grenades:__init()
-    self.womanskins = { 14, 31, 41, 46, 47, 62, 72, 82, 92, 102, 60, 86, 90, 65, 25 }
+    self.womanskins = {14, 31, 41, 46, 47, 62, 72, 82, 92, 102, 60, 86, 90, 65, 25}
 
     self.blacklist = {
-        animations = { 
+        animations = {
             [AnimationState.SReelFlight] = true,
             [AnimationState.SIdlePassengerVehicle] = true,
             [AnimationState.SReeledInIdle] = true,
@@ -26,14 +26,14 @@ function Grenades:__init()
         }
     }
 
-    Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
-    Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
-    Events:Subscribe( "InputPoll", self, self.InputPoll )
-    Events:Subscribe( "FireGrenade", self, self.FireGrenade )
-    Events:Subscribe( "PostTick", self, self.PostTick )
-    Events:Subscribe( "Render", self, self.Render )
+    Events:Subscribe("ModuleLoad", self, self.ModuleLoad)
+    Events:Subscribe("ModuleUnload", self, self.ModuleUnload)
+    Events:Subscribe("InputPoll", self, self.InputPoll)
+    Events:Subscribe("FireGrenade", self, self.FireGrenade)
+    Events:Subscribe("PostTick", self, self.PostTick)
+    Events:Subscribe("Render", self, self.Render)
 
-    Network:Subscribe( "GrenadeTossed", self, self.GrenadeTossed )
+    Network:Subscribe("GrenadeTossed", self, self.GrenadeTossed)
 
     self.object = false
 end
@@ -60,54 +60,58 @@ end
 
 function Grenades:InputPoll()
     if not self.thrown then
-        if not self.thrownTimer then self.thrownTimer = Timer() end
+        if not self.thrownTimer then
+            self.thrownTimer = Timer()
+        end
 
         local bs = LocalPlayer:GetBaseState()
 
         if bs ~= AnimationState.SParachute then
-            Input:SetValue( Action.TurnLeft, 0 )
-            Input:SetValue( Action.TurnRight, 0 )
-            Input:SetValue( Action.LookLeft, 0 )
-            Input:SetValue( Action.LookUp, 0 )
-            Input:SetValue( Action.LookRight, 0 )
-            Input:SetValue( Action.LookDown, 0 )
+            Input:SetValue(Action.TurnLeft, 0)
+            Input:SetValue(Action.TurnRight, 0)
+            Input:SetValue(Action.LookLeft, 0)
+            Input:SetValue(Action.LookUp, 0)
+            Input:SetValue(Action.LookRight, 0)
+            Input:SetValue(Action.LookDown, 0)
 
             if not self.blacklist.animations2[bs] and not self.blacklist.animations[bs] then
                 local angle = LocalPlayer:GetAngle()
-                LocalPlayer:SetAngle( Angle( Camera:GetAngle().yaw, angle.pitch, angle.roll ) )
+                LocalPlayer:SetAngle(Angle(Camera:GetAngle().yaw, angle.pitch, angle.roll))
             end
         end
 
         if not LocalPlayer:InVehicle() and not self.blacklist.animations[bs] then
-            LocalPlayer:SetLeftArmState( self.thrownUnder and AnimationState.LaSUnderThrowGrenade or AnimationState.LaSOverThrowGrenade )
+            LocalPlayer:SetLeftArmState(self.thrownUnder and AnimationState.LaSUnderThrowGrenade or AnimationState.LaSOverThrowGrenade)
         end
     end
 end
 
-function Grenades:FireGrenade( args )
+function Grenades:FireGrenade(args)
     if args.type == "Frag" then
         self:TossGrenade(Grenade.Types.Frag)
     elseif args.type == "Smoke" then
         self:TossGrenade(Grenade.Types.Smoke)
     elseif args.type == "MichaelBay" then
-        if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+        if LocalPlayer:GetWorld() ~= DefaultWorld then
+            return
+        end
 
-        self:TossGrenade( Grenade.Types.MichaelBay )
+        self:TossGrenade(Grenade.Types.MichaelBay)
 
-        if not table.find( self.womanskins, LocalPlayer:GetModelId() ) then
-            Game:FireEvent( "ply.predator.awesomeness" )
+        if not table.find(self.womanskins, LocalPlayer:GetModelId()) then
+            Game:FireEvent("ply.predator.awesomeness")
         end
     end
 
-    if LocalPlayer:GetValue( "SuperNuclearBomb" ) then
+    if LocalPlayer:GetValue("SuperNuclearBomb") then
         if args.type == "Atom" then
             if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-            self:TossGrenade( Grenade.Types.Atom )
+            self:TossGrenade(Grenade.Types.Atom)
 
-			if not table.find( self.womanskins, LocalPlayer:GetModelId() ) then
-            	Game:FireEvent( "ply.predator.awesomeness" )
-			end
+            if not table.find(self.womanskins, LocalPlayer:GetModelId()) then
+                Game:FireEvent("ply.predator.awesomeness")
+            end
         end
     end
 end
@@ -115,7 +119,7 @@ end
 function Grenades:PostTick()
     if not self.thrown then
         local cameraAngle = Camera:GetAngle()
-        local position = LocalPlayer:GetBonePosition( "ragdoll_LeftForeArm" ) + LocalPlayer:GetBoneAngle( "ragdoll_LeftForeArm" ) * Grenades.GrenadeOffset
+        local position = LocalPlayer:GetBonePosition("ragdoll_LeftForeArm") + LocalPlayer:GetBoneAngle("ragdoll_LeftForeArm") * Grenades.GrenadeOffset
 
         self.thrownVelocity = (cameraAngle * Vector3.Forward * 25) * ((cameraAngle.pitch + (math.pi / 2)) / (math.pi / 2))
         self.thrownPosition = position
@@ -152,7 +156,7 @@ function Grenades:Render()
     self:ApplyDummy(LocalPlayer)
 end
 
-function Grenades:ApplyDummy( player )
+function Grenades:ApplyDummy(player)
     local state = player:GetLeftArmState()
     local dummy = self.dummies[player:GetId()]
 
@@ -168,8 +172,8 @@ function Grenades:ApplyDummy( player )
                 self.dummies[player:GetId()] = dummy
             end
 
-            dummy:SetAngle( player:GetBoneAngle("ragdoll_LeftForeArm") )
-            dummy:SetPosition( player:GetBonePosition("ragdoll_LeftForeArm") + dummy:GetAngle() * Grenades.GrenadeOffset )
+            dummy:SetAngle(player:GetBoneAngle("ragdoll_LeftForeArm"))
+            dummy:SetPosition(player:GetBonePosition("ragdoll_LeftForeArm") + dummy:GetAngle() * Grenades.GrenadeOffset)
         end
     elseif dummy then
         dummy:Remove()
@@ -177,9 +181,8 @@ function Grenades:ApplyDummy( player )
     end
 end
 
-function Grenades:TossGrenade( type )
-    if self.thrown and
-        not table.find({AnimationState.LaSUnderThrowGrenade, AnimationState.LaSOverThrowGrenade}, LocalPlayer:GetLeftArmState()) then
+function Grenades:TossGrenade(type)
+    if self.thrown and not table.find({AnimationState.LaSUnderThrowGrenade, AnimationState.LaSOverThrowGrenade}, LocalPlayer:GetLeftArmState()) then
         self.thrown = false
         self.thrownUnder = Camera:GetAngle().pitch < -math.pi / 12
         self.thrownType = type
@@ -188,7 +191,7 @@ function Grenades:TossGrenade( type )
     end
 end
 
-function Grenades:GrenadeTossed( args )
+function Grenades:GrenadeTossed(args)
     table.insert(self.grenades, Grenade(args.position, args.velocity, args.type))
 end
 

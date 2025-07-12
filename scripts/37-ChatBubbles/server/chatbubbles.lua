@@ -1,11 +1,11 @@
 class "ChatBubbles"
 
 function ChatBubbles:__init()
-	Events:Subscribe( "PlayerChat", self, self.onPlayerChat )
+    Events:Subscribe("PlayerChat", self, self.onPlayerChat)
 end
 
-function ChatBubbles:onPlayerChat( args )
-	Network:Broadcast ( "chatBubbles.receiveMessage", args )
+function ChatBubbles:onPlayerChat(args)
+    Network:Broadcast("chatBubbles.receiveMessage", args)
 end
 
-chatbubbles = ChatBubbles()
+local chatbubbles = ChatBubbles()

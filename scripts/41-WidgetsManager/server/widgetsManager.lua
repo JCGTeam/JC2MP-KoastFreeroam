@@ -1,7 +1,7 @@
 class 'WidgetsManager'
 
 function WidgetsManager:__init()
-    Events:Subscribe( "PostTick", self, self.PostTick )
+    Events:Subscribe("PostTick", self, self.PostTick)
 
     self.timer = Timer()
 
@@ -12,12 +12,12 @@ end
 
 function WidgetsManager:PostTick()
     if self.timer:GetSeconds() >= self.updateDelay then
-        self.widget = ( self.widget >= self.maxWidgets ) and 0 or self.widget + 1
+        self.widget = (self.widget >= self.maxWidgets) and 0 or self.widget + 1
 
-        Network:Broadcast( "UpdateBestScoreWidget", self.widget )
+        Network:Broadcast("UpdateBestScoreWidget", self.widget)
 
         self.timer:Restart()
-	end
+    end
 end
 
-widgetsmanager = WidgetsManager()
+local widgetsmanager = WidgetsManager()
