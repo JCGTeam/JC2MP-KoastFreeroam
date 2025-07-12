@@ -1,4 +1,4 @@
-# Koast Freeroam
+# JC2:MP | Koast Freeroam
 ![Koast Freeroam](https://i.imgur.com/Pg5QXZU.jpg)
 
 [![Discord](https://img.shields.io/badge/Discord-Koast_Freeroam-5765ec?logo=discord&logoColor=white)](https://discord.com/invite/vzew9mDpYn)
