@@ -16,7 +16,6 @@ function ServerHealth:__init()
 
     if not self.serverStatus then
         self.serverStatus = NetworkObject.Create("ServerStatus", {MaxPlayers = 0})
-        print("SSSSS")
     end
 
     self:CheckServerHealth()
@@ -111,7 +110,7 @@ function ServerHealth:PreTick()
         self.timer:Restart()
     end
 
-    if self.statusTimer:GetMinutes() >= 10 then
+    if self.statusTimer:GetMinutes() >= 15 then
         local pCount = Server:GetPlayerCount()
         local pMaxCount = self.serverStatus:GetValue("MaxPlayers")
         local sMaxPlayers = Config:GetValue("Server", "MaxPlayers")

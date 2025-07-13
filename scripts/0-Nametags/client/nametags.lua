@@ -83,53 +83,41 @@ function Nametags:UpdateLimits()
 end
 
 function Nametags:CreateWindow()
-    if self.window then
-        return
-    end
+    if self.window then return end
 
     self.window = Window.Create()
     self.window:SetSize(Vector2(200, 246))
     self.window:SetPosition((Render.Size - self.window:GetSize()) / 2)
     self.window:SetTitle(self.locStrings["title"])
-    self.window:Subscribe("WindowClosed", self, function()
-        self:SetWindowVisible(false)
-    end)
+    self.window:Subscribe("WindowClosed", self, function() self:SetWindowVisible(false) end)
 
     local enabled_checkbox = LabeledCheckBox.Create(self.window)
     enabled_checkbox:SetSize(Vector2(320, 20))
     enabled_checkbox:SetDock(GwenPosition.Top)
     enabled_checkbox:GetLabel():SetText(self.locStrings["enabled"])
     enabled_checkbox:GetCheckBox():SetChecked(self.enabled)
-    enabled_checkbox:GetCheckBox():Subscribe("CheckChanged", function()
-        self.enabled = enabled_checkbox:GetCheckBox():GetChecked()
-    end)
+    enabled_checkbox:GetCheckBox():Subscribe("CheckChanged", function() self.enabled = enabled_checkbox:GetCheckBox():GetChecked() end)
 
     local player_checkbox = LabeledCheckBox.Create(self.window)
     player_checkbox:SetSize(Vector2(320, 20))
     player_checkbox:SetDock(GwenPosition.Top)
     player_checkbox:GetLabel():SetText(self.locStrings["ptags"])
     player_checkbox:GetCheckBox():SetChecked(self.player_enabled)
-    player_checkbox:GetCheckBox():Subscribe("CheckChanged", function()
-        self.player_enabled = player_checkbox:GetCheckBox():GetChecked()
-    end)
+    player_checkbox:GetCheckBox():Subscribe("CheckChanged", function() self.player_enabled = player_checkbox:GetCheckBox():GetChecked() end)
 
     local playerClanTag_checkbox = LabeledCheckBox.Create(self.window)
     playerClanTag_checkbox:SetSize(Vector2(320, 20))
     playerClanTag_checkbox:SetDock(GwenPosition.Top)
     playerClanTag_checkbox:GetLabel():SetText(self.locStrings["ctags"])
     playerClanTag_checkbox:GetCheckBox():SetChecked(self.player_enabled)
-    playerClanTag_checkbox:GetCheckBox():Subscribe("CheckChanged", function()
-        self.playerClanTag_enabled = playerClanTag_checkbox:GetCheckBox():GetChecked()
-    end)
+    playerClanTag_checkbox:GetCheckBox():Subscribe("CheckChanged", function() self.playerClanTag_enabled = playerClanTag_checkbox:GetCheckBox():GetChecked() end)
 
     local vehicle_checkbox = LabeledCheckBox.Create(self.window)
     vehicle_checkbox:SetSize(Vector2(320, 20))
     vehicle_checkbox:SetDock(GwenPosition.Top)
     vehicle_checkbox:GetLabel():SetText(self.locStrings["vtags"])
     vehicle_checkbox:GetCheckBox():SetChecked(self.vehicle_enabled)
-    vehicle_checkbox:GetCheckBox():Subscribe("CheckChanged", function()
-        self.vehicle_enabled = vehicle_checkbox:GetCheckBox():GetChecked()
-    end)
+    vehicle_checkbox:GetCheckBox():Subscribe("CheckChanged", function() self.vehicle_enabled = vehicle_checkbox:GetCheckBox():GetChecked() end)
 
     local player_text = Label.Create(self.window)
     player_text:SetSize(Vector2(160, 32))
@@ -290,9 +278,7 @@ function Nametags:DrawCircle(pos_3d, scale, alpha, colour)
     local radius = 6
     local shadow_radius = radius + 1
     local pos_2d, success = Render:WorldToScreen(pos_3d)
-    if not success then
-        return
-    end
+    if not success then return end
 
     radius = radius * scale
     shadow_radius = shadow_radius * scale
@@ -309,9 +295,7 @@ function Nametags:DrawFullTag(pos, name, dist, colour, health)
     local scale = Nametags:CalculateAlpha(dist, self.player_bias, self.player_max, self.player_limit)
 
     -- Make sure we're supposed to draw
-    if not scale then
-        return
-    end
+    if not scale then return end
 
     local alpha = scale * 255
 
@@ -323,9 +307,7 @@ function Nametags:DrawCircleTag(pos, dist, colour)
     local scale = math.lerp(1, 0, math.clamp(1, 0, dist / self.player_limit))
 
     -- Make sure we're supposed to draw
-    if not scale then
-        return
-    end
+    if not scale then return end
 
     self:DrawCircle(pos, scale, scale, colour)
 end
@@ -417,9 +399,7 @@ end
 
 function Nametags:Render()
     -- If we're not supposed to draw now, then take us out
-    if not self.enabled or Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue("HiddenHUD") then
-        return
-    end
+    if not self.enabled or Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue("HiddenHUD") then return end
 
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
@@ -487,9 +467,7 @@ function Nametags:Render()
         end
 
         -- Sort by distance, descending
-        table.sort(sorted_players, function(a, b)
-            return (a[2] > b[2])
-        end)
+        table.sort(sorted_players, function(a, b) return (a[2] > b[2]) end)
 
         self.player_count = #sorted_players
 
