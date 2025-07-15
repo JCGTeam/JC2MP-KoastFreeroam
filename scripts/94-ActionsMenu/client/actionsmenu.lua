@@ -140,6 +140,8 @@ end
 function ActionsMenu:LocalPlayerChat(args)
     local cmd_args = args.text:split(" ")
 
+    if #cmd_args ~= 1 then return end
+
     if cmd_args[1] == "/heal" then self:Heal() end
     if cmd_args[1] == "/kill" or cmd_args[1] == "/suicide" then Network:Send("KillMe") end
     if cmd_args[1] == "/clear" then Network:Send("ClearInv") end

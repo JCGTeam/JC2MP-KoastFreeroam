@@ -604,32 +604,28 @@ function Admin:PlayerChat(args)
     local cmd_args = args.text:split(" ")
     local sender = args.player
 
-    if sender:GetValue("NT_TagName") then
-        if sender:GetValue("NT_TagName") == "Наблюдатель" then
-            if cmd_args[1] == "/hidetag" then
-                if sender:GetValue("TagHide") then
-                    Chat:Send(sender, "[Сервер] ", Color.White, "Тэг над головой включён.", Color(124, 242, 0))
-                    sender:SetNetworkValue("TagHide", false)
-                else
-                    Chat:Send(sender, "[Сервер] ", Color.White, "Тэг над головой отключён.", Color(124, 242, 0))
-                    sender:SetNetworkValue("TagHide", true)
-                end
+    local HideTagCommand = function()
+        if cmd_args[1] == "/hidetag" then
+            if sender:GetValue("TagHide") then
+                Chat:Send(sender, "[Сервер] ", Color.White, "Тэг над головой включён.", Color(124, 242, 0))
+                sender:SetNetworkValue("TagHide", false)
+            else
+                Chat:Send(sender, "[Сервер] ", Color.White, "Тэг над головой отключён.", Color(124, 242, 0))
+                sender:SetNetworkValue("TagHide", true)
             end
         end
     end
 
+    if sender:GetValue("NT_TagName") then
+        if sender:GetValue("NT_TagName") == "Наблюдатель" then
+            HideTagCommand()
+        end
+    end
+
     if isCreator(sender) or isGlAdmin(sender) or isAdmin(sender) or isAdminD(sender) or isModerD(sender) then
-        if not sender:GetValue("NT_TagName") then
-            if cmd_args[1] == "/hidetag" then
-                if sender:GetValue("TagHide") then
-                    Chat:Send(sender, "[Сервер] ", Color.White, "Тэг над головой включён.", Color(124, 242, 0))
-                    sender:SetNetworkValue("TagHide", false)
-                else
-                    Chat:Send(sender, "[Сервер] ", Color.White, "Тэг над головой отключён.", Color(124, 242, 0))
-                    sender:SetNetworkValue("TagHide", true)
-                end
-            end
-        elseif cmd_args[1] == "/petyx" then
+        HideTagCommand()
+
+        if cmd_args[1] == "/petyx" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
                 return false

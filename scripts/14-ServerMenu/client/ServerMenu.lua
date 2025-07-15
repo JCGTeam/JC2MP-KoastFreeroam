@@ -533,7 +533,7 @@ function ServerMenu:SetWindowVisible(visible, sound)
 
         self.money:SetText("$" .. formatNumber(LocalPlayer:GetMoney()))
         self.bonus_btn:SetText(LocalPlayer:GetValue("MoneyBonus") and self.locStrings["moneybonus"] or self.locStrings["notavailable"])
-        self.level:SetText(self.locStrings["level"] .. LocalPlayer:GetValue("PlayerLevel"))
+        self.level:SetText(self.locStrings["level"] .. tostring(LocalPlayer:GetValue("PlayerLevel")))
         self.passiveon_btn:SetText(LocalPlayer:GetValue("Passive") and self.locStrings["disable"] or self.locStrings["enable"])
         self.jesusmode_btn:SetText(LocalPlayer:GetValue("WaterWalk") and self.locStrings["disable"] or self.locStrings["enable"])
         self.hideme_btn:SetText(LocalPlayer:GetValue("HideMe") and self.locStrings["disable"] or self.locStrings["enable"])
