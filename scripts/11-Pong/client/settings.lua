@@ -37,10 +37,10 @@ status_colour = Color(0, 0, 0)
 mouse_last = Vector2.Zero
 
 difficulty_level = {
-	["noob"] = {1, 4, 2.5},
-	["easy"] = {1.3, 5.5, 2.5},
-	["medium"] = {1.6, 7.6, 3},
-	["hard"] = {1.9, 9, 3.3},
-	["extreme"] = {2.3, 11, 4.6},
-	["hell"] = {4, 16, 5.5}
+    ["noob"] = {1, 4, 2.5},
+    ["easy"] = {1.3, 5.5, 2.5},
+    ["medium"] = {1.6, 7.6, 3},
+    ["hard"] = {1.9, 9, 3.3},
+    ["extreme"] = {2.3, 11, 4.6},
+    ["hell"] = {4, 16, 5.5}
 }

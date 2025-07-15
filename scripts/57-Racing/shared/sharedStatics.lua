@@ -3,5 +3,4 @@
 -- settings file. Nothing should need to be altered here.
 ----------------------------------------------------------------------------------------------------
 statics = {}
-
 statics.version = "PIZDATAYA"

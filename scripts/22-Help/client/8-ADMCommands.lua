@@ -1,13 +1,13 @@
 class 'HADMCommands'
 
 function HADMCommands:__init()
-	Events:Subscribe( "LoadAdminsTab", self, self.LoadAdminsTab )
-	Events:Subscribe( "UnloadAdminsTab", self, self.UnloadAdminsTab )
+    Events:Subscribe("LoadAdminsTab", self, self.LoadAdminsTab)
+    Events:Subscribe("UnloadAdminsTab", self, self.UnloadAdminsTab)
 end
 
 function HADMCommands:LoadAdminsTab()
-	if LocalPlayer:GetValue( "Tag" ) == "Creator" or LocalPlayer:GetValue( "Tag" ) == "GlAdmin" or LocalPlayer:GetValue( "Tag" ) == "Admin" or LocalPlayer:GetValue( "Tag" ) == "Organizer" then
-		Events:Fire( "HelpAddItem",
+	if LocalPlayer:GetValue("Tag") == "Creator" or LocalPlayer:GetValue("Tag") == "GlAdmin" or LocalPlayer:GetValue("Tag") == "Admin" or LocalPlayer:GetValue("Tag") == "Organizer" then
+		Events:Fire("HelpAddItem",
 		{
 			name = "Админское :3",
 			text =
@@ -57,9 +57,9 @@ function HADMCommands:LoadAdminsTab()
 				"    /clearjoinnotice Удалить сообщение при подключении игроков на сервер.\n" ..
 				"    /addcustomtp   Добавить точку для телепортации.\n" ..
 				"    /clearallcustomtp   Очистить все созданные точки для телепортации."
-		} )
-	elseif LocalPlayer:GetValue( "Tag" ) == "AdminD" or LocalPlayer:GetValue( "Tag" ) == "ModerD" then
-		Events:Fire( "HelpAddItem",
+		})
+	elseif LocalPlayer:GetValue("Tag") == "AdminD" or LocalPlayer:GetValue("Tag") == "ModerD" then
+		Events:Fire("HelpAddItem",
 		{
 			name = "Админское :3",
 			text =
@@ -76,14 +76,14 @@ function HADMCommands:LoadAdminsTab()
 				"    /hidetag             Скрыть/показать тэг над головой.\n \n" ..
 				"> Админам:\n" ..
 				"    /rnb                    Включить переливание цветов для транспорта."
-		} )
+		})
 	end
 end
 
 function HADMCommands:UnloadAdminsTab()
-	if LocalPlayer:GetValue( "Tag" ) == "Creator" or LocalPlayer:GetValue( "Tag" ) == "GlAdmin" or LocalPlayer:GetValue( "Tag" ) == "Admin" then
-		Events:Fire( "HelpRemoveItem", { name = "Админское :3" } )
-	end
+    if LocalPlayer:GetValue("Tag") == "Creator" or LocalPlayer:GetValue("Tag") == "GlAdmin" or LocalPlayer:GetValue("Tag") == "Admin" then
+        Events:Fire("HelpRemoveItem", {name = "Админское :3"})
+    end
 end
 
-hadmCommands = HADMCommands()
+local hadmCommands = HADMCommands()

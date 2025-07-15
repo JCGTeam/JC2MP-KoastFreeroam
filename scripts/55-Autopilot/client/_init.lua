@@ -486,5 +486,5 @@ end
 
 function Vehicle:GetGroundSpeed()
 	local velocity = self:GetLinearVelocity()
-	return Vector2( velocity.x, velocity.z ):Length() * 3.6
+	return Vector2(velocity.x, velocity.z):Length() * 3.6
 end

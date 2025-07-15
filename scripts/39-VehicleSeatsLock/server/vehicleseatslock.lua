@@ -1,27 +1,27 @@
 class 'VehicleSeatsLock'
 
 function VehicleSeatsLock:__init()
-    Network:Subscribe( "SetSeatLock", self, self.SetSeatLock )
+    Network:Subscribe("SetSeatLock", self, self.SetSeatLock)
 
-    Events:Subscribe( "EntityDespawn", self, self.EntityDespawn )
+    Events:Subscribe("EntityDespawn", self, self.EntityDespawn)
 end
 
-function VehicleSeatsLock:SetSeatLock( args, sender )
+function VehicleSeatsLock:SetSeatLock(args, sender)
     if args and args.vehicle then
-        args.vehicle:SetNetworkValue( "SeatLocked", { seat = args.seat, locked = args.locked } )
+        args.vehicle:SetNetworkValue("SeatLocked", {seat = args.seat, locked = args.locked})
 
-        Network:SendNearby( sender, "SyncSeatLock", { vehicle = args.vehicle, seat = args.seat, locked = args.locked } )
+        Network:SendNearby(sender, "SyncSeatLock", {vehicle = args.vehicle, seat = args.seat, locked = args.locked})
     end
 end
 
-function VehicleSeatsLock:EntityDespawn( args, sender )
-	local entity = args.entity
+function VehicleSeatsLock:EntityDespawn(args, sender)
+    local entity = args.entity
 
-	if entity.__type == "Vehicle" then
-		if entity:GetValue( "SeatLocked" )  then
-			entity:SetNetworkValue( "SeatLocked", nil )
-		end
+    if entity.__type == "Vehicle" then
+        if entity:GetValue("SeatLocked") then
+            entity:SetNetworkValue("SeatLocked", nil)
+        end
     end
 end
 
-vehicleseatslock = VehicleSeatsLock()
+local vehicleseatslock = VehicleSeatsLock()

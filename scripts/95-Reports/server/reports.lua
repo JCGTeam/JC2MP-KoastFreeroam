@@ -34,4 +34,4 @@ function Reports:SendReport( args, sender )
     end
 end
 
-reports = Reports()
+local reports = Reports()

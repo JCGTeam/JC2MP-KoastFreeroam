@@ -15,6 +15,7 @@ settings.blockedInputsRacing = {
 	Action.NextWeapon , -- Blocks switching weapons.
 	Action.PrevWeapon , -- Blocks switching weapons.
 }
+
 settings.blockedInputsStartingGrid = {
 	Action.FireLeft ,
 	Action.FireRight ,
@@ -29,6 +30,7 @@ settings.blockedInputsStartingGrid = {
 	Action.PlaneIncTrust ,
 	Action.PlaneDecTrust ,
 }
+
 settings.blockedInputsStartingGridOnFoot = {
 	Action.FireLeft ,
 	Action.FireRight ,
@@ -43,6 +45,7 @@ settings.blockedInputsStartingGridOnFoot = {
 	Action.Evade ,
 	Action.Kick ,
 }
+
 settings.blockedInputsInVehicle = {
 	Action.StuntJump ,
 	Action.ParachuteOpenClose ,

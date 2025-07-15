@@ -1,14 +1,14 @@
 class 'HControls'
 
 function HControls:__init()
-	Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
-	Events:Subscribe( "Lang", self, self.EngHelp )
+    Events:Subscribe("ModuleLoad", self, self.ModuleLoad)
+    Events:Subscribe("Lang", self, self.EngHelp)
 end
 
 function HControls:EngHelp()
-	Events:Fire( "HelpRemoveItem", { name = "Управление" } )
+	Events:Fire("HelpRemoveItem", {name = "Управление"})
 
-	Events:Fire( "HelpAddItem",
+	Events:Fire("HelpAddItem",
 	{
 		name = "Control",
 		text =
@@ -41,11 +41,11 @@ function HControls:EngHelp()
 			'    "Ctrl" + "Z"    Vertical takeoff.\n' ..
 			'    "X"               Reverse.\n' ..
 			'    "R"               Autopilot.'
-	} )
+	})
 end
 
 function HControls:RusHelp()
-	Events:Fire( "HelpAddItem",
+	Events:Fire("HelpAddItem",
 	{
 		name = "Управление",
 		text =
@@ -79,16 +79,16 @@ function HControls:RusHelp()
 			'    "Ctrl" + "Z"    Вертикальная посадка.\n' ..
 			'    "X"               Задний ход.\n' ..
 			'    "R"               Автопилот.'
-	} )
+	})
 end
 
 function HControls:ModuleLoad()
-	local lang = LocalPlayer:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		self:EngHelp()
-	else
-		self:RusHelp()
-	end
+    local lang = LocalPlayer:GetValue("Lang")
+    if lang and lang == "EN" then
+        self:EngHelp()
+    else
+        self:RusHelp()
+    end
 end
 
-hcontrols = HControls()
+local hcontrols = HControls()

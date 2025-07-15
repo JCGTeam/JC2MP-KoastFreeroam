@@ -1,11 +1,11 @@
 class 'Load'
 
 function Load:__init()
-	Network:Subscribe( "KickPlayer", self, self.KickPlayer )
+    Network:Subscribe("KickPlayer", self, self.KickPlayer)
 end
 
-function Load:KickPlayer( args, sender )
-	sender:Kick()
+function Load:KickPlayer(args, sender)
+    sender:Kick()
 end
 
-Load = Load()
+local load = Load()

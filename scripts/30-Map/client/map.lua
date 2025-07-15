@@ -1,89 +1,90 @@
 class "Location"
 
 Location.Type = {
-	Comm        = "Comm",
-	CivCity     = "CivCity",
-	CivVil      = "CivVil",
-	MilLocation = "MilLocation",
-	MilAir      = "MilAir",
-	MilHarb     = "MilHarb",
-	MilStrong   = "MilStrong",
-	OilRig      = "OilRig",
-	Waypoint    = "Waypoint"
+    Comm = "Comm",
+    CivCity = "CivCity",
+    CivVil = "CivVil",
+    MilLocation = "MilLocation",
+    MilAir = "MilAir",
+    MilHarb = "MilHarb",
+    MilStrong = "MilStrong",
+    OilRig = "OilRig",
+    Waypoint = "Waypoint"
 }
 
 Location.TypeName = {
-	Comm        = "Communication Outpost",
-	CivCity     = "Civilian City",
-	CivVil      = "Civilian Village",
-	MilLocation = "Military Location",
-	MilAir      = "Military AirLocation",
-	MilHarb     = "Military Harbor",
-	MilStrong   = "Military Stronghold",
-	OilRig      = "Oil Rig",
-	Waypoint    = "Waypoint"
+    Comm = "Communication Outpost",
+    CivCity = "Civilian City",
+    CivVil = "Civilian Village",
+    MilLocation = "Military Location",
+    MilAir = "Military AirLocation",
+    MilHarb = "Military Harbor",
+    MilStrong = "Military Stronghold",
+    OilRig = "Oil Rig",
+    Waypoint = "Waypoint"
 }
 
 Location.Icon = {
-	Sheet  = Image.Create( AssetLocation.Game, "pda_icons_dif.dds" ),
-	Size   = Vector2.One * 64,
-	UVSize = Vector2.One * 0.125,
-	UV     = {
-		Comm        = Vector2( 0.125 * 6, 0.125 * 1 ),
-		CivCity     = Vector2( 0.125 * 6, 0.125 * 2 ),
-		CivVil      = Vector2( 0.125 * 4, 0.125 * 2 ),
-		MilLocation = Vector2( 0.125 * 1, 0.125 * 1 ),
-		MilAir      = Vector2( 0.125 * 5, 0.125 * 1 ),
-		MilHarb     = Vector2( 0.125 * 1, 0.125 * 2 ),
-		MilStrong   = Vector2( 0.125 * 3, 0.125 * 3 ),
-		OilRig      = Vector2( 0.125 * 2, 0.125 * 2 ),
-		Waypoint    = Vector2( 0.125 * 7, 0.125 * 3 )
-	}
+    Sheet = Image.Create(AssetLocation.Game, "pda_icons_dif.dds"),
+    Size = Vector2.One * 64,
+    UVSize = Vector2.One * 0.125,
+    UV = {
+        Comm = Vector2(0.125 * 6, 0.125 * 1),
+        CivCity = Vector2(0.125 * 6, 0.125 * 2),
+        CivVil = Vector2(0.125 * 4, 0.125 * 2),
+        MilLocation = Vector2(0.125 * 1, 0.125 * 1),
+        MilAir = Vector2(0.125 * 5, 0.125 * 1),
+        MilHarb = Vector2(0.125 * 1, 0.125 * 2),
+        MilStrong = Vector2(0.125 * 3, 0.125 * 3),
+        OilRig = Vector2(0.125 * 2, 0.125 * 2),
+        Waypoint = Vector2(0.125 * 7, 0.125 * 3)
+    }
 }
 
-function Location:__init( name, position, type )
-	self.name     = name
-	self.position = position
-	self.type     = type
+function Location:__init(name, position, type)
+    self.name = name
+    self.position = position
+    self.type = type
 end
 
 function Location:GetTypeName()
-	return Location.TypeName[self.type]
+    return Location.TypeName[self.type]
 end
 
-function Location:IsActive( position, scale )
-	local position0 = PDA:IsUsingGamepad() and (Render.Size / 2) or Mouse:GetPosition()
-	local iconSize = (Location.Icon.Size * scale / 2)
-	local position1 = position - iconSize
-	local position2 = position + iconSize
+function Location:IsActive(position, scale)
+    local position0 = PDA:IsUsingGamepad() and (Render.Size / 2) or Mouse:GetPosition()
+    local iconSize = (Location.Icon.Size * scale / 2)
+    local position1 = position - iconSize
+    local position2 = position + iconSize
 
-	if position0.x >= position1.x and position0.y >= position1.y and position0.x <= position2.x and position0.y <= position2.y then
-		return true
-	end
+    if position0.x >= position1.x and position0.y >= position1.y and position0.x <= position2.x and position0.y <=
+        position2.y then
+        return true
+    end
 
-	return false
+    return false
 end
 
-function Location:DrawIcon( position, scale )
-	local iconSize = Location.Icon.Size * scale
-	Location.Icon.Sheet:Draw( position - (iconSize / 2), iconSize, Location.Icon.UV[self.type], Location.Icon.UV[self.type] + Location.Icon.UVSize )
+function Location:DrawIcon(position, scale)
+    local iconSize = Location.Icon.Size * scale
+    Location.Icon.Sheet:Draw(position - (iconSize / 2), iconSize, Location.Icon.UV[self.type], Location.Icon.UV[self.type] + Location.Icon.UVSize)
 end
 
-function Location:Draw( position, scale )
-	self:DrawIcon( position, scale )
+function Location:Draw(position, scale)
+    self:DrawIcon(position, scale)
 end
 
 function Location:DrawTitle(position, scale)
-	Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
+    Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
 
-	local textSize = 21
-	Render:DrawShadowedText( position - (Render:GetTextSize(self.name, textSize) / 2) + (Vector2.Down * (Location.Icon.Size.y / 2) * scale) + (Vector2.Down * textSize / 2), self.name, Color.White, Color.Black, textSize )
+    local textSize = 21
+    Render:DrawShadowedText(position - (Render:GetTextSize(self.name, textSize) / 2) + (Vector2.Down * (Location.Icon.Size.y / 2) * scale) + (Vector2.Down * textSize / 2), self.name, Color.White, Color.Black, textSize)
 end
 
 Map = {
-	Heli  = Image.Create( AssetLocation.Game, "hud_icon_heli_orange_dif.dds" ),
-	Marker = Image.Create( AssetLocation.Base64, "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" ),
-	Image = Image.Create( AssetLocation.Game, "pda_map_dif.dds" ),
+	Heli  = Image.Create(AssetLocation.Game, "hud_icon_heli_orange_dif.dds"),
+	Marker = Image.Create(AssetLocation.Base64, "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"),
+	Image = Image.Create(AssetLocation.Game, "pda_map_dif.dds"),
 	Zoom = 1,
 	Offset = Vector2(),
 	IconScale = 0.4,
@@ -94,7 +95,7 @@ Map = {
 	ActiveLocation = nil,
 	LocationsVisible = false,
 	Players = {},
-	Waypoint = Location( "Waypoint", Vector3(), Location.Type.Waypoint ),
+	Waypoint = Location("Waypoint", Vector3(), Location.Type.Waypoint),
 	Locations = {
 		Location("Kepulauan", Vector3(-1396.228, 276.0449, 10460.26), Location.Type.Comm),
 		Location("Negeri Gunung Berawn", Vector3(7826.969, 254.5643, 8466.012), Location.Type.MilLocation),
@@ -483,184 +484,186 @@ Map = {
 	}
 }
 
-function Map:ScreenToWorld( position )
-	position = ((((position - (Render.Size / 2)) / Map.Zoom) - Map.Offset) / Render.Height) * 32768
+function Map:ScreenToWorld(position)
+    position = ((((position - (Render.Size / 2)) / Map.Zoom) - Map.Offset) / Render.Height) * 32768
 
-	return Vector3( position.x, Physics:GetTerrainHeight(position), position.y )
+    return Vector3(position.x, Physics:GetTerrainHeight(position), position.y)
 end
 
-function Map:WorldToScreen( position )
-	return (Render.Size / 2) + ((Map.Offset + ((Vector2(position.x, position.z) / 32768) * Render.Height)) * Map.Zoom)
+function Map:WorldToScreen(position)
+    return (Render.Size / 2) + ((Map.Offset + ((Vector2(position.x, position.z) / 32768) * Render.Height)) * Map.Zoom)
 end
 
-function Map:ToggleWaypoint( position )
-	local wPosition, waypoint = Waypoint:GetPosition()
+function Map:ToggleWaypoint(position)
+    local wPosition, waypoint = Waypoint:GetPosition()
 
-	if waypoint then
-		Waypoint:Remove()
-		if self.soundRemove then
-			self.soundRemove:Play()
-			self.soundRemove:SetParameter(0,1)
-		else
-			self.soundRemove = ClientSound.Create( AssetLocation.Game, {
-						bank_id = 20,
-						sound_id = 13,
-						position = Camera:GetPosition(),
-						angle = Angle()
-			})
+    if waypoint then
+        Waypoint:Remove()
 
-			self.soundRemove:SetParameter(0,1)
-		end
-	else
-		Waypoint:SetPosition( position )
-		if self.soundSet then
-			self.soundSet:Play()
-			self.soundSet:SetParameter(0,1)
-		else
-			self.soundSet = ClientSound.Create( AssetLocation.Game, {
-				bank_id = 20,
-				sound_id = 12,
-				position = Camera:GetPosition(),
-				angle = Angle()
-			})
+        if self.soundRemove then
+            self.soundRemove:Play()
+            self.soundRemove:SetParameter(0, 1)
+        else
+            self.soundRemove = ClientSound.Create(AssetLocation.Game, {
+                bank_id = 20,
+                sound_id = 13,
+                position = Camera:GetPosition(),
+                angle = Angle()
+            })
 
-			self.soundSet:SetParameter(0,1)
-		end
-	end
+            self.soundRemove:SetParameter(0, 1)
+        end
+    else
+        Waypoint:SetPosition(position)
+
+        if self.soundSet then
+            self.soundSet:Play()
+            self.soundSet:SetParameter(0, 1)
+        else
+            self.soundSet = ClientSound.Create(AssetLocation.Game, {
+                bank_id = 20,
+                sound_id = 12,
+                position = Camera:GetPosition(),
+                angle = Angle()
+            })
+
+            self.soundSet:SetParameter(0, 1)
+        end
+    end
 end
 
 function Map:Draw()
-	if Map.Border then
-		Render:FillArea( Vector2.Zero, Render.Size, Color( 10, 10, 10, math.lerp( 0, 200, animationValue ) ) )
-	end
+    if Map.Border then
+        Render:FillArea(Vector2.Zero, Render.Size, Color(10, 10, 10, math.lerp(0, 200, animationValue)))
+    end
 
-	Map.Heli:SetSize( Vector2.One * 30 )
-	Map.Image:SetSize( Vector2.One * Render.Height * Map.Zoom )
-	Map.Image:SetPosition( Map:WorldToScreen( Vector3( 16384, 0, 16384 ) ) - Map.Image:GetSize() )
+    Map.Heli:SetSize(Vector2.One * 30)
+    Map.Image:SetSize(Vector2.One * Render.Height * Map.Zoom)
+    Map.Image:SetPosition(Map:WorldToScreen(Vector3(16384, 0, 16384)) - Map.Image:GetSize())
 
-	if self.soundSet then
-		self.soundSet:SetPosition( Camera:GetPosition() )
-	end
+    if self.soundSet then
+        self.soundSet:SetPosition(Camera:GetPosition())
+    end
 
-	if self.soundRemove then
-		self.soundRemove:SetPosition( Camera:GetPosition() )
-	end
+    if self.soundRemove then
+        self.soundRemove:SetPosition(Camera:GetPosition())
+    end
 
-	if Map.Ramka then
-		local ramkaSize = Vector2( 3, 3 )
-		Render:FillArea( Map.Image:GetPosition() - ramkaSize, Map.Image:GetSize() + ramkaSize * 2, Color( 185, 215, 255, 100 * Map.RamkaAlpha ) )
-	end
+    if Map.Ramka then
+        local ramkaSize = Vector2(3, 3)
+        Render:FillArea(Map.Image:GetPosition() - ramkaSize, Map.Image:GetSize() + ramkaSize * 2, Color(185, 215, 255, 100 * Map.RamkaAlpha))
+    end
 
-	Map.Image:Draw()
+    Map.Image:Draw()
 
-	local scale = Map.IconScale
-	local locations = Map.Locations
-	local isUsingGamepad = PDA:IsUsingGamepad()
-	local scaleFactor = scale * (isUsingGamepad and 2 or 1)
+    local scale = Map.IconScale
+    local locations = Map.Locations
+    local isUsingGamepad = PDA:IsUsingGamepad()
+    local scaleFactor = scale * (isUsingGamepad and 2 or 1)
 
-	if Map.LocationsVisible then
-		Map.ActiveLocation = nil
+    if Map.LocationsVisible then
+        Map.ActiveLocation = nil
 
-		for i = 1, #locations do
-			local location = locations[i]
-			local position = Map:WorldToScreen( location.position )
+        for i = 1, #locations do
+            local location = locations[i]
+            local position = Map:WorldToScreen(location.position)
 
-			if position.x > 0 and position.y > 0 and position.x < Render.Width and position.y < Render.Height then
-				if location:IsActive( position, scaleFactor ) then
-					Map.ActiveLocation = location
-				end
+            if position.x > 0 and position.y > 0 and position.x < Render.Width and position.y < Render.Height then
+                if location:IsActive(position, scaleFactor) then
+                    Map.ActiveLocation = location
+                end
 
-				location:Draw( position, scale )
-			end
-		end
-	end
+                location:Draw(position, scale)
+            end
+        end
+    end
 
-	local text_clr = Color( 255, 255, 255, math.lerp( 0, 255, animationValue ) )
-	local text_shadow = Color( 0, 0, 0, math.lerp( 0, 255, animationValue ) )
+    local text_clr = Color(255, 255, 255, math.lerp(0, 255, animationValue))
+    local text_shadow = Color(0, 0, 0, math.lerp(0, 255, animationValue))
 
-	if rendermap then
-		local text_size = 14
-		local pId = LocalPlayer:GetId()
-		local pWorldId = LocalPlayer:GetWorld():GetId()
-		local background_clr = Color( 0, 0, 0, math.lerp( 0, 150, animationValue ) )
+    if rendermap then
+        local text_size = 14
+        local pId = LocalPlayer:GetId()
+        local pWorldId = LocalPlayer:GetWorld():GetId()
+        local background_clr = Color(0, 0, 0, math.lerp(0, 150, animationValue))
 
-		for _, player in pairs( Map.Players ) do
-			if player.id ~= pId and player.worldId == pWorldId then
-				local position = Map:WorldToScreen( player.pos )
-				local str = player.name
+        for _, player in pairs(Map.Players) do
+            if player.id ~= pId and player.worldId == pWorldId then
+                local position = Map:WorldToScreen(player.pos)
+                local str = player.name
 
-				Render:DrawCircle( position, Render.Size.y * 0.0055, text_shadow )
-				Render:FillCircle( position, Render.Size.y * 0.005, player.col )
+                Render:DrawCircle(position, Render.Size.y * 0.0055, text_shadow)
+                Render:FillCircle(position, Render.Size.y * 0.005, player.col)
 
-				if labels ~= 0 then
-					Render:FillArea( position + Render.Size * 0.003, Vector2( Render:GetTextWidth( str, text_size ), Render:GetTextHeight( str, text_size ) ), background_clr )
-					Render:DrawShadowedText( position + Render.Size * 0.003, str, player.col, text_shadow, text_size )
-				end
-			end
-		end
+                if labels ~= 0 then
+                    Render:FillArea(position + Render.Size * 0.003, Vector2(Render:GetTextWidth(str, text_size), Render:GetTextHeight(str, text_size)), background_clr)
+                    Render:DrawShadowedText(position + Render.Size * 0.003, str, player.col, text_shadow, text_size)
+                end
+            end
+        end
 
-		local Transform = Transform2()
-		Transform:Translate( Map:WorldToScreen( LocalPlayer:GetPosition() ) - Map.Marker:GetSize() / 2 + Map.Marker:GetSize() / 2 )
-		Transform:Rotate( -LocalPlayer:GetAngle().yaw )
+        local Transform = Transform2()
+        Transform:Translate(Map:WorldToScreen(LocalPlayer:GetPosition()) - Map.Marker:GetSize() / 2 + Map.Marker:GetSize() / 2)
+        Transform:Rotate(-LocalPlayer:GetAngle().yaw)
 
-		Render:SetTransform( Transform )
+        Render:SetTransform(Transform)
 
-		Map.Marker:SetSize( Vector2( Render.Height * 0.027, Render.Height * 0.027 ) )
-		Map.Marker:Draw( - Map.Marker:GetSize() / 2, Map.Marker:GetSize(), Vector2.Zero, Vector2.One )
+        Map.Marker:SetSize(Vector2(Render.Height * 0.027, Render.Height * 0.027))
+        Map.Marker:Draw(-Map.Marker:GetSize() / 2, Map.Marker:GetSize(), Vector2.Zero, Vector2.One)
 
-		Render:ResetTransform()
+        Render:ResetTransform()
 
-		local frac = math.sin( Client:GetElapsedSeconds() * 15 ) * 0.5 + 0.5
-		marker_animation = math.lerp( 0.5, 1, frac )
-		Map.Marker:SetAlpha( marker_animation )
+        local frac = math.sin(Client:GetElapsedSeconds() * 15) * 0.5 + 0.5
+        marker_animation = math.lerp(0.5, 1, frac)
+        Map.Marker:SetAlpha(marker_animation)
 
-		local position, waypoint = Waypoint:GetPosition()
+        local position, waypoint = Waypoint:GetPosition()
 
-		if waypoint then
-			Map.Waypoint.position = position
-			Map.Waypoint:Draw( Map:WorldToScreen(position), scale * Map.WaypointScale )
-		end
+        if waypoint then
+            Map.Waypoint.position = position
+            Map.Waypoint:Draw(Map:WorldToScreen(position), scale * Map.WaypointScale)
+        end
 
-		if Map.ActiveLocation then
-			Map.ActiveLocation:DrawTitle( Map:WorldToScreen(Map.ActiveLocation.position), scale )
-		end
+        if Map.ActiveLocation then
+            Map.ActiveLocation:DrawTitle(Map:WorldToScreen(Map.ActiveLocation.position), scale)
+        end
 
-		if isUsingGamepad then
-			local center = ( Render.Size / 2 )
-			local width = Vector2.Right * ( Render.Width / 2.5 )
-			local offsetWidth = Vector2.Right * ( Location.Icon.Size.x * scale )
+        if isUsingGamepad then
+            local center = (Render.Size / 2)
+            local width = Vector2.Right * (Render.Width / 2.5)
+            local offsetWidth = Vector2.Right * (Location.Icon.Size.x * scale)
 
-			Render:DrawLine( center - width, center - offsetWidth, text_clr )
-			Render:DrawLine( center + width, center + offsetWidth, text_clr )
+            Render:DrawLine(center - width, center - offsetWidth, text_clr)
+            Render:DrawLine(center + width, center + offsetWidth, text_clr)
 
-			local height = Vector2.Down * ( Render.Height / 2.5 )
-			local offsetHeight = Vector2.Down * ( Location.Icon.Size.y * scale )
+            local height = Vector2.Down * (Render.Height / 2.5)
+            local offsetHeight = Vector2.Down * (Location.Icon.Size.y * scale)
 
-			Render:DrawLine( center - height, center - offsetHeight, text_clr )
-			Render:DrawLine( center + height, center + offsetHeight, text_clr )
-		end
+            Render:DrawLine(center - height, center - offsetHeight, text_clr)
+            Render:DrawLine(center + height, center + offsetHeight, text_clr)
+        end
 
-		Render:SetFont( AssetLocation.Disk, "Archivo.ttf" )
+        Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
 
-		local mpos = Mouse:GetPosition()
-		local position = Map:ScreenToWorld( mpos )
-		local txtx = "X: " .. string.format( "%.0f", tonumber( position.x ) )
-		local txty = "Y: " .. string.format( "%.0f", tonumber( position.z ) )
-		local tips_pos = Vector2( 41, 46 )
+        local mpos = Mouse:GetPosition()
+        local position = Map:ScreenToWorld(mpos)
+        local txtx = "X: " .. string.format("%.0f", tonumber(position.x))
+        local txty = "Y: " .. string.format("%.0f", tonumber(position.z))
+        local tips_pos = Vector2(41, 46)
 
-		Render:DrawShadowedText( tips_pos - Vector2.One, txtx .. "\n" .. txty, text_clr, text_shadow, 15 )
+        Render:DrawShadowedText(tips_pos - Vector2.One, txtx .. "\n" .. txty, text_clr, text_shadow, 15)
 
-		local height = Render:GetTextHeight("A") * 2.5
-		tips_pos.y = tips_pos.y + height
+        local height = Render:GetTextHeight("A") * 2.5
+        tips_pos.y = tips_pos.y + height
 
-		Render:DrawShadowedText( tips_pos - Vector2.One, locStrings["MTSetWp"] .. "\n" .. locStrings["MTPToggle"] .. "\n" .. locStrings["MTExtract"], text_clr, text_shadow, 15 )
-	end
+        Render:DrawShadowedText(tips_pos - Vector2.One, locStrings["MTSetWp"] .. "\n" .. locStrings["MTPToggle"] .. "\n" .. locStrings["MTExtract"], text_clr, text_shadow, 15)
+    end
 
-	if extraction_timer then
-		local position = math.lerp( Map:WorldToScreen(previous_position), Map:WorldToScreen(next_position), extraction_timer:GetSeconds() / extraction_delay )
-		Map.Heli:SetPosition( position - 0.5 * Map.Heli:GetSize() )
-		Map.Heli:Draw()
-	end
+    if extraction_timer then
+        local position = math.lerp(Map:WorldToScreen(previous_position), Map:WorldToScreen(next_position), extraction_timer:GetSeconds() / extraction_delay)
+        Map.Heli:SetPosition(position - 0.5 * Map.Heli:GetSize())
+        Map.Heli:Draw()
+    end
 
-	collectgarbage()
+    collectgarbage()
 end

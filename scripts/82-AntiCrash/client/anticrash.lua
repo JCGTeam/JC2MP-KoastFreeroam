@@ -6,11 +6,11 @@ function AntiCrash:__init()
     local vehicle = LocalPlayer:GetVehicle()
 
     if LocalPlayer:InVehicle() and vehicle:GetClass() == VehicleClass.Land then
-        self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll )
+        self.InputPollEvent = Events:Subscribe("InputPoll", self, self.InputPoll)
     end
 
-    Events:Subscribe( "LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle )
-	Events:Subscribe( "LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle )
+    Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
+    Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
 end
 
 function AntiCrash:InputPoll()
@@ -20,21 +20,21 @@ function AntiCrash:InputPoll()
         local vehicle = LocalPlayer:GetVehicle()
 
         if LocalPlayer:InVehicle() and vehicle:GetClass() == VehicleClass.Land then
-            Input:SetValue( Action.UseItem, 1 )
+            Input:SetValue(Action.UseItem, 1)
         end
     end
 end
 
-function AntiCrash:LocalPlayerEnterVehicle( args )
-    if not ( args.vehicle:GetClass() == VehicleClass.Land ) then return end
+function AntiCrash:LocalPlayerEnterVehicle(args)
+    if not args.vehicle:GetClass() == VehicleClass.Land then return end
 
-	if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe( "InputPoll", self, self.InputPoll ) end
+    if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe("InputPoll", self, self.InputPoll) end
 end
 
-function AntiCrash:LocalPlayerExitVehicle( args )
-    if not ( args.vehicle:GetClass() == VehicleClass.Land ) then return end
+function AntiCrash:LocalPlayerExitVehicle(args)
+    if not args.vehicle:GetClass() == VehicleClass.Land then return end
 
-	if self.InputPollEvent then Events:Unsubscribe( self.InputPollEvent ) self.InputPollEvent = nil end
+    if self.InputPollEvent then Events:Unsubscribe(self.InputPollEvent) self.InputPollEvent = nil end
 end
 
-anticrash = AntiCrash()
+local anticrash = AntiCrash()

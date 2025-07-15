@@ -7,8 +7,8 @@ SCOREBOARD_CONFIGURATION =
 
 	COLUMNS = -- Scoreboard collumns
 	{	
-		{name = " ", width = 35, getter = function() return " " end },
-		{name = "ID:", width = 35, getter = function(CBoardClientInstance, p) return p:GetId() end },
+		{name = " ", width = 35, getter = function() return " " end},
+		{name = "ID:", width = 35, getter = function(CBoardClientInstance, p) return p:GetId() end},
 		{name = "Игрок:", width = 200, getter = function(CBoardClientInstance, p) return string.sub(p:GetName(), 1, 40) end},
 		{name = "Клан:", width = 200, getter = function(CBoardClientInstance, p) return tostring(CBoardClientInstance.tServerPlayersData[p:GetId()].clantag) end},
 		{name = "Уровень:", width = 90, getter = function(CBoardClientInstance, p) return tostring(CBoardClientInstance.tServerPlayersData[p:GetId()].level) end},
@@ -21,8 +21,8 @@ SCOREBOARD_CONFIGURATION =
 	SYNC_DATA =
 	{
 		ping = function(player) return player:GetPing() end,
-		level = function(player) return player:GetValue( "PlayerLevel" ) end,
-		clantag = function(player) return player:GetValue( "ClanTag" ) or "" end,
+		level = function(player) return player:GetValue("PlayerLevel") end,
+		clantag = function(player) return player:GetValue("ClanTag") or "" end,
 		kills = function(player) return player:GetValue("Kills") end,
 		gamemode = function(player) return player:GetValue("GameMode") end,
 		lang = function(player) return player:GetValue("Country") end

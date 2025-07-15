@@ -1,1 +1,1 @@
-class( "HUD" )
+class("HUD")

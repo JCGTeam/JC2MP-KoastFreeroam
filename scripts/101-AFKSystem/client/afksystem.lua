@@ -1,55 +1,55 @@
 class 'AFKSystem'
 
 function AFKSystem:__init()
-	self.timer = Timer()
-	self.secondsToEnterAFK = 180
+    self.timer = Timer()
+    self.secondsToEnterAFK = 180
 
-	self.tag = "[AFK] "
+    self.tag = "[AFK] "
 
-	local lang = LocalPlayer:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		self:Lang()
-	else
-		self.locStrings = {
-			welcomeback = "С возвращением,",
-			pausetime = "Время вашей паузы:"
-		}
-	end
+    local lang = LocalPlayer:GetValue("Lang")
+    if lang and lang == "EN" then
+        self:Lang()
+    else
+        self.locStrings = {
+            welcomeback = "С возвращением,",
+            pausetime = "Время вашей паузы:"
+        }
+    end
 
-	Events:Subscribe( "Lang", self, self.Lang )
-	Events:Subscribe( "LocalPlayerInput", self, self.LocalPlayerInput )
-	Events:Subscribe( "ModuleUnload", self, self.ModuleUnload )
+    Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+    Events:Subscribe("ModuleUnload", self, self.ModuleUnload)
 end
 
 function AFKSystem:Lang()
-	self.locStrings = {
-		welcomeback = "Welcome back,",
-		pausetime = "Your pause time:"
-	}
+    self.locStrings = {
+        welcomeback = "Welcome back,",
+        pausetime = "Your pause time:"
+    }
 end
 
 function AFKSystem:LocalPlayerInput()
-	local seconds = self.timer:GetSeconds()
+    local seconds = self.timer:GetSeconds()
 
-	if seconds >= self.secondsToEnterAFK then
-		local text = self.locStrings["welcomeback"] .. " " .. tostring( LocalPlayer:GetName() ) .. "! " .. self.locStrings["pausetime"] .. " " .. self:SecondsToClock( seconds )
+    if seconds >= self.secondsToEnterAFK then
+        local text = self.locStrings["welcomeback"] .. " " .. tostring(LocalPlayer:GetName()) .. "! " .. self.locStrings["pausetime"] .. " " .. self:SecondsToClock(seconds)
 
-		Chat:Print( self.tag, Color.White, text, Color.DarkGray )
-	end
+        Chat:Print(self.tag, Color.White, text, Color.DarkGray)
+    end
 
-	self.timer:Restart()
+    self.timer:Restart()
 end
 
 function AFKSystem:ModuleUnload()
-	self:LocalPlayerInput()
+    self:LocalPlayerInput()
 end
 
-function AFKSystem:SecondsToClock( seconds )
-    local hours = math.floor( seconds / 3600 )
-    local mins = math.floor( ( seconds % 3600 ) / 60 )
-    local secs = math.floor( seconds % 60 )
+function AFKSystem:SecondsToClock(seconds)
+    local hours = math.floor(seconds / 3600)
+    local mins = math.floor((seconds % 3600) / 60)
+    local secs = math.floor(seconds % 60)
 
-    return string.format( "%02d:%02d:%02d", hours, mins, secs )
+    return string.format("%02d:%02d:%02d", hours, mins, secs)
 end
 
-afksystem = AFKSystem()
+local afksystem = AFKSystem()

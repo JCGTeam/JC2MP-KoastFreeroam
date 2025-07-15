@@ -426,4 +426,4 @@ function CameraView:CycleViews()
 	self:CastCenterText( self.names[self.camera] )
 end
 
-cameralock = CameraView()
+local cameralock = CameraView()

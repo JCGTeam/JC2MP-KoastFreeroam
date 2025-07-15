@@ -14,33 +14,23 @@ inputSuspensionValue = 0
 -- Events
 
 ModuleLoad = function()
-	RaceMenu()
+    RaceMenu()
 end
 
 ModulesLoad = function()
-	-- Add us to the help menu.
-	local args = {
-		name = settings.gamemodeName ,
-		text = settings.gamemodeDescription
-	}
+    -- Add us to the help menu.
+    local args = {name = settings.gamemodeName, text = settings.gamemodeDescription}
 end
 
 ModuleUnload = function()
-	-- Remove us from the help menu.
-	local args = {
-		name = settings.gamemodeName
-	}
+    -- Remove us from the help menu.
+    local args = {name = settings.gamemodeName}
 end
 
-Events:Subscribe("ModuleLoad" , ModuleLoad)
-Events:Subscribe("ModulesLoad" , ModulesLoad)
-Events:Subscribe("ModuleUnload" , ModuleUnload)
+Events:Subscribe("ModuleLoad", ModuleLoad)
+Events:Subscribe("ModulesLoad", ModulesLoad)
+Events:Subscribe("ModuleUnload", ModuleUnload)
 
 -- Network events
 
-Network:Subscribe(
-	"InitializeClass" ,
-	function(args)
-		_G[args.className](args)
-	end
-)
+Network:Subscribe("InitializeClass", function(args) _G[args.className](args) end)

@@ -1,14 +1,14 @@
 class 'HDonate'
 
 function HDonate:__init()
-	Events:Subscribe( "ModuleLoad", self, self.ModuleLoad )
-	Events:Subscribe( "Lang", self, self.EngHelp )
+    Events:Subscribe("ModuleLoad", self, self.ModuleLoad)
+    Events:Subscribe("Lang", self, self.EngHelp)
 end
 
 function HDonate:EngHelp()
-	Events:Fire( "HelpRemoveItem", { name = "Донат" } )
+	Events:Fire("HelpRemoveItem", {name = "Донат"})
 
-	Events:Fire( "HelpAddItem",
+	Events:Fire("HelpAddItem",
 	{
 		name = "Donate",
 		text =
@@ -60,13 +60,13 @@ function HDonate:EngHelp()
 			"    Game currency\n" ..
 			"    Unban\n" ..
 			"    Advertising in game chat"
-	} )
+	})
 end
 
 function HDonate:RusHelp()
-	Events:Fire( "HelpRemoveItem", { name = "Donate" } )
+	Events:Fire("HelpRemoveItem", {name = "Donate"})
 
-	Events:Fire( "HelpAddItem",
+	Events:Fire("HelpAddItem",
 	{
 		name = "Донат",
 		text =
@@ -118,16 +118,16 @@ function HDonate:RusHelp()
 			"    Игровая валюта\n" ..
 			"    Разблокировка\n" ..
 			"    Реклама в игровом чате"
-	} )
+	})
 end
 
 function HDonate:ModuleLoad()
-	local lang = LocalPlayer:GetValue( "Lang" )
-	if lang and lang == "EN" then
-		self:EngHelp()
-	else
-		self:RusHelp()
-	end
+    local lang = LocalPlayer:GetValue("Lang")
+    if lang and lang == "EN" then
+        self:EngHelp()
+    else
+        self:RusHelp()
+    end
 end
 
-hdonate = HDonate()
+local hdonate = HDonate()
