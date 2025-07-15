@@ -105,7 +105,6 @@ function ClanSystem:ModuleLoad()
             areyousure = "Вы уверены, что хотите это сделать?",
             yes = "Да",
             inviteplayer = "» Пригласить игрока",
-            search = "Поиск",
             public = "Публичный",
             private = "По приглашению",
             friend_txt = "Друг"
@@ -176,7 +175,6 @@ function ClanSystem:Lang()
         areyousure = "Are you sure you want to do this?",
         yes = "Yes",
         inviteplayer = "» Invite Player",
-        search = "Search",
         public = "Public",
         private = "Private",
         friend_txt = "Friend"
