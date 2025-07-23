@@ -36,21 +36,31 @@ function FirstPerson:__init()
     self.bering = {[85] = true}
     self.aero = {[39] = true}
 
+    self:UpdateKeyBinds()
+
     self.locStrings = {
         on = "Вид от 1-го лица включён",
         off = "Вид от 1-го лица отключён"
     }
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
     Events:Subscribe("KeyUp", self, self.KeyUp)
 end
 
 function FirstPerson:Lang()
     self.locStrings = {
-        on = "First-person view enabled",
-        off = "First-person view disabled"
+        on = "First-person View Enabled",
+        off = "First-person View Disabled"
     }
+end
+
+function FirstPerson:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local bind = keyBinds and keyBinds["FirstPerson"]
+
+    self.expectedKey = bind and bind.type == "Key" and bind.value or 117
 end
 
 function FirstPerson:LocalPlayerExitVehicle()
@@ -97,14 +107,16 @@ function FirstPerson:Active()
         Events:Fire("ZoomReset")
     end
 
-    Events:Fire("CastCenterText", {text = (self.enabled and self.locStrings["on"] or self.locStrings["off"]), time = 2})
+    local locStrings = self.locStrings
+
+    Events:Fire("CastCenterText", {text = (self.enabled and locStrings["on"] or locStrings["off"]), time = 2})
 end
 
 function FirstPerson:KeyUp(args)
     if Game:GetState() ~= GUIState.Game then return end
     if LocalPlayer:GetValue("SpectatorMode") then return end
 
-    if args.key == VirtualKey.F6 then
+    if args.key == self.expectedKey then
         self:Active()
     end
 end

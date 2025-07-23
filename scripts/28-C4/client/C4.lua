@@ -111,20 +111,29 @@ function C4Controller:MouseUp(args)
 end
 
 function C4Controller:PreTick()
-    for player in Client:GetStreamedPlayers() do
+    local streamedPlayers = Client:GetStreamedPlayers()
+
+    for player in streamedPlayers do
         self:ApplyDummy(player)
     end
 
     self:ApplyDummy(LocalPlayer)
 
-    if not self.planted and self.plantedTimer:GetSeconds() > C4Controller.AnimationTimeout then
+    local planted = self.planted
+    local plantedTimer = self.plantedTimer
+    local animationTimeout = C4Controller.AnimationTimeout
+    local detonationTimeout = C4Controller.DetonationTimeout
+
+    if not planted and plantedTimer:GetSeconds() > animationTimeout then
         local args = {}
-        local position = LocalPlayer:GetBonePosition("ragdoll_LeftForeArm") + LocalPlayer:GetBoneAngle("ragdoll_LeftForeArm") * C4Controller.PlantingOffset
+        local plantingOffset = C4Controller.PlantingOffset
+        local position = LocalPlayer:GetBonePosition("ragdoll_LeftForeArm") + LocalPlayer:GetBoneAngle("ragdoll_LeftForeArm") * plantingOffset
         local raycast = Physics:Raycast(position, (LocalPlayer:GetAimTarget().position - position):Normalized(), 0, 500, true)
         local entity = raycast.entity
+        local raycastPos = raycast.position
 
         args.world = LocalPlayer:GetWorld()
-        args.position = raycast.position
+        args.position = raycastPos
         args.angle = Angle.FromVectors(Vector3.Up, raycast.normal)
         args.values = {}
 
@@ -134,29 +143,34 @@ function C4Controller:PreTick()
 
             if entity.__type == "LocalPlayer" or entity.__type == "Player" then
                 local closestBone = nil
+                local eBones = entity:GetBones()
 
-                for k, bone in pairs(entity:GetBones()) do
-                    if not closestBone or bone.position:Distance(raycast.position) <
-                        closestBone.position:Distance(raycast.position) then
+                for k, bone in pairs(eBones) do
+                    local bonePos = bone.position
+
+                    if not closestBone or bonePos:Distance(raycastPos) < closestBone.position:Distance(raycastPos) then
+                        local boneAngle = bone.angle
+
                         args.values.parent_bone = k
-                        args.values.position_offset = -bone.angle * (raycast.position - bone.position)
-                        args.values.angle_offset = -bone.angle * args.angle
+                        args.values.position_offset = -boneAngle * (raycastPos - bonePos)
+                        args.values.angle_offset = -boneAngle * args.angle
 
                         closestBone = bone
                     end
                 end
             else
-                local angle = -entity:GetAngle()
-                args.values.position_offset = angle * (raycast.position - entity:GetPosition())
-                args.values.angle_offset = angle * args.angle
+                local ePos = entity:GetPosition()
+                local eAngle = -entity:GetAngle()
+
+                args.values.position_offset = eAngle * (raycastPos - ePos)
+                args.values.angle_offset = eAngle * args.angle
             end
         end
 
         Network:Send("Spawn", args)
         self.planted = true
         self.anim = true
-    elseif not self.detonated and self.detonationTimer:GetSeconds() > C4Controller.DetonationTimeout /
-        (self.tossed and 4 or 1) then
+    elseif not self.detonated and self.detonationTimer:GetSeconds() > detonationTimeout / (self.tossed and 4 or 1) then
         Network:Send("Detonate", args)
         self.detonated = true
         self.anim = false

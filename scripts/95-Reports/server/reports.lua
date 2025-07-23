@@ -12,7 +12,7 @@ function Reports:SendReport( args, sender )
             args.category = "Отсутствует :("
         end
 
-        local level = "Х/З"
+        local level = "?"
 
         if sender:GetValue( "PlayerLevel" ) then
             level = sender:GetValue( "PlayerLevel" )

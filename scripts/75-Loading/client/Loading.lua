@@ -14,8 +14,6 @@ function Load:__init()
 
     self.BackgroundImage:SetSize(Render.Size)
 
-    self.background_clr = Color.Black
-
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
         self:Lang()
@@ -74,22 +72,26 @@ end
 
 function Load:PostRender()
     if Game:GetState() == GUIState.Loading then
-        local CircleSize = Vector2(70, 70)
-        local Rotation = self:GetRotation()
-        local Pos = Vector2(Render.Size.x - 80, Render.Size.y - 80)
+        local circleSize = Vector2(70, 70)
+        local rotation = self:GetRotation()
+        local pos = Vector2(Render.Size.x - 80, Render.Size.y - 80)
+        local background_clr = Color.Black
+        local pi = math.pi
 
-        Render:FillArea(Vector2.Zero, Render.Size, self.background_clr)
+        Render:FillArea(Vector2.Zero, Render.Size, background_clr)
         self.BackgroundImage:Draw()
 
         local TransformOuter = Transform2()
-        TransformOuter:Translate(Pos)
-        TransformOuter:Rotate(math.pi * Rotation)
+        TransformOuter:Translate(pos)
+        TransformOuter:Rotate(pi * rotation)
 
         Render:SetTransform(TransformOuter)
-        self.LoadingCircle_Outer:Draw(-(CircleSize / 2), CircleSize, Vector2.Zero, Vector2.One)
+        self.LoadingCircle_Outer:Draw(-(circleSize / 2), circleSize, Vector2.Zero, Vector2.One)
         Render:ResetTransform()
 
-        if self.FadeInTimer and self.FadeInTimer:GetMinutes() >= 1 then
+        local fadeInTimer = self.FadeInTimer
+
+        if fadeInTimer and fadeInTimer:GetMinutes() >= 1 then
             if self.PostRenderEvent then Events:Unsubscribe(self.PostRenderEvent) self.PostRenderEvent = nil end
             self:ExitWindow()
         end
@@ -102,24 +104,26 @@ function Load:ExitWindow()
 
     if self.window then return end
 
+    local locStrings = self.locStrings
+
     self.window = Window.Create()
     self.window:SetSizeRel(Vector2(0.2, 0.2))
     self.window:SetMinimumSize(Vector2(500, 200))
     self.window:SetPositionRel(Vector2(0.7, 0.5) - self.window:GetSizeRel() / 2)
     self.window:SetVisible(true)
-    self.window:SetTitle(self.locStrings["wtitle"])
+    self.window:SetTitle(locStrings["wtitle"])
     self.window:Subscribe("WindowClosed", self, self.WindowClosed)
 
     self.errorText = Label.Create(self.window)
     self.errorText:SetPosition(Vector2(20, 30))
     self.errorText:SetSize(Vector2(450, 100))
-    self.errorText:SetText(self.locStrings["wtext"])
+    self.errorText:SetText(locStrings["wtext"])
     self.errorText:SetTextSize(20)
 
     self.leaveButton = Button.Create(self.window)
     self.leaveButton:SetSize(Vector2(100, 40))
     self.leaveButton:SetDock(GwenPosition.Bottom)
-    self.leaveButton:SetText(self.locStrings["wbutton"])
+    self.leaveButton:SetText(locStrings["wbutton"])
     self.leaveButton:Subscribe("Press", self, self.Exit)
 end
 

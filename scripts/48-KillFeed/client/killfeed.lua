@@ -14,11 +14,28 @@ function Killfeed:__init()
     Network:Subscribe("PlayerDeath", self, self.PlayerDeath)
 
     Events:Subscribe("Lang", self, self.Lang)
-    Events:Subscribe("Render", self, self.Render)
+    Events:Subscribe("NetworkObjectValueChange", self, self.ObjectValueChange)
+    Events:Subscribe("SharedObjectValueChange", self, self.ObjectValueChange)
+
+    if LocalPlayer:GetValue("KillFeedVisible") or not LocalPlayer:GetValue("HiddenHUD") then
+        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+    end
 end
 
 function Killfeed:Lang()
     self:CreateKillStringsENG()
+end
+
+function Killfeed:ObjectValueChange(args)
+    if args.object.__type ~= "LocalPlayer" then return end
+
+    if args.key == "KillFeedVisible" or args.key == "HiddenHUD" then
+        if LocalPlayer:GetValue("KillFeedVisible") and not LocalPlayer:GetValue("HiddenHUD") then
+            if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
+        else
+            if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+        end
+    end
 end
 
 function Killfeed:PlayerDeath(args)
@@ -201,12 +218,12 @@ end
 
 function Killfeed:Render()
     if Game:GetState() ~= GUIState.Game then return end
-    if not LocalPlayer:GetValue("KillFeedVisible") or LocalPlayer:GetValue("HiddenHUD") then return end
 
     local center_hint = Vector2(Render.Width - 25, Render.Height / 4.8)
     local height_offset = 0
+	local list = self.list
 
-    for i, v in ipairs(self.list) do
+    for i, v in ipairs(list) do
         if os.clock() - v.time < self.removal_time then
             local pos = center_hint + Vector2(-Render:GetTextWidth(v.message), height_offset)
             local alpha = self:CalculateAlpha(v.time)
@@ -234,7 +251,7 @@ function Killfeed:Render()
 
             height_offset = height_offset + Render:GetTextHeight(v.message) + 4
         else
-            table.remove(self.list, i)
+            table.remove(list, i)
         end
     end
 end

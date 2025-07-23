@@ -61,15 +61,16 @@ function Shop:__init()
 
     self.tab_control:Subscribe("TabSwitch", function()
         local current_tab = self.tab_control:GetCurrentTab():GetText()
+        local locStrings = self.locStrings
 
-        if current_tab == self.locStrings["vehicles"] then
-            self.decalLabel:SetVisible(true)
+        if current_tab == locStrings["vehicles"] then
+            self.decalBW:SetVisible(true)
         else
-            self.decalLabel:SetVisible(false)
+            self.decalBW:SetVisible(false)
             self.vehColorWindow:SetVisible(false)
         end
 
-        if current_tab == self.locStrings["homepoints"] then
+        if current_tab == locStrings["homepoints"] then
             self.buy_button:SetEnabled(false)
         else
             self.buy_button:SetEnabled(true)
@@ -91,26 +92,26 @@ function Shop:__init()
     self.buy_button:SetDock(GwenPosition.Bottom)
     self.buy_button:Subscribe("Press", self, self.Buy)
 
-    self.decalLabel = Label.Create(self.window)
-    self.decalLabel:SetDock(GwenPosition.Bottom)
+    self.decalBW = BaseWindow.Create(self.window)
+    self.decalBW:SetDock(GwenPosition.Bottom)
     local margin = Vector2(5, 5)
-    self.decalLabel:SetMargin(margin, margin)
-    self.decalLabel:SetHeight(20)
+    self.decalBW:SetMargin(margin, margin)
+    self.decalBW:SetHeight(20)
 
-    local decal = ComboBox.Create(self.decalLabel)
+    local decal = ComboBox.Create(self.decalBW)
     decal:SetDock(GwenPosition.Right)
 
-    self.decalText = Label.Create(self.decalLabel)
+    self.decalText = Label.Create(self.decalBW)
     self.decalText:SetDock(GwenPosition.Right)
     self.decalText:SetMargin(Vector2.Zero, Vector2(2, 0))
     self.decalText:SetAlignment(GwenPosition.Center)
 
-    self.vehColorText = Label.Create(self.decalLabel)
+    self.vehColorText = Label.Create(self.decalBW)
     self.vehColorText:SetDock(GwenPosition.Left)
     self.vehColorText:SetMargin(Vector2.Zero, Vector2(2, 0))
     self.vehColorText:SetAlignment(GwenPosition.Center)
 
-    local vehColor = Label.Create(self.decalLabel)
+    local vehColor = Label.Create(self.decalBW)
     vehColor:SetDock(GwenPosition.Left)
     vehColor:SetWidth(60)
 
@@ -188,7 +189,7 @@ function Shop:__init()
             spawnonhomepoint = "Появляться на точке дома после подключения к серверу",
             gohome = "Переместиться домой »",
             pvpblock = "Вы не можете использовать это во время боя!",
-            dlcwarning = "ВНИМАНИЕ! DLC-контент не сможет наносить урон и не будет виден игрокам, которые его не имеют.",
+            dlcwarning = "ВАЖНО: DLC-контент не сможет наносить урон и не будет виден игрокам, которые его не имеют",
             w = "Пожалуйста, подождите ",
             ws = " секунд."
         }
@@ -287,7 +288,7 @@ function Shop:Lang()
         neck = "Neck",
         accessories = "Accessories",
         parachutes = "Parachutes",
-        vehiclecolor = "Vehicle color",
+        vehiclecolor = "Vehicle Color",
         save = "Save",
         novip = "Needed VIP status not found.",
         home = "Home",
@@ -295,7 +296,7 @@ function Shop:Lang()
         spawnonhomepoint = "Spawn on home point after connecting to the server",
         gohome = "Go home »",
         pvpblock = "You cannot use this during combat!",
-        dlcwarning = "WARNING: DLC content will not be able to deal damage and will not be visible to players who do not have it.",
+        dlcwarning = "WARNING: DLC content will not be able to deal damage and will not be visible to players who do not have it",
         w = "Please, wait ",
         ws = " seconds."
     }
@@ -833,7 +834,8 @@ function Shop:SortFunction(column, a, b)
 end
 
 function Shop:CreateSubCategory(category, subcategory_name)
-    local visible_subcategory_name = self.locStrings[subcategory_name] or subcategory_name
+    local locStrings = self.locStrings
+    local visible_subcategory_name = locStrings[subcategory_name] or subcategory_name
 
     local t = {}
     t.window = BaseWindow.Create(self.window)
@@ -852,9 +854,9 @@ function Shop:CreateSubCategory(category, subcategory_name)
     category.categories[subcategory_name] = t
 
     if LocalPlayer:GetValue("DLCWarning") then
-        if subcategory_name == "DLC" or subcategory_name == "Правая рука" or subcategory_name == "Левая рука" or subcategory_name == "Основное" or subcategory_name == "Парашюты" then
+        if subcategory_name == "DLC" or subcategory_name == "righthand" or subcategory_name == "lefthand" or subcategory_name == "primary" or subcategory_name == "parachutes" then
             local dlc_warning = Label.Create(t.window)
-            dlc_warning:SetText(self.locStrings["dlcwarning"])
+            dlc_warning:SetText(locStrings["dlcwarning"])
             dlc_warning:SetTextColor(Color(200, 200, 200))
             dlc_warning:SetDock(GwenPosition.Top)
             local margin = Vector2(5, 5)
@@ -892,10 +894,12 @@ function Shop:LoadCategories()
         end
     end
 
+    local locStrings = self.locStrings
+
     self.vehColorWindow = Window.Create()
     self.vehColorWindow:SetVisible(false)
     -- self.vehColorWindow:SetClosable( false )
-    self.vehColorWindow:SetTitle(self.locStrings["vehiclecolor"])
+    self.vehColorWindow:SetTitle(locStrings["vehiclecolor"])
 
     local tab_control = TabControl.Create(self.vehColorWindow)
     tab_control:SetDock(GwenPosition.Fill)
@@ -930,7 +934,7 @@ function Shop:LoadCategories()
     self.tone2Picker:SetColor(lpColor)
 
     local setColorBtn = Button.Create(self.vehColorWindow)
-    setColorBtn:SetText(self.locStrings["save"])
+    setColorBtn:SetText(locStrings["save"])
     setColorBtn:SetHeight(30)
     setColorBtn:SetDock(GwenPosition.Bottom)
     setColorBtn:Subscribe("Press", function()
@@ -942,7 +946,7 @@ function Shop:LoadCategories()
         self.vehColorWindow:SetVisible(false)
     end)
 
-    local home = self:CreateCategory(self.locStrings["homepoints"])
+    local home = self:CreateCategory(locStrings["homepoints"])
 
     local window = ScrollControl.Create(home.tab_control)
     window:SetDock(GwenPosition.Fill)
@@ -951,18 +955,18 @@ function Shop:LoadCategories()
 
     local textSize = 12
 
-    local top = Label.Create(window)
+    local top = BaseWindow.Create(window)
     top:SetDock(GwenPosition.Top)
-    top:SetHeight(Render:GetTextHeight(self.locStrings["sethomebutton"], textSize) + 18)
+    top:SetHeight(Render:GetTextHeight(locStrings["sethomebutton"], textSize) + 18)
 
     self.texter = Label.Create(top)
-    self.texter:SetText(self.locStrings["home"] .. " 1: ")
+    self.texter:SetText(locStrings["home"] .. " 1: ")
     self.texter:SetDock(GwenPosition.Left)
     self.texter:SetAlignment(GwenPosition.Center)
     self.texter:SizeToContents()
 
     self.buttonHB = Button.Create(top)
-    self.buttonHB:SetText(self.locStrings["sethomebutton"])
+    self.buttonHB:SetText(locStrings["sethomebutton"])
     local btnColor = Color.LightGreen
     self.buttonHB:SetTextHoveredColor(btnColor)
     self.buttonHB:SetTextPressedColor(btnColor)
@@ -970,7 +974,7 @@ function Shop:LoadCategories()
     self.buttonHB:SetDock(GwenPosition.Left)
     local padding = Vector2(3, 0)
     self.buttonHB:SetMargin(padding, padding)
-    self.buttonHB:SetWidth(Render:GetTextWidth(self.locStrings["sethomebutton"], textSize) + 30)
+    self.buttonHB:SetWidth(Render:GetTextWidth(locStrings["sethomebutton"], textSize) + 30)
     self.buttonHB:Subscribe("Press", self, self.BuyHome)
 
     self.toggleH = Button.Create(top)
@@ -981,7 +985,7 @@ function Shop:LoadCategories()
     self.toggleH:Subscribe("Press", self, self.ToggleHome)
 
     local spawninhome = LabeledCheckBox.Create(window)
-    spawninhome:GetLabel():SetText(self.locStrings["spawnonhomepoint"])
+    spawninhome:GetLabel():SetText(locStrings["spawnonhomepoint"])
     spawninhome:SetWidth(350)
     spawninhome:SetDock(GwenPosition.Top)
     local padding = Vector2(0, 10)
@@ -1000,7 +1004,7 @@ function Shop:LoadCategories()
     self.Home_button = MenuItem.Create(window)
     self.Home_button:SetPosition(home_img:GetPosition())
     self.Home_button:SetSize(Vector2(home_img:GetSize().x, height * 1.25))
-    self.Home_button:SetText(self.locStrings["gohome"])
+    self.Home_button:SetText(locStrings["gohome"])
     local btnColor = Color.LightGreen
     self.Home_button:SetTextHoveredColor(btnColor)
     self.Home_button:SetTextPressedColor(btnColor)
@@ -1020,12 +1024,14 @@ function Shop:CalcView()
 end
 
 function Shop:ToggleHome()
+    local locStrings = self.locStrings
+
     if self.home then
         self.home = false
-        self.texter:SetText(self.locStrings["home"] .. " 2: ")
+        self.texter:SetText(locStrings["home"] .. " 2: ")
     else
         self.home = true
-        self.texter:SetText(self.locStrings["home"] .. " 1: ")
+        self.texter:SetText(locStrings["home"] .. " 1: ")
     end
 
     self.texter:SizeToContents()
@@ -1112,9 +1118,12 @@ function Shop:SetWindowVisible(visible, sound)
 end
 
 function Shop:Render()
-    local is_visible = self.activeWindow and (Game:GetState() == GUIState.Game)
+    local activeWindow = self.activeWindow
+    local is_visible = activeWindow and (Game:GetState() == GUIState.Game)
+    local window = self.window
+    local windowGetVisible = window:GetVisible()
 
-    if self.window:GetVisible() ~= is_visible then
+    if windowGetVisible ~= is_visible then
         self.window:SetVisible(is_visible)
         Mouse:SetVisible(is_visible)
     end
@@ -1130,6 +1139,14 @@ end
 function Shop:LocalPlayerInput(args)
     if args.input == Action.GuiPause then
         self:SetWindowVisible(false)
+    end
+
+    if args.input == Action.GuiOk then
+        local buy_button = self.buy_button
+
+        if buy_button and buy_button:GetVisible() and buy_button:GetEnabled() then
+            self:Buy()
+        end
     end
 
     if self.actions[args.input] then
@@ -1158,13 +1175,15 @@ function Shop:Buy()
         self:SetWindowVisible(false)
 
         if self.types[category_name] == 1 then
+            local locStrings = self.locStrings
+
             if LocalPlayer:GetValue("PVPMode") then
-                Events:Fire("CastCenterText", { text = self.locStrings["pvpblock"], time = 6, color = Color.Red})
+                Events:Fire("CastCenterText", { text = locStrings["pvpblock"], time = 6, color = Color.Red})
                 return
             end
 
             if time < self.cooltime then
-                Events:Fire("CastCenterText", {text = self.locStrings["w"] .. math.ceil(self.cooltime - time) .. self.locStrings["ws"], time = 6, color = Color.Red})
+                Events:Fire("CastCenterText", {text = locStrings["w"] .. math.ceil(self.cooltime - time) .. locStrings["ws"], time = 6, color = Color.Red})
                 return false
             end
             self.cooltime = time + self.cooldown

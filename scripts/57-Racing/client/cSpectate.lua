@@ -45,7 +45,7 @@ function Spectate:__init(args)
 
     self:InitializeRaceModules()
 
-    self:EventSubscribe("ControlDown")
+    self:EventSubscribe("LocalPlayerInput")
     self:NetworkSubscribe("RaceSetState")
     self:NetworkSubscribe("SpectateReceiveTarget", self.ReceiveTarget)
     self:NetworkSubscribe("UpdateRacePositions")
@@ -123,10 +123,10 @@ function Spectate:RenderRacing()
     end
 end
 
-function Spectate:ControlDown(args)
-    if args.name == "Следующая цель" then
+function Spectate:LocalPlayerInput(args)
+    if args.input == Action.MoveRight then
         self:ChangeTarget(1)
-    elseif args.name == "Предыдущая цель" then
+    elseif args.input == Action.MoveLeft then
         self:ChangeTarget(-1)
     end
 end

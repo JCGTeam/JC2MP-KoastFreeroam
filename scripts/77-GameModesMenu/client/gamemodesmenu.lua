@@ -323,8 +323,10 @@ end
 
 function GameModesMenu:Render()
     local is_visible = Game:GetState() == GUIState.Game
+    local window = self.window
+    local windowGetVisible = window:GetVisible()
 
-    if self.window:GetVisible() ~= is_visible then
+    if windowGetVisible ~= is_visible then
         self.window:SetVisible(is_visible)
         Mouse:SetVisible(is_visible)
     end

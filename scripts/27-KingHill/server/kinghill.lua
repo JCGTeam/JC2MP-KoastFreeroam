@@ -26,14 +26,18 @@ function KingHill:ModuleUnload()
 end
 
 function KingHill:PreTick()
-    for k, lobby in ipairs(self.lobbies) do
-        if lobby:GetState() == GamemodeState.ENDED then
-            table.remove(self.lobbies, k)
+    local lobbies = self.lobbies
+
+    for k, lobby in ipairs(lobbies) do
+        local state = lobby:GetState()
+
+        if state == GamemodeState.ENDED then
+            table.remove(lobbies, k)
         end
     end
 
-    if #self.lobbies == 0 then
-        table.insert(self.lobbies, Lobby(KingHillConfig.Maps[math.random(1, #KingHillConfig.Maps)]))
+    if #lobbies == 0 then
+        table.insert(lobbies, Lobby(KingHillConfig.Maps[math.random(1, #KingHillConfig.Maps)]))
     end
 end
 

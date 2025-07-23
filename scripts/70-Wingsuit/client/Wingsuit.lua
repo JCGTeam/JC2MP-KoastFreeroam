@@ -6,12 +6,15 @@ function Pigeon:__init()
     self.score = 0
     self.superspeed = false
 
+    self:UpdateKeyBinds()
+
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
         self:Lang()
     else
         self.locStrings = {
-            name = "Нажмите Shift или RB чтобы ускориться. Нажмите Ctrl чтобы сбавить скорость.",
+            press = "Нажмите ",
+            name = " или RB чтобы ускориться. Нажмите Ctrl чтобы сбавить скорость.",
             nameTh = "%i км/ч %i метров\n",
             tip = "Нажмите Q, чтобы раскрыть вингсьют.",
             tRecord = "Личный рекорд полета на вингсьюте: ",
@@ -25,8 +28,6 @@ function Pigeon:__init()
     self.max_speed = 139
     self.min_speed = 0
 
-    self.BoostColor = Color(255, 125, 125, 200)
-
     self.tether_length = 150 -- meters
     self.yaw_gain = 1.5
     self.yaw = 0
@@ -35,6 +36,8 @@ function Pigeon:__init()
 
     self.speed = self.default_speed
     self.vertical_speed = self.default_vertical_speed
+
+    self.cooltime = 0
 
     self.blacklist = {
         actions = { -- Actions to block while wingsuit is active
@@ -74,8 +77,9 @@ function Pigeon:__init()
     self.subs = {}
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
-    Events:Subscribe("KeyUp", self, self.Activate)
+    Events:Subscribe("KeyUp", self, self.KeyUp)
     Events:Subscribe("AbortWingsuit", self, self.Abort)
     Events:Subscribe("LocalPlayerWorldChange", self, self.LocalPlayerWorldChange)
 
@@ -92,7 +96,8 @@ end
 
 function Pigeon:Lang()
     self.locStrings = {
-        name = "Press Shift or RB to boost. Press Ctrl to slow down.",
+        press = "Press ",
+        name = " or RB to boost. Press Ctrl to slow down.",
         nameTh = "%i km/h %i m\n",
         tip = "Press Q to use wingsuit.",
         tRecord = "Personal flying record: ",
@@ -100,86 +105,114 @@ function Pigeon:Lang()
     }
 end
 
-function Pigeon:LocalPlayerInput()
+function Pigeon:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local openWingsuitBind = keyBinds and keyBinds["Wingsuit"]
+    local boostBind = keyBinds and keyBinds["VehicleLandBoost"]
+
+    self.openWingsuitKey = openWingsuitBind and openWingsuitBind.type == "Key" and openWingsuitBind.value or 81
+    self.boostKey = boostBind and boostBind.type == "Key" and boostBind.value or 16
+    self.boostStringKey = boostBind and boostBind.type == "Key" and boostBind.valueString or "Shift"
+end
+
+function Pigeon:LocalPlayerInput(args)
     if Game:GetState() ~= GUIState.Game then return end
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-    if not LocalPlayer:GetValue("Wingsuit") then return end
-    if not LocalPlayer:GetValue("WingsuitEnabled") then return end
+    if args.input == Action.Kick then
+        if Game:GetSetting(GameSetting.GamepadInUse) == 1 then
+            self:OpenWingsuit()
+        end
+    elseif args.input == Action.VehicleCam and self.subs.camera then
+        local elapsedSeconds = Client:GetElapsedSeconds()
+        local time = elapsedSeconds
 
-    if Input:GetValue(Action.Kick) > 0 and not (self.subs.camera or LocalPlayer:GetVehicle()) then
-        local bs = LocalPlayer:GetBaseState()
-        if self.blacklist.animations[bs] then return end
-
-        if not self.timers.activate or self.timers.activate:GetMilliseconds() > 300 then
-            self.timers.activate = Timer()
-        elseif self.timers.activate:GetMilliseconds() < 500 then
-            self.timers.activate = nil
-
-            if self.whitelist.animations[bs] then
-                if not self.RCtimer then
-                    self.RCtimer = Timer()
-                end
-
-                if LocalPlayer:GetValue("PigeonMod") and LocalPlayer:GetValue("PVPMode") then
-                    Events:Fire("CastCenterText", {text = self.locStrings["pvpblock"], time = 3, color = Color.Red})
-                    return
-                end
-
-                self.timers.camera_start = Timer()
-                self.speed = self.default_speed
-
-                LocalPlayer:SetBaseState(AnimationState.SSkydive)
-                LocalPlayer:SetValue("IsPigeonMod", true)
-
-                if not self.subs.wings then self.subs.wings = Events:Subscribe("GameRenderOpaque", self, self.DrawWings) end
-                if not self.subs.velocity then self.subs.velocity = Events:Subscribe("Render", self, self.SetVelocity) end
-                if not self.subs.camera then self.subs.camera = Events:Subscribe("CalcView", self, self.Camera) end
-                if not self.subs.glide then self.subs.glide = Events:Subscribe("InputPoll", self, self.Glide) end
-                if not self.subs.input then self.subs.input = Events:Subscribe("LocalPlayerInput", self, self.Input) end
-            elseif LocalPlayer:GetValue("PigeonMod") then
-                if self.whitelist.animations[bs] then
-                    local timer = Timer()
-                    self.timers.camera_start = Timer()
-                    self.speed = self.default_speed
-
-                    if not self.subs.camera then self.subs.camera = Events:Subscribe("CalcView", self, self.Camera) end
-                    if not self.subs.input then self.subs.input = Events:Subscribe("LocalPlayerInput", self, self.Input) end
-                    if not self.subs.wings then self.subs.wings = Events:Subscribe("GameRenderOpaque", self, self.DrawWings) end
-
-                    self.subs.delay = Events:Subscribe("PreTick", function()
-                        local dt = timer:GetMilliseconds()
-                        LocalPlayer:SetBaseState(AnimationState.SSkydive)
-                        LocalPlayer:SetLinearVelocity(LocalPlayer:GetAngle() * math.lerp(Vector3(0, self.speed, 0), Vector3(0, 0, -self.speed), dt / 1000))
-                        if dt > 1000 then
-                            Events:Unsubscribe(self.subs.delay)
-                            self.subs.delay = nil
-                            self.subs.velocity = Events:Subscribe("Render", self, self.SetVelocity)
-                        end
-                    end)
-                end
+        if time < self.cooltime then
+            time = elapsedSeconds
+        else
+            if self.camera < 5 then
+                self.camera = self.camera + 1
+            else
+                self.camera = 1
             end
         end
+
+        self.cooltime = time + 0.05
+        return false
     end
 end
 
-function Pigeon:Activate(args)
+function Pigeon:KeyUp(args)
     if Game:GetState() ~= GUIState.Game then return end
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-    if args.key == VirtualKey.Control and self.subs.camera and not (self.timers.camera_start or self.timers.camera_stop) then
-        if not self.timers.activate or self.timers.activate:GetMilliseconds() > 300 then
+    local timers = self.timers
+    local timersActivate = timers.activate
+
+    if args.key == VirtualKey.Control and self.subs.camera and not (timers.camera_start or timers.camera_stop) then
+        if not timersActivate or timersActivate:GetMilliseconds() > 300 then
             self.timers.activate = Timer()
-        elseif self.timers.activate:GetMilliseconds() < 500 then
+        elseif timersActivate:GetMilliseconds() < 500 then
             local ray = Physics:Raycast(LocalPlayer:GetPosition(), LocalPlayer:GetAngle() * Vector3(0, -1, -1), 0, 50)
             LocalPlayer:SetBaseState((ray.distance < 50) and AnimationState.SFall or AnimationState.SSkydive)
             self.timers.camera_stop = Timer()
         end
-    elseif args.key == string.byte("C") and self.subs.camera then
-        if self.camera < 5 then
-            self.camera = self.camera + 1
-        else
-            self.camera = 1
+    end
+
+    if args.key == self.openWingsuitKey then
+        self:OpenWingsuit()
+    end
+end
+
+function Pigeon:OpenWingsuit(args)
+    if not LocalPlayer:GetValue("Wingsuit") then return end
+    if not LocalPlayer:GetValue("WingsuitEnabled") then return end
+    if self.subs.camera or LocalPlayer:GetVehicle() then return end
+
+    local bs = LocalPlayer:GetBaseState()
+    if self.blacklist.animations[bs] then return end
+
+    if self.whitelist.animations[bs] then
+        if not self.RCtimer then
+            self.RCtimer = Timer()
+        end
+
+        if LocalPlayer:GetValue("PigeonMod") and LocalPlayer:GetValue("PVPMode") then
+            Events:Fire("CastCenterText", {text = self.locStrings["pvpblock"], time = 3, color = Color.Red})
+            return
+        end
+
+        self.timers.camera_start = Timer()
+        self.speed = self.default_speed
+
+        LocalPlayer:SetBaseState(AnimationState.SSkydive)
+        LocalPlayer:SetValue("IsPigeonMod", true)
+
+        if not self.subs.wings then self.subs.wings = Events:Subscribe("GameRenderOpaque", self, self.DrawWings) end
+        if not self.subs.velocity then self.subs.velocity = Events:Subscribe("Render", self, self.SetVelocity) end
+        if not self.subs.camera then self.subs.camera = Events:Subscribe("CalcView", self, self.Camera) end
+        if not self.subs.glide then self.subs.glide = Events:Subscribe("InputPoll", self, self.Glide) end
+        if not self.subs.input then self.subs.input = Events:Subscribe("LocalPlayerInput", self, self.Input) end
+    elseif LocalPlayer:GetValue("PigeonMod") then
+        if self.whitelist.animations[bs] then
+            local timer = Timer()
+            self.timers.camera_start = Timer()
+            self.speed = self.default_speed
+
+            if not self.subs.camera then self.subs.camera = Events:Subscribe("CalcView", self, self.Camera) end
+            if not self.subs.input then self.subs.input = Events:Subscribe("LocalPlayerInput", self, self.Input) end
+            if not self.subs.wings then self.subs.wings = Events:Subscribe("GameRenderOpaque", self, self.DrawWings) end
+
+            self.subs.delay = Events:Subscribe("PreTick", function()
+                local dt = timer:GetMilliseconds()
+                LocalPlayer:SetBaseState(AnimationState.SSkydive)
+                LocalPlayer:SetLinearVelocity(LocalPlayer:GetAngle() * math.lerp(Vector3(0, self.speed, 0), Vector3(0, 0, -self.speed), dt / 1000))
+                if dt > 1000 then
+                    Events:Unsubscribe(self.subs.delay)
+                    self.subs.delay = nil
+                    self.subs.velocity = Events:Subscribe("Render", self, self.SetVelocity)
+                end
+            end)
         end
     end
 end
@@ -218,11 +251,19 @@ function Pigeon:SetVelocity()
     end
 
     local angle = LocalPlayer:GetAngle()
-    if LocalPlayer:GetValue("PigeonMod") then
-        if not LocalPlayer:GetValue("Freeze") then
-            if Input:GetValue(Action.Dash) > 0 and self.speed < self.max_speed then
+    local pigeonMod = LocalPlayer:GetValue("PigeonMod")
+
+    if pigeonMod then
+        local freeze = LocalPlayer:GetValue("Freeze")
+        local gamepad = Game:GetSetting(GameSetting.GamepadInUse) == 1
+        local inputBoost = Input:GetValue(Action.Dash) > 0
+        local inputBrake = Input:GetValue(Action.Handbrake) > 0
+        local keyBoost = Key:IsDown(self.boostKey)
+
+        if not freeze then
+            if (gamepad and inputBoost or keyBoost) and self.speed < self.max_speed then
                 self.speed = self.speed + 0.5
-            elseif Key:IsDown(VirtualKey.Control) and self.speed > self.min_speed then
+            elseif (gamepad and inputBrake or Key:IsDown(VirtualKey.Control)) and self.speed > self.min_speed then
                 self.speed = self.speed - 1
             end
         end
@@ -292,25 +333,28 @@ function Pigeon:SetVelocity()
     end
 
     if Game:GetState() ~= GUIState.Game then return end
-    if not LocalPlayer:GetValue("BestRecordVisible") or LocalPlayer:GetValue("HiddenHUD") then return end
-    if not LocalPlayer:GetValue("PigeonMod") then return end
+    if LocalPlayer:GetValue("HiddenHUD") then return end
+    if not pigeonMod then return end
 
+    local locStrings = self.locStrings
+    local text = locStrings["press"] .. self.boostStringKey .. locStrings["name"]
     local speed = LocalPlayer:GetLinearVelocity():Length() * 3.6
     local player_pos = LocalPlayer:GetPosition()
     local altitude = player_pos.y - (math.max(200, Physics:GetTerrainHeight(player_pos)))
     Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
-    local hud_str = string.format(self.locStrings["nameTh"], speed, altitude)
+    local hud_str = string.format(locStrings["nameTh"], speed, altitude)
     local screen_pos = Vector2(0.5 * Render.Width - 0.5 * Render:GetTextWidth(hud_str, TextSize.Large), Render.Height - Render:GetTextHeight(hud_str, TextSize.Large))
+    local boostColor = Color(255, 125, 125, 200)
 
-    Render:DrawShadowedText(screen_pos, hud_str, self.BoostColor, Color(0, 0, 0, 100), TextSize.Large)
+    Render:DrawShadowedText(screen_pos, hud_str, boostColor, Color(0, 0, 0, 100), TextSize.Large)
 
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     local textSize = 15
-    local size = Render:GetTextSize(self.locStrings["name"], textSize)
+    local size = Render:GetTextSize(text, textSize)
     local pos = Vector2((Render.Width - size.x) / 2, Render.Height - size.y - 10)
 
-    Render:DrawShadowedText(pos, self.locStrings["name"], Color.White, Color(0, 0, 0, 180), textSize)
+    Render:DrawShadowedText(pos, text, Color.White, Color(0, 0, 0, 180), textSize)
 end
 
 function Pigeon:Glide()

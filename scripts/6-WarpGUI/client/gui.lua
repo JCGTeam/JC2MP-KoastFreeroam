@@ -176,14 +176,16 @@ function WarpGui:AddPlayer(player)
 
     local item = self.playerList:AddItem(playerId)
 
+    local locStrings = self.locStrings
+
     if LocalPlayer:IsFriend(player) then
-        item:SetToolTip(self.locStrings["friend"])
+        item:SetToolTip(locStrings["friend"])
     end
 
-    local warpToButton = self:CreateListButton(self.locStrings["teleport"], true, item)
+    local warpToButton = self:CreateListButton(locStrings["teleport"], true, item)
     warpToButton:Subscribe("Press", function() self:WarpToPlayerClick(player) end)
 
-    local acceptButton = self:CreateListButton(self.locStrings["accept"], false, item)
+    local acceptButton = self:CreateListButton(locStrings["accept"], false, item)
     acceptButton:Subscribe("Press", function() self:AcceptWarpClick(player) end)
     self.acceptButtons[playerId] = acceptButton
 
@@ -191,9 +193,9 @@ function WarpGui:AddPlayer(player)
     local whitelistButtonText = "-"
     if whitelist ~= nil then
         if whitelist == 1 then
-            whitelistButtonText = self.locStrings["autotp"]
+            whitelistButtonText = locStrings["autotp"]
         elseif whitelist == 2 then
-            whitelistButtonText = self.locStrings["blacklist"]
+            whitelistButtonText = locStrings["blacklist"]
         end
     end
     local whitelistButton = self:CreateListButton(whitelistButtonText, true, item)
@@ -236,7 +238,9 @@ function WarpGui:WarpToPlayerClick(player)
     if time < self.cooltime then
         self:SetWindowVisible(false)
 
-        Events:Fire("CastCenterText", { text = self.locStrings["w"] .. math.ceil(self.cooltime - time) .. self.locStrings["ws"], time = 6, color = Color.Red})
+        local locStrings = self.locStrings
+
+        Events:Fire("CastCenterText", { text = locStrings["w"] .. math.ceil(self.cooltime - time) .. locStrings["ws"], time = 6, color = Color.Red})
         return
     end
 
@@ -252,7 +256,9 @@ function WarpGui:AcceptWarpClick(player)
     local playerId = tostring(player:GetSteamId().id)
 
     if not self.warpRequests[playerId] then
-        Chat:Print(self.locStrings["tag"], Color.White, player:GetName() .. self.locStrings["noteleport"], self.textColor)
+        local locStrings = self.locStrings
+
+        Chat:Print(locStrings["tag"], Color.White, player:GetName() .. locStrings["noteleport"], self.textColor)
         return
     else
         local acceptButton = self.acceptButtons[playerId]
@@ -282,20 +288,26 @@ function WarpGui:WarpRequest(args)
             Network:Send("WarpTo", {requester = requestingPlayer, target = LocalPlayer})
         elseif whitelist == 0 or not whitelist then -- Not in whitelist
             local acceptButton = self.acceptButtons[playerId]
+
             if not acceptButton then return end
 
             acceptButton:SetEnabled(true)
             self.warpRequests[playerId] = true
+
+            local locStrings = self.locStrings
+
             if LocalPlayer:GetWorld() ~= DefaultWorld then
-                Network:Send("WarpMessageTo", {target = requestingPlayer, message = self.locStrings["teleportrequest2"], centertext = true})
-                Chat:Print(self.locStrings["tag"], Color.White, requestingPlayer:GetName() .. self.locStrings["teleportrequest3"], self.textColor)
+                Network:Send("WarpMessageTo", {target = requestingPlayer, message = locStrings["teleportrequest2"], centertext = true})
+                Chat:Print(locStrings["tag"], Color.White, requestingPlayer:GetName() .. locStrings["teleportrequest3"], self.textColor)
                 return
             end
-            Network:Send("WarpMessageTo", {target = requestingPlayer, message = self.locStrings["teleportrequest"], centertext = true})
-            Events:Fire("SendNotification", {txt = self.locStrings["tprequest"], image = "Information", subtxt = self.locStrings["prequester"] .. requestingPlayer:GetName()})
-            Chat:Print(self.locStrings["tag"], Color.White, requestingPlayer:GetName() .. self.locStrings["gonnawarp"],self.textColor)
+
+            Network:Send("WarpMessageTo", {target = requestingPlayer, message = locStrings["teleportrequest"], centertext = true})
+            Events:Fire("SendNotification", {txt = locStrings["tprequest"], image = "Information", subtxt = locStrings["prequester"] .. requestingPlayer:GetName()})
+            Chat:Print(locStrings["tag"], Color.White, requestingPlayer:GetName() .. locStrings["gonnawarp"], self.textColor)
 
             self.requesterId = playerId
+
             if not self.PostTickEvent then
                 self.PostTickEvent = Events:Subscribe("PostTick", self, self.PostTick)
                 self.RefreshTimer = Timer()
@@ -420,17 +432,20 @@ end
 function WarpGui:PlayerQuit(args)
     local player = args.player
     local playerId = tostring(player:GetSteamId().id)
+    local rows = self.rows
 
-    if not self.rows[playerId] then return end
+    if not rows[playerId] then return end
 
-    self.playerList:RemoveItem(self.rows[playerId])
+    self.playerList:RemoveItem(rows[playerId])
     self.rows[playerId] = nil
 end
 
 function WarpGui:Render()
     local is_visible = Game:GetState() == GUIState.Game
+    local window = self.window
+    local windowGetVisible = window:GetVisible()
 
-    if self.window:GetVisible() ~= is_visible then
+    if windowGetVisible ~= is_visible then
         self.window:SetVisible(is_visible)
         Mouse:SetVisible(is_visible)
     end
@@ -444,8 +459,10 @@ function WarpGui:SetWindowVisible(visible, sound)
     end
 
     if self.activeWindow then
+        local rows = self.rows
+
         for p in Client:GetPlayers() do
-            self.rows[tostring(p:GetSteamId().id)]:SetTextColor(p:GetColor())
+            rows[tostring(p:GetSteamId().id)]:SetTextColor(p:GetColor())
         end
 
         if LocalPlayer:GetValue("SystemFonts") then

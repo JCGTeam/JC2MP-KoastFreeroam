@@ -27,13 +27,14 @@ function Admin:PostRender()
     if self.timer and self.message then
         if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
+        local locStrings = self.locStrings
         local size = 30
-        local testpos = Vector2(Render.Size.x / 2 - Render:GetTextWidth(self.locStrings["tag"] .. self.message, size) / 2, 80)
+        local testpos = Vector2(Render.Size.x / 2 - Render:GetTextWidth(locStrings["tag"] .. self.message, size) / 2, 80)
         local shadowColor = Color(0, 0, 0)
 
-        Render:DrawShadowedText(testpos, self.locStrings["tag"], self.textColor, shadowColor, size)
+        Render:DrawShadowedText(testpos, locStrings["tag"], self.textColor, shadowColor, size)
 
-        testpos.x = testpos.x + Render:GetTextWidth(self.locStrings["tag"], size)
+        testpos.x = testpos.x + Render:GetTextWidth(locStrings["tag"], size)
 
         Render:DrawShadowedText(testpos, self.message, self.textColor2, shadowColor, size)
 

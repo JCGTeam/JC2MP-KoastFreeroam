@@ -46,6 +46,8 @@ function PDA:__init()
     self.dragging = false
     self.lastMousePosition = Mouse:GetPosition()
 
+    self:UpdateKeyBinds()
+
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
         self:Lang()
@@ -59,9 +61,10 @@ function PDA:__init()
 
     labels = 0
 
-	self.KeyUpEvent = Events:Subscribe("KeyUp", self, self.KeyUp)
-
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
+
+    self.KeyUpEvent = Events:Subscribe("KeyUp", self, self.KeyUp)
 
     Network:Subscribe("WarpDoPoof", self, self.WarpDoPoof)
 end
@@ -72,6 +75,13 @@ function PDA:Lang()
         MTPToggle = "[Right Click] - Show/Hide players names",
         MTExtract = "[R] - Teleportation"
     }
+end
+
+function PDA:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local bind = keyBinds and keyBinds["ServerMap"]
+
+    self.expectedKey = bind and bind.type == "Key" and bind.value or 113
 end
 
 function PDA:PlayerUpdate(args)
@@ -236,7 +246,7 @@ function PDA:MouseUp(args)
 end
 
 function PDA:KeyUp(args)
-    if (args.key) == VirtualKey.F2 or string.char(args.key) == "M" and Game:GetState() == GUIState.Game then
+    if args.key == self.expectedKey and Game:GetState() == GUIState.Game then
         PDA:Toggle()
 
         if self.active then
@@ -250,7 +260,7 @@ function PDA:KeyUp(args)
         end
     end
 
-    if self.active and string.char(args.key) == "R" then
+    if self.active and args.key == 82 then
         if LocalPlayer:GetWorld() ~= DefaultWorld then
             PDA:Toggle()
             -- and Map.ActiveLocation
@@ -324,9 +334,12 @@ function PDA:PostRender()
     end
 
     if extraction_sequence then
-        if self.world_fadeout_timer then
-            local dt = self.world_fadeout_timer:GetMilliseconds()
+        local worldFadeOutTimer = self.world_fadeout_timer
+
+        if worldFadeOutTimer then
+            local dt = worldFadeOutTimer:GetMilliseconds()
             local delay = self.world_fadeout_delay
+
             if dt < delay then
                 Render:FillArea(Vector2.Zero, Render.Size, self:ColorA(Color.Black, 255 * (dt / delay)))
             end
@@ -336,9 +349,12 @@ function PDA:PostRender()
             Render:FillArea(Vector2.Zero, Render.Size, Color.Black)
         end
 
-        if self.world_fadein_timer then
-            local dt = self.world_fadein_timer:GetMilliseconds()
+        local worldFadeInTimer = self.world_fadein_timer
+
+        if worldFadeInTimer then
+            local dt = worldFadeInTimer:GetMilliseconds()
             local delay = self.world_fadein_delay
+
             if dt < delay then
                 Render:FillArea(Vector2.Zero, Render.Size, self:ColorA(Color.Black, 255 * (1 - dt / delay)))
             end

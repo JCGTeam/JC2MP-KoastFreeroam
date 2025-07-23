@@ -112,29 +112,42 @@ end
 
 Controls.Set = function(controlToSet)
     local alreadyExists = false
-    -- If a control with this name already exists, modify it.
+
     for index, control in ipairs(Controls.controls) do
         if control.name == controlToSet.name then
-            -- If the old control was type MouseMovement, remove it from Controls.mouseControls.
             if control.type == "MouseMovement" then
                 table.remove(Controls.mouseControls, table.find(Controls.mouseControls, control) or 0)
             end
 
             Controls.controls[index] = controlToSet
-
             alreadyExists = true
+
             break
         end
     end
 
-    -- If its type is MouseMovement, add it to Controls.mouseControls.
+    if not alreadyExists then
+        table.insert(Controls.controls, controlToSet)
+    end
+
     if controlToSet.type == "MouseMovement" then
         table.insert(Controls.mouseControls, controlToSet)
     end
+end
 
-    if alreadyExists == false then
-        table.insert(Controls.controls, controlToSet)
+Controls.UpdateBindings = function()
+    local bindings = {}
+
+    for _, control in ipairs(Controls.controls) do
+        bindings[control.name] = {
+            type = control.type,
+            value = control.value,
+            valueString = control.valueString
+        }
     end
+
+    LocalPlayer:SetValue("KeyBinds", bindings)
+    Events:Fire("UpdateKeyBinds")
 end
 
 Controls.Remove = function(controlName)
@@ -343,10 +356,10 @@ Controls.InputPoll = function(args)
     Controls.actionsBuffer = {}
 end
 
-Events:Subscribe("LocalPlayerInput", Controls.LocalPlayerInput)
-Events:Subscribe("KeyDown", Controls.KeyDown)
-Events:Subscribe("KeyUp", Controls.KeyUp)
-Events:Subscribe("MouseDown", Controls.MouseDown)
-Events:Subscribe("MouseUp", Controls.MouseUp)
-Events:Subscribe("MouseScroll", Controls.MouseScroll)
-Events:Subscribe("InputPoll", Controls.InputPoll)
+--Events:Subscribe("LocalPlayerInput", Controls.LocalPlayerInput)
+--Events:Subscribe("KeyDown", Controls.KeyDown)
+--Events:Subscribe("KeyUp", Controls.KeyUp)
+--Events:Subscribe("MouseDown", Controls.MouseDown)
+--Events:Subscribe("MouseUp", Controls.MouseUp)
+--Events:Subscribe("MouseScroll", Controls.MouseScroll)
+--Events:Subscribe("InputPoll", Controls.InputPoll)

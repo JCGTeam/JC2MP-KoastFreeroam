@@ -80,24 +80,26 @@ function BetterChat:Lang()
 end
 
 function BetterChat:CreateChatModeListItems()
-    self.chatmodelist:AddItem(self.locStrings["tGlobal"], self.locStrings["tGlobal"])
-    self.chatmodelist:AddItem(self.locStrings["tLocal"], self.locStrings["tLocal"])
+    local locStrings = self.locStrings
+
+    self.chatmodelist:AddItem(locStrings["tGlobal"], locStrings["tGlobal"])
+    self.chatmodelist:AddItem(locStrings["tLocal"], locStrings["tLocal"])
     if LocalPlayer:GetValue("ClanTag") then
-        self.chatmodelist:AddItem(self.locStrings["tClan"], self.locStrings["tClan"])
+        self.chatmodelist:AddItem(locStrings["tClan"], locStrings["tClan"])
     end
     if LocalPlayer:GetValue("Tag") or LocalPlayer:GetValue("NT_TagName") then
-        self.chatmodelist:AddItem(self.locStrings["tPrefix"], self.locStrings["tPrefix"])
+        self.chatmodelist:AddItem(locStrings["tPrefix"], locStrings["tPrefix"])
     end
 
     local chatMode = LocalPlayer:GetValue("ChatMode")
     if chatMode == 0 then
-        self.chatmodelist:SelectItemByName(self.locStrings["tGlobal"])
+        self.chatmodelist:SelectItemByName(locStrings["tGlobal"])
     elseif chatMode == 1 then
-        self.chatmodelist:SelectItemByName(self.locStrings["tLocal"])
+        self.chatmodelist:SelectItemByName(locStrings["tLocal"])
     elseif chatMode == 2 then
-        self.chatmodelist:SelectItemByName(self.locStrings["tClan"])
+        self.chatmodelist:SelectItemByName(locStrings["tClan"])
     elseif chatMode == 3 then
-        self.chatmodelist:SelectItemByName(self.locStrings["tPrefix"])
+        self.chatmodelist:SelectItemByName(locStrings["tPrefix"])
     end
 end
 
@@ -119,10 +121,12 @@ end
 
 function BetterChat:OpenChatMenu()
     if not self.window then
+        local locStrings = self.locStrings
+
         self.window = Window.Create()
         self.window:SetSize(Vector2(270, 155))
         self.window:SetPosition((Render.Size - self.window:GetSize()) / 2)
-        self.window:SetTitle(self.locStrings["chatsetingswindow"])
+        self.window:SetTitle(locStrings["chatsetingswindow"])
         self.window:Subscribe("WindowClosed", self, self.CloseWindow)
         Mouse:SetVisible(true)
 
@@ -130,19 +134,19 @@ function BetterChat:OpenChatMenu()
         possettbutton:SetDock(GwenPosition.Top)
         possettbutton:SetHeight(30)
         possettbutton:SetMargin(Vector2(0, 2), Vector2(0, 5))
-        possettbutton:SetText(self.locStrings["changechatpos"])
+        possettbutton:SetText(locStrings["changechatpos"])
         possettbutton:Subscribe("Press", self, self.ChatPosChanger)
 
         local resetbutton = Button.Create(self.window)
         resetbutton:SetDock(GwenPosition.Top)
         resetbutton:SetHeight(30)
         resetbutton:SetMargin(Vector2.Zero, Vector2(0, 10))
-        resetbutton:SetText(self.locStrings["restorechatpos"])
+        resetbutton:SetText(locStrings["restorechatpos"])
         resetbutton:Subscribe("Press", self, self.ChatPosReset)
         self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
 
         local joinmessages_btn = Label.Create(self.window)
-        joinmessages_btn:SetText(self.locStrings["showconnects"])
+        joinmessages_btn:SetText(locStrings["showconnects"])
         joinmessages_btn:SetDock(GwenPosition.Top)
         joinmessages_btn:SetMargin(Vector2.Zero, Vector2(0, 5))
         joinmessages_btn:SizeToContents()
@@ -150,9 +154,9 @@ function BetterChat:OpenChatMenu()
         self.joinmessages_cb = ComboBox.Create(self.window)
         self.joinmessages_cb:SetDock(GwenPosition.Top)
         self.joinmessages_cb:SetHeight(25)
-        self.joinmessages_cb:AddItem(self.locStrings["sc_cb_1"], "0")
-        self.joinmessages_cb:AddItem(self.locStrings["sc_cb_2"], "1")
-        self.joinmessages_cb:AddItem(self.locStrings["sc_cb_3"], "2")
+        self.joinmessages_cb:AddItem(locStrings["sc_cb_1"], "0")
+        self.joinmessages_cb:AddItem(locStrings["sc_cb_2"], "1")
+        self.joinmessages_cb:AddItem(locStrings["sc_cb_3"], "2")
 
         local visibleJoinMessages = LocalPlayer:GetValue("VisibleJoinMessages")
         if visibleJoinMessages then
@@ -182,18 +186,20 @@ function BetterChat:ChatPosChanger()
     if not self.controlstipSh then
         local systemFonts = LocalPlayer:GetValue("SystemFonts")
 
+        local locStrings = self.locStrings
+
         self.controlstipSh = Label.Create()
-        self.controlstipSh:SetText(self.locStrings["tiptext"])
+        self.controlstipSh:SetText(locStrings["tiptext"])
         self.controlstipSh:SetTextSize(20)
         self.controlstipSh:SetTextColor(Color.Black)
         if systemFonts then
             self.controlstipSh:SetFont(AssetLocation.SystemFont, "Impact")
         end
         self.controlstipSh:SizeToContents()
-        self.controlstipSh:SetPosition(Vector2((Render.Size.x / 2) - (Render:GetTextSize(self.locStrings["tiptext"], 20).x / 2), 60))
+        self.controlstipSh:SetPosition(Vector2((Render.Size.x / 2) - (Render:GetTextSize(locStrings["tiptext"], 20).x / 2), 60))
 
         self.controlstip = Label.Create()
-        self.controlstip:SetText(self.locStrings["tiptext"])
+        self.controlstip:SetText(locStrings["tiptext"])
         self.controlstip:SetTextSize(20)
         if systemFonts then
             self.controlstip:SetFont(AssetLocation.SystemFont, "Impact")
@@ -254,11 +260,12 @@ function BetterChat:Render()
             self.chatmodelist:SetFont(AssetLocation.SystemFont, "Impact")
         end
 
+        local locStrings = self.locStrings
         local chatPos = Chat:GetPosition()
         local textSize = 14
 
-        local textWidth = Render:GetTextWidth(self.locStrings["chatmode"], textSize)
-        local textHeight = Render:GetTextHeight(self.locStrings["chatmode"], textSize)
+        local textWidth = Render:GetTextWidth(locStrings["chatmode"], textSize)
+        local textHeight = Render:GetTextHeight(locStrings["chatmode"], textSize)
 
         local textPos = Vector2(chatPos.x, chatPos.y - textHeight - self.chatheight)
 
@@ -266,7 +273,7 @@ function BetterChat:Render()
 
         self.chatmodelist:SetPosition(Vector2(textPos.x + textWidth + 1, textPos.y - textHeight / 5))
 
-        Render:DrawShadowedText(textPos, self.locStrings["chatmode"], Color(215, 215, 215), Color(25, 25, 25, 150), textSize)
+        Render:DrawShadowedText(textPos, locStrings["chatmode"], Color(215, 215, 215), Color(25, 25, 25, 150), textSize)
 
         if not self.chatactive then
             self.chatmodelist:Clear()
@@ -285,19 +292,24 @@ function BetterChat:Render()
     end
 
     if self.chatmodelist:GetVisible() then
+        local locStrings = self.locStrings
         local selectedItem = self.chatmodelist:GetSelectedItem():GetText()
+        local toggle
 
-        if selectedItem == self.locStrings["tGlobal"] then
-            self.toggle = 0
-        elseif selectedItem == self.locStrings["tLocal"] then
-            self.toggle = 1
-        elseif selectedItem == self.locStrings["tClan"] then
-            self.toggle = 2
-        elseif selectedItem == self.locStrings["tPrefix"] then
-            self.toggle = 3
+        if selectedItem == locStrings["tGlobal"] then
+            toggle = 0
+        elseif selectedItem == locStrings["tLocal"] then
+            toggle = 1
+        elseif selectedItem == locStrings["tClan"] then
+            toggle = 2
+        elseif selectedItem == locStrings["tPrefix"] then
+            toggle = 3
         end
 
-        Network:Send("Toggle", self.toggle)
+        if toggle ~= self.last_toggle then
+            self.last_toggle = toggle
+            Network:Send("Toggle", toggle)
+        end
     end
 end
 

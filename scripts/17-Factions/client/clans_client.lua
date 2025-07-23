@@ -182,11 +182,11 @@ function ClanSystem:Lang()
 end
 
 function ClanSystem:CreateWindow()
-    if self.clanMenu.window then
-        return
-    end
+    if self.clanMenu.window then return end
 
-    self.clanMenu.window = GUI:Window(self.locStrings["clans"], Vector2(0.54, 0.4) - Vector2(0.3, 0.45) / 2, Vector2(0.6, 0.70))
+    local locStrings = self.locStrings
+
+    self.clanMenu.window = GUI:Window(locStrings["clans"], Vector2(0.54, 0.4) - Vector2(0.3, 0.45) / 2, Vector2(0.6, 0.70))
     self.clanMenu.window:Subscribe("WindowClosed", self, function() self:SetWindowVisible(false, true) end)
 
     self.clanMenu.tabs = TabControl.Create(self.clanMenu.window)
@@ -194,14 +194,14 @@ function ClanSystem:CreateWindow()
     self.clanMenu.tabs:SetVisible(true)
 
     local clanslist = BaseWindow.Create(self.clanMenu.tabs)
-    self.clanMenu.tabs:AddPage(self.locStrings["clanlist"], clanslist)
+    self.clanMenu.tabs:AddPage(locStrings["clanlist"], clanslist)
 
     self.clanMenu.list = SortedList.Create(clanslist)
     self.clanMenu.list:SetDock(GwenPosition.Fill)
-    self.clanMenu.list:AddColumn(self.locStrings["clan"])
-    self.clanMenu.list:AddColumn(self.locStrings["founder"])
-    self.clanMenu.list:AddColumn(self.locStrings["type"])
-    self.clanMenu.list:AddColumn(self.locStrings["members"])
+    self.clanMenu.list:AddColumn(locStrings["clan"])
+    self.clanMenu.list:AddColumn(locStrings["founder"])
+    self.clanMenu.list:AddColumn(locStrings["type"])
+    self.clanMenu.list:AddColumn(locStrings["members"])
     self.clanMenu.list:SetSort(self, self.SortFunction)
     self.clanMenu.list:Subscribe("SortPress", function(button) self.sort_dir = not self.sort_dir end)
     self.clanMenu.list:Subscribe("RowSelected", self, self.GetClanInfo)
@@ -294,14 +294,14 @@ function ClanSystem:CreateWindow()
     self.createClan.tabs:SetVisible(false)
 
     local clancreate = BaseWindow.Create(self.createClan.tabs)
-    self.createClan.tabs:AddPage(self.locStrings["clancreation"], clancreate)
+    self.createClan.tabs:AddPage(locStrings["clancreation"], clancreate)
 
-    self.createClan.bkpanelsLabel = Label.Create(clancreate)
-    self.createClan.bkpanelsLabel:SetDock(GwenPosition.Right)
-    self.createClan.bkpanelsLabel:SetMargin(Vector2(5, 0), Vector2.Zero)
-    self.createClan.bkpanelsLabel:SetSize(Vector2(250, 20))
+    self.createClan.bkpanelsBW = BaseWindow.Create(clancreate)
+    self.createClan.bkpanelsBW:SetDock(GwenPosition.Right)
+    self.createClan.bkpanelsBW:SetMargin(Vector2(5, 0), Vector2.Zero)
+    self.createClan.bkpanelsBW:SetSize(Vector2(250, 20))
 
-    self.createClan.pLabel = GroupBox.Create(self.createClan.bkpanelsLabel)
+    self.createClan.pLabel = GroupBox.Create(self.createClan.bkpanelsBW)
     self.createClan.pLabel:SetDock(GwenPosition.Bottom)
     self.createClan.pLabel:SetHeight(groupBoxHeight)
 
@@ -357,8 +357,8 @@ function ClanSystem:CreateWindow()
     self.createClan.type = ComboBox.Create(clancreate)
     self.createClan.type:SetDock(GwenPosition.Top)
     self.createClan.type:SetHeight(20)
-    self.createClan.type:AddItem(self.locStrings["public"], "0")
-    self.createClan.type:AddItem(self.locStrings["private"], "1")
+    self.createClan.type:AddItem(locStrings["public"], "0")
+    self.createClan.type:AddItem(locStrings["private"], "1")
 
     self.createClan.subcategory = GroupBox.Create(clancreate)
     self.createClan.subcategory:SetDock(GwenPosition.Fill)
@@ -388,20 +388,20 @@ function ClanSystem:CreateWindow()
     self.manageClan.mctabs:SetVisible(false)
 
     local hometab = BaseWindow.Create(self.manageClan.mctabs)
-    self.manageClan.mctabs:AddPage(self.locStrings["myclan"], hometab)
+    self.manageClan.mctabs:AddPage(locStrings["myclan"], hometab)
 
     self.manageClan.mList = SortedList.Create(hometab)
     self.manageClan.mList:SetDock(GwenPosition.Fill)
-    self.manageClan.mList:AddColumn(self.locStrings["player"])
-    self.manageClan.mList:AddColumn(self.locStrings["rank"])
-    self.manageClan.mList:AddColumn(self.locStrings["joindate"])
+    self.manageClan.mList:AddColumn(locStrings["player"])
+    self.manageClan.mList:AddColumn(locStrings["rank"])
+    self.manageClan.mList:AddColumn(locStrings["joindate"])
 
-    self.manageClan.mBkpanelsLabel = Label.Create(hometab)
-    self.manageClan.mBkpanelsLabel:SetDock(GwenPosition.Right)
-    self.manageClan.mBkpanelsLabel:SetMargin(Vector2(5, 0), Vector2.Zero)
-    self.manageClan.mBkpanelsLabel:SetSize(Vector2(250, 20))
+    self.manageClan.mBkpanelsBW = BaseWindow.Create(hometab)
+    self.manageClan.mBkpanelsBW:SetDock(GwenPosition.Right)
+    self.manageClan.mBkpanelsBW:SetMargin(Vector2(5, 0), Vector2.Zero)
+    self.manageClan.mBkpanelsBW:SetSize(Vector2(250, 20))
 
-    self.manageClan.mcLabel = GroupBox.Create(self.manageClan.mBkpanelsLabel)
+    self.manageClan.mcLabel = GroupBox.Create(self.manageClan.mBkpanelsBW)
     self.manageClan.mcLabel:SetDock(GwenPosition.Top)
     self.manageClan.mcLabel:SetHeight(groupBoxHeight)
 
@@ -419,7 +419,7 @@ function ClanSystem:CreateWindow()
     self.manageClan.lClan:SetTextSize(self.textSize)
     self.manageClan.lClan:Subscribe("Press", self, self.ClanMenu)
 
-    self.manageClan.newsLabel = GroupBox.Create(self.manageClan.mBkpanelsLabel)
+    self.manageClan.newsLabel = GroupBox.Create(self.manageClan.mBkpanelsBW)
     self.manageClan.newsLabel:SetMargin(Vector2(0, 10), Vector2(0, 10))
     self.manageClan.newsLabel:SetDock(GwenPosition.Top)
     self.manageClan.newsLabel:SetHeight(groupBoxHeight)
@@ -432,7 +432,7 @@ function ClanSystem:CreateWindow()
     self.manageClan.newstbLabel:SetWrap(true)
     self.manageClan.newstbLabel:SetDock(GwenPosition.Fill)
 
-    self.manageClan.mpLabel = GroupBox.Create(self.manageClan.mBkpanelsLabel)
+    self.manageClan.mpLabel = GroupBox.Create(self.manageClan.mBkpanelsBW)
     self.manageClan.mpLabel:SetDock(GwenPosition.Bottom)
     self.manageClan.mpLabel:SetHeight(85)
 
@@ -494,7 +494,7 @@ function ClanSystem:CreateWindow()
     self.manageClan.kick:Subscribe("Press", self, self.Kick)
 
     local clanlogs = BaseWindow.Create(self.manageClan.mctabs)
-    self.manageClan.mctabs:AddPage(self.locStrings["logs"], clanlogs)
+    self.manageClan.mctabs:AddPage(locStrings["logs"], clanlogs)
 
     self.log = {}
     self.log.clear = Button.Create(clanlogs)
@@ -505,18 +505,18 @@ function ClanSystem:CreateWindow()
 
     self.log.list = SortedList.Create(clanlogs)
     self.log.list:SetDock(GwenPosition.Fill)
-    self.log.list:AddColumn(self.locStrings["action"])
-    self.log.list:AddColumn(self.locStrings["date"], 150)
+    self.log.list:AddColumn(locStrings["action"])
+    self.log.list:AddColumn(locStrings["date"], 150)
 
     local clansettings = BaseWindow.Create(self.manageClan.mctabs)
-    self.manageClan.mctabs:AddPage(self.locStrings["clansettings"], clansettings)
+    self.manageClan.mctabs:AddPage(locStrings["clansettings"], clansettings)
 
-    self.manageClan.bkpanelsLabel = Label.Create(clansettings)
-    self.manageClan.bkpanelsLabel:SetDock(GwenPosition.Right)
-    self.manageClan.bkpanelsLabel:SetMargin(Vector2(5, 0), Vector2.Zero)
-    self.manageClan.bkpanelsLabel:SetSize(Vector2(250, 20))
+    self.manageClan.bkpanelsBW = BaseWindow.Create(clansettings)
+    self.manageClan.bkpanelsBW:SetDock(GwenPosition.Right)
+    self.manageClan.bkpanelsBW:SetMargin(Vector2(5, 0), Vector2.Zero)
+    self.manageClan.bkpanelsBW:SetSize(Vector2(250, 20))
 
-    self.manageClan.newsmngLabel = GroupBox.Create(self.manageClan.bkpanelsLabel)
+    self.manageClan.newsmngLabel = GroupBox.Create(self.manageClan.bkpanelsBW)
     self.manageClan.newsmngLabel:SetMargin(Vector2(0, 10), Vector2(0, 10))
     self.manageClan.newsmngLabel:SetDock(GwenPosition.Top)
     self.manageClan.newsmngLabel:SetHeight(140)
@@ -536,7 +536,7 @@ function ClanSystem:CreateWindow()
     self.manageClan.newsApply:SetTextSize(self.textSize)
     self.manageClan.newsApply:Subscribe("Press", self, self.ChangeClanNews)
 
-    self.manageClan.pLabel = GroupBox.Create(self.manageClan.bkpanelsLabel)
+    self.manageClan.pLabel = GroupBox.Create(self.manageClan.bkpanelsBW)
     self.manageClan.pLabel:SetDock(GwenPosition.Bottom)
     self.manageClan.pLabel:SetHeight(groupBoxHeight)
 
@@ -578,8 +578,8 @@ function ClanSystem:CreateWindow()
     self.manageClan.type = ComboBox.Create(clansettings)
     self.manageClan.type:SetDock(GwenPosition.Top)
     self.manageClan.type:SetHeight(20)
-    self.manageClan.type:AddItem(self.locStrings["public"], "0")
-    self.manageClan.type:AddItem(self.locStrings["private"], "1")
+    self.manageClan.type:AddItem(locStrings["public"], "0")
+    self.manageClan.type:AddItem(locStrings["private"], "1")
 
     self.manageClan.subcategory = GroupBox.Create(clansettings)
     self.manageClan.subcategory:SetDock(GwenPosition.Fill)
@@ -605,27 +605,27 @@ function ClanSystem:CreateWindow()
 
     self.confirm = {}
     self.confirm.action = ""
-    self.confirm.window = GUI:Window(self.locStrings["confirmaction"], Vector2(0.86, 0.65) - Vector2(0.13, 0.13) / 2, Vector2(0.19, 0.13))
+    self.confirm.window = GUI:Window(locStrings["confirmaction"], Vector2(0.86, 0.65) - Vector2(0.13, 0.13) / 2, Vector2(0.19, 0.13))
     self.confirm.window:SetVisible(false)
     self.confirm.label = Label.Create(self.confirm.window)
     self.confirm.label:SetDock(GwenPosition.Fill)
     self.confirm.label:SetAlignment(GwenPosition.Center)
-    self.confirm.label:SetText(self.locStrings["areyousure"])
+    self.confirm.label:SetText(locStrings["areyousure"])
     self.confirm.label:SetTextColor(Color(255, 150, 150))
     self.confirm.accept = Button.Create(self.confirm.window)
     self.confirm.accept:SetDock(GwenPosition.Bottom)
-    self.confirm.accept:SetText(self.locStrings["yes"])
+    self.confirm.accept:SetText(locStrings["yes"])
     self.confirm.accept:SetTextHoveredColor(Color(255, 150, 150))
     self.confirm.accept:SetHeight(btnHeight)
     self.confirm.accept:Subscribe("Press", self, self.Confirm)
 
     self.invitations = {}
     self.invitations.rows = {}
-    self.invitations.window = GUI:Window(self.locStrings["invitations"], Vector2(0.26, 0.4) - Vector2(0.25, 0.45) / 2, Vector2(0.25, 0.7))
+    self.invitations.window = GUI:Window(locStrings["invitations"], Vector2(0.26, 0.4) - Vector2(0.25, 0.45) / 2, Vector2(0.25, 0.7))
     self.invitations.window:SetVisible(false)
     self.invitations.list = SortedList.Create(self.invitations.window)
     self.invitations.list:SetDock(GwenPosition.Fill)
-    self.invitations.list:AddColumn(self.locStrings["clan"])
+    self.invitations.list:AddColumn(locStrings["clan"])
 
     self.invitations.join = Button.Create(self.invitations.window)
     self.invitations.join:SetDock(GwenPosition.Bottom)
@@ -637,13 +637,13 @@ function ClanSystem:CreateWindow()
 
     self.clanList = {}
     self.clanList.rows = {}
-    self.clanList.window = GUI:Window(self.locStrings["playerlist"], Vector2(0.26, 0.4) - Vector2(0.25, 0.45) / 2, Vector2(0.25, 0.7))
+    self.clanList.window = GUI:Window(locStrings["playerlist"], Vector2(0.26, 0.4) - Vector2(0.25, 0.45) / 2, Vector2(0.25, 0.7))
     self.clanList.window:SetVisible(false)
 
     self.clanList.playersList = SortedList.Create(self.clanList.window)
     self.clanList.playersList:SetDock(GwenPosition.Fill)
     self.clanList.playersList:SetBackgroundVisible(false)
-    self.clanList.playersList:AddColumn(self.locStrings["players"])
+    self.clanList.playersList:AddColumn(locStrings["players"])
 
     self.clanList.invitePlayer = Button.Create(self.clanList.window)
     self.clanList.invitePlayer:SetDock(GwenPosition.Bottom)
@@ -662,53 +662,53 @@ function ClanSystem:CreateWindow()
     self.clanList.searchEdit:Subscribe("Blur", self, self.Blur)
     self.clanList.searchEdit:Subscribe("EscPressed", self, self.EscPressed)
 
-    self.clanMenu.cLabel:SetText(self.locStrings["clan"])
-    self.clanMenu.manageClan:SetText(self.locStrings["yourclan"])
-    self.clanMenu.lClan:SetText(self.locStrings["clanlist"])
-    self.clanMenu.pLabel:SetText(self.locStrings["forplayers"])
-    self.clanMenu.join:SetText(self.locStrings["jointoclan"])
-    self.clanMenu.playersList:SetText(self.locStrings["playerlist"])
-    self.clanMenu.invitations:SetText(self.locStrings["invitations"])
-    self.clanMenu.create:SetText(self.locStrings["createclan"])
-    self.clanMenu.iLabel:SetText(self.locStrings["info"])
-    self.clanMenu.searchClansEdit:SetToolTip(self.locStrings["search"])
-    self.createClan.pLabel:SetText(self.locStrings["manage"])
-    self.createClan.dLabel:SetText(self.locStrings["requirestocreate"])
-    self.createClan.create:SetText(self.locStrings["createclan"])
-    self.createClan.back:SetText(self.locStrings["back"])
-    self.createClan.nLabel:SetText(self.locStrings["clanname"])
-    self.createClan.nEdit:SetToolTip(self.locStrings["maxchars"])
-    self.createClan.tLabel:SetText(self.locStrings["clandescription"])
-    self.createClan.subcategory:SetText(self.locStrings["color"])
-    self.createClan.subcategory2:SetText(self.locStrings["preview"])
-    self.createClan.ttLabel:SetText(self.locStrings["clantype"])
-    self.manageClan.mcLabel:SetText(self.locStrings["clan"])
-    self.manageClan.manageClan:SetText(self.locStrings["yourclan"])
-    self.manageClan.lClan:SetText(self.locStrings["clanlist"])
-    self.manageClan.newsLabel:SetText(self.locStrings["notice"])
-    self.manageClan.newstbLabel:SetText(self.locStrings["loading"])
-    self.manageClan.mpLabel:SetText(self.locStrings["manage"])
-    self.manageClan.playersList:SetText(self.locStrings["playerlist"])
-    self.manageClan.leaveClan:SetText(self.locStrings["leaveclan"])
-    self.manageClan.cInfoLabel:SetText(self.locStrings["info"])
-    self.manageClan.ciLabel:SetText(self.locStrings["clanname"])
-    self.manageClan.psettLabel:SetText(self.locStrings["membermanagement"])
-    self.manageClan.setRank:SetText(self.locStrings["setrank"])
-    self.manageClan.kick:SetText(self.locStrings["kick"])
-    self.log.clear:SetText(self.locStrings["clearlogs"])
-    self.manageClan.newsmngLabel:SetText(self.locStrings["notice"])
-    self.manageClan.newsApply:SetText(self.locStrings["applychanges"])
-    self.manageClan.pLabel:SetText(self.locStrings["manage"])
-    self.manageClan.dLabel:SetText(self.locStrings["requirestochange"])
-    self.manageClan.create:SetText(self.locStrings["applychanges"])
-    self.manageClan.remove:SetText(self.locStrings["removeclan"])
-    self.manageClan.tLabel:SetText(self.locStrings["clandescription"])
-    self.manageClan.subcategory:SetText(self.locStrings["color"])
-    self.manageClan.subcategory2:SetText(self.locStrings["preview"])
-    self.manageClan.ttLabel:SetText(self.locStrings["clantype"])
-    self.invitations.join:SetText(self.locStrings["jointoclan"])
-    self.clanList.invitePlayer:SetText(self.locStrings["inviteplayer"])
-    self.clanList.searchEdit:SetToolTip(self.locStrings["search"])
+    self.clanMenu.cLabel:SetText(locStrings["clan"])
+    self.clanMenu.manageClan:SetText(locStrings["yourclan"])
+    self.clanMenu.lClan:SetText(locStrings["clanlist"])
+    self.clanMenu.pLabel:SetText(locStrings["forplayers"])
+    self.clanMenu.join:SetText(locStrings["jointoclan"])
+    self.clanMenu.playersList:SetText(locStrings["playerlist"])
+    self.clanMenu.invitations:SetText(locStrings["invitations"])
+    self.clanMenu.create:SetText(locStrings["createclan"])
+    self.clanMenu.iLabel:SetText(locStrings["info"])
+    self.clanMenu.searchClansEdit:SetToolTip(locStrings["search"])
+    self.createClan.pLabel:SetText(locStrings["manage"])
+    self.createClan.dLabel:SetText(locStrings["requirestocreate"])
+    self.createClan.create:SetText(locStrings["createclan"])
+    self.createClan.back:SetText(locStrings["back"])
+    self.createClan.nLabel:SetText(locStrings["clanname"])
+    self.createClan.nEdit:SetToolTip(locStrings["maxchars"])
+    self.createClan.tLabel:SetText(locStrings["clandescription"])
+    self.createClan.subcategory:SetText(locStrings["color"])
+    self.createClan.subcategory2:SetText(locStrings["preview"])
+    self.createClan.ttLabel:SetText(locStrings["clantype"])
+    self.manageClan.mcLabel:SetText(locStrings["clan"])
+    self.manageClan.manageClan:SetText(locStrings["yourclan"])
+    self.manageClan.lClan:SetText(locStrings["clanlist"])
+    self.manageClan.newsLabel:SetText(locStrings["notice"])
+    self.manageClan.newstbLabel:SetText(locStrings["loading"])
+    self.manageClan.mpLabel:SetText(locStrings["manage"])
+    self.manageClan.playersList:SetText(locStrings["playerlist"])
+    self.manageClan.leaveClan:SetText(locStrings["leaveclan"])
+    self.manageClan.cInfoLabel:SetText(locStrings["info"])
+    self.manageClan.ciLabel:SetText(locStrings["clanname"])
+    self.manageClan.psettLabel:SetText(locStrings["membermanagement"])
+    self.manageClan.setRank:SetText(locStrings["setrank"])
+    self.manageClan.kick:SetText(locStrings["kick"])
+    self.log.clear:SetText(locStrings["clearlogs"])
+    self.manageClan.newsmngLabel:SetText(locStrings["notice"])
+    self.manageClan.newsApply:SetText(locStrings["applychanges"])
+    self.manageClan.pLabel:SetText(locStrings["manage"])
+    self.manageClan.dLabel:SetText(locStrings["requirestochange"])
+    self.manageClan.create:SetText(locStrings["applychanges"])
+    self.manageClan.remove:SetText(locStrings["removeclan"])
+    self.manageClan.tLabel:SetText(locStrings["clandescription"])
+    self.manageClan.subcategory:SetText(locStrings["color"])
+    self.manageClan.subcategory2:SetText(locStrings["preview"])
+    self.manageClan.ttLabel:SetText(locStrings["clantype"])
+    self.invitations.join:SetText(locStrings["jointoclan"])
+    self.clanList.invitePlayer:SetText(locStrings["inviteplayer"])
+    self.clanList.searchEdit:SetToolTip(locStrings["search"])
 
     self.createClan.dLabel:SizeToContents()
     self.createClan.nLabel:SizeToContents()
@@ -879,8 +879,10 @@ end
 function ClanSystem:ClanList()
     self.clanList.window:SetVisible(not self.clanList.window:GetVisible())
 
+    local playerToRow = self.playerToRow
+
     for p in Client:GetPlayers() do
-        self.playerToRow[p:GetId()]:SetTextColor(p:GetColor())
+        playerToRow[p:GetId()]:SetTextColor(p:GetColor())
     end
 end
 
@@ -918,13 +920,14 @@ function ClanSystem:ReceiveClans(args)
         local colour = (data.colour:split(",") or {255, 255, 255})
         local r, g, b = table.unpack(colour)
         local membersCount = args.clanMembers[name] and #args.clanMembers[name] or 0
+        local locStrings = self.locStrings
 
         local item = self.clanMenu.list:AddItem(tostring(name))
         item:SetCellText(1, data.creator)
-        item:SetCellText(2, (data.type == "1" and self.locStrings["private"] or self.locStrings["public"]))
+        item:SetCellText(2, (data.type == "1" and locStrings["private"] or locStrings["public"]))
         item:SetCellText(3, tostring(membersCount))
         item:SetDataObject("creationDate", tostring(data.creationDate))
-        item:SetDataObject("description", data.description ~= "" and data.description or self.locStrings["nodescription"])
+        item:SetDataObject("description", data.description ~= "" and data.description or locStrings["nodescription"])
         item:SetTextColor(Color(tonumber(r), tonumber(g), tonumber(b)))
         table.insert(self.clanList.rows, item)
         self.clansRow[tostring(name)] = item
@@ -977,11 +980,13 @@ function ClanSystem:ReceiveData(args)
     self.manageClan.newstbLabel:SetText(args.newstext)
     self.manageClan.newstbLabel:SizeToContents()
 
+    local locStrings = self.locStrings
+
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
-        self.manageClan.ciLabel:SetText("> Clan name: " .. tostring(args.clanData.name) .. "\n\n★ Clan type: " .. (args.clanData.type == "1" and self.locStrings["private"] or self.locStrings["public"]) .. "\n\nツ Members: " .. tostring(#args.members) .. "\n\n● Creation date: " .. tostring(args.clanData.creationDate))
+        self.manageClan.ciLabel:SetText("> Clan name: " .. tostring(args.clanData.name) .. "\n\n★ Clan type: " .. (args.clanData.type == "1" and locStrings["private"] or locStrings["public"]) .. "\n\nツ Members: " .. tostring(#args.members) .. "\n\n● Creation date: " .. tostring(args.clanData.creationDate))
     else
-        self.manageClan.ciLabel:SetText("> Название клана: " .. tostring(args.clanData.name) .. "\n\n★ Тип клана: " .. (args.clanData.type == "1" and self.locStrings["private"] or self.locStrings["public"]) .. "\n\nツ Участников: " .. tostring(#args.members) .. "\n\n● Дата создания: " .. tostring(args.clanData.creationDate))
+        self.manageClan.ciLabel:SetText("> Название клана: " .. tostring(args.clanData.name) .. "\n\n★ Тип клана: " .. (args.clanData.type == "1" and locStrings["private"] or locStrings["public"]) .. "\n\nツ Участников: " .. tostring(#args.members) .. "\n\n● Дата создания: " .. tostring(args.clanData.creationDate))
     end
 
     self.manageClan.ciLabel:SizeToContents()
@@ -1085,9 +1090,10 @@ end
 
 function ClanSystem:PlayerQuit(args)
     local pId = args.player:GetId()
+    local playerToRow = self.playerToRow[pId]
 
-    if (self.playerToRow[pId]) then
-        self.clanList.playersList:RemoveItem(self.playerToRow[pId])
+    if playerToRow then
+        self.clanList.playersList:RemoveItem(playerToRow)
     end
 end
 
@@ -1205,8 +1211,10 @@ end
 
 function ClanSystem:Render()
     local is_visible = Game:GetState() == GUIState.Game
+    local window = self.clanMenu.window
+    local windowGetVisible = window:GetVisible()
 
-    if self.clanMenu.window:GetVisible() ~= is_visible then
+    if windowGetVisible ~= is_visible then
         self.clanMenu.window:SetVisible(is_visible)
         Mouse:SetVisible(is_visible)
     end

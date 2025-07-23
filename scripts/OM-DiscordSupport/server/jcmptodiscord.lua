@@ -2,9 +2,10 @@
 -- config ----------------------------------------------------------------------
 local host = '127.0.0.1' -- localhost
 local port = 7778 -- default port 7778
-local tagColor = Color.DodgerBlue
-local playerColor = Color.Orange
-local textColor = Color.White
+
+local discordChannelId = "865977760576438282"
+local discordConsole = "865978337712799754"
+local discordReports = "975753707767611422"
 --------------------------------------------------------------------------------
 
 local uv = require('luv')
@@ -16,9 +17,9 @@ Events:Subscribe('ModuleLoad', function()
     local udp = uv.new_udp()
     udp:send('handshake', host, port)
 
-    Events:Subscribe('ToDiscord', function(args) local data = encode {"865977760576438282", args.text} udp:send(data, host, port) end)
-    Events:Subscribe('ToDiscordConsole', function(args) local data = encode {"865978337712799754", args.text} udp:send(data, host, port) end)
-    Events:Subscribe('ToDiscordReports', function(args) local data = encode {"975753707767611422", args.text} udp:send(data, host, port) end)
+    Events:Subscribe('ToDiscord', function(args) local data = encode {discordChannelId, args.text} udp:send(data, host, port) end)
+    Events:Subscribe('ToDiscordConsole', function(args) local data = encode {discordConsole, args.text} udp:send(data, host, port) end)
+    Events:Subscribe('ToDiscordReports', function(args) local data = encode {discordReports, args.text} udp:send(data, host, port) end)
 
     udp:recv_start(function(err, data)
         assert(not err, err)

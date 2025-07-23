@@ -8,8 +8,20 @@ function Woet:__init()
         self.KeyUpEvent = Events:Subscribe("KeyUp", self, self.KeyUp)
     end
 
+    self:UpdateKeyBinds()
+
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
     Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
+end
+
+function Woet:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local woetBind = keyBinds and keyBinds["VehicleTricks"]
+    local vehicleJumpBind = keyBinds and keyBinds["VehicleJump"]
+
+    self.vehicleTricksKey = woetBind and woetBind.type == "Key" and woetBind.value or 9
+    self.vehicleJumpKey = bivehicleJumpBindnd and vehicleJumpBind.type == "Key" and vehicleJumpBind.value or 9
 end
 
 function Woet:LocalPlayerEnterVehicle()
@@ -27,7 +39,8 @@ function Woet:KeyUp(args)
     if LocalPlayer:GetValue("Freeze") then return end
 
     local enhancedWoet = LocalPlayer:GetValue("EnhancedWoet")
-    if enhancedWoet and args.key == string.byte("Y") then
+
+    if enhancedWoet and args.key == self.vehicleTricksKey then
         if not LocalPlayer:GetValue("Passive") then
             local vehicle = LocalPlayer:GetVehicle()
 
@@ -49,7 +62,7 @@ function Woet:KeyUp(args)
         end
     end
 
-    if args.key == VirtualKey.Tab then
+    if args.key == self.vehicleJumpKey then
         if LocalPlayer:GetValue("VehicleJump") then
             local time = Client:GetElapsedSeconds()
             local vehicle = LocalPlayer:GetVehicle()

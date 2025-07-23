@@ -32,17 +32,42 @@ function ServerMenu:__init()
         ["VIP"] = true
     }
 
+    self:UpdateKeyBinds()
+
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
         self:Lang()
     else
         self.locStrings = {
+            servermenu = "▧ Меню сервера",
+            news = "НОВОСТИ",
+            helprules = "ПОМОЩЬ / ПРАВИЛА",
+            blackmarket = "Черный рынок",
+            blackmarkettl = "Транспорт, оружие, внешность и прочие",
+            teleport = "Телепортация",
+            teleporttl = "Телепортация к игрокам",
+            clans = "Кланы",
+            clanstl = "Управление кланом и другие кланы игроков",
+            messages = "Сообщения",
+            messagestl = "Общайтесь лично с игроками",
+            settings = "Настройки",
+            settingstl = "Настройки сервера",
+            dailytasks = "Задачи",
+            dailytaskstl = "Ежедневные задания за которые вы получаете награды",
+            minigames = "Развлечения",
+            minigamestl = "Различные развлечения",
+            abilities = "Способности",
+            abilitiestl = "Прокачка способностей и навыков",
+            passivemode = "Мирный режим:",
+            jesusmode = "Режим Иисуса:",
             gametime = "Игровое время: ",
+            rewards = "Награды:",
             level = "Уровень: ",
             moneybonus = "$$ Денежный бонус $$",
             notavailable = "Недоступно :(",
             bonus = "[Бонус] ",
             availablemoneybonus = "Доступен денежный бонус! Откройте меню сервера, чтобы получить его.",
+            feedback = "Обратная связь",
             pigeonmod = "Режим голубя",
             hideme = "Скрытие маркера",
             disable = "Отключить",
@@ -76,6 +101,7 @@ function ServerMenu:__init()
     self:LoadCategories()
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("LocalPlayerChat", self, self.LocalPlayerChat)
     Events:Subscribe("KeyUp", self, self.KeyUp)
     Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
@@ -87,62 +113,96 @@ end
 
 function ServerMenu:Lang()
     self.locStrings = {
+        servermenu = "▧ Server Menu",
+        news = "NEWS",
+        helprules = "HELP / RULES",
+        blackmarket = "Black Market",
+        blackmarkettl = "Vehicles, weapons, appearance and others",
+        teleport = "Teleportation",
+        teleporttl = "Teleport to the players",
+        clans = "Clans",
+        clanstl = "Your clan and other clans of players",
+        messages = "Messages",
+        messagestl = "Communicate personally with the players",
+        settings = "Settings",
+        settingstl = "Server settings",
+        dailytasks = "Daily Tasks",
+        dailytaskstl = "Daily tasks for which you get rewards",
+        minigames = "Minigames",
+        minigamestl = "Various minigames",
+        abilities = "Abilities",
+        abilitiestl = "Upgrading your abilities and skills",
+        passivemode = "Passive Mode:",
+        jesusmode = "Jesus Mode:",
         gametime = "Game Time: ",
+        rewards = "Rewards:",
         level = "Level: ",
-        moneybonus = "$$ Money bonus $$",
+        moneybonus = "$$ Money Bonus $$",
         notavailable = "Not available",
         bonus = "[Bonus] ",
         availablemoneybonus = "Money bonus is available! Open the server menu to get it!",
-        pigeonmod = "Pigeon mod",
-        hideme = "Invisible marker",
+        feedback = "Feedback",
+        pigeonmod = "Pigeon Mod",
+        hideme = "Invisible Marker",
         disable = "Disable",
         enable = "Enable",
-        disabled = " disabled",
-        enabled = " enabled",
-        disabled_2 = " disabled",
-        enabled_2 = " enabled"
+        disabled = " Disabled",
+        enabled = " Enabled",
+        disabled_2 = " Disabled",
+        enabled_2 = " Enabled"
     }
 
     if self.window then
-        self.window:SetTitle("▧ Server Menu")
-        self.news_button:SetText("NEWS")
-        self.help_button:SetText("HELP / RULES")
-        self.shop_button:SetText("Black Market")
-        self.shop_button:SetToolTip("Vehicles, weapons, appearance and others")
-        self.tp_button:SetText("Teleportation")
-        self.tp_button:SetToolTip("Teleport to the players")
-        self.clans_button:SetText("Clans")
-        self.clans_button:SetToolTip("Your clan and other clans of players")
-        self.pm_button:SetText("Messages")
-        self.pm_button:SetToolTip("Communicate personally with the players")
-        self.sett_button:SetText("Settings")
-        self.sett_button:SetToolTip("Server settings")
-        self.tasks_button:SetToolTip("Daily tasks for which you get rewards")
-        self.tasks_button:SetText("Daily Tasks")
-        self.minigames_button:SetText("Minigames")
-        self.minigames_button:SetToolTip("Various minigames")
-        self.abilities_button:SetText("Abilities")
-        self.abilities_button:SetToolTip("Upgrading your abilities and skills")
-        self.passive:SetText("Passive mode:")
+        local locStrings = self.locStrings
+
+        self.window:SetTitle(locStrings["servermenu"])
+        self.news_button:SetText(locStrings["news"])
+        self.help_button:SetText(locStrings["helprules"])
+        self.shop_button:SetText(locStrings["blackmarket"])
+        self.shop_button:SetToolTip(locStrings["blackmarkettl"])
+        self.tp_button:SetText(locStrings["teleport"])
+        self.tp_button:SetToolTip(locStrings["teleporttl"])
+        self.clans_button:SetText(locStrings["clans"])
+        self.clans_button:SetToolTip(locStrings["clanstl"])
+        self.pm_button:SetText(locStrings["messages"])
+        self.pm_button:SetToolTip(locStrings["messagestl"])
+        self.sett_button:SetText(locStrings["settings"])
+        self.sett_button:SetToolTip(locStrings["settingstl"])
+        self.tasks_button:SetText(locStrings["dailytasks"])
+        self.tasks_button:SetToolTip(locStrings["dailytaskstl"])
+        self.minigames_button:SetText(locStrings["minigames"])
+        self.minigames_button:SetToolTip(locStrings["minigamestl"])
+        self.abilities_button:SetText(locStrings["abilities"])
+        self.abilities_button:SetToolTip(locStrings["abilitiestl"])
+        self.passive:SetText(locStrings["passivemode"])
         self.passive:SizeToContents()
-        self.jesusmode:SetText("Jesus mode:")
+        self.jesusmode:SetText(locStrings["jesusmode"])
         self.jesusmode:SizeToContents()
-        self.hideme:SetText("Invisible marker:")
-        self.pigeonmod:SetText("Pigeon mod:")
-        self.bonus:SetText("Bonus:")
+        self.hideme:SetText(locStrings["hideme"] .. ":")
+        self.pigeonmod:SetText(locStrings["pigeonmod"] .. ":")
+        self.bonus:SetText(locStrings["rewards"])
         self.bonus:SizeToContents()
         self.bonus_btn:SetText("NEEDED 9 LEVEL")
-        self.report_btn:SetText("Feedback")
+        self.report_btn:SetText(locStrings["feedback"])
     end
 end
 
+function ServerMenu:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local bind = keyBinds and keyBinds["ServerMenu"]
+
+    self.expectedKey = bind and bind.type == "Key" and bind.value or 66
+end
+
 function ServerMenu:LoadCategories()
+    local locStrings = self.locStrings
+
     self.window = Window.Create()
     self.window:SetSizeRel(Vector2(0.55, 0.5))
     self.window:SetMinimumSize(Vector2(700, 442))
     self.window:SetPositionRel(Vector2(0.7, 0.5) - self.window:GetSizeRel() / 2)
     self.window:SetVisible(self.activeWindow)
-    self.window:SetTitle("▧ Меню сервера")
+    self.window:SetTitle(locStrings["servermenu"])
     self.window:Subscribe("Render", self, self.UpdateGameInfo)
     self.window:Subscribe("WindowClosed", self, function() self:SetWindowVisible(false, true) end)
 
@@ -153,7 +213,7 @@ function ServerMenu:LoadCategories()
 
     self.help_button = Button.Create(self.top_container)
     self.help_button:SetVisible(true)
-    self.help_button:SetText("ПОМОЩЬ / ПРАВИЛА")
+    self.help_button:SetText(locStrings["helprules"])
     self.help_button:SetDock(GwenPosition.Fill)
     self.help_button:SetTextSize(self.textSize2)
     self.help_button:SetMargin(Vector2(5, 0), Vector2.Zero)
@@ -161,11 +221,11 @@ function ServerMenu:LoadCategories()
 
     self.news_button = Button.Create(self.top_container)
     self.news_button:SetVisible(true)
-    self.news_button:SetText("НОВОСТИ")
+    self.news_button:SetText(locStrings["news"])
     self.news_button:SetDock(GwenPosition.Left)
     self.news_button:SetTextSize(self.textSize2)
     self.news_button:SetMargin(Vector2.Zero, Vector2.Zero)
-    self.news_button:SetWidth(Render:GetTextWidth("НОВОСТИ") + 25)
+    self.news_button:SetWidth(Render:GetTextWidth(locStrings["news"]) + 25)
     self.news_button:Subscribe("Press", self, self.CastNewsMenu)
 
     self.scroll_control = ScrollControl.Create(self.window)
@@ -176,14 +236,14 @@ function ServerMenu:LoadCategories()
     local textWidth = Render:GetTextWidth(self.resizer_txt, self.textSize)
 
     local spacing = textWidth + 15
-    self.shop_button = self:CreateServerMenuButton("Черный рынок", self.shopimage, "Транспорт, оружие, внешность и прочие", 5, self.CastShop)
-    self.tp_button = self:CreateServerMenuButton("Телепортация", self.tpimage, "Телепортация к игрокам", self.shop_button:GetPosition().x + spacing, self.CastWarpGUI)
-    self.clans_button = self:CreateServerMenuButton("Кланы", self.clansimage, "Управление кланом и другие кланы игроков", self.tp_button:GetPosition().x + spacing, self.CastClansMenu)
-    self.pm_button = self:CreateServerMenuButton("Сообщения", self.pmimage, "Общайтесь лично с игроками", self.clans_button:GetPosition().x + spacing, self.CastGuiPm)
-    self.tasks_button = self:CreateServerMenuButton("Задачи", self.dedmimage, "Ежедневные задания за которые вы получаете награды", self.pm_button:GetPosition().x + spacing, self.CastDedMorozMenu)
-    self.minigames_button = self:CreateServerMenuButton("Развлечения", self.mainmenuimage, "Различные развлечения", self.tasks_button:GetPosition().x + spacing, self.CastMainMenu)
-    self.abilities_button = self:CreateServerMenuButton("Способности", self.abiltiesimage, "Прокачка способностей и навыков", self.minigames_button:GetPosition().x + spacing, self.CastAbilitiesMenu)
-    self.sett_button = self:CreateServerMenuButton("Настройки", self.settimage, "Настройки сервера", self.abilities_button:GetPosition().x + spacing, self.CastSettingsMenu)
+    self.shop_button = self:CreateServerMenuButton(locStrings["blackmarket"], self.shopimage, locStrings["blackmarkettl"], 5, self.CastShop)
+    self.tp_button = self:CreateServerMenuButton(locStrings["teleport"], self.tpimage, locStrings["teleporttl"], self.shop_button:GetPosition().x + spacing, self.CastWarpGUI)
+    self.clans_button = self:CreateServerMenuButton(locStrings["clans"], self.clansimage, locStrings["clanstl"], self.tp_button:GetPosition().x + spacing, self.CastClansMenu)
+    self.pm_button = self:CreateServerMenuButton(locStrings["messages"], self.pmimage, locStrings["messagestl"], self.clans_button:GetPosition().x + spacing, self.CastGuiPm)
+    self.tasks_button = self:CreateServerMenuButton(locStrings["dailytasks"], self.dedmimage, locStrings["dailytaskstl"], self.pm_button:GetPosition().x + spacing, self.CastDedMorozMenu)
+    self.minigames_button = self:CreateServerMenuButton(locStrings["minigames"], self.mainmenuimage, locStrings["minigamestl"], self.tasks_button:GetPosition().x + spacing, self.CastMainMenu)
+    self.abilities_button = self:CreateServerMenuButton(locStrings["abilities"], self.abiltiesimage, locStrings["abilitiestl"], self.minigames_button:GetPosition().x + spacing, self.CastAbilitiesMenu)
+    self.sett_button = self:CreateServerMenuButton(locStrings["settings"], self.settimage, locStrings["settingstl"], self.abilities_button:GetPosition().x + spacing, self.CastSettingsMenu)
 
     local textWidth2 = Render:GetTextWidth(self.resizer_txt2, self.textSize2)
     local textHeight2 = Render:GetTextHeight(self.resizer_txt2, self.textSize2)
@@ -195,14 +255,14 @@ function ServerMenu:LoadCategories()
 
     self.passive = Label.Create(self.leftcontainer)
     self.passive:SetTextColor(Color.MediumSpringGreen)
-    self.passive:SetText("Мирный режим:")
+    self.passive:SetText(locStrings["passivemode"])
     self.passive:SetPosition(Vector2(5, 0))
     self.passive:SizeToContents()
 
     spacing = textHeight2 + 15
     self.passiveon_btn = Button.Create(self.leftcontainer)
     self.passiveon_btn:SetVisible(true)
-    self.passiveon_btn:SetText(self.locStrings["enable"])
+    self.passiveon_btn:SetText(locStrings["enable"])
     self.passiveon_btn:SetSize(Vector2(textWidth2, spacing))
     self.passiveon_btn:SetTextSize(self.textSize2)
     self.passiveon_btn:SetPosition(Vector2(5, Render:GetTextHeight(self.passive:GetText())))
@@ -210,37 +270,37 @@ function ServerMenu:LoadCategories()
 
     self.jesusmode = Label.Create(self.leftcontainer)
     self.jesusmode:SetTextColor(Color(185, 215, 255))
-    self.jesusmode:SetText("Режим Иисуса:")
+    self.jesusmode:SetText(locStrings["jesusmode"])
     self.jesusmode:SetPosition(Vector2(self.passiveon_btn:GetSize().x + self.passiveon_btn:GetPosition().x + 10, 0))
     self.jesusmode:SizeToContents()
 
     self.jesusmode_btn = Button.Create(self.leftcontainer)
-    self.jesusmode_btn:SetText(self.locStrings["enable"])
+    self.jesusmode_btn:SetText(locStrings["enable"])
     self.jesusmode_btn:SetSize(Vector2(textWidth2, spacing))
     self.jesusmode_btn:SetTextSize(self.textSize2)
     self.jesusmode_btn:SetPosition(Vector2(self.passiveon_btn:GetSize().x + self.passiveon_btn:GetPosition().x + 10, Render:GetTextHeight(self.jesusmode:GetText())))
     self.jesusmode_btn:Subscribe("Press", self, self.CastJesusMode)
 
     self.hideme = Label.Create(self.leftcontainer)
-    self.hideme:SetText("Скрытие маркера:")
+    self.hideme:SetText(locStrings["hideme"] .. ":")
     self.hideme:SetPosition(Vector2(self.jesusmode_btn:GetSize().x + self.jesusmode_btn:GetPosition().x + 10, 0))
     self.hideme:SizeToContents()
 
     self.hideme_btn = Button.Create(self.leftcontainer)
-    self.hideme_btn:SetText(self.locStrings["enable"])
+    self.hideme_btn:SetText(locStrings["enable"])
     self.hideme_btn:SetSize(Vector2(textWidth2 * 1.15, spacing))
     self.hideme_btn:SetTextSize(self.textSize2)
     self.hideme_btn:SetPosition(Vector2(self.jesusmode_btn:GetSize().x + self.jesusmode_btn:GetPosition().x + 10, Render:GetTextHeight(self.passive:GetText())))
     self.hideme_btn:Subscribe("Press", self, self.CastHideMe)
 
     self.pigeonmod = Label.Create(self.leftcontainer)
-    self.pigeonmod:SetText("Режим голубя:")
+    self.pigeonmod:SetText(locStrings["pigeonmod"] .. ":")
     self.pigeonmod:SetPosition(Vector2(self.hideme_btn:GetSize().x + self.hideme_btn:GetPosition().x + 10, 0))
     self.pigeonmod:SizeToContents()
     self.pigeonmod:SetVisible(false)
 
     self.pigeonmod_btn = Button.Create(self.leftcontainer)
-    self.pigeonmod_btn:SetText(self.locStrings["enable"])
+    self.pigeonmod_btn:SetText(locStrings["enable"])
     self.pigeonmod_btn:SetSize(Vector2(textWidth2 * 1.15, spacing))
     self.pigeonmod_btn:SetTextSize(self.textSize2)
     self.pigeonmod_btn:SetPosition(Vector2(self.hideme_btn:GetSize().x + self.hideme_btn:GetPosition().x + 10, Render:GetTextHeight(self.passive:GetText())))
@@ -253,7 +313,7 @@ function ServerMenu:LoadCategories()
     self.rightcontainer:SetSize(Vector2(Render:GetTextWidth("Достигните 9-го уровня", 15) + 50, 0))
 
     self.bonus = Label.Create(self.rightcontainer)
-    self.bonus:SetText("Награды:")
+    self.bonus:SetText(locStrings["rewards"])
     self.bonus:SetDock(GwenPosition.Top)
     self.bonus:SetMargin(Vector2.Zero, Vector2(0, 6))
     self.bonus:SizeToContents()
@@ -270,7 +330,7 @@ function ServerMenu:LoadCategories()
     self.bonus_btn:Subscribe("Press", self, self.Cash)
 
     self.report_btn = Button.Create(self.rightcontainer)
-    self.report_btn:SetText("Обратная связь")
+    self.report_btn:SetText(locStrings["feedback"])
     self.report_btn:SetSize(Vector2(0, Render:GetTextHeight(self.report_btn:GetText(), self.textSize2) + 10))
     self.report_btn:SetTextSize(self.textSize2)
     self.report_btn:SetDock(GwenPosition.Bottom)
@@ -278,7 +338,7 @@ function ServerMenu:LoadCategories()
     self.report_btn:Subscribe("Press", self, self.CastReportMenu)
 
     self.gametime = Label.Create(self.leftcontainer)
-    self.gametime:SetText(self.locStrings["gametime"] .. "00:00")
+    self.gametime:SetText(locStrings["gametime"] .. "00:00")
     self.gametime:SizeToContents()
     self.gametime:SetDock(GwenPosition.Bottom)
 
@@ -388,7 +448,7 @@ end
 function ServerMenu:KeyUp(args)
     if Game:GetState() ~= GUIState.Game then return end
 
-    if args.key == string.byte('B') then
+    if args.key == self.expectedKey then
         self:SetWindowVisible(not self.activeWindow, true)
         self:CloseOutherWindows()
     end
@@ -429,7 +489,7 @@ function ServerMenu:CurrentWeather()
         return "Грозы"
     end
 
-    return "Х/З"
+    return "?"
 end
 
 function ServerMenu:UpdateGameInfo()
@@ -437,12 +497,16 @@ function ServerMenu:UpdateGameInfo()
     local hh, timedec = math.modf(gettime)
     local mm = math.floor(60 * timedec)
     -- local precipitation = math.floor( math.lerp( 0, 100, math.clamp( Game:GetWeatherSeverity(), 0, 2 ) / 2 ) ) .. "%"
+    local locStrings = self.locStrings
 
-    self.gametime:SetText(self.locStrings["gametime"] .. string.format("%d:%02d", hh, mm))
+    self.gametime:SetText(locStrings["gametime"] .. string.format("%d:%02d", hh, mm))
 end
 
 function ServerMenu:Render()
-    local is_visible = self.activeWindow and (Game:GetState() == GUIState.Game)
+    local activeWindow = self.activeWindow
+    local is_visible = activeWindow and (Game:GetState() == GUIState.Game)
+    local window = self.window
+    local windowGetVisible = window:GetVisible()
 
     if not LocalPlayer:GetValue("HelpMenuReaded") then
         local frac = math.sin(Client:GetElapsedSeconds() * 5) * 0.5 + 0.5
@@ -451,7 +515,7 @@ function ServerMenu:Render()
         self.help_button:SetTextColor(alpha)
     end
 
-    if self.window:GetVisible() ~= is_visible then
+    if windowGetVisible ~= is_visible then
         self.window:SetVisible(is_visible)
         Mouse:SetVisible(is_visible)
     end
@@ -531,13 +595,15 @@ function ServerMenu:SetWindowVisible(visible, sound)
 
         self.statsName:SetTextColor(LocalPlayer:GetColor())
 
+        local locStrings = self.locStrings
+
         self.money:SetText("$" .. formatNumber(LocalPlayer:GetMoney()))
-        self.bonus_btn:SetText(LocalPlayer:GetValue("MoneyBonus") and self.locStrings["moneybonus"] or self.locStrings["notavailable"])
-        self.level:SetText(self.locStrings["level"] .. tostring(LocalPlayer:GetValue("PlayerLevel")))
-        self.passiveon_btn:SetText(LocalPlayer:GetValue("Passive") and self.locStrings["disable"] or self.locStrings["enable"])
-        self.jesusmode_btn:SetText(LocalPlayer:GetValue("WaterWalk") and self.locStrings["disable"] or self.locStrings["enable"])
-        self.hideme_btn:SetText(LocalPlayer:GetValue("HideMe") and self.locStrings["disable"] or self.locStrings["enable"])
-        self.pigeonmod_btn:SetText(LocalPlayer:GetValue("PigeonMod") and self.locStrings["disable"] or self.locStrings["enable"])
+        self.bonus_btn:SetText(LocalPlayer:GetValue("MoneyBonus") and locStrings["moneybonus"] or locStrings["notavailable"])
+        self.level:SetText(locStrings["level"] .. tostring(LocalPlayer:GetValue("PlayerLevel")))
+        self.passiveon_btn:SetText(LocalPlayer:GetValue("Passive") and locStrings["disable"] or locStrings["enable"])
+        self.jesusmode_btn:SetText(LocalPlayer:GetValue("WaterWalk") and locStrings["disable"] or locStrings["enable"])
+        self.hideme_btn:SetText(LocalPlayer:GetValue("HideMe") and locStrings["disable"] or locStrings["enable"])
+        self.pigeonmod_btn:SetText(LocalPlayer:GetValue("PigeonMod") and locStrings["disable"] or locStrings["enable"])
 
         self.level:SizeToContents()
 
@@ -635,7 +701,10 @@ function ServerMenu:CastHideMe()
     self:SetWindowVisible(false)
 
     Network:Send("ToggleHideMe")
-    Events:Fire("CastCenterText", {text = self.locStrings["hideme"] .. (LocalPlayer:GetValue("HideMe") and self.locStrings["disabled"] or self.locStrings["enabled"]), time = 2})
+
+    local locStrings = self.locStrings
+
+    Events:Fire("CastCenterText", {text = locStrings["hideme"] .. (LocalPlayer:GetValue("HideMe") and locStrings["disabled"] or self.locStrings["enabled"]), time = 2})
 end
 
 function ServerMenu:CastPigeonMod()
@@ -645,7 +714,10 @@ function ServerMenu:CastPigeonMod()
     self:SetWindowVisible(false)
 
     LocalPlayer:SetValue("PigeonMod", not LocalPlayer:GetValue("PigeonMod"))
-    Events:Fire("CastCenterText", {text = self.locStrings["pigeonmod"] .. (LocalPlayer:GetValue("PigeonMod") and self.locStrings["enabled_2"] or self.locStrings["disabled_2"]), time = 2})
+
+    local locStrings = self.locStrings
+
+    Events:Fire("CastCenterText", {text = locStrings["pigeonmod"] .. (LocalPlayer:GetValue("PigeonMod") and locStrings["enabled_2"] or self.locStrings["disabled_2"]), time = 2})
 
     local bs = LocalPlayer:GetBaseState()
 
@@ -676,7 +748,10 @@ end
 function ServerMenu:Bonus()
     if LocalPlayer:GetValue("MoneyBonus") then
         self.bonus_btn:SetEnabled(true)
-        Chat:Print(self.locStrings["bonus"], Color.White, self.locStrings["availablemoneybonus"], Color(185, 215, 255))
+
+        local locStrings = self.locStrings
+
+        Chat:Print(locStrings["bonus"], Color.White, locStrings["availablemoneybonus"], Color(185, 215, 255))
     end
 end
 

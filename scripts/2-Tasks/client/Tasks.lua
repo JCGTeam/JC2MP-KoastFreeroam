@@ -31,8 +31,8 @@ function Tasks:__init()
     self.availableJobKey = 0
     self.jobCheckTimer = Timer()
 
-    self.opcolor = Color(251, 184, 41)
     self.jobcolor = Color(192, 255, 192)
+    self.opcolor = Color(251, 184, 41)
 
     self.targetArrowValue = 1000
     self.targetArrowFlashNum = 3
@@ -76,14 +76,16 @@ function Tasks:__init()
 
     self.descriptionContainer:SetMargin(Vector2(10, 10), Vector2(10, 10))
 
+    local locStrings = self.locStrings
     local textSize = 15
-    self.windowL2:SetText(self.locStrings["rewardtip"] .. "777")
+
+    self.windowL2:SetText(locStrings["rewardtip"] .. "777")
     self.windowL2:SetTextColor(self.opcolor)
     self.windowL2:SetDock(GwenPosition.Top)
     self.windowL2:SetTextSize(textSize)
     self.windowL2:SetHeight(Render:GetTextHeight(self.windowL2:GetText(), textSize))
 
-    self.windowL3:SetText(self.locStrings["vehicletip"] .. "Lada Granta")
+    self.windowL3:SetText(locStrings["vehicletip"] .. "Lada Granta")
     self.windowL3:SetDock(GwenPosition.Top)
     self.windowL3:SetMargin(Vector2(0, 10), Vector2())
     self.windowL3:SetHeight(Render:GetTextHeight(self.windowL3:GetText()))
@@ -92,7 +94,7 @@ function Tasks:__init()
     self.windowL1:SetDock(GwenPosition.Top)
     self.windowL1:SetHeight(Render:GetTextHeight(self.windowL1:GetText()))
 
-    self.StartJobLabel:SetText(self.locStrings["presstostart"])
+    self.StartJobLabel:SetText(locStrings["presstostart"])
     self.StartJobLabel:SetDock(GwenPosition.Fill)
     self.StartJobLabel:SetTextSize(textSize)
     self.StartJobLabel:SetMargin(Vector2(0, 8), Vector2(0, 8))
@@ -189,7 +191,9 @@ end
 function Tasks:JobFinish()
     if not self.job then return end
 
-    Events:Fire("CastCenterText", {text = self.locStrings["taskcompleted"], time = 6, color = Color(0, 255, 0)})
+    local locStrings = self.locStrings
+
+    Events:Fire("CastCenterText", {text = locStrings["taskcompleted"], time = 6, color = Color(0, 255, 0)})
 
     self.sound = ClientSound.Create(AssetLocation.Game, {
         bank_id = 25,
@@ -199,7 +203,7 @@ function Tasks:JobFinish()
     })
     self.sound:SetParameter(0, 1)
 
-    Game:ShowPopup(self.locStrings["taskcomplatedcount"] .. (LocalPlayer:GetValue("CompletedTasks") or 0), true)
+    Game:ShowPopup(locStrings["taskcomplatedcount"] .. (LocalPlayer:GetValue("CompletedTasks") or 0), true)
 
     self:JobCancel()
 end
@@ -253,13 +257,16 @@ function Tasks:PostTick()
 
     self.jobCheckTimer:Restart()
 
-    if not self.jobsTable then return end
+    local jobsTable = self.jobsTable
+
+    if not jobsTable then return end
 
     local cameraPos = Camera:GetPosition()
+    local locations = self.locations
 
-    for k, v in ipairs(self.locations) do
+    for k, v in ipairs(locations) do
         local jDist = v.position:Distance2D(cameraPos)
-        local jobToRender = self.jobsTable[k]
+        local jobToRender = jobsTable[k]
 
         if jDist < 1028 and jobToRender.direction then
             if not self.ResolutionChangeEvent then self.ResolutionChangeEvent = Events:Subscribe("ResolutionChange", self, self.ResolutionChange) end
@@ -283,10 +290,15 @@ end
 
 function Tasks:InJobPostTick()
     local vehicle = LocalPlayer:GetVehicle()
+    local jobCompleteTimer = self.jobCompleteTimer
+    local job = self.job
 
-    if self.jobCompleteTimer and self.jobCompleteTimer:GetSeconds() > 1 and self.job and vehicle then
+    if jobCompleteTimer and jobCompleteTimer:GetSeconds() > 1 and job and vehicle then
         self.jobCompleteTimer:Restart()
-        local jDist = self.locations[self.job.destination].position:Distance(vehicle:GetPosition())
+
+        local destination = job.destination
+        local vehiclePos = vehicle:GetPosition()
+        local jDist = self.locations[destination].position:Distance(vehiclePos)
 
         if jDist < 20 then
             Network:Send("CompleteJob", nil)
@@ -295,9 +307,7 @@ function Tasks:InJobPostTick()
 end
 
 function Tasks:KeyUp(a)
-    if Game:GetState() ~= GUIState.Game then
-        return
-    end
+    if Game:GetState() ~= GUIState.Game then return end
 
     local args = {}
     args.job = self.availableJobKey
@@ -312,9 +322,7 @@ function Tasks:KeyUp(a)
 end
 
 function Tasks:LocalPlayerInput(a)
-    if Game:GetState() ~= GUIState.Game then
-        return
-    end
+    if Game:GetState() ~= GUIState.Game then return end
 
     local args = {}
     args.job = self.availableJobKey
@@ -344,19 +352,34 @@ function Tasks:DrawShadowedText(pos, text, colour, size, scale)
 end
 
 function Tasks:DrawLocation(k, v, dist, dir, jobDistance)
-    if self.locationsVisible and not self.job then
-        local upAngle = Angle(0, math.pi / 2, 0)
-        local normalizedDist = dist / self.jobDistance
-        local textAlpha = 255 - math.clamp(normalizedDist * 255 * 2.25, 0, 255)
+    local locationsVisible = self.locationsVisible
+    local job = self.job
 
-        Render:SetTransform(Transform3():Translate(v.position):Rotate(upAngle))
-        Render:DrawCircle(Vector3.Zero, 3, Color(255, 255, 255, textAlpha))
+    if locationsVisible and not job then
+        local pi = math.pi
+        local upAngle = Angle(0, pi / 2, 0)
+        local jobDistance = self.jobDistance
+        local normalizedDist = dist / jobDistance
+        local pos = v.position
+        local t = Transform3():Translate(pos):Rotate(upAngle)
+
+        local circlePos = Vector3.Zero
+        local circleSize = 3
+
+        local textAlpha = 255 - math.clamp(normalizedDist * 255 * 2.25, 0, 255)
+        local circleColor = Color(255, 255, 255, textAlpha)
+
+        Render:SetTransform(t)
+        Render:DrawCircle(circlePos, circleSize, circleColor)
     end
 end
 
 function Tasks:DrawLocation2(k, v, dist, dir, jobDistance)
     local pos = v.position + Vector3(0, 3, 0)
-    local angle = Angle(Camera:GetAngle().yaw, 0, math.pi) * Angle(math.pi, 0, 0)
+    local cameraAngle = Camera:GetAngle()
+    local cameraAngleYaw = cameraAngle.yaw
+    local pi = math.pi
+    local angle = Angle(cameraAngleYaw, 0, pi) * Angle(pi, 0, 0)
 
     local textSize = 50
     local textScale = 0.0095
@@ -370,32 +393,57 @@ function Tasks:DrawLocation2(k, v, dist, dir, jobDistance)
     local t = Transform3():Translate(pos):Scale(textScale):Rotate(angle):Translate(-textBoxScaleDivided)
     Render:SetTransform(t)
 
-    if not self.job and self.locationsVisible then
-        self:DrawShadowedText(Vector3.Zero, text, Color(255, 255, 255, textAlpha), textSize)
+    local job = self.job
+    local locationsVisible = self.locationsVisible
+
+    if not job and locationsVisible then
+        local textPos = Vector3.Zero
+        local textColor = Color(255, 255, 255, textAlpha)
+
+        self:DrawShadowedText(textPos, text, textColor, textSize)
     end
 
     Render:ResetTransform()
 
-    if v.position:Distance(LocalPlayer:GetPosition()) <= 3.5 and not (self.job or LocalPlayer:GetVehicle()) then
+    local window = self.window
+    local windowGetVisible = window:GetVisible()
+    local lpPos = LocalPlayer:GetPosition()
+    local lpVehicle = LocalPlayer:GetVehicle()
+
+    if v.position:Distance(lpPos) <= 3.5 and not (job or lpVehicle) then
         local theJob = self.jobsTable[k]
 
         if not LocalPlayer:GetValue("HiddenHUD") then
-            if not self.window:GetVisible() then
-                if LocalPlayer:GetValue("SystemFonts") then
+            if not windowGetVisible then
+                local systemFonts = LocalPlayer:GetValue("SystemFonts")
+
+                if systemFonts then
                     self.windowL2:SetFont(AssetLocation.SystemFont, "Impact")
                     self.StartJobLabel:SetFont(AssetLocation.SystemFont, "Impact")
                 end
 
-                self.windowL1:SetText(self.locStrings["delivto"] .. theJob.description)
-                self.windowL1:SetTextColor(self.jobcolor)
-                self.windowL2:SetText(self.locStrings["rewardtip"] .. tostring(theJob.reward))
-                self.windowL2:SetTextColor(self.opcolor)
-                self.windowL3:SetText(self.locStrings["vehicletip"] .. Vehicle.GetNameByModelId(theJob.vehicle))
+                local locStrings = self.locStrings
+                local delivto_txt = locStrings["delivto"]
+                local rewardtip_txt = locStrings["rewardtip"]
+                local vehicletip_txt = locStrings["vehicletip"]
+
+                local jobDescription = theJob.description
+                local jobReward = tostring(theJob.reward)
+                local jobVehicle = Vehicle.GetNameByModelId(theJob.vehicle)
+
+                local jobColor = self.jobcolor
+                local opColor = self.opcolor
+
+                self.windowL1:SetText(delivto_txt .. jobDescription)
+                self.windowL1:SetTextColor(jobColor)
+                self.windowL2:SetText(rewardtip_txt .. jobReward)
+                self.windowL2:SetTextColor(opColor)
+                self.windowL3:SetText(vehicletip_txt .. jobVehicle)
 
                 self.window:SetVisible(true)
             end
         else
-            if self.window:GetVisible() then
+            if windowGetVisible then
                 self.window:SetVisible(false)
             end
         end
@@ -403,16 +451,20 @@ function Tasks:DrawLocation2(k, v, dist, dir, jobDistance)
         self.availableJobKey = k
         self.availableJob = theJob
     else
-        if self.availableJobKey == k and self.window:GetVisible() then
+        local availableJobKey = self.availableJobKey
+
+        if availableJobKey == k and windowGetVisible then
             self.window:SetVisible(false)
         end
     end
 end
 
 function Tasks:DrawTargetArrow(args)
-    local position = Camera:GetPosition() + Render:ScreenToWorldDirection(NormVector2(0, -0.65)) * 8.5
+    local cameraPos = Camera:GetPosition()
+    local position = cameraPos + Render:ScreenToWorldDirection(NormVector2(0, -0.65)) * 8.5
+    local lpPos = LocalPlayer:GetPosition()
 
-    local angle = Angle.FromVectors(Vector3(0, 0, -1), args.checkpointPosition - LocalPlayer:GetPosition())
+    local angle = Angle.FromVectors(Vector3(0, 0, -1), args.checkpointPosition - lpPos)
     angle.roll = 0
 
     local maxValue = self.targetArrowFlashNum * self.targetArrowFlashInterval * 2
@@ -434,35 +486,43 @@ function Tasks:ResolutionChange(args)
 end
 
 function Tasks:Render()
-    if LocalPlayer:GetWorld() ~= DefaultWorld or not LocalPlayer:GetValue("JobsVisible") then return end
-
     if self.sound then
-        self.sound:SetPosition(Camera:GetPosition())
-        self.sound:SetParameter(0, Game:GetSetting(GameSetting.MusicVolume) / 100)
+        local cameraPos = Camera:GetPosition()
+        local musicVolume = Game:GetSetting(GameSetting.MusicVolume) / 100
+
+        self.sound:SetPosition(cameraPos)
+        self.sound:SetParameter(0, musicVolume)
     end
+
+    if LocalPlayer:GetWorld() ~= DefaultWorld or not LocalPlayer:GetValue("JobsVisible") then return end
 
     local gameAlpha = Game:GetSetting(4)
 
     if Game:GetState() ~= GUIState.Game or gameAlpha <= 1 or LocalPlayer:GetValue("HiddenHUD") then return end
 
-    if self.jobsTable then
+    local jobsTable = self.jobsTable
+    local locations = self.locations
+
+    if jobsTable then
         local markersIsVisible = LocalPlayer:GetValue("JobsMarkersVisible") and self.markers
 
         if markersIsVisible then
             local cameraPos = Camera:GetPosition()
-            local locationsCount = #self.locations
+            local locationsCount = #locations
 
             self.taskminimapblimp:SetAlpha(gameAlpha / 100)
 
-            local taskminimapblimpSize = self.taskminimapblimp:GetSize() / 2
+            local taskminimapblimp = self.taskminimapblimp
+            local taskminimapblimpSize = taskminimapblimp:GetSize() / 2
 
             for i = 1, locationsCount do
-                local jPos = self.locations[i].position
+                local jPos = locations[i].position
                 local jDist = jPos:Distance2D(cameraPos)
-                local jobToRender = self.jobsTable[i]
+                local jobToRender = jobsTable[i]
+                local jobToRenderDirection = jobToRender.direction
 
-                if jDist < 1028 and jobToRender.direction then
-                    local mapPos = Render:WorldToMinimap(Vector3(jPos.x, jPos.y, jPos.z))
+                if jDist < 1028 and jobToRenderDirection then
+                    local mapPos = Render:WorldToMinimap(jPos)
 
                     self.taskminimapblimp:SetPosition(mapPos - taskminimapblimpSize)
                     self.taskminimapblimp:Draw()
@@ -471,29 +531,42 @@ function Tasks:Render()
         end
     end
 
-    if self.job then
+    local job = self.job
+
+    if job then
         self.markers = false
 
         if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
+        local locStrings = self.locStrings
+        local target_txt = locStrings["target"]
+        local delivto_txt = locStrings["delivto"]
+
         local textShadow = Color(0, 0, 0, 150)
         local textSize = 15
-        local textPos = Vector2(Render.Size.x / 2 - Render:GetTextWidth(self.locStrings["target"] .. self.locStrings["delivto"] .. self.job.description, textSize) / 2, Render.Height * 0.07)
+        local jobDescription = job.description
+        local textPos = Vector2(Render.Size.x / 2 - Render:GetTextWidth(target_txt .. delivto_txt .. jobDescription, textSize) / 2, Render.Height * 0.07)
 
-        Render:DrawShadowedText(textPos, self.locStrings["target"], Color(192, 255, 192), textShadow, textSize)
+        local jobColor = self.jobcolor
+        local defaultColor = Color.White
 
-        textPos.x = textPos.x + Render:GetTextWidth(self.locStrings["target"], textSize)
-        Render:DrawShadowedText(textPos, self.locStrings["delivto"] .. self.job.description, Color.White, textShadow, textSize)
+        Render:DrawShadowedText(textPos, target_txt, jobColor, textShadow, textSize)
 
-        local destPos = self.locations[self.job.destination].position
-        local destDist = Vector3.Distance(destPos, LocalPlayer:GetPosition())
+        textPos.x = textPos.x + Render:GetTextWidth(target_txt, textSize)
+        Render:DrawShadowedText(textPos, delivto_txt .. jobDescription, defaultColor, textShadow, textSize)
+
+        local destPos = locations[job.destination].position
+        local lpPos = LocalPlayer:GetPosition()
+        local destDist = Vector3.Distance(destPos, lpPos)
 
         if destDist < 500 then
-            local upAngle = Angle(0, math.pi / 2, 0)
+            local pi = math.pi
+            local upAngle = Angle(0, pi / 2, 0)
             local t2 = Transform3():Translate(destPos):Rotate(upAngle)
+            local circleColor = Color(64, 255, 64, 64)
 
             Render:SetTransform(t2)
-            Render:DrawCircle(Vector3.Zero, 10, Color(64, 255, 64, 64))
+            Render:DrawCircle(Vector3.Zero, 10, circleColor)
         end
 
         if LocalPlayer:GetVehicle() then
@@ -520,17 +593,25 @@ end
 function Tasks:GameRender()
     if not LocalPlayer:GetValue("JobsVisible") or Game:GetState() ~= GUIState.Game or LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-    if self.jobsTable then
-        local cameraPos = Camera:GetPosition()
+    local jobsTable = self.jobsTable
 
+    if jobsTable then
         if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
-        for k, v in ipairs(self.locations) do
-            local jDist = v.position:Distance(cameraPos)
-            local jobToRender = self.jobsTable[k]
+        local cameraPos = Camera:GetPosition()
+        local jobDistance = self.jobDistance
+        local locations = self.locations
 
-            if jDist < self.jobDistance and jobToRender.direction then
-                self:DrawLocation2(k, v, jDist, jobToRender.direction, jobToRender.distance)
+        for k, v in ipairs(locations) do
+            local vPos = v.position
+            local jDist = vPos:Distance(cameraPos)
+            local jobToRender = jobsTable[k]
+            local direction = jobToRender.direction
+
+            if jDist < jobDistance and direction then
+                local jobToRenderDistance = jobToRender.distance
+
+                self:DrawLocation2(k, v, jDist, direction, jobToRenderDistance)
             end
         end
     end
@@ -539,15 +620,23 @@ end
 function Tasks:GameRenderOpaque()
     if not LocalPlayer:GetValue("JobsVisible") or Game:GetState() ~= GUIState.Game or LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-    if self.jobsTable then
+    local jobsTable = self.jobsTable
+
+    if jobsTable then
         local cameraPos = Camera:GetPosition()
+        local jobDistance = self.jobDistance
+        local locations = self.locations
 
-        for k, v in ipairs(self.locations) do
-            local jDist = v.position:Distance(cameraPos)
-            local jobToRender = self.jobsTable[k]
+        for k, v in ipairs(locations) do
+            local vPos = v.position
+            local jDist = vPos:Distance(cameraPos)
+            local jobToRender = jobsTable[k]
+            local direction = jobToRender.direction
 
-            if jDist < self.jobDistance and jobToRender.direction then
-                self:DrawLocation(k, v, jDist, jobToRender.direction, jobToRender.distance)
+            if jDist < jobDistance and direction then
+                local jobToRenderDistance = jobToRender.distance
+
+                self:DrawLocation(k, v, jDist, direction, jobToRenderDistance)
             end
         end
     end

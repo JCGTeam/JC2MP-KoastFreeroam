@@ -88,30 +88,6 @@ function Menu:SetLang(args, sender)
                 sender:SetNetworkValue("Country", "RU")
             end
         end
-
-        local text_clr = Color.White
-        local text2_clr = Color.DarkGray
-
-        local pcountry = sender:GetValue("Country")
-
-        local lang = sender:GetValue("Lang")
-        if lang then
-            if lang == "RU" then
-                Chat:Send(sender, "==============", text_clr)
-                Chat:Send(sender, "> Меню сервера: ", text_clr, "B", text2_clr)
-                Chat:Send(sender, "> Меню действий: ", text_clr, "V", text2_clr)
-                Chat:Send(sender, "> Серверная карта: ", text_clr, "M", text2_clr, " / ", text_clr, "F2", text2_clr)
-                Chat:Send(sender, "> Список игроков: ", text_clr, "F5", text2_clr)
-                Chat:Send(sender, "==============", text_clr)
-            elseif lang == "EN" then
-                Chat:Send(sender, "==============", text_clr)
-                Chat:Send(sender, "> Server Menu: ", text_clr, "B", text2_clr)
-                Chat:Send(sender, "> Actions Menu: ", text_clr, "V", text2_clr)
-                Chat:Send(sender, "> Server Map: ", text_clr, "M", text2_clr, " / ", text_clr, "F2", text2_clr)
-                Chat:Send(sender, "> Players List: ", text_clr, "F5", text2_clr)
-                Chat:Send(sender, "==============", text_clr)
-            end
-        end
     end
 end
 

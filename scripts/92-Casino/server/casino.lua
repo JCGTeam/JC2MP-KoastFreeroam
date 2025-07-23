@@ -88,7 +88,7 @@ function CoinFlip:SendRequest(args, sender)
 
     sender:SendChatMessage(tag, self.tag_clr, "Приглашение отправлено игроку " .. args.selectedplayer:GetName(), self.text_clr)
     args.selectedplayer:SendChatMessage(tag, self.tag_clr, sender:GetName() .. " приглашает вас в казино. Сыграем?", self.text_clr)
-    args.selectedplayer:SendChatMessage(tag, self.tag_clr, "B (Меню сервера) > Развлечения > Казино", self.text2_clr)
+    args.selectedplayer:SendChatMessage(tag, self.tag_clr, "Меню сервера > Развлечения > Казино", self.text2_clr)
 
     Network:Send(args.selectedplayer, "EnableAccept", sender)
 end

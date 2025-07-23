@@ -1,6 +1,6 @@
-class 'Doors'
+class 'OpenGates'
 
-function Doors:__init()
+function OpenGates:__init()
     self.places = {}
 
     self:LoadPlaces("places.txt")
@@ -12,7 +12,7 @@ function Doors:__init()
     Network:Subscribe("GetPlayers", self, self.GetPlayers)
 end
 
-function Doors:LoadPlaces(filename)
+function OpenGates:LoadPlaces(filename)
     print("Opening " .. filename)
     local file = io.open(filename, "r")
 
@@ -33,7 +33,7 @@ function Doors:LoadPlaces(filename)
     file:close()
 end
 
-function Doors:ParsePlace(line)
+function OpenGates:ParsePlace(line)
     line = line:gsub(" ", "")
 
     local tokens = line:split(",")
@@ -45,24 +45,26 @@ function Doors:ParsePlace(line)
     table.insert(self.places, {line, vector})
 end
 
-function Doors:ClientModuleLoad(args)
+function OpenGates:ClientModuleLoad(args)
     Network:Send(args.player, "Places", self.places)
 end
 
-function Doors:GetPlayers(args, sender)
+function OpenGates:GetPlayers(args, sender)
     local sName = sender:GetName()
     local sPos = sender:GetPosition()
+    local maxDist = 50
+    local tag_clr = self.tag_clr
 
     for p in Server:GetPlayers() do
-        local jDist = sPos:Distance(p:GetPosition())
+        local dist = sPos:Distance(p:GetPosition())
 
-        if jDist < 50 then
+        if dist < maxDist then
             Network:Send(p, "OpenDoors")
 
             local pLang = p:GetValue("Lang")
-            Chat:Send(p, pLang == "EN" and "[Doors] " or "[Ворота] ", self.tag_clr, sName .. (pLang == "EN" and " opened the doors." or " открыл ворота."), self.text_clr)
+            Chat:Send(p, pLang == "EN" and "[Gates] " or "[Ворота] ", tag_clr, sName .. (pLang == "EN" and " opened the gates" or " открыл ворота"), self.text_clr)
         end
     end
 end
 
-local doors = Doors()
+local opengates = OpenGates()

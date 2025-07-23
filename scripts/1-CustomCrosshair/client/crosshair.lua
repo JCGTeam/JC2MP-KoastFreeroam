@@ -37,8 +37,8 @@ function Crosshair:__init()
             [AnimationState.SHitreactUncontrolledFlight] = true,
             [AnimationState.SHitreactUncontrolledFlightPosematching] = true,
             [AnimationState.SHitreactGetUpBlendin] = true,
-            [AnimationState.SUncontrolledSkydive] = true
-            -- [AnimationState.SDash] = true
+            [AnimationState.SUncontrolledSkydive] = true,
+            [AnimationState.SDash] = true
         },
 
         animations3 = {
@@ -123,13 +123,17 @@ function Crosshair:CheckList(tableList, modelID)
 end
 
 function Crosshair:GetRotation()
-    local frac = math.sin(Client:GetElapsedSeconds() * 5) * 0.5 + 0.5
+    local elapsedSeconds = Client:GetElapsedSeconds()
+    local frac = math.sin(elapsedSeconds * 5) * 0.5 + 0.5
     self.alpha = math.lerp(50, 255, frac)
 end
 
 function Crosshair:Render()
-    if self.popalTimer and self.popalTimer:GetSeconds() >= 0.1 then self.popalTimer = nil end
-    if self.resetTimer and self.resetTimer:GetSeconds() >= 1.25 then self:ShowCrosshair() end
+    local popalTimer = self.popalTimer
+    local resetTimer = self.resetTimer
+
+    if popalTimer and popalTimer:GetSeconds() >= 0.1 then self.popalTimer = nil end
+    if resetTimer and resetTimer:GetSeconds() >= 1.25 then self:ShowCrosshair() end
 
     if Game:GetState() ~= GUIState.Game then return end
 
@@ -139,7 +143,7 @@ function Crosshair:Render()
     if LocalPlayer:GetValue("SpectatorMode") then return end
 
     local aimTarget = LocalPlayer:GetAimTarget()
-    if not self.popalTimer and aimTarget then
+    if not popalTimer and aimTarget then
         self.pointColor = (aimTarget.player or aimTarget.vehicle or (aimTarget.entity and aimTarget.entity.__type == "ClientActor")) and Color.LawnGreen or Color.White
     end
 
@@ -147,11 +151,16 @@ function Crosshair:Render()
     local las = LocalPlayer:GetLeftArmState()
     local inVehicle = LocalPlayer:InVehicle()
 
-    if self.blacklist.animations[bs] then return end
+    local blacklist = self.blacklist
+    local animations2 = blacklist.animations2
+    local animations3 = blacklist.animations3
+    local animations4 = blacklist.animations4
+
+    if blacklist.animations[bs] then return end
 
     -- self.size = Render.Height / 400
     local pos_2d = Vector2(Render.Size.x / 2, Render.Size.y / 2)
-    --[[if not inVehicle and not self.blacklist.animations2[bs] and LocalPlayer:GetEquippedSlot() <= 3 and not (self.blacklist.animations3[bs] or LocalPlayer:GetValue("Passive")) then
+    --[[if not inVehicle and not animations2[bs] and LocalPlayer:GetEquippedSlot() <= 3 and not (animations3[bs] or LocalPlayer:GetValue("Passive")) then
 		--Тут хуйня для рисовки перекрестья
 	end]] --
 
@@ -159,15 +168,17 @@ function Crosshair:Render()
     Transform:Translate(pos_2d)
     Render:SetTransform(Transform)
 
-    local ray = Physics:Raycast(Camera:GetPosition(), Camera:GetAngle() * Vector3.Forward, 0, 1000)
+    local cameraPos = Camera:GetPosition()
+    local cameraAngle = Camera:GetAngle()
+    local ray = Physics:Raycast(cameraPos, cameraAngle * Vector3.Forward, 0, 1000)
+    local distance = ray.distance
+    local visibleDistance = 0
 
-    if ray.position.y > 198 and ray.distance < 83 and ray.distance > 1 then
+    if ray.position.y > 198 and distance < 83 and distance > 1 then
         self:GetRotation()
-        self.distance = ray.distance
-        self.position = ray.position
-        self.normal = ray.normal
+        visibleDistance = distance
     else
-        self.distance = 0
+        visibleDistance = 0
     end
 
     if inVehicle then
@@ -176,7 +187,9 @@ function Crosshair:Render()
         local seat = LocalPlayer:GetSeat()
 
         if seat ~= 6 and seat ~= 7 then
-            if self:CheckList(self.vehicleslist, vehicleModel) then
+            local vehicleslist = self.vehicleslist
+
+            if self:CheckList(vehicleslist, vehicleModel) then
                 local vehicleTemplate = vehicle:GetTemplate()
 
                 if vehicleModel == 3 or vehicleModel == 18 or vehicleModel == 35 or vehicleModel == 36 or vehicleModel == 62 then
@@ -198,51 +211,55 @@ function Crosshair:Render()
         end
     end
 
-    if self.distance > 1 and not (inVehicle or self.blacklist.animations2[bs] or self.blacklist.animations2[las] or self.blacklist.animations4[bs]) then
-        if LocalPlayer:GetValue("GameMode") ~= "Охота" then
-            local crossColor = Color(255, 255, 255, self.alpha)
-            local crossColorShadow = Color(0, 0, 0, self.alpha)
+    if visibleDistance > 1 and not (inVehicle or animations2[bs] or animations2[las] or animations4[bs]) then
+        local alpha = self.alpha
+        local crossColor = Color(255, 255, 255, alpha)
+        local crossColorShadow = Color(0, 0, 0, alpha)
 
-            Render:DrawLine(Vector2(4, 4), Vector2(3, 3), crossColorShadow)
-            Render:DrawLine(Vector2(-4, -4), Vector2(-3, -3), crossColorShadow)
-            Render:DrawLine(Vector2(-4, 4), Vector2(-3, 3), crossColorShadow)
-            Render:DrawLine(Vector2(4, -4), Vector2(3, -3), crossColorShadow)
+        Render:DrawLine(Vector2(4, 4), Vector2(3, 3), crossColorShadow)
+        Render:DrawLine(Vector2(-4, -4), Vector2(-3, -3), crossColorShadow)
+        Render:DrawLine(Vector2(-4, 4), Vector2(-3, 3), crossColorShadow)
+        Render:DrawLine(Vector2(4, -4), Vector2(3, -3), crossColorShadow)
 
-            Render:DrawLine(Vector2(14, 14), Vector2(15, 15), crossColorShadow)
-            Render:DrawLine(Vector2(-14, -14), Vector2(-15, -15), crossColorShadow)
-            Render:DrawLine(Vector2(-14, 14), Vector2(-15, 15), crossColorShadow)
-            Render:DrawLine(Vector2(14, -14), Vector2(15, -15), crossColorShadow)
+        Render:DrawLine(Vector2(14, 14), Vector2(15, 15), crossColorShadow)
+        Render:DrawLine(Vector2(-14, -14), Vector2(-15, -15), crossColorShadow)
+        Render:DrawLine(Vector2(-14, 14), Vector2(-15, 15), crossColorShadow)
+        Render:DrawLine(Vector2(14, -14), Vector2(15, -15), crossColorShadow)
 
-            Render:DrawLine(Vector2(3, 4), Vector2(13, 14), crossColorShadow)
-            Render:DrawLine(Vector2(-3, -4), Vector2(-13, -14), crossColorShadow)
-            Render:DrawLine(Vector2(-3, 4), Vector2(-13, 14), crossColorShadow)
-            Render:DrawLine(Vector2(3, -4), Vector2(13, -14), crossColorShadow)
+        Render:DrawLine(Vector2(3, 4), Vector2(13, 14), crossColorShadow)
+        Render:DrawLine(Vector2(-3, -4), Vector2(-13, -14), crossColorShadow)
+        Render:DrawLine(Vector2(-3, 4), Vector2(-13, 14), crossColorShadow)
+        Render:DrawLine(Vector2(3, -4), Vector2(13, -14), crossColorShadow)
 
-            Render:DrawLine(Vector2(4, 3), Vector2(14, 13), crossColorShadow)
-            Render:DrawLine(Vector2(-4, -3), Vector2(-14, -13), crossColorShadow)
-            Render:DrawLine(Vector2(-4, 3), Vector2(-14, 13), crossColorShadow)
-            Render:DrawLine(Vector2(4, -3), Vector2(14, -13), crossColorShadow)
+        Render:DrawLine(Vector2(4, 3), Vector2(14, 13), crossColorShadow)
+        Render:DrawLine(Vector2(-4, -3), Vector2(-14, -13), crossColorShadow)
+        Render:DrawLine(Vector2(-4, 3), Vector2(-14, 13), crossColorShadow)
+        Render:DrawLine(Vector2(4, -3), Vector2(14, -13), crossColorShadow)
 
-            Render:DrawLine(Vector2(4, 5), Vector2(14, 15), crossColorShadow)
-            Render:DrawLine(Vector2(-4, -5), Vector2(-14, -15), crossColorShadow)
-            Render:DrawLine(Vector2(-4, 5), Vector2(-14, 15), crossColorShadow)
-            Render:DrawLine(Vector2(4, -5), Vector2(14, -15), crossColorShadow)
+        Render:DrawLine(Vector2(4, 5), Vector2(14, 15), crossColorShadow)
+        Render:DrawLine(Vector2(-4, -5), Vector2(-14, -15), crossColorShadow)
+        Render:DrawLine(Vector2(-4, 5), Vector2(-14, 15), crossColorShadow)
+        Render:DrawLine(Vector2(4, -5), Vector2(14, -15), crossColorShadow)
 
-            Render:DrawLine(Vector2(5, 4), Vector2(15, 14), crossColorShadow)
-            Render:DrawLine(Vector2(-5, -4), Vector2(-15, -14), crossColorShadow)
-            Render:DrawLine(Vector2(-5, 4), Vector2(-15, 14), crossColorShadow)
-            Render:DrawLine(Vector2(5, -4), Vector2(15, -14), crossColorShadow)
+        Render:DrawLine(Vector2(5, 4), Vector2(15, 14), crossColorShadow)
+        Render:DrawLine(Vector2(-5, -4), Vector2(-15, -14), crossColorShadow)
+        Render:DrawLine(Vector2(-5, 4), Vector2(-15, 14), crossColorShadow)
+        Render:DrawLine(Vector2(5, -4), Vector2(15, -14), crossColorShadow)
 
-            Render:DrawLine(Vector2(4, 4), Vector2(14, 14), crossColor)
-            Render:DrawLine(Vector2(-4, -4), Vector2(-14, -14), crossColor)
-            Render:DrawLine(Vector2(-4, 4), Vector2(-14, 14), crossColor)
-            Render:DrawLine(Vector2(4, -4), Vector2(14, -14), crossColor)
-        end
+        Render:DrawLine(Vector2(4, 4), Vector2(14, 14), crossColor)
+        Render:DrawLine(Vector2(-4, -4), Vector2(-14, -14), crossColor)
+        Render:DrawLine(Vector2(-4, 4), Vector2(-14, 14), crossColor)
+        Render:DrawLine(Vector2(4, -4), Vector2(14, -14), crossColor)
     end
 
-    if not self.blacklist.animations2[bs] then
-        Render:FillCircle(Vector2.Zero, self.size / 2, self.pointColor)
-        Render:DrawCircle(Vector2.Zero, self.size / 2, Color.Black)
+    if not animations2[bs] then
+        local pos = Vector2.Zero
+        local size = self.size / 2
+        local pointColor = self.pointColor
+        local pointShadow = Color.Black
+
+        Render:FillCircle(pos, size, pointColor)
+        Render:DrawCircle(pos, size, pointShadow)
     end
 end
 

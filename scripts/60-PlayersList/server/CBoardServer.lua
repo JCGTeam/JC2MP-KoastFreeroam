@@ -43,11 +43,13 @@ end
 function CBoardServer:getPlayersDataList()
     local data = {}
 
+    local tSyncData = self.tSyncData
+
     for p in Server:GetPlayers() do
         local id = p:GetId()
         data[id] = {}
 
-        for k, f in pairs(self.tSyncData) do
+        for k, f in pairs(tSyncData) do
             data[id][k] = f(p)
         end
 

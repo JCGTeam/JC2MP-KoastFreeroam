@@ -38,14 +38,16 @@ function JoinLeave:PlayerJoin(args)
     local text_clr = Color.White
     local text2_clr = Color.DarkGray
 
-    if self.languageslist[pcountry] then
+    local languageslist = self.languageslist
+
+    if languageslist[pcountry] then
         Chat:Send(args.player, "Добро пожаловать на Koast Freeroam! Приятной игры :3", Color(185, 215, 255))
     else
         Chat:Send(args.player, "Welcome to Koast Freeroam! Have a good game :3", Color(185, 215, 255))
     end
 
     if self.joinNotice then
-        Chat:Send(args.player, self.languageslist[pcountry] and "[Объявление] " or "[Notice] ", Color(255, 210, 0), self.joinNotice, Color.White)
+        Chat:Send(args.player, languageslist[pcountry] and "[Объявление] " or "[Notice] ", Color(255, 210, 0), self.joinNotice, Color.White)
     end
 end
 

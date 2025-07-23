@@ -2,7 +2,6 @@ class 'Menu'
 
 function Menu:__init()
     self.step = 0
-    self.backgroundColor = Color(10, 10, 10, 200)
 
     -- self.rusFlag = Image.Create(AssetLocation.Resource, "RusFlag")
     -- self.engFlag = Image.Create(AssetLocation.Resource, "EngFlag")
@@ -32,7 +31,11 @@ function Menu:__init()
             apply = "Применить",
             next = "Далее >",
             continue = "Продолжить ( ͡° ͜ʖ ͡°)",
-            setupFinished = "Настройка завершена! Приятной игры :3"
+            setupFinished = "Настройка завершена! Приятной игры :3",
+            servermenu = "> Меню сервера: ",
+            actionsmenu = "> Меню действий: ",
+            servermap = "> Серверная карта: ",
+            playerslist = "> Список игроков: "
         }
     end
 
@@ -62,7 +65,11 @@ function Menu:Lang()
         apply = "Apply",
         next = "Next >",
         continue = "Continue ( ͡° ͜ʖ ͡°)",
-        setupFinished = "Setup completed! Enjoy the game :3"
+        setupFinished = "Setup completed! Enjoy the game :3",
+        servermenu = "> Server Menu: ",
+        actionsmenu = "> Actions Menu: ",
+        servermap = "> Server Map: ",
+        playerslist = "> Players List: "
     }
 end
 
@@ -80,7 +87,39 @@ function Menu:LangItem(langCode, langFull, flag)
     end
     langItem:SetAlignment(GwenPosition.CenterV)
     langItem:SetTextPadding(Vector2(20, 0), Vector2(75, 0))
-    langItem:Subscribe("Press", function() Network:Send("SetLang", {lang = langCode}) self:NextStep() end)
+    langItem:Subscribe("Press", function()
+        Network:Send("SetLang", {lang = langCode})
+        if langCode ~= "RU" then
+            Events:Fire("Lang", langCode)
+        end
+
+        local keyBinds = LocalPlayer:GetValue("KeyBinds")
+        local serverMenuBind = keyBinds and keyBinds["ServerMenu"]
+        local actionsMenuBind = keyBinds and keyBinds["ActionsMenu"]
+        local serverMapBind = keyBinds and keyBinds["ServerMap"]
+        local playersListBind = keyBinds and keyBinds["PlayersList"]
+
+        local serverMenuStringKey = serverMenuBind and serverMenuBind.type == "Key" and serverMenuBind.valueString or "B"
+        local actionsMenuStringKey = actionsMenuBind and actionsMenuBind.type == "Key" and actionsMenuBind.valueString or "V"
+        local serverMapStringKey = serverMapBind and serverMapBind.type == "Key" and serverMapBind.valueString or "M"
+        local playersListStringKey = playersListBind and playersListBind.type == "Key" and playersListBind.valueString or "F5"
+
+        local divider = "=============="
+
+        local locStrings = self.locStrings
+
+        local text_clr = Color.White
+        local text2_clr = Color.DarkGray
+
+        Chat:Print(divider, text_clr)
+        Chat:Print(locStrings["servermenu"], text_clr, serverMenuStringKey, text2_clr)
+        Chat:Print(locStrings["actionsmenu"], text_clr, actionsMenuStringKey, text2_clr)
+        Chat:Print(locStrings["servermap"], text_clr, serverMapStringKey, text2_clr)
+        Chat:Print(locStrings["playerslist"], text_clr, playersListStringKey, text2_clr)
+        Chat:Print(divider, text_clr)
+
+        self:NextStep()
+    end)
 
     --[[local langFlag = ImagePanel.Create( langItem.button )
     langFlag:SetDock( GwenPosition.Left )
@@ -180,7 +219,9 @@ function Menu:Render()
     Game:FireEvent("gui.hud.hide.force")
     Game:FireEvent("gui.minimap.hide")
 
-    Render:FillArea(Vector2.Zero, Render.Size, self.backgroundColor)
+    local backgroundColor = Color(10, 10, 10, 200)
+
+    Render:FillArea(Vector2.Zero, Render.Size, backgroundColor)
 
     if self.rico and self.rico:GetAlpha() > 0 then
         self.rico:Draw()
@@ -193,15 +234,20 @@ function Menu:Render()
         -- Render:DrawText(Vector2((Render.Width - Render:GetTextWidth(version_txt, 15) - 30), Render.Size.y - 45), version_txt, Color(255, 255, 255, 100), 15)
     end
 
-    if self.welcomeTextAlpha then
+    local welcomeTextAlpha = self.welcomeTextAlpha
+
+    if welcomeTextAlpha then
         if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
+        local locStrings = self.locStrings
         local textSize = 36
-        Render:DrawShadowedText(Vector2(Render.Size.x / 2 - Render:GetTextWidth(self.locStrings["welcomeTitle"], textSize) / 2, self.welcomeTextPos), self.locStrings["welcomeTitle"], Color(255, 255, 255, self.welcomeTextAlpha), Color(0, 0, 0, self.welcomeTextAlpha), textSize)
+        Render:DrawShadowedText(Vector2(Render.Size.x / 2 - Render:GetTextWidth(locStrings["welcomeTitle"], textSize) / 2, self.welcomeTextPos), locStrings["welcomeTitle"], Color(255, 255, 255, welcomeTextAlpha), Color(0, 0, 0, welcomeTextAlpha), textSize)
     end
 
-    if self.welcomeScreenTimer then
-        local welcomeScreenSeconds = self.welcomeScreenTimer:GetSeconds()
+    local welcomeScreenTimer = self.welcomeScreenTimer
+
+    if welcomeScreenTimer then
+        local welcomeScreenSeconds = welcomeScreenTimer:GetSeconds()
 
         if welcomeScreenSeconds >= 0.5 then
             if not self.rico then
@@ -210,16 +256,21 @@ function Menu:Render()
                 self.rico:SetPosition(Vector2(Render.Size.x / 1.42, Render.Size.y))
                 self.rico:SetAlpha(0)
 
+                local rico = self.rico
+
                 Animation:Play(0, 255, 2, easeInOut, function(value) self.welcomeTextAlpha = value end)
-                Animation:Play(Render.Size.y, Render.Size.y / 1.2 - self.rico:GetSize().y / 2, 2, easeInOut, function(value) self.rico:SetPosition(Vector2(self.rico:GetPosition().x, value)) end)
-                Animation:Play(self.rico:GetAlpha(), 1, 1, easeIOnut, function(value) self.rico:SetAlpha(value) end)
+                Animation:Play(Render.Size.y, Render.Size.y / 1.2 - rico:GetSize().y / 2, 2, easeInOut, function(value) self.rico:SetPosition(Vector2(rico:GetPosition().x, value)) end)
+                Animation:Play(rico:GetAlpha(), 1, 1, easeIOnut, function(value) self.rico:SetAlpha(value) end)
             end
         end
 
         if welcomeScreenSeconds >= 5 then
-            Animation:Play(self.rico:GetPosition().y, Render.Size.y, 2, easeInOut, function(value) self.rico:SetPosition(Vector2(self.rico:GetPosition().x, value)) end)
-            Animation:Play(self.rico:GetAlpha(), 0, 2, easeInOut, function(value) self.rico:SetAlpha(value) end)
-            Animation:Play(self.welcomeTextPos, Render.Size.y / 6, 2, easeInOut, function(value) self.welcomeTextPos = value end)
+            local rico = self.rico
+            local welcomeTextPos = self.welcomeTextPos
+
+            Animation:Play(rico:GetPosition().y, Render.Size.y, 2, easeInOut, function(value) self.rico:SetPosition(Vector2(rico:GetPosition().x, value)) end)
+            Animation:Play(rico:GetAlpha(), 0, 2, easeInOut, function(value) self.rico:SetAlpha(value) end)
+            Animation:Play(welcomeTextPos, Render.Size.y / 6, 2, easeInOut, function(value) self.welcomeTextPos = value end)
 
             self.welcomeScreenTimer = nil
 
@@ -230,12 +281,16 @@ function Menu:Render()
     local visiblity = Game:GetState() ~= GUIState.Loading
 
     if self.langScreen then self.langScreen.window:SetVisible(visiblity) end
-    if self.nicknameColorScreen then self.nicknameColorScreen.label:SetVisible(visiblity) end
+    if self.nicknameColorScreen then self.nicknameColorScreen.bw:SetVisible(visiblity) end
     if self.rulesScreen then self.rulesScreen.label:SetVisible(visiblity) end
 
-    if LocalPlayer:GetValue("SystemFonts") then
-        if self.langList then
-            for _, v in pairs(self.langList) do
+    local systemFonts = LocalPlayer:GetValue("SystemFonts")
+
+    if systemFonts then
+        local langList = self.langList
+
+        if langList then
+            for _, v in pairs(langList) do
                 if IsValid(v) then
                     v.langItem:SetFont(AssetLocation.SystemFont, "Impact")
                     v.langArrow:SetFont(AssetLocation.SystemFont, "Impact")
@@ -256,8 +311,8 @@ function Menu:ResolutionChange(args)
     end
 
     if self.nicknameColorScreen then
-        local nicknameColorScreenSize = self.nicknameColorScreen.label:GetSize()
-        self.nicknameColorScreen.label:SetPosition(Vector2(args.size.x / 2 - nicknameColorScreenSize.x / 2, args.size.y / 1.85 - nicknameColorScreenSize.y / 2))
+        local nicknameColorScreenSize = self.nicknameColorScreen.bw:GetSize()
+        self.nicknameColorScreen.bw:SetPosition(Vector2(args.size.x / 2 - nicknameColorScreenSize.x / 2, args.size.y / 1.85 - nicknameColorScreenSize.y / 2))
     end
 
     if self.rulesScreen then
@@ -346,8 +401,6 @@ function Menu:ChangeStep(step)
         self.langList.ro = self:LangItem("RO", "Română")
         self.langList.id = self:LangItem("ID", "Bahasa Indonesia")
         ]] --
-
-        self.langList.en.langItem:Subscribe("Press", function() Events:Fire("Lang") end)
     elseif step == 1 then
         Mouse:SetVisible(false)
 
@@ -398,16 +451,18 @@ function Menu:ChangeStep(step)
 
         self.promocodes = {}
 
-        local description = self.locStrings["promocodeDescription"]
-        self.promocodes.label = Label.Create()
-        self.promocodes.label:SetSize(Vector2(math.clamp(Render:GetTextWidth(description, 18) + 50, 500, Render.Size.x), (Render:GetTextHeight("A", 30) * 1.5) + 200))
-        self.promocodes.label:SetPosition(Vector2(Render.Size.x / 2 - self.promocodes.label:GetSize().x / 2, Render.Size.y))
-        local padding = Vector2(30, 30)
-        self.promocodes.label:SetPadding(padding, padding)
+        local locStrings = self.locStrings
 
-        self.promocodes.title = Label.Create(self.promocodes.label)
+        local description = locStrings["promocodeDescription"]
+        self.promocodes.bw = BaseWindow.Create()
+        self.promocodes.bw:SetSize(Vector2(math.clamp(Render:GetTextWidth(description, 18) + 50, 500, Render.Size.x), (Render:GetTextHeight("A", 30) * 1.5) + 200))
+        self.promocodes.bw:SetPosition(Vector2(Render.Size.x / 2 - self.promocodes.bw:GetSize().x / 2, Render.Size.y))
+        local padding = Vector2(30, 30)
+        self.promocodes.bw:SetPadding(padding, padding)
+
+        self.promocodes.title = Label.Create(self.promocodes.bw)
         self.promocodes.title:SetDock(GwenPosition.Top)
-        self.promocodes.title:SetText(self.locStrings["promocode"])
+        self.promocodes.title:SetText(locStrings["promocode"])
         padding = Vector2(20, 20)
         self.promocodes.title:SetMargin(padding, padding)
         self.promocodes.title:SetAlignment(GwenPosition.Center)
@@ -417,7 +472,7 @@ function Menu:ChangeStep(step)
         self.promocodes.title:SetTextSize(30)
         self.promocodes.title:SizeToContents()
 
-        self.promocodes.window = ModernGUI.Window.Create(self.promocodes.label)
+        self.promocodes.window = ModernGUI.Window.Create(self.promocodes.bw)
         self.promocodes.window:SetDock(GwenPosition.Fill)
 
         self.promocodes.windowTitle = Label.Create(self.promocodes.window.window)
@@ -438,19 +493,19 @@ function Menu:ChangeStep(step)
         self.promocodes.textBox = ModernGUI.TextBox.Create(self.promocodes.scroll)
         self.promocodes.textBox:SetDock(GwenPosition.Top)
         self.promocodes.textBox:SetMargin(Vector2(2, 5), Vector2(2, 2))
-        self.promocodes.textBox:InsertText(self.locStrings["enterpromocode"])
+        self.promocodes.textBox:InsertText(locStrings["enterpromocode"])
         self.promocodes.textBox_color = self.promocodes.textBox:GetTextColor()
         self.promocodes.textBox:Subscribe("TextChanged", self, function() self.promocodes.textBox:SetTextColor(self.promocodes.textBox_color) end)
         self.promocodes.textBox:Subscribe("ReturnPressed", function() Events:Fire("ApplyPromocode", {type = 1, name = self.promocodes.textBox:GetText()}) end)
 
-        self.promocodes.bottom = Label.Create(self.promocodes.window.window)
+        self.promocodes.bottom = BaseWindow.Create(self.promocodes.window.window)
         self.promocodes.bottom:SetDock(GwenPosition.Bottom)
         self.promocodes.bottom:SetHeight(40)
 
         self.promocodes.skipButton = ModernGUI.Button.Create(self.promocodes.bottom)
         self.promocodes.skipButton:SetDock(GwenPosition.Left)
-        self.promocodes.skipButton:SetWidth(self.promocodes.label:GetWidth() / 2.5)
-        self.promocodes.skipButton:SetText(self.locStrings["skip"])
+        self.promocodes.skipButton:SetWidth(self.promocodes.bw:GetWidth() / 2.5)
+        self.promocodes.skipButton:SetText(locStrings["skip"])
         if systemFonts then
             self.promocodes.skipButton:SetFont(AssetLocation.SystemFont, "Impact")
         end
@@ -460,8 +515,8 @@ function Menu:ChangeStep(step)
 
         self.promocodes.nextButton = ModernGUI.Button.Create(self.promocodes.bottom)
         self.promocodes.nextButton:SetDock(GwenPosition.Right)
-        self.promocodes.nextButton:SetWidth(self.promocodes.label:GetWidth() / 2.5)
-        self.promocodes.nextButton:SetText(self.locStrings["apply"])
+        self.promocodes.nextButton:SetWidth(self.promocodes.bw:GetWidth() / 2.5)
+        self.promocodes.nextButton:SetText(locStrings["apply"])
         if systemFonts then
             self.promocodes.nextButton:SetFont(AssetLocation.SystemFont, "Impact")
         end
@@ -469,9 +524,9 @@ function Menu:ChangeStep(step)
         self.promocodes.nextButton:SetMargin(padding, padding)
         self.promocodes.nextButton:Subscribe("Press", function() Events:Fire("ApplyPromocode", {type = 1, name = self.promocodes.textBox:GetText()}) end)
 
-        Animation:Play(self.promocodes.label:GetPosition().y, (Render.Size.y / 2 - self.promocodes.label:GetSize().y / 2) + 50, 2, easeInOut, function(value)
+        Animation:Play(self.promocodes.bw:GetPosition().y, (Render.Size.y / 2 - self.promocodes.bw:GetSize().y / 2) + 50, 2, easeInOut, function(value)
             if self.promocodes then
-                self.promocodes.label:SetPosition(Vector2(Render.Size.x / 2 - self.promocodes.label:GetSize().x / 2, value))
+                self.promocodes.bw:SetPosition(Vector2(Render.Size.x / 2 - self.promocodes.bw:GetSize().x / 2, value))
             end
         end)
     elseif step == 3 then
@@ -497,14 +552,16 @@ function Menu:ChangeStep(step)
 
         self.nicknameColorScreen = {}
 
-        local description = self.locStrings["initialSetup"]
-        self.nicknameColorScreen.label = Label.Create()
-        self.nicknameColorScreen.label:SetSize(Vector2(math.clamp(Render:GetTextWidth(description, 30) + 100, 650, Render.Size.x), 500))
-        self.nicknameColorScreen.label:SetPosition(Vector2(Render.Size.x / 2 - self.nicknameColorScreen.label:GetSize().x / 2, Render.Size.y))
-        local padding = Vector2(30, 30)
-        self.nicknameColorScreen.label:SetPadding(padding, padding)
+        local locStrings = self.locStrings
 
-        self.nicknameColorScreen.title = Label.Create(self.nicknameColorScreen.label)
+        local description = locStrings["initialSetup"]
+        self.nicknameColorScreen.bw = BaseWindow.Create()
+        self.nicknameColorScreen.bw:SetSize(Vector2(math.clamp(Render:GetTextWidth(description, 30) + 100, 650, Render.Size.x), 500))
+        self.nicknameColorScreen.bw:SetPosition(Vector2(Render.Size.x / 2 - self.nicknameColorScreen.bw:GetSize().x / 2, Render.Size.y))
+        local padding = Vector2(30, 30)
+        self.nicknameColorScreen.bw:SetPadding(padding, padding)
+
+        self.nicknameColorScreen.title = Label.Create(self.nicknameColorScreen.bw)
         self.nicknameColorScreen.title:SetDock(GwenPosition.Top)
         self.nicknameColorScreen.title:SetText(description)
         padding = Vector2(20, 20)
@@ -516,13 +573,13 @@ function Menu:ChangeStep(step)
         self.nicknameColorScreen.title:SetTextSize(30)
         self.nicknameColorScreen.title:SizeToContents()
 
-        self.nicknameColorScreen.window = ModernGUI.Window.Create(self.nicknameColorScreen.label)
+        self.nicknameColorScreen.window = ModernGUI.Window.Create(self.nicknameColorScreen.bw)
         self.nicknameColorScreen.window:SetDock(GwenPosition.Fill)
 
         self.nicknameColorScreen.windowTitle = Label.Create(self.nicknameColorScreen.window.window)
         self.nicknameColorScreen.windowTitle:SetDock(GwenPosition.Top)
         self.nicknameColorScreen.windowTitle:SetMargin(Vector2(10, 10), Vector2(10, 5))
-        self.nicknameColorScreen.windowTitle:SetText(self.locStrings["nicknameColor"])
+        self.nicknameColorScreen.windowTitle:SetText(locStrings["nicknameColor"])
         if systemFonts then
             self.nicknameColorScreen.windowTitle:SetFont(AssetLocation.SystemFont, "Impact")
         end
@@ -551,7 +608,7 @@ function Menu:ChangeStep(step)
 
         self.nicknameColorScreen.nextButton = ModernGUI.Button.Create(self.nicknameColorScreen.window.window)
         self.nicknameColorScreen.nextButton:SetDock(GwenPosition.Bottom)
-        self.nicknameColorScreen.nextButton:SetText(self.locStrings["next"])
+        self.nicknameColorScreen.nextButton:SetText(locStrings["next"])
         if systemFonts then
             self.nicknameColorScreen.nextButton:SetFont(AssetLocation.SystemFont, "Impact")
         end
@@ -560,9 +617,9 @@ function Menu:ChangeStep(step)
         self.nicknameColorScreen.nextButton:SetHeight(40)
         self.nicknameColorScreen.nextButton:Subscribe("Press", function() Network:Send("SetPlayerColor", {color = lpColor}) self:NextStep() end)
 
-        Animation:Play(self.nicknameColorScreen.label:GetPosition().y, (Render.Size.y / 2 - self.nicknameColorScreen.label:GetSize().y / 2) + 50, 1, easeInOut, function(value)
+        Animation:Play(self.nicknameColorScreen.bw:GetPosition().y, (Render.Size.y / 2 - self.nicknameColorScreen.bw:GetSize().y / 2) + 50, 1, easeInOut, function(value)
             if self.nicknameColorScreen then
-                self.nicknameColorScreen.label:SetPosition(Vector2(Render.Size.x / 2 - self.nicknameColorScreen.label:GetSize().x / 2, value))
+                self.nicknameColorScreen.bw:SetPosition(Vector2(Render.Size.x / 2 - self.nicknameColorScreen.bw:GetSize().x / 2, value))
             end
         end)
     elseif step == 4 then
@@ -636,6 +693,8 @@ function Menu:ChangeStep(step)
 
         self.donateScreen = {}
 
+        local locStrings = self.locStrings
+
         self.donateScreen.boosty = self:QRLink(nil, "Boosty", self.qrBoosty, "boosty.to/jcgteam/donate")
         self.donateScreen.boosty.window:SetPosition(pos)
         self.donateScreen.boosty.window:SetSize(size)
@@ -644,9 +703,9 @@ function Menu:ChangeStep(step)
         Animation:Play(Render.Size.y, finalPos, 0.35, easeInOut, function(value)
             if self.donateScreen then self.donateScreen.boosty.window:SetPosition(Vector2(self.donateScreen.boosty.window:GetPosition().x, value)) end end, function()
                 self.donateScreen.nextButton = ModernGUI.Button.Create()
-                self.donateScreen.nextButton:SetSize(Vector2(Render:GetTextWidth(self.locStrings["continue"], self.donateScreen.nextButton:GetTextSize()) + 30, 40))
+                self.donateScreen.nextButton:SetSize(Vector2(Render:GetTextWidth(locStrings["continue"], self.donateScreen.nextButton:GetTextSize()) + 30, 40))
                 self.donateScreen.nextButton:SetPosition(Vector2(Render.Size.x / 2 - self.donateScreen.nextButton:GetSize().x / 2, Render.Size.y))
-                self.donateScreen.nextButton:SetText(self.locStrings["continue"])
+                self.donateScreen.nextButton:SetText(locStrings["continue"])
                 if LocalPlayer:GetValue("SystemFonts") then
                     self.donateScreen.nextButton:SetFont(AssetLocation.SystemFont, "Impact")
                 end
@@ -684,7 +743,6 @@ function Menu:ChangeStep(step)
         -- if self.CalcViewEvent then Events:Unsubscribe(self.CalcViewEvent) self.CalcViewEvent = nil end
 
         self.step = nil
-        self.backgroundColor = nil
 
         self.locStrings = nil
         self.rusFlag = nil
@@ -740,10 +798,12 @@ function Menu:PlayLinkAnimation(currentLink, linksTable, finalPos, size)
         if currentLink < #linksTable then
             self:PlayLinkAnimation(currentLink + 1, linksTable, finalPos, size)
         else
+            local locStrings = self.locStrings
+
             self.linksScreen.nextButton = ModernGUI.Button.Create()
-            self.linksScreen.nextButton:SetSize(Vector2(Render:GetTextWidth(self.locStrings["next"], self.linksScreen.nextButton:GetTextSize()) + 30, 40))
+            self.linksScreen.nextButton:SetSize(Vector2(Render:GetTextWidth(locStrings["next"], self.linksScreen.nextButton:GetTextSize()) + 30, 40))
             self.linksScreen.nextButton:SetPosition(Vector2( Render.Size.x / 2 - self.linksScreen.nextButton:GetSize().x / 2, Render.Size.y))
-            self.linksScreen.nextButton:SetText(self.locStrings["next"])
+            self.linksScreen.nextButton:SetText(locStrings["next"])
             if LocalPlayer:GetValue("SystemFonts") then
                 self.linksScreen.nextButton:SetFont(AssetLocation.SystemFont, "Impact")
             end

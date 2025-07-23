@@ -139,6 +139,8 @@ function Lobby:NetworkBroadcast(event, args)
 end
 
 function Lobby:Collision(args, sender)
+    local deathPosition = self.deathPosition
+
     for player in self:GetPlayers() do
         if player == sender then
             if args.fell then
@@ -164,7 +166,7 @@ function Lobby:Collision(args, sender)
             end
 
             player:SetHealth(1)
-            player:SetPosition(self.deathPosition)
+            player:SetPosition(deathPosition)
         end
     end
 end
@@ -181,10 +183,14 @@ function Lobby:PreTick()
     local state = self:GetState()
 
     if state == GamemodeState.WAITING then
-        if self.timer:GetSeconds() >= self.startingTime and self.startingTime ~= 0 then
+        local timer = self.timer
+        local seconds = timer:GetSeconds()
+        local startingTime = self.startingTime
+
+        if seconds >= startingTime and startingTime ~= 0 then
             self:Broadcast("Запуск трона с " .. self:GetQueue():GetSize() .. " игроками!", Color(185, 215, 255))
             self:SetState(GamemodeState.PREPARING)
-        elseif self.startingTime == 0 and self.timer:GetSeconds() > 600 then
+        elseif startingTime == 0 and seconds > 600 then
             local playerCount = self:GetQueue():GetSize()
 
             if playerCount == 0 then
@@ -237,6 +243,9 @@ function Lobby:PreTick()
 
             self:GetQueue():Clear()
         else
+            local timer = self.timer
+            local seconds = timer:GetSeconds()
+            local startingTime = self.startingTime
             local playerCount = self:GetPlayerCount()
             local playersInVehicles = self:GetPlayersInVehicles()
 
@@ -248,7 +257,7 @@ function Lobby:PreTick()
                 end
             end
 
-            if playerCount == #playersInVehicles or (self.timer:GetSeconds() - self.startingTime) >= self.waitingTime then
+            if playerCount == #playersInVehicles or (seconds - startingTime) >= self.waitingTime then
                 for player in self:GetPlayers() do
                     if not table.find(playersInVehicles, player) then
                         Tron.SendMessage(player, "К сожалению, вы были удалены из лобби, чтобы предотвратить высокое время загрузки других игроков(", Color(185, 215, 255))
@@ -276,7 +285,10 @@ function Lobby:PreTick()
             end
         end
     elseif state == GamemodeState.COUNTDOWN then
-        if self.timer:GetSeconds() > 3 then
+        local timer = self.timer
+        local seconds = timer:GetSeconds()
+
+        if seconds > 3 then
             self:SetState(GamemodeState.INPROGRESS, {position = self.position, maxRadius = self.maxRadius})
         end
     elseif state == GamemodeState.INPROGRESS then

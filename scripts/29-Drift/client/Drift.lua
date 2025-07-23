@@ -88,10 +88,13 @@ end
 
 function Drift:Render()
     local object = NetworkObject.GetByName("Drift")
+    local driftPhysics = LocalPlayer:GetValue("DriftPhysics")
 
-    if LocalPlayer:GetValue("DriftPhysics") then
-        if self.slide then
-            if self.slide == 0 then
+    if driftPhysics then
+        local slide = self.slide
+
+        if slide then
+            if slide == 0 then
                 if not self.mass then
                     self.mass = true
                     Network:Send("ChangeMass", {veh = LocalPlayer:GetVehicle(), bool = self.mass})
@@ -106,14 +109,16 @@ function Drift:Render()
 
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
+    local locStrings = self.locStrings
+
     if self.score and not self.timer and self.score >= 100 then
         self.slide = self.slide + (1 * self.multipler)
         self.anim_tick = self.anim_tick + 1
         self.sscore = self.score
 
         local scoreMult = math.ceil(self.score * self.multipler)
-        local btext = self.locStrings["tDriftTw"]
-        local text = self.locStrings["tDriftTw"] .. tostring(scoreMult)
+        local btext = locStrings["tDriftTw"]
+        local text = locStrings["tDriftTw"] .. tostring(scoreMult)
         local text_mult = "x" .. tostring(self.multipler)
 
         if self.anim_tick < 30 then
@@ -123,32 +128,32 @@ function Drift:Render()
         end
 
         if scoreMult > 5000 then
-            btext = self.locStrings["tDrift3"]
-            text = self.locStrings["tDrift3"] .. scoreMult
+            btext = locStrings["tDrift3"]
+            text = locStrings["tDrift3"] .. scoreMult
         end
         if scoreMult > 10000 then
-            btext = self.locStrings["tDrift4"]
-            text = self.locStrings["tDrift4"] .. scoreMult
+            btext = locStrings["tDrift4"]
+            text = locStrings["tDrift4"] .. scoreMult
         end
         if scoreMult > 50000 then
-            btext = self.locStrings["tDrift5"]
-            text = self.locStrings["tDrift5"] .. scoreMult
+            btext = locStrings["tDrift5"]
+            text = locStrings["tDrift5"] .. scoreMult
         end
         if scoreMult > 100000 then
-            btext = self.locStrings["tDrift6"]
-            text = self.locStrings["tDrift6"] .. scoreMult
+            btext = locStrings["tDrift6"]
+            text = locStrings["tDrift6"] .. scoreMult
         end
         if scoreMult > 500000 then
-            btext = self.locStrings["tDrift7"]
-            text = self.locStrings["tDrift7"] .. scoreMult
+            btext = locStrings["tDrift7"]
+            text = locStrings["tDrift7"] .. scoreMult
         end
         if scoreMult > 1000000 then
-            btext = self.locStrings["tDrift8"]
-            text = self.locStrings["tDrift8"] .. scoreMult
+            btext = locStrings["tDrift8"]
+            text = locStrings["tDrift8"] .. scoreMult
         end
         if scoreMult > 10000000 then
-            btext = self.locStrings["tDrift9"]
-            text = self.locStrings["tDrift9"] .. scoreMult
+            btext = locStrings["tDrift9"]
+            text = locStrings["tDrift9"] .. scoreMult
         end
 
         if LocalPlayer:GetValue("BestRecordVisible") and not LocalPlayer:GetValue("HiddenHUD") and Game:GetState() == GUIState.Game then
@@ -182,7 +187,7 @@ function Drift:Render()
                 shared:SetValue("Record", scoreMult)
                 Network:Send("DriftRecordTask", scoreMult)
                 Network:Send("UpdateMaxRecord", scoreMult)
-                Game:ShowPopup(self.locStrings["tRecord"] .. scoreMult, true)
+                Game:ShowPopup(locStrings["tRecord"] .. scoreMult, true)
             end
 
             self.slide = nil
@@ -192,20 +197,27 @@ function Drift:Render()
         end
     end
 
-    if LocalPlayer:GetState() ~= PlayerState.InVehicle then
+    local lpState = LocalPlayer:GetState()
+
+    if lpState ~= PlayerState.InVehicle then
         self.timer = nil
         return
     end
+
     local vehicle = LocalPlayer:GetVehicle()
 
     if not IsValid(vehicle) then
         self.timer = nil
         return
     end
-    if vehicle:GetClass() ~= VehicleClass.Land then
+
+    local vClass = vehicle:GetClass()
+
+    if vClass ~= VehicleClass.Land then
         self.timer = nil
         return
     end
+
     local velocity = vehicle:GetLinearVelocity()
     local horizontalVelocity = Vector3(velocity.x, 0, velocity.z)
 
@@ -219,9 +231,12 @@ function Drift:Render()
         self.timer = nil
         return
     end
-    local raycast = Physics:Raycast(vehicle:GetPosition() + Vector3(0, 0.5, 0), Vector3.Down, 0, 10)
 
-    if raycast.distance > 1 then
+    local vPos = vehicle:GetPosition()
+    local raycast = Physics:Raycast(vPos + Vector3(0, 0.5, 0), Vector3.Down, 0, 10)
+    local distance = raycast.distance
+
+    if distance > 1 then
         self.timer = nil
         return
     end
@@ -251,8 +266,8 @@ function Drift:Render()
     self.anim_tick = self.anim_tick + 1
 
     local scoreMult = math.ceil(self.score * self.multipler)
-    local btext = self.locStrings["tDriftTw"]
-    local text = self.locStrings["tDriftTw"] .. tostring(scoreMult)
+    local btext = locStrings["tDriftTw"]
+    local text = locStrings["tDriftTw"] .. tostring(scoreMult)
     local text_mult = "x" .. tostring(self.multipler)
 
     self.angular = vehicle:GetAngularVelocity()
@@ -267,35 +282,38 @@ function Drift:Render()
         self.multipler = 10
     end
     if scoreMult > 5000 then
-        btext = self.locStrings["tDrift3"]
-        text = self.locStrings["tDrift3"] .. scoreMult
+        btext = locStrings["tDrift3"]
+        text = locStrings["tDrift3"] .. scoreMult
     end
     if scoreMult > 10000 then
-        btext = self.locStrings["tDrift4"]
-        text = self.locStrings["tDrift4"] .. scoreMult
+        btext = locStrings["tDrift4"]
+        text = locStrings["tDrift4"] .. scoreMult
     end
     if scoreMult > 50000 then
-        btext = self.locStrings["tDrift5"]
-        text = self.locStrings["tDrift5"] .. scoreMult
+        btext = locStrings["tDrift5"]
+        text = locStrings["tDrift5"] .. scoreMult
     end
     if scoreMult > 100000 then
-        btext = self.locStrings["tDrift6"]
-        text = self.locStrings["tDrift6"] .. scoreMult
+        btext = locStrings["tDrift6"]
+        text = locStrings["tDrift6"] .. scoreMult
     end
     if scoreMult > 500000 then
-        btext = self.locStrings["tDrift7"]
-        text = self.locStrings["tDrift7"] .. scoreMult
+        btext = locStrings["tDrift7"]
+        text = locStrings["tDrift7"] .. scoreMult
     end
     if scoreMult > 1000000 then
-        btext = self.locStrings["tDrift8"]
-        text = self.locStrings["tDrift8"] .. scoreMult
+        btext = locStrings["tDrift8"]
+        text = locStrings["tDrift8"] .. scoreMult
     end
     if scoreMult > 10000000 then
-        btext = self.locStrings["tDrift9"]
-        text = self.locStrings["tDrift9"] .. scoreMult
+        btext = locStrings["tDrift9"]
+        text = locStrings["tDrift9"] .. scoreMult
     end
 
-    if LocalPlayer:GetValue("BestRecordVisible") and not LocalPlayer:GetValue("HiddenHUD") and Game:GetState() == GUIState.Game then
+    local bestRecordsVisible = LocalPlayer:GetValue("BestRecordVisible")
+    local hiddenHUD = LocalPlayer:GetValue("HiddenHUD")
+
+    if bestRecordsVisible and not hiddenHUD and Game:GetState() == GUIState.Game then
         local textSize = Render:GetTextSize(text, self.textSize)
         local textSize_mult = Render:GetTextSize(text_mult, self.textSize)
         local shadowColor = Color(25, 25, 25, 150)

@@ -19,8 +19,9 @@ function AirControl:LocalPlayerInput(args)
     if not vehicle then return end
 
     local class = vehicle:GetClass()
-    if class and (class == VehicleClass.Land) then
-        local ray = Physics:Raycast(vehicle:GetPosition() + Vector3(0, 0.5, 0), Vector3.Down, 0, 100)
+    if class and class == VehicleClass.Land then
+        local vPos = vehicle:GetPosition()
+        local ray = Physics:Raycast(vPos + Vector3(0, 0.5, 0), Vector3.Down, 0, 100)
 
         if vehicle:GetPosition().y > 205 and ray.distance >= 3 then
             local velocity = vehicle:GetAngularVelocity()

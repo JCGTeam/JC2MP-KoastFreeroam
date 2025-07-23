@@ -322,16 +322,16 @@ function StateVehicleSelection:StateSelection()
     end
 end
 
-function StateVehicleSelection:ControlDown(control)
-    if control.name == "Поворачивать камеру" and inputSuspensionValue == 0 then
+function StateVehicleSelection:MouseDown(args)
+    if args.button == 3 and inputSuspensionValue == 0 then
         if self.camera then
             self.camera.isInputEnabled = true
         end
     end
 end
 
-function StateVehicleSelection:ControlUp(control)
-    if control.name == "Поворачивать камеру" and inputSuspensionValue == 0 then
+function StateVehicleSelection:MouseUp(args)
+    if args.button == 3 and inputSuspensionValue == 0 then
         if self.camera then
             self.camera.isInputEnabled = false
         end
@@ -345,8 +345,8 @@ function StateVehicleSelection:VehicleSelectionInitialize(vehicleUsages)
     self:EventUnsubscribe("Render")
 
     self:EventSubscribe("Render", self.StateSelection)
-    self:EventSubscribe("ControlDown")
-    self:EventSubscribe("ControlUp")
+    self:EventSubscribe("MouseDown")
+    self:EventSubscribe("MouseUp")
     self:NetworkSubscribe("VehicleSelected")
     self:NetworkSubscribe("VehicleTemplateSelected")
     self:NetworkSubscribe("ReceiveVehicleUsages")

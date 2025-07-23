@@ -32,6 +32,8 @@ function ActionsMenu:__init()
         ["VIP"] = true
     }
 
+    self:UpdateKeyBinds()
+
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
         self:Lang()
@@ -66,6 +68,7 @@ function ActionsMenu:__init()
     self.textSize = 15
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("KeyUp", self, self.KeyUp)
     Events:Subscribe("LocalPlayerChat", self, self.LocalPlayerChat)
     Events:Subscribe("LocalPlayerWorldChange", self, function() self:SetWindowVisible(false) end)
@@ -74,10 +77,10 @@ end
 function ActionsMenu:Lang()
     self.locStrings = {
         title = "▧ Actions Menu",
-        healme = "Heal yourself",
-        killme = "Kill yourself",
-        clearinv = "Clear inventory",
-        sendmoney_txt = "Send money",
+        healme = "Heal Yourself",
+        killme = "Kill Yourself",
+        clearinv = "Clear Inventory",
+        sendmoney_txt = "Send Money",
         bloozing = "Drink",
         seat = "Sit",
         lezat = "Lie",
@@ -85,8 +88,8 @@ function ActionsMenu:Lang()
         vehicledriverseatlock = "Lock driver's door",
         vehicledriverseatunlock = "Unlock driver's door",
         vehicleboom = "Blow up a vehicle",
-        sky = "Take to the sky",
-        down = "Going down",
+        sky = "Take to the Sky",
+        down = "Going Down",
         pvpblock = "You cannot use this during combat!",
         novehicle = "You must be behind the driver's seat!",
         novip = "Required VIP status :(",
@@ -97,6 +100,13 @@ function ActionsMenu:Lang()
         ltext1 = "Player:",
         ltext2 = "Vehicle:"
     }
+end
+
+function ActionsMenu:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local bind = keyBinds and keyBinds["ActionsMenu"]
+
+    self.expectedKey = bind and bind.type == "Key" and bind.value or 86
 end
 
 function ActionsMenu:SetWindowVisible(visible, sound)
@@ -129,13 +139,13 @@ function ActionsMenu:SetWindowVisible(visible, sound)
 end
 
 function ActionsMenu:KeyUp(args)
-    if Game:GetState() ~= GUIState.Game then return end
-    if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+    if Game:GetState() ~= GUIState.Game or LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-    if args.key == 86 then
+    if args.key == self.expectedKey then
         self:SetWindowVisible(not self.activeWindow, true)
     end
 end
+
 
 function ActionsMenu:LocalPlayerChat(args)
     local cmd_args = args.text:split(" ")
@@ -176,45 +186,47 @@ end
 function ActionsMenu:CreateWindow()
     if self.window then return end
 
+    local locStrings = self.locStrings
+
     self.greenColor = Color(192, 255, 192)
 
     self.window = Window.Create()
-    self.window:SetSize(Vector2(Render:GetTextWidth(self.locStrings["vehiclerepair"], self.textSize) + 90, 430))
+    self.window:SetSize(Vector2(Render:GetTextWidth(locStrings["vehiclerepair"], self.textSize) + 90, 430))
     self.window:SetMinimumSize(Vector2(300, 315))
     self.window:SetPosition(Vector2(Render.Size.x - self.window:GetSize().x - 45, Render.Size.y / 2 - self.window:GetSize().y / 2))
     self.window:SetVisible(false)
-    self.window:SetTitle(self.locStrings["title"])
+    self.window:SetTitle(locStrings["title"])
     self.window:Subscribe("WindowClosed", self, function() self:SetWindowVisible(false, true) end)
 
     self.scroll = ScrollControl.Create(self.window)
     self.scroll:SetDock(GwenPosition.Fill)
     self.scroll:SetScrollable(false, true)
 
-    self.SendMoneyBtn = self:CreateActionButton(self.locStrings["sendmoney_txt"], function() Events:Fire("OpenSendMoneyMenu") self:SetWindowVisible(false) end)
+    self.SendMoneyBtn = self:CreateActionButton(locStrings["sendmoney_txt"], function() Events:Fire("OpenSendMoneyMenu") self:SetWindowVisible(false) end)
 
     self.label1 = Label.Create(self.scroll)
     self.label1:SetDock(GwenPosition.Top)
-    self.label1:SetText(self.locStrings["ltext1"])
+    self.label1:SetText(locStrings["ltext1"])
     self.label1:SetMargin(Vector2(5, 5), Vector2(5, 0))
     self.label1:SizeToContents()
 
-    self.HealMeBtn = self:CreateActionButton(self.locStrings["healme"], self.Heal, self.greenColor)
-    self.KillMeBtn = self:CreateActionButton(self.locStrings["killme"], function() Network:Send("KillMe") self:SetWindowVisible(false) end)
-    self.ClearInvBtn = self:CreateActionButton(self.locStrings["clearinv"], function() Network:Send("ClearInv") self:SetWindowVisible(false) end)
-    self.BloozingBtn = self:CreateActionButton(self.locStrings["bloozing"], function() Events:Fire("BloozingStart") self:SetWindowVisible(false) end)
-    self.SeatBtn = self:CreateActionButton(self.locStrings["seat"], self.Seat)
-    self.LezatBtn = self:CreateActionButton(self.locStrings["lezat"], self.Sleep)
+    self.HealMeBtn = self:CreateActionButton(locStrings["healme"], self.Heal, self.greenColor)
+    self.KillMeBtn = self:CreateActionButton(locStrings["killme"], function() Network:Send("KillMe") self:SetWindowVisible(false) end)
+    self.ClearInvBtn = self:CreateActionButton(locStrings["clearinv"], function() Network:Send("ClearInv") self:SetWindowVisible(false) end)
+    self.BloozingBtn = self:CreateActionButton(locStrings["bloozing"], function() Events:Fire("BloozingStart") self:SetWindowVisible(false) end)
+    self.SeatBtn = self:CreateActionButton(locStrings["seat"], self.Seat)
+    self.LezatBtn = self:CreateActionButton(locStrings["lezat"], self.Sleep)
 
     self.label2 = Label.Create(self.scroll)
     self.label2:SetDock(GwenPosition.Top)
-    self.label2:SetText(self.locStrings["ltext2"])
+    self.label2:SetText(locStrings["ltext2"])
     self.label2:SetMargin(Vector2(5, 5), Vector2(5, 0))
     self.label2:SizeToContents()
 
-    self.VehicleRepairBtn = self:CreateActionButton(self.locStrings["vehiclerepair"], self.VehicleRepair, self.greenColor)
+    self.VehicleRepairBtn = self:CreateActionButton(locStrings["vehiclerepair"], self.VehicleRepair, self.greenColor)
     local vehicle = LocalPlayer:GetVehicle()
-    self.VehicleDriverSeatLockBtn = self:CreateActionButton((vehicle and vehicle:GetSeatLocked(VehicleSeat.Driver)) and self.locStrings["vehicledriverseatunlock"] or self.locStrings["vehicledriverseatlock"], self.VehicleToggleDriverSeatLock)
-    self.VehicleBoomBtn = self:CreateActionButton(self.locStrings["vehicleboom"], self.VehicleBoom)
+    self.VehicleDriverSeatLockBtn = self:CreateActionButton((vehicle and vehicle:GetSeatLocked(VehicleSeat.Driver)) and locStrings["vehicledriverseatunlock"] or locStrings["vehicledriverseatlock"], self.VehicleToggleDriverSeatLock)
+    self.VehicleBoomBtn = self:CreateActionButton(locStrings["vehicleboom"], self.VehicleBoom)
 
     self.label3 = Label.Create(self.scroll)
     self.label3:SetDock(GwenPosition.Top)
@@ -222,8 +234,8 @@ function ActionsMenu:CreateWindow()
     self.label3:SetMargin(Vector2(5, 5), Vector2(5, 0))
     self.label3:SizeToContents()
 
-    self.SkyBtn = self:CreateActionButton(self.locStrings["sky"], self.Sky)
-    self.DownBtn = self:CreateActionButton(self.locStrings["down"], self.Down)
+    self.SkyBtn = self:CreateActionButton(locStrings["sky"], self.Sky)
+    self.DownBtn = self:CreateActionButton(locStrings["down"], self.Down)
 end
 
 function ActionsMenu:Heal()
@@ -415,8 +427,10 @@ end
 
 function ActionsMenu:Render()
     local is_visible = Game:GetState() == GUIState.Game
+    local window = self.window
+    local windowGetVisible = window:GetVisible()
 
-    if self.window:GetVisible() ~= is_visible then
+    if windowGetVisible ~= is_visible then
         self.window:SetVisible(is_visible)
         Mouse:SetVisible(is_visible)
     end

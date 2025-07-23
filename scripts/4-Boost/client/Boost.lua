@@ -42,15 +42,17 @@ function Boost:__init()
     self.strength = self.defaultStrength
     self.delta = 0
 
+    self:UpdateKeyBinds()
+
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
         self:Lang()
     else
         self.locStrings = {
-            name = "Нажмите ",
-            nameTw = "или LB ",
-            nameTh = "для супер-ускорения. ",
-            nameFo = "Нажмите F для мгновенной заморозки.",
+            press = "Нажмите ",
+            orlb = " или LB",
+            toboost = " для супер-ускорения. ",
+            tobrake = " для мгновенной заморозки.",
             title = "Настройки супер-ускорения",
             opt1 = "Супер-ускорение для машин",
             opt2 = "Супер-ускорение для лодок",
@@ -108,6 +110,7 @@ function Boost:__init()
     end
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
     Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
@@ -115,10 +118,10 @@ end
 
 function Boost:Lang()
     self.locStrings = {
-        name = "Press ",
-        nameTw = "or LB ",
-        nameTh = "to boost. ",
-        nameFo = "Press F to brake.",
+        press = "Press ",
+        orlb = " or LB",
+        toboost = " to boost. ",
+        tobrake = " to brake.",
         title = "Boost Settings",
         opt1 = "Land vehicles boost",
         opt2 = "Boats boost",
@@ -129,6 +132,21 @@ function Boost:Lang()
         opt7 = "Instant brake",
         opt8 = "Boost strength"
     }
+end
+
+function Boost:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local landBoostBind = keyBinds and keyBinds["VehicleLandBoost"]
+    local planeBoostBind = keyBinds and keyBinds["VehiclePlaneBoost"]
+    local brakeBind = keyBinds and keyBinds["VehicleBrake"]
+
+    self.landBoostKey = landBoostBind and landBoostBind.type == "Key" and landBoostBind.value or 16
+    self.planeBoostKey = planeBoostBind and planeBoostBind.type == "Key" and planeBoostBind.value or 81
+    self.brakeKey = brakeBind and brakeBind.type == "Key" and brakeBind.value or 70
+
+    self.landBoostStringKey = landBoostBind and landBoostBind.type == "Key" and landBoostBind.valueString or "Shift"
+    self.planeBoostStringKey = planeBoostBind and planeBoostBind.type == "Key" and planeBoostBind.valueString or "Q"
+    self.brakeStringKey = brakeBind and brakeBind.type == "Key" and brakeBind.valueString or "F"
 end
 
 function Boost:UpdateSettings(settings)
@@ -149,24 +167,26 @@ function Boost:CreateWindow()
         end
     end
 
+    local locStrings = self.locStrings
+
     self.window = Window.Create()
     self.window:SetSize(Vector2(250, 240))
-    self.window:SetTitle(self.locStrings["title"])
+    self.window:SetTitle(locStrings["title"])
     self.window:Subscribe("WindowClosed", function() self:SetWindowVisible(false) end)
     self:ResolutionChange()
 
-    self:AddSetting(self.locStrings["opt1"], "landBoost", self.landBoost, self.defaultLandBoost)
-    self:AddSetting(self.locStrings["opt2"], "boatBoost", self.boatBoost, self.defaultBoatBoost)
-    self:AddSetting(self.locStrings["opt3"], "heliBoost", self.heliBoost, self.defaultHeliBoost)
-    self:AddSetting(self.locStrings["opt4"], "planeBoost", self.planeBoost, self.defaultPlaneBoost)
-    self:AddSetting(self.locStrings["opt5"], "textEnabled", self.textEnabled, self.defaultTextEnabled)
-    self:AddSetting(self.locStrings["opt6"], "padEnabled", self.padEnabled, self.defaultPadEnabled)
-    self:AddSetting(self.locStrings["opt7"], "brake", self.brake, self.defaultBrakeEnabled)
+    self:AddSetting(locStrings["opt1"], "landBoost", self.landBoost, self.defaultLandBoost)
+    self:AddSetting(locStrings["opt2"], "boatBoost", self.boatBoost, self.defaultBoatBoost)
+    self:AddSetting(locStrings["opt3"], "heliBoost", self.heliBoost, self.defaultHeliBoost)
+    self:AddSetting(locStrings["opt4"], "planeBoost", self.planeBoost, self.defaultPlaneBoost)
+    self:AddSetting(locStrings["opt5"], "textEnabled", self.textEnabled, self.defaultTextEnabled)
+    self:AddSetting(locStrings["opt6"], "padEnabled", self.padEnabled, self.defaultPadEnabled)
+    self:AddSetting(locStrings["opt7"], "brake", self.brake, self.defaultBrakeEnabled)
 
     local strength_text = Label.Create(self.window)
     strength_text:SetSize(Vector2(160, 32))
     strength_text:SetDock(GwenPosition.Top)
-    strength_text:SetText(self.locStrings["opt8"])
+    strength_text:SetText(locStrings["opt8"])
     strength_text:SetAlignment(GwenPosition.CenterV)
 
     local strength_numeric = Numeric.Create(self.window)
@@ -215,24 +235,29 @@ function Boost:LocalPlayerInput(args)
     if self.padEnabled and args.input == self.controllerAction and LocalPlayer:GetWorld() == DefaultWorld and Game:GetSetting(GameSetting.GamepadInUse) == 1 then
         local vehicle = LocalPlayer:GetVehicle()
 
-        if vehicle and
-            (self:LandCheck(vehicle) or self:BoatCheck(vehicle) or self:HeliCheck(vehicle) or self:PlaneCheck(vehicle)) then
+        if vehicle and (self:LandCheck(vehicle) or self:BoatCheck(vehicle) or self:HeliCheck(vehicle) or self:PlaneCheck(vehicle)) then
             self:Boost(vehicle)
         end
     end
 end
 
 function Boost:Render(args)
-    if self.hinttimer and self.hinttimer:GetSeconds() >= 8 then
+    local hinttimer = self.hinttimer
+
+    if hinttimer and hinttimer:GetSeconds() >= 8 then
         self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.15, easeIOnut, function(value) self.animationValue = value end, function() self.animationValue = nil end)
         self.hinttimer = nil
     end
 
     if not LocalPlayer:GetValue("Boost") then return end
-    if Game:GetState() ~= GUIState.Game then return end
+
+    local gameState = Game:GetState()
+
+    if gameState ~= GUIState.Game then return end
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
     local vehicle = LocalPlayer:GetVehicle()
+
     if not vehicle then return end
 
     self.delta = args.delta
@@ -241,21 +266,32 @@ function Boost:Render(args)
     local heli = self:HeliCheck(vehicle)
     local plane = self:PlaneCheck(vehicle)
 
-    if not (LocalPlayer:GetValue("VehBrake") or LocalPlayer:GetValue("Freeze")) then
+    local vehBrake = LocalPlayer:GetValue("VehBrake")
+    local freeze = LocalPlayer:GetValue("Freeze")
+
+    if not (vehBrake or freeze) then
         if land or boat then
-            if Key:IsDown(160) then -- LShift
+            local landBoostKey = self.landBoostKey
+
+            if Key:IsDown(landBoostKey) then
                 self:Boost(vehicle)
             end
         elseif heli or plane then
-            if Key:IsDown(81) then -- Q
+            local planeBoostKey = self.planeBoostKey
+
+            if Key:IsDown(planeBoostKey) then
                 self:Boost(vehicle)
             end
         end
     end
 
-    if self.brake and not LocalPlayer:GetValue("Freeze") then
-        if Key:IsDown(70) then -- F
-            if not LocalPlayer:GetValue("VehBrake") then
+    local brake = self.brake
+
+    if brake and not freeze then
+        local brakeKey = self.brakeKey
+
+        if Key:IsDown(brakeKey) then
+            if not vehBrake then
                 LocalPlayer:SetValue("VehBrake", true)
             end
 
@@ -263,45 +299,46 @@ function Boost:Render(args)
             vehicle:SetLinearVelocity(vectorZero)
             vehicle:SetAngularVelocity(vectorZero)
 
-            self.vpos = self.vpos or vehicle:GetPosition()
-            self.vangle = self.vangle or vehicle:GetAngle()
+            local vPos = vehicle:GetPosition()
+            local vAngle = vehicle:GetAngle()
 
-            vehicle:SetPosition(self.vpos)
-            vehicle:SetAngle(self.vangle)
-        else
-            if LocalPlayer:GetValue("VehBrake") then
-                LocalPlayer:SetValue("VehBrake", nil)
-
-                self.vpos = nil
-                self.vangle = nil
-            end
+            vehicle:SetPosition(vPos)
+            vehicle:SetAngle(vAngle)
+        elseif vehBrake then
+            LocalPlayer:SetValue("VehBrake", nil)
         end
     end
 
-    if Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue("HiddenHUD") then return end
-    if not self.animationValue then return end
+    if LocalPlayer:GetValue("HiddenHUD") then return end
+
+    local animationValue = self.animationValue
+
+    if not animationValue then return end
 
     if self.textEnabled and (land or boat or heli or plane) then
         if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
-        local text = self.locStrings["name"]
+        local locStrings = self.locStrings
+        local lsPress = locStrings["press"]
+
+        local text = lsPress
         if land or boat then
-            text = text .. "Shift "
+            text = text .. self.landBoostStringKey
         elseif heli or plane then
-            text = text .. "Q "
+            text = text .. self.planeBoostStringKey
         end
         if self.padEnabled then
-            text = text .. self.locStrings["nameTw"]
+            text = text .. locStrings["orlb"]
         end
-        text = text .. self.locStrings["nameTh"]
-        if self.brake then
-            text = text .. self.locStrings["nameFo"]
+        text = text .. locStrings["toboost"]
+        if brake then
+            text = text .. lsPress .. self.brakeStringKey .. locStrings["tobrake"]
         end
 
         local textSize = 15
         local size = Render:GetTextSize(text, textSize)
-        local pos = Vector2((Render.Width - size.x) / 2, math.lerp(Render.Height, Render.Height - size.y - 10, self.animationValue))
-        local alpha = math.lerp(0, 255, self.animationValue)
+        local pos = Vector2((Render.Width - size.x) / 2, math.lerp(Render.Height, Render.Height - size.y - 10, animationValue))
+        local alpha = math.lerp(0, 255, animationValue)
 
         Render:DrawShadowedText(pos, text, Color(255, 255, 255, alpha), Color(0, 0, 0, alpha), textSize)
     end

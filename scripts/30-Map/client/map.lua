@@ -67,7 +67,10 @@ end
 
 function Location:DrawIcon(position, scale)
     local iconSize = Location.Icon.Size * scale
-    Location.Icon.Sheet:Draw(position - (iconSize / 2), iconSize, Location.Icon.UV[self.type], Location.Icon.UV[self.type] + Location.Icon.UVSize)
+	local iconType = Location.Icon.UV[self.type]
+	local iconUVSize = Location.Icon.UVSize
+
+    Location.Icon.Sheet:Draw(position - (iconSize / 2), iconSize, iconType, iconType + iconUVSize)
 end
 
 function Location:Draw(position, scale)
@@ -586,8 +589,9 @@ function Map:Draw()
         local pId = LocalPlayer:GetId()
         local pWorldId = LocalPlayer:GetWorld():GetId()
         local background_clr = Color(0, 0, 0, math.lerp(0, 150, animationValue))
+		local players = Map.Players
 
-        for _, player in pairs(Map.Players) do
+        for _, player in pairs(players) do
             if player.id ~= pId and player.worldId == pWorldId then
                 local position = Map:WorldToScreen(player.pos)
                 local str = player.name

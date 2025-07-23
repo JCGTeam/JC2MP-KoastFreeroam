@@ -180,19 +180,28 @@ function ClanSystem:SendPlayerList(player)
 end
 
 function ClanSystem:SyncPlayers()
-    if (Server:GetElapsedSeconds() - self.LastTick >= 4) then
+    if Server:GetElapsedSeconds() - self.LastTick >= 4 then
+        local playerList = self.playerList
+        local clans = self.clans
+
         for player in Server:GetPlayers() do
             local clan = self:GetPlayerClan(player)
-            self.playerList[player:GetId()] = clan
+
+            playerList[player:GetId()] = clan
 
             if clan then
-                local colour = (self.clans[clan].colour:split(",") or {255, 255, 255})
+                local colour = clans[clan].colour:split(",") or {255, 255, 255}
                 local r, g, b = table.unpack(colour)
+                local finalColor = Color(tonumber(r), tonumber(g), tonumber(b))
 
-                player:SetNetworkValue("ClanColor", Color(tonumber(r), tonumber(g), tonumber(b)))
+                if player:GetValue("ClanColor") ~= finalColor then
+                    player:SetNetworkValue("ClanColor", finalColor)
+                end
             end
 
-            player:SetNetworkValue("ClanTag", clan)
+            if player:GetValue("ClanTag") ~= clan then
+                player:SetNetworkValue("ClanTag", clan)
+            end
         end
 
         self.LastTick = Server:GetElapsedSeconds()

@@ -34,7 +34,9 @@ function Messages:Lang()
 end
 
 function Messages:ModulesLoad()
-    Events:Fire("SendNotification", {txt = self.locStrings["updatefiles"], image = "Upgrade", subtxt = self.locStrings["loadfiles"]})
+    local locStrings = self.locStrings
+
+    Events:Fire("SendNotification", {txt = locStrings["updatefiles"], image = "Upgrade", subtxt = locStrings["loadfiles"]})
     Events:Fire("LoadUI")
 end
 
@@ -44,7 +46,9 @@ function Messages:ModuleError(e)
 end
 
 function Messages:Text()
-    Events:Fire("SendNotification", {txt = self.locStrings["higping"], image = "Warning", subtxt = self.locStrings["mblags"]})
+    local locStrings = self.locStrings
+
+    Events:Fire("SendNotification", {txt = locStrings["higping"], image = "Warning", subtxt = locStrings["mblags"]})
 end
 
 function Messages:TextTw(args)

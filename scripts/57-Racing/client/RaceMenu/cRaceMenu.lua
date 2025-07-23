@@ -66,10 +66,8 @@ function RaceMenu:__init()
 
     self:CreateWindow()
     self:AddTab(HomeTab)
-    self:AddTab(SettingsTab)
     self:AddTab(StatsTab)
 
-    self:EventSubscribe("ControlDown")
     self:EventSubscribe("LocalPlayerInput")
     self:EventSubscribe("LocalPlayerChat")
     self:EventSubscribe("PostTick")
@@ -129,12 +127,6 @@ function RaceMenu:WindowClosed()
 end
 
 -- Events
-
-function RaceMenu:ControlDown(control)
-    if control.name == "Открыть меню гонок" and inputSuspensionValue == 0 then
-        self:SetEnabled(not self.isEnabled)
-    end
-end
 
 function RaceMenu:LocalPlayerInput(args)
     if self.isEnabled == false then

@@ -58,8 +58,14 @@ function Claymores:LocalPlayerInput(args)
 end
 
 function Claymores:onPostTick()
-    if not self.placing then return end
-    if self.placing:GetMilliseconds() < self.delay then return end
+    local placing = self.placing
+
+    if not placing then return end
+
+    local milliseconds = placing:GetMilliseconds()
+    local delay = self.delay
+
+    if milliseconds < delay then return end
 
     LocalPlayer:SetBaseState(AnimationState.SUprightIdle)
     Network:Send("01")

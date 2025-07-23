@@ -150,7 +150,9 @@ function Derby:TextPos(text, size, offsetx, offsety)
 end
 
 function Derby:Render()
-    if self.state == "Inactive" then return end
+    local state = self.state
+
+    if state == "Inactive" then return end
     if Game:GetState() ~= GUIState.Game then return end
 
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
@@ -158,18 +160,19 @@ function Derby:Render()
     local players = {LocalPlayer}
     local color = Color.White
     local colorShadow = Color(25, 25, 25, 150)
+    local lpWorld = LocalPlayer:GetWorld()
 
     for player in Client:GetPlayers() do
-        if player:GetWorld() == LocalPlayer:GetWorld() then
+        if player:GetWorld() == lpWorld then
             table.insert(players, player)
         end
     end
 
-    if self.state ~= "Inactive" then
+    if state ~= "Inactive" then
         local pos = Vector2(Render.Width - 367, 0)
     end
 
-    if self.state == "Lobby" then
+    if state == "Lobby" then
         local text = self.locStrings["lobbyplayers"] .. self.playerCount
         local textinfo = self:TextPos(text, TextSize.Large, 0, -Render.Height + 150)
         Render:DrawShadowedText(textinfo, text, color, colorShadow, TextSize.Large)
@@ -179,7 +182,7 @@ function Derby:Render()
         Render:DrawShadowedText(textinfo, text, Color(165, 165, 165), colorShadow, 25)
     end
 
-    if self.state == "Setup" then
+    if state == "Setup" then
         local text = self.locStrings["loading"]
         local textinfo = self:TextPos(text, TextSize.VeryLarge, 0, -200)
         Render:DrawShadowedText(textinfo, text, color, colorShadow, TextSize.VeryLarge)
@@ -199,7 +202,7 @@ function Derby:Render()
         end
 
         DrawCenteredShadowedText(Vector2(Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20)), self.locStrings["nameT"], color, 20)
-    elseif self.state == "Countdown" then
+    elseif state == "Countdown" then
         local time = 3 - math.floor(math.clamp(self.countdownTimer:GetSeconds(), 0, 3))
         local message = {self.locStrings["cdgo"], "1", "2", "3"}
         local text = message[time + 1]
@@ -216,9 +219,8 @@ function Derby:Render()
             DrawCenteredShadowedText(Vector2(Render.Width - 75, Render.Height - 75 - (k * 20)), player:GetName(), color_players)
         end
 
-        DrawCenteredShadowedText(Vector2(Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20)),
-            self.locStrings["nameT"], color, 20)
-    elseif self.state == "Running" then
+        DrawCenteredShadowedText(Vector2(Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20)), self.locStrings["nameT"], color, 20)
+    elseif state == "Running" then
         local text = self.locStrings["lobbyplayers"] .. self.playerCount
         local textinfo = self:TextPos(text, TextSize.Large, 0, -Render.Height + 215)
         Render:DrawShadowedText(textinfo, text, color, colorShadow, TextSize.Large)

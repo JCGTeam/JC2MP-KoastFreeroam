@@ -51,7 +51,6 @@ function Bank:__init()
 
     self.timer = Timer()
     self.message_size = TextSize.VeryLarge
-    self.submessage_size = 25
 
     -- self:AddPlayer( LocalPlayer )
     for player in Client:GetPlayers() do
@@ -72,11 +71,13 @@ function Bank:Lang()
     }
 
     if self.plist then
-        self.plist.window:SetTitle(self.locStrings["title"])
-        self.plist.balance:SetText(self.locStrings["balance"] .. formatNumber(LocalPlayer:GetMoney()))
-        self.plist.text:SetText(self.locStrings["amounttosend"])
-        self.plist.okay:SetText(self.locStrings["send"])
-        self.plist.filter:SetToolTip(self.locStrings["send"])
+        local locStrings = self.locStrings
+
+        self.plist.window:SetTitle(locStrings["title"])
+        self.plist.balance:SetText(locStrings["balance"] .. formatNumber(LocalPlayer:GetMoney()))
+        self.plist.text:SetText(locStrings["amounttosend"])
+        self.plist.okay:SetText(locStrings["send"])
+        self.plist.filter:SetToolTip(locStrings["send"])
     end
 end
 
@@ -91,8 +92,10 @@ function Bank:SetWindowVisible(visible, sound)
         if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
         if not self.WindowRenderEvent then self.WindowRenderEvent = Events:Subscribe("Render", self, self.WindowRender) end
 
+        local rows = self.rows
+
         for p in Client:GetPlayers() do
-            self.rows[p:GetId()]:SetTextColor(p:GetColor())
+            rows[p:GetId()]:SetTextColor(p:GetColor())
         end
 
         if LocalPlayer:GetValue("SystemFonts") then
@@ -122,26 +125,28 @@ end
 function Bank:CreateWindow()
     self.plist = {}
 
+    local locStrings = self.locStrings
+
     self.plist.window = Window.Create()
     self.plist.window:SetSizeRel(Vector2(0.25, 0.42))
     self.plist.window:SetMinimumSize(Vector2(370, 240))
     self.plist.window:SetPositionRel(Vector2(0.85, 0.5) - self.plist.window:GetSizeRel() / 2)
     self.plist.window:SetVisible(self.activeWindow)
-    self.plist.window:SetTitle(self.locStrings["title"])
+    self.plist.window:SetTitle(locStrings["title"])
     self.plist.window:Subscribe("WindowClosed", self, function() self:SetWindowVisible(false, true) end)
 
     self.plist.balance = Label.Create(self.plist.window)
     self.plist.balance:SetDock(GwenPosition.Top)
     self.plist.balance:SetMargin(Vector2(5, 5), Vector2(5, 5))
     self.plist.balance:SetTextSize(20)
-    self.plist.balance:SetText(self.locStrings["balance"] .. formatNumber(LocalPlayer:GetMoney()))
+    self.plist.balance:SetText(locStrings["balance"] .. formatNumber(LocalPlayer:GetMoney()))
     self.plist.balance:SetTextColor(Color(251, 184, 41))
     self.plist.balance:SizeToContents()
 
     self.plist.text = Label.Create(self.plist.window)
     self.plist.text:SetDock(GwenPosition.Top)
     self.plist.text:SetMargin(Vector2(5, 5), Vector2(5, 5))
-    self.plist.text:SetText(self.locStrings["amounttosend"])
+    self.plist.text:SetText(locStrings["amounttosend"])
     self.plist.text:SizeToContents()
 
     self.plist.moneytosend = Numeric.Create(self.plist.window)
@@ -156,21 +161,21 @@ function Bank:CreateWindow()
     self.plist.playerList = SortedList.Create(self.plist.window)
     self.plist.playerList:SetMargin(Vector2.Zero, Vector2(0, 4))
     self.plist.playerList:SetBackgroundVisible(false)
-    self.plist.playerList:AddColumn(self.locStrings["player"])
+    self.plist.playerList:AddColumn(locStrings["player"])
     self.plist.playerList:SetButtonsVisible(true)
     self.plist.playerList:SetDock(GwenPosition.Fill)
 
     self.plist.okay = Button.Create(self.plist.window)
     self.plist.okay:SetDock(GwenPosition.Bottom)
     self.plist.okay:SetHeight(35)
-    self.plist.okay:SetText(self.locStrings["send"])
+    self.plist.okay:SetText(locStrings["send"])
     self.plist.okay:Subscribe("Press", self, self.SendToPlayer)
 
     self.plist.filter = TextBox.Create(self.plist.window)
     self.plist.filter:SetDock(GwenPosition.Bottom)
     self.plist.filter:SetMargin(Vector2(0, 5), Vector2(0, 5))
     self.plist.filter:SetHeight(25)
-    self.plist.filter:SetToolTip(self.locStrings["search"])
+    self.plist.filter:SetToolTip(locStrings["search"])
     self.plist.filter:Subscribe("TextChanged", self, self.TextChanged)
     self.plist.filter:Subscribe("Focus", self, self.Focus)
     self.plist.filter:Subscribe("Blur", self, self.Blur)
@@ -186,10 +191,11 @@ end
 function Bank:PlayerQuit(args)
     local player = args.player
     local playerId = player:GetId()
+    local rows = self.rows
 
-    if not self.rows[playerId] then return end
+    if not rows[playerId] then return end
 
-    self.plist.playerList:RemoveItem(self.rows[playerId])
+    self.plist.playerList:RemoveItem(rows[playerId])
     self.rows[playerId] = nil
 end
 
@@ -234,8 +240,10 @@ end
 
 function Bank:WindowRender()
     local is_visible = Game:GetState() == GUIState.Game
+    local window = self.plist.window
+    local windowGetVisible = window:GetVisible()
 
-    if self.plist.window:GetVisible() ~= is_visible then
+    if windowGetVisible ~= is_visible then
         self.plist.window:SetVisible(is_visible)
         Mouse:SetVisible(is_visible)
     end
@@ -270,10 +278,14 @@ function Bank:EscPressed()
 end
 
 function Bank:Render()
-    if not self.message then return end
+    local message = self.message
 
-    if self.message_timer then
-        local message_timer_seconds = self.message_timer:GetSeconds()
+    if not message then return end
+
+    local message_timer = self.message_timer
+
+    if message_timer then
+        local message_timer_seconds = message_timer:GetSeconds()
 
         if message_timer_seconds >= 5 then
             self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.75, easeIOnut, function(value) self.animationValue = value end, function()
@@ -281,7 +293,6 @@ function Bank:Render()
                 self.message = nil
                 self.submessage = nil
                 self.color = nil
-                self.shadowColor = nil
                 self.animationValue = nil
                 self.posY = nil
                 self.fadeOutAnimation = nil
@@ -295,11 +306,16 @@ function Bank:Render()
 
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
-    local pos_2d = Vector2((Render.Size.x / 2) - (Render:GetTextSize(self.message .. " | " .. self.submessage, self.submessage_size).x / 2), math.lerp(110, 100, self.posY))
-    local textColor = Color(self.color.r, self.color.g, self.color.b, math.lerp(0, self.color.a, self.animationValue))
-    local textShadow = Color(self.shadowColor.r, self.shadowColor.g, self.shadowColor.b, math.lerp(0, self.shadowColor.a, self.animationValue))
+    local size = 25
+    local pos = Vector2((Render.Size.x / 2) - (Render:GetTextSize(message .. " | " .. self.submessage, size).x / 2), math.lerp(110, 100, self.posY))
+    local color = self.color
+    local shadowColor = Color(0, 0, 0, 100)
 
-    Render:DrawShadowedText(pos_2d, self.message .. " | " .. self.submessage, textColor, textShadow, self.submessage_size)
+    local animationValue = self.animationValue
+    local textColor = Color(color.r, color.g, color.b, math.lerp(0, color.a, animationValue))
+    local textShadow = Color(shadowColor.r, shadowColor.g, shadowColor.b, math.lerp(0, shadowColor.a, animationValue))
+
+    Render:DrawShadowedText(pos, message .. " | " .. self.submessage, textColor, textShadow, size)
 end
 
 function Bank:MoneyChange(args)
@@ -324,7 +340,6 @@ function Bank:MoneyChange(args)
         self.message = (diff > 0 and "+" or "-") .. " $" .. formatNumber(math.abs(diff))
         self.submessage = self.locStrings["balance"] .. formatNumber(args.new_money)
         self.color = diff > 0 and Color(251, 184, 41) or Color.OrangeRed
-        self.shadowColor = Color(0, 0, 0, 100)
     end
 end
 
