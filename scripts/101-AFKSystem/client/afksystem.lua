@@ -42,6 +42,8 @@ function AFKSystem:LocalPlayerInput()
 end
 
 function AFKSystem:ModuleUnload()
+    if not IsValid(LocalPlayer) then return end
+
     self:LocalPlayerInput()
 end
 
