@@ -35,14 +35,18 @@ function SuperGrapple:Render()
     local longerGrapple = LocalPlayer:GetValue("LongerGrapple")
 
     if LocalPlayer:GetValue("LongerGrappleEnabled") and longerGrapple then
-        if LocalPlayer:InVehicle() or Game:GetState() ~= GUIState.Game or LocalPlayer:GetWorld() ~= DefaultWorld then return end
+        if LocalPlayer:InVehicle() or LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-        local velocity = -LocalPlayer:GetAngle() * LocalPlayer:GetLinearVelocity()
-        self.velocity = -velocity.z
-        if not self.object then
-            local ray = Physics:Raycast(Camera:GetPosition(), Camera:GetAngle() * Vector3.Forward, 0, longerGrapple)
+        local object = self.object
+        local velocity = -(-LocalPlayer:GetAngle() * LocalPlayer:GetLinearVelocity()).z
 
-            if ray.distance < longerGrapple and ray.distance > 1 then
+        if not object then
+            local cameraPos = Camera:GetPosition()
+            local cameraAngle = Camera:GetAngle()
+            local ray = Physics:Raycast(cameraPos, cameraAngle * Vector3.Forward, 0, longerGrapple)
+            local distance = ray.distance
+
+            if distance < longerGrapple and distance > 1 then
                 self.distance = ray.distance
                 self.position = ray.position
                 self.normal = ray.normal
@@ -52,12 +56,14 @@ function SuperGrapple:Render()
         end
 
         local bs = LocalPlayer:GetBaseState()
-        if self.distance > 1 and (self.distance > 80 or (self.velocity > 20 and bs ~= AnimationState.SSkydive)) then
-            if LocalPlayer:GetValue("LongerGrappleVisible") and not LocalPlayer:GetValue("HiddenHUD") then
+        local distance = self.distance
+
+        if distance > 1 and (distance > 80 or (velocity > 20 and bs ~= AnimationState.SSkydive)) then
+            if LocalPlayer:GetValue("LongerGrappleVisible") and Game:GetState() == GUIState.Game and not LocalPlayer:GetValue("HiddenHUD") then
                 if bs ~= 45 and bs ~= 43 and bs ~= 41 and bs ~= 208 and bs ~= 38 and bs ~= 47 and bs ~= 42 and bs ~= 191 and bs ~= 56 and bs ~= 143 and bs ~= 142 then
                     Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
 
-                    local str = "> " .. string.format(self.disttext, tostring(self.distance)) .. " <"
+                    local str = "> " .. string.format(self.disttext, tostring(distance)) .. " <"
                     local size = Render.Size.x / 100
                     local pos = Vector2(Render.Size.x / 2 - Render:GetTextWidth(str, size) / 2, 30)
                     local sett_alpha = Game:GetSetting(4) * 2.25
@@ -67,7 +73,10 @@ function SuperGrapple:Render()
                 end
             end
         end
-        if self.fire and not self.object and self.distance > 80 then
+
+        local fire = self.fire
+
+        if fire and not object and distance > 80 then
             local cameraAngle = Camera:GetAngle()
             local args = {
                 collision = "km02.towercomplex.flz/key013_01_lod1-g_col.pfx",
@@ -79,10 +88,16 @@ function SuperGrapple:Render()
             self.endposition = self.position + cameraAngle * Vector3.Forward * 1.5
             self.startposition = args.position
             self.fire = nil
-        elseif self.object and self.endposition then
-            local dist = Vector3.Distance(LocalPlayer:GetPosition(), self.object:GetPosition())
+        elseif object and self.endposition then
+            local lpPos = LocalPlayer:GetPosition()
+            local objPos = self.object:GetPosition()
+            local dist = Vector3.Distance(lpPos, objPos)
+
             if dist < 15 then
-                local angle = Angle.FromVectors(Vector3.Up, self.normal) * Angle(0, math.pi / 2, 0)
+                local normal = self.normal
+                local pi = math.pi
+                local angle = Angle.FromVectors(Vector3.Up, normal) * Angle(0, pi / 2, 0)
+
                 self.object:SetPosition(self.endposition - (angle * (Vector3.Forward * 2)))
                 self.object:SetAngle(angle)
                 self.endposition = nil

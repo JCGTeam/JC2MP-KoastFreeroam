@@ -4,7 +4,7 @@ local warning = "Невозможно использовать это здесь
 local inVehicle = "Вы должны находиться внутри транспорта и быть водителем!"
 
 function confirmationMessage(player, message)
-    Chat:Send(player, "[Сервер] ", Color.White, message, Color(124, 242, 0))
+    Chat:Send(player, "[Сервер] ", Color.White, message, Color(255, 250, 150))
 end
 
 function deniedMessage(player, message)
@@ -38,8 +38,8 @@ function BoomToSky:BoomToSky(args)
         if not vehicle or vehicle and vehicle:GetDriver() == args.player then
             Network:Send(args.player, "StartBoomToSky", {boomvelocity = 100})
             if args.sender then
-                confirmationMessage(args.player, args.sender:GetName() .. " запустил тебя в небо.")
-                confirmationMessage(args.sender, "Вы отправили " .. args.player:GetName() .. " в небо.")
+                confirmationMessage(args.player, args.sender:GetName() .. " запустил тебя в небо")
+                confirmationMessage(args.sender, "Вы отправили " .. args.player:GetName() .. " в небо")
             end
         else
             if not args.sender then
@@ -57,8 +57,8 @@ function BoomToSky:BoomToSky(args)
         if not vehicle or vehicle and vehicle:GetDriver() == args.player then
             Network:Send(args.player, "StartBoomToSky", {boomvelocity = -100})
             if args.sender then
-                confirmationMessage(args.player, args.sender:GetName() .. " отправил тебя вниз.")
-                confirmationMessage(args.sender, "Вы отправили " .. args.player:GetName() .. " вниз.")
+                confirmationMessage(args.player, args.sender:GetName() .. " отправил тебя вниз")
+                confirmationMessage(args.sender, "Вы отправили " .. args.player:GetName() .. " вниз")
             end
         else
             if not args.sender then

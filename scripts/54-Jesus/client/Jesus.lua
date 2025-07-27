@@ -26,22 +26,26 @@ function Jesus:__init()
 
     self.surfaces = {}
 
-    Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
-    Events:Subscribe("Render", self, self.Render)
     Events:Subscribe("Lang", self, self.Lang)
     Events:Subscribe("PostTick", self, self.PostTick)
     Events:Subscribe("ModuleUnload", self, self.RemoveAllSurfaces)
     Events:Subscribe("PlayerQuit", self, self.PlayerQuit)
     Events:Subscribe("LocalPlayerChat", self, self.LocalPlayerChat)
     Events:Subscribe("ToggleJesus", self, self.ToggleJesus)
+    Events:Subscribe("NetworkObjectValueChange", self, self.ObjectValueChange)
+    Events:Subscribe("SharedObjectValueChange", self, self.ObjectValueChange)
+
+    if LocalPlayer:GetValue("JesusModeVisible") or not LocalPlayer:GetValue("HiddenHUD") then
+        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+    end
 end
 
 function Jesus:Lang()
     self.locStrings = {
         name = "Jesus",
         nameSizer = "Passive",
-        disable = " disabled",
-        enable = " enabled",
+        disable = " Disabled",
+        enable = " Enabled",
         notusable = "You cannot use it here!"
     }
 end
@@ -51,10 +55,13 @@ function Jesus:PlayerQuit(args)
 end
 
 function Jesus:Master(player)
-    if player:GetValue("WaterWalk") then
-        local vehicle = player:GetVehicle()
+    local waterWalk = player:GetValue("WaterWalk")
 
-        if vehicle and vehicle:GetClass() == VehicleClass.Sea then
+    if waterWalk then
+        local vehicle = player:GetVehicle()
+        local class = vehicle and vehicle:GetClass()
+
+        if class == VehicleClass.Sea then
             self:Remove(player)
             return
         end
@@ -80,11 +87,16 @@ function Jesus:Create(player)
 end
 
 function Jesus:Move(player)
-    local surface = self.surfaces[player:GetId()]
+    local surfaces = self.surfaces
+    local surface = surfaces[player:GetId()]
 
     if not (surface or IsValid(surface)) then self:Create(player) return end
 
-    if Vector3.Distance(surface:GetPosition(), player:GetPosition()) >= self.maxDistance then
+    local surfacePos = surface:GetPosition()
+    local pPos = player:GetPosition()
+    local maxDistance = self.maxDistance
+
+    if Vector3.Distance(surfacePos, pPos) >= maxDistance then
         if self:Remove(player) then
             self:Create(player)
         end
@@ -98,16 +110,22 @@ end
 function Jesus:Position(player)
     local anchor = self:Anchor(player)
     local playerPos = anchor:GetPosition()
-    local PlayerAngle = anchor:GetAngle()
+    local playerAngle = anchor:GetAngle()
     local effectiveAngle = Angle.Zero
     local effectiveHeight = self.surfaceHeight
 
     local pState = player:GetState()
     if pState == 1 or pState == 2 or pState == 3 or pState == 5 then
-        effectiveAngle = Angle(PlayerAngle.yaw, 0, 0) * Angle(math.pi * 1.5, 0, 0)
+        local playerAngleYaw = playerAngle.yaw
+        local pi = math.pi
+
+        effectiveAngle = Angle(playerAngleYaw, 0, 0) * Angle(pi * 1.5, 0, 0)
     end
 
-    if playerPos.y < effectiveHeight + self.underWaterOffset and not player:InVehicle() then
+    local underWaterOffset = self.underWaterOffset
+    local inVehicle = player:InVehicle()
+
+    if playerPos.y < effectiveHeight + underWaterOffset and not inVehicle then
         effectiveHeight = playerPos.y - 1
     end
 
@@ -156,13 +174,17 @@ end
 function Jesus:PostTick()
     self:Master(LocalPlayer)
 
-    for players in Client:GetStreamedPlayers() do
-        self:Master(players)
+    local streamedPlayers = Client:GetStreamedPlayers()
+
+    for p in streamedPlayers do
+        self:Master(p)
     end
 end
 
-function Jesus:NetworkObjectValueChange(args)
-    if args.key == "WaterWalk" and args.object.__type == "LocalPlayer" then
+function Jesus:ObjectValueChange(args)
+    if args.object.__type ~= "LocalPlayer" then return end
+
+    if args.key == "WaterWalk" then
         if args.value then
             self.visible = true
 
@@ -172,29 +194,43 @@ function Jesus:NetworkObjectValueChange(args)
             self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeIOnut, function(value) self.animationValue = value end, function() self.visible = nil end)
         end
     end
+
+    if args.key == "JesusModeVisible" or args.key == "HiddenHUD" then
+        if LocalPlayer:GetValue("JesusModeVisible") and not LocalPlayer:GetValue("HiddenHUD") then
+            if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
+        else
+            if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+        end
+    end
 end
 
 function Jesus:Render()
     if not self.visible then return end
     if Game:GetState() ~= GUIState.Game then return end
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
-    if not LocalPlayer:GetValue("JesusModeVisible") or LocalPlayer:GetValue("HiddenHUD") then return end
+
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
+    local locStrings = self.locStrings
+    local text = locStrings["nameSizer"]
     local text_size = 18
-    local text_width = Render:GetTextWidth(self.locStrings["nameSizer"], text_size)
-    local text_height = Render:GetTextHeight(self.locStrings["nameSizer"], text_size)
-    local posY = math.lerp(-text_height - 2, 0, self.animationValue)
-    local text_pos = Vector2(Render.Width / 1.3 - text_width / 1.8 + text_width / 5.5, posY + 2)
-    local sett_alpha = math.lerp(0, Game:GetSetting(4) * 2.25, self.animationValue)
+    local text_width = Render:GetTextWidth(text, text_size)
+    local text_height = Render:GetTextHeight(text, text_size)
+
+    local animationValue = self.animationValue
+    local posY = math.lerp(-text_height - 2, 0, animationValue)
+    local width = Render.Width
+    local widthDivided = width / 1.3
+    local text_pos = Vector2(widthDivided - text_width / 1.8 + text_width / 5.5, posY + 2)
+    local sett_alpha = math.lerp(0, Game:GetSetting(4) * 2.25, animationValue)
     local background_clr = Color(0, 0, 0, sett_alpha / 2.4)
 
-    Render:FillArea(Vector2(Render.Width / 1.3 - text_width / 1.8, posY), Vector2(text_width + 5, text_height + 2), background_clr)
+    Render:FillArea(Vector2(widthDivided - text_width / 1.8, posY), Vector2(text_width + 5, text_height + 2), background_clr)
 
-    Render:FillTriangle(Vector2((Render.Width / 1.3 - text_width / 1.8 - 10), posY), Vector2((Render.Width / 1.3 - text_width / 1.8), posY), Vector2((Render.Width / 1.3 - text_width / 1.8), posY + text_height + 2), background_clr)
-    Render:FillTriangle(Vector2((Render.Width / 1.3 - text_width / 1.8 + text_width + 15), posY), Vector2((Render.Width / 1.3 - text_width / 1.8 + text_width + 5), posY), Vector2((Render.Width / 1.3 - text_width / 1.8 + text_width + 5), posY + text_height + 2), background_clr)
+    Render:FillTriangle(Vector2(widthDivided - text_width / 1.8 - 10, posY), Vector2(widthDivided - text_width / 1.8, posY), Vector2(widthDivided - text_width / 1.8, posY + text_height + 2), background_clr)
+    Render:FillTriangle(Vector2(widthDivided - text_width / 1.8 + text_width + 15, posY), Vector2(widthDivided - text_width / 1.8 + text_width + 5, posY), Vector2(widthDivided - text_width / 1.8 + text_width + 5, posY + text_height + 2), background_clr)
 
-    Render:DrawShadowedText(text_pos, self.locStrings["name"], Color(185, 215, 255, sett_alpha), Color(0, 0, 0, sett_alpha), text_size)
+    Render:DrawShadowedText(text_pos, locStrings["name"], Color(185, 215, 255, sett_alpha), Color(0, 0, 0, sett_alpha), text_size)
 end
 
 function Jesus:LocalPlayerChat(args)
@@ -208,13 +244,15 @@ end
 function Jesus:ToggleJesus()
     if not LocalPlayer:GetValue("JesusModeEnabled") then return end
 
+    local locStrings = self.locStrings
+
     if LocalPlayer:GetWorld() ~= DefaultWorld then
-        Events:Fire("CastCenterText", {text = self.locStrings["notusable"], time = 3, color = Color.Red})
+        Events:Fire("CastCenterText", {text = locStrings["notusable"], time = 3, color = Color.Red})
         return
     end
 
     LocalPlayer:SetSystemValue("WaterWalk", not LocalPlayer:GetValue("WaterWalk"))
-    Events:Fire("CastCenterText", {text = self.locStrings["name"] .. (LocalPlayer:GetValue("WaterWalk") and self.locStrings["disable"] or self.locStrings["enable"]), time = 2, color = Color(185, 215, 255)})
+    Events:Fire("CastCenterText", {text = locStrings["name"] .. (LocalPlayer:GetValue("WaterWalk") and locStrings["disable"] or self.locStrings["enable"]), time = 2, color = Color(185, 215, 255)})
 end
 
 function LocalPlayer:SetSystemValue(valueName, value)

@@ -80,12 +80,13 @@ function Pong:Render()
         Render:FillArea(pong_draw_start + Vector2(pong_table_width - ping_width - 10, ping_pos_opp), Vector2(ping_width, ping_height), self.plaftorm_clr)
         Render:FillArea(pong_draw_start + ball_pos, Vector2(ball_width, ball_height), self.text_clr)
 
+        local locStrings = self.locStrings
         local textSize = 15
-        Render:DrawShadowedText(pong_draw_start + Vector2(0, pong_table_height + 5), self.locStrings["you"] .. scores[1], self.text_clr, self.shadow, textSize)
-        Render:DrawShadowedText(pong_draw_start + Vector2(pong_table_width - 65, pong_table_height + 5), self.locStrings["enemy"] .. scores[2], self.text_clr, self.shadow, textSize)
-        Render:DrawShadowedText(pong_draw_start + Vector2(pong_table_width / 2 - Render:GetTextWidth(self.locStrings["limit"], textSize) / 2, pong_table_height + 5), self.locStrings["limit"] .. score_limit, self.text_clr, self.shadow, textSize)
+        Render:DrawShadowedText(pong_draw_start + Vector2(0, pong_table_height + 5), locStrings["you"] .. scores[1], self.text_clr, self.shadow, textSize)
+        Render:DrawShadowedText(pong_draw_start + Vector2(pong_table_width - 65, pong_table_height + 5), locStrings["enemy"] .. scores[2], self.text_clr, self.shadow, textSize)
+        Render:DrawShadowedText(pong_draw_start + Vector2(pong_table_width / 2 - Render:GetTextWidth(locStrings["limit"], textSize) / 2, pong_table_height + 5), locStrings["limit"] .. score_limit, self.text_clr, self.shadow, textSize)
 
-        Render:DrawShadowedText(pong_draw_start + Vector2(pong_table_width / 2 - Render:GetTextWidth(self.locStrings["tip"], textSize) / 2, pong_table_height + 50), self.locStrings["tip"], self.text_clr, self.shadow, textSize)
+        Render:DrawShadowedText(pong_draw_start + Vector2(pong_table_width / 2 - Render:GetTextWidth(locStrings["tip"], textSize) / 2, pong_table_height + 50), locStrings["tip"], self.text_clr, self.shadow, textSize)
 
         if paused then
             Render:DrawText(pong_draw_start + pong_table_center + Vector2(Render:GetTextWidth(status_text, TextSize.Huge) * -0.5, Render:GetTextHeight(status_text, TextSize.Huge) * -0.5), status_text, status_colour, TextSize.Huge)

@@ -34,16 +34,16 @@ function PM:__init(player)
     self.GUI.window:SetTitle("[▼] Личные Сообщения")
     self.GUI.window:SetVisible(self.activeWindow)
 
-    self.GUI.labelP = Label.Create(self.GUI.window)
-    self.GUI.labelP:SetDock(GwenPosition.Left)
-    self.GUI.labelP:SetWidthRel(0.4)
+    self.GUI.bWlP = BaseWindow.Create(self.GUI.window)
+    self.GUI.bWlP:SetDock(GwenPosition.Left)
+    self.GUI.bWlP:SetWidthRel(0.4)
 
-    self.GUI.list = SortedList.Create(self.GUI.labelP)
+    self.GUI.list = SortedList.Create(self.GUI.bWlP)
     self.GUI.list:SetDock(GwenPosition.Fill)
     self.GUI.list:AddColumn("Игрок")
     self.GUI.list:Subscribe("RowSelected", self, self.loadMessages)
 
-    self.GUI.filter = TextBox.Create(self.GUI.labelP)
+    self.GUI.filter = TextBox.Create(self.GUI.bWlP)
     self.GUI.filter:SetDock(GwenPosition.Bottom)
     self.GUI.filter:SetHeight(32)
     self.GUI.filter:SetMargin(Vector2(0, 4), Vector2())
@@ -52,26 +52,26 @@ function PM:__init(player)
     self.GUI.filter:Subscribe("Blur", self, self.Blur)
     self.GUI.filter:Subscribe("EscPressed", self, self.EscPressed)
 
-    self.GUI.PMMessagesControlLabel = Label.Create(self.GUI.window)
-    self.GUI.PMMessagesControlLabel:SetDock(GwenPosition.Top)
-    self.GUI.PMMessagesControlLabel:SetHeight(25)
-    self.GUI.PMMessagesControlLabel:SetMargin(Vector2(10, 5), Vector2(5, 5))
+    self.GUI.PMMessagesControlBW = BaseWindow.Create(self.GUI.window)
+    self.GUI.PMMessagesControlBW:SetDock(GwenPosition.Top)
+    self.GUI.PMMessagesControlBW:SetHeight(25)
+    self.GUI.PMMessagesControlBW:SetMargin(Vector2(10, 5), Vector2(5, 5))
 
-    self.GUI.labelM = Label.Create(self.GUI.PMMessagesControlLabel)
+    self.GUI.labelM = Label.Create(self.GUI.PMMessagesControlBW)
     self.GUI.labelM:SetDock(GwenPosition.Left)
     self.GUI.labelM:SetAlignment(GwenPosition.CenterV)
     self.GUI.labelM:SetText("Переписка:")
     self.GUI.labelM:SetTextSize(14)
     self.GUI.labelM:SizeToContents()
 
-    self.GUI.clear = Button.Create(self.GUI.PMMessagesControlLabel)
+    self.GUI.clear = Button.Create(self.GUI.PMMessagesControlBW)
     self.GUI.clear:SetDock(GwenPosition.Right)
     self.GUI.clear:SetText("Очистить")
     self.GUI.clear:SetSize(Vector2(Render:GetTextWidth(self.GUI.clear:GetText()), 25))
     self.GUI.clear:SetTextHoveredColor(Color(255, 150, 150))
     self.GUI.clear:Subscribe("Press", self, self.clearMessage)
 
-    self.GUI.PMDistrub = Button.Create(self.GUI.PMMessagesControlLabel)
+    self.GUI.PMDistrub = Button.Create(self.GUI.PMMessagesControlBW)
     self.GUI.PMDistrub:SetDock(GwenPosition.Right)
     self.GUI.PMDistrub:SetMargin(Vector2.Zero, Vector2(5, 0))
     self.GUI.PMDistrub:SetText("Не беспокоить")
@@ -103,12 +103,12 @@ function PM:__init(player)
     self.GUI.messagesLabel:SetDock(GwenPosition.Fill)
     self.GUI.messagesLabel:SetWrap(true)
 
-    self.GUI.PMMessageTypingLabel = Label.Create(self.GUI.window)
-    self.GUI.PMMessageTypingLabel:SetDock(GwenPosition.Bottom)
-    self.GUI.PMMessageTypingLabel:SetHeightRel(0.065)
-    self.GUI.PMMessageTypingLabel:SetMargin(Vector2(10, 0), Vector2(5, 5))
+    self.GUI.PMMessageTypingBW = BaseWindow.Create(self.GUI.window)
+    self.GUI.PMMessageTypingBW:SetDock(GwenPosition.Bottom)
+    self.GUI.PMMessageTypingBW:SetHeightRel(0.065)
+    self.GUI.PMMessageTypingBW:SetMargin(Vector2(10, 0), Vector2(5, 5))
 
-    self.GUI.message = TextBox.Create(self.GUI.PMMessageTypingLabel)
+    self.GUI.message = TextBox.Create(self.GUI.PMMessageTypingBW)
     self.GUI.message:SetText("")
     self.GUI.message:SetDock(GwenPosition.Fill)
     self.GUI.message:SetMargin(Vector2(0, 2), Vector2(5, 2))
@@ -118,7 +118,7 @@ function PM:__init(player)
     self.GUI.message:Subscribe("Blur", self, self.Blur)
     self.GUI.message:Subscribe("EscPressed", self, self.EscPressed)
 
-    self.GUI.send = Button.Create(self.GUI.PMMessageTypingLabel)
+    self.GUI.send = Button.Create(self.GUI.PMMessageTypingBW)
     self.GUI.send:SetText(">")
     self.GUI.send:SetDock(GwenPosition.Right)
     self.GUI.send:SetWidth(70)
@@ -196,9 +196,11 @@ function PM:SetWindowVisible(visible, sound)
     end
 
     if self.activeWindow then
+        local playerToRow = self.playerToRow
+
         for p in Client:GetPlayers() do
             local playerColor = p:GetColor()
-            self.playerToRow[p:GetId()]:SetTextColor(playerColor)
+            playerToRow[p:GetId()]:SetTextColor(playerColor)
         end
 
         if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
@@ -220,8 +222,10 @@ end
 
 function PM:Render()
     local is_visible = Game:GetState() == GUIState.Game
+    local window = self.GUI.window
+    local windowGetVisible = window:GetVisible()
 
-    if self.GUI.window:GetVisible() ~= is_visible then
+    if windowGetVisible ~= is_visible then
         self.GUI.window:SetVisible(is_visible)
         Mouse:SetVisible(is_visible)
     end
@@ -316,9 +320,10 @@ end
 
 function PM:playerQuit(args)
     local pId = args.player:GetId()
+    local playerToRow = self.playerToRow
 
-    if self.playerToRow[pId] then
-        self.GUI.list:RemoveItem(self.playerToRow[pId])
+    if playerToRow[pId] then
+        self.GUI.list:RemoveItem(playerToRow[pId])
         self.playerToRow[pId] = nil
     end
 end
@@ -380,6 +385,8 @@ end
 function PM:sendMessage()
     local row = self.GUI.list:GetSelectedRow()
 
+    local locStrings = self.locStrings
+
     if row then
         local player = row:GetDataObject("id")
 
@@ -392,13 +399,13 @@ function PM:sendMessage()
                     self.GUI.message:Focus()
                 end
             else
-                Chat:Print(self.locStrings["tag"], Color.White, self.locStrings["limit"], Color.DarkGray)
+                Chat:Print(locStrings["tag"], Color.White, locStrings["limit"], Color.DarkGray)
             end
         else
-            Chat:Print(self.locStrings["tag"], Color.White, self.locStrings["playeroffline"], Color.DarkGray)
+            Chat:Print(locStrings["tag"], Color.White, locStrings["playeroffline"], Color.DarkGray)
         end
     else
-        Chat:Print(self.locStrings["tag"], Color.White, self.locStrings["playernotselected"], Color.DarkGray)
+        Chat:Print(locStrings["tag"], Color.White, locStrings["playernotselected"], Color.DarkGray)
     end
 end
 

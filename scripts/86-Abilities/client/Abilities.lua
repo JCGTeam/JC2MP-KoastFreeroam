@@ -55,6 +55,8 @@ function Abilities:__init()
     self.window:SetVisible(self.activeWindow)
     self.window:Subscribe("WindowClosed", self, function() self:SetWindowVisible(false, true) end)
 
+    self:UpdateKeyBinds()
+
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
         self:Lang()
@@ -82,9 +84,9 @@ function Abilities:__init()
             supernuclearbomb_description = "Мощнейший взрыв, который уничтожает всё, что находится поблизости с этой волшебной гранатой :)",
             longergrapple_description = "Увеличивает максимальную дальность выстрела крюком-кошки.",
             jesusmode_description = "Возможность ходить и ездить по воде.",
-            wingsuittutorial = "Используйте клавишу 'Q' находясь в свободном полете или на парашюте, чтобы раскрыть вингсьют.",
-            landvehboosttutorial = "Используйте клавишу 'Shift', чтобы воспользоваться супер-пупер ускорением.",
-            airvehboosttutorial = "Используйте клавишу 'Q', чтобы воспользоваться супер-пупер ускорением."
+            usekey = 'Используйте клавишу "',
+            wingsuittutorial = '" находясь в свободном полете или на парашюте, чтобы раскрыть вингсьют.',
+            vehboosttutorial = '", чтобы воспользоваться супер-пупер ускорением.'
         }
     end
 
@@ -133,6 +135,7 @@ function Abilities:__init()
     self.tip_title:SizeToContents()
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("OpenAbitiliesMenu", self, self.OpenAbitiliesMenu)
     Events:Subscribe("CloseAbitiliesMenu", self, function() self:SetWindowVisible(false) end)
 end
@@ -165,10 +168,21 @@ function Abilities:Lang()
         supernuclearbomb_description = "A powerful explosion that destroys everything in the vicinity of this magic grenade :)",
         longergrapple_description = "Increases the maximum range of the grapple hook shot.",
         jesusmode_description = "The ability to walk and drive on water.",
-        wingsuittutorial = "Use 'Q' key while in free flight or on a parachute to open the wingsuit.",
-        landvehboosttutorial = "Use 'Shift' key to use super boost.",
-        airvehboosttutorial = "Use 'Q' key to use super boost."
+        usekey = 'Use "',
+        wingsuittutorial = '" key while in free flight or on a parachute to open the wingsuit.',
+        vehboosttutorial = '" key to use super boost.'
     }
+end
+
+function Abilities:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local openWingsuitBind = keyBinds and keyBinds["Wingsuit"]
+    local landBoostBind = keyBinds and keyBinds["VehicleLandBoost"]
+    local planeBoostBind = keyBinds and keyBinds["VehiclePlaneBoost"]
+
+    self.openWingsuitStringKey = openWingsuitBind and openWingsuitBind.type == "Key" and openWingsuitBind.valueString or "Q"
+    self.landBoostStringKey = landBoostBind and landBoostBind.type == "Key" and landBoostBind.valueString or "Shift"
+    self.planeBoostStringKey = planeBoostBind and planeBoostBind.type == "Key" and planeBoostBind.valueString or "Q"
 end
 
 function Abilities:Clear()
@@ -176,10 +190,11 @@ function Abilities:Clear()
     self:SetWindowVisible(false)
 end
 
-function Abilities:AbilityButton(pos, title, description, event, image)
+function Abilities:AbilityButton(visible, pos, title, description, event, image)
     local btnSize = Vector2(self.buttonsSize, self.buttonsSize)
 
     local button = Button.Create(self.maincontainer)
+    button:SetVisible(visible)
     button:SetSize(btnSize)
     button:SetPosition(pos)
     button:Subscribe("HoverEnter", self, function()
@@ -190,6 +205,7 @@ function Abilities:AbilityButton(pos, title, description, event, image)
     button:Subscribe("Press", self, event)
 
     local unlockstats = Rectangle.Create(button)
+    unlockstats:SetVisible(visible)
     unlockstats:SetDock(GwenPosition.Fill)
     unlockstats:SetColor(self.unlocked_clr)
     unlockstats:Subscribe("HoverEnter", self, function()
@@ -235,10 +251,12 @@ function Abilities:WingsuitUnlocker()
     sound:SetParameter(0, 0.75)
     Network:Send("WingsuitUnlock")
 
-    self.wingsuitbutton.unlockstats:SetToolTip(self.locStrings["wingsuit"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+    local locStrings = self.locStrings
+
+    self.wingsuitbutton.unlockstats:SetToolTip(locStrings["wingsuit"] .. " ( " .. locStrings["unlocked"] .. " )")
     self.wingsuitbutton.unlockstats:SetVisible(true)
 
-    Events:Fire("OpenWhatsNew", {titletext = self.locStrings["wingsuit"], text = self.locStrings["wingsuittutorial"]})
+    Events:Fire("OpenWhatsNew", {titletext = locStrings["wingsuit"], text = locStrings["usekey"] .. self.openWingsuitStringKey .. locStrings["wingsuittutorial"]})
 end
 
 function Abilities:BoostUnlocker()
@@ -252,27 +270,28 @@ function Abilities:BoostUnlocker()
     sound:SetParameter(0, 0.75)
     Network:Send("BoostUnlock")
 
+    local locStrings = self.locStrings
     local boost = LocalPlayer:GetValue("Boost")
 
     if not boost then
-        self.boost_1button.unlockstats:SetToolTip(self.locStrings["landvehicleboost"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+        self.boost_1button.unlockstats:SetToolTip(locStrings["landvehicleboost"] .. " ( " .. locStrings["unlocked"] .. " )")
         self.boost_1button.unlockstats:SetVisible(true)
 
-        self.boost_2button:SetToolTip(self.locStrings["watervehicleboost"] .. " ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_2) .. " )")
+        self.boost_2button:SetToolTip(locStrings["watervehicleboost"] .. " ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_2) .. " )")
         self.boost_2button:SetVisible(true)
 
-        Events:Fire("OpenWhatsNew", {titletext = self.locStrings["landvehicleboost"], text = self.locStrings["airvehboosttutorial"]})
+        Events:Fire("OpenWhatsNew", {titletext = locStrings["landvehicleboost"], text = locStrings["usekey"] .. self.landBoostStringKey .. locStrings["vehboosttutorial"]})
     elseif boost == self.boostValue_1 then
-        self.boost_2button.unlockstats:SetToolTip(self.locStrings["watervehicleboost"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+        self.boost_2button.unlockstats:SetToolTip(locStrings["watervehicleboost"] .. " ( " .. locStrings["unlocked"] .. " )")
         self.boost_2button.unlockstats:SetVisible(true)
 
-        self.boost_3button:SetToolTip(self.locStrings["airvehicleboost"] .. " ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_3) .. " )")
+        self.boost_3button:SetToolTip(locStrings["airvehicleboost"] .. " ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_3) .. " )")
         self.boost_3button:SetVisible(true)
     elseif boost == self.boostValue_2 then
-        self.boost_3button.unlockstats:SetToolTip(self.locStrings["airvehicleboost"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+        self.boost_3button.unlockstats:SetToolTip(locStrings["airvehicleboost"] .. " ( " .. locStrings["unlocked"] .. " )")
         self.boost_3button.unlockstats:SetVisible(true)
 
-        Events:Fire("OpenWhatsNew", {titletext = self.locStrings["airvehicleboost"], text = self.locStrings["airvehboosttutorial"]})
+        Events:Fire("OpenWhatsNew", {titletext = locStrings["airvehicleboost"], text = locStrings["usekey"] .. self.planeBoostStringKey .. locStrings["vehboosttutorial"]})
     end
 end
 
@@ -287,10 +306,12 @@ function Abilities:MoneyBonusUnlocker()
     sound:SetParameter(0, 0.75)
     Network:Send("MoneyBonusUnlock")
 
-    self.bonusmoneybutton.unlockstats:SetToolTip(self.locStrings["bonusmoney"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+    local locStrings = self.locStrings
+
+    self.bonusmoneybutton.unlockstats:SetToolTip(locStrings["bonusmoney"] .. " ( " .. locStrings["unlocked"] .. " )")
     self.bonusmoneybutton.unlockstats:SetVisible(true)
 
-    Events:Fire("OpenWhatsNew", {titletext = self.locStrings["bonusmoney"], text = "                                              Поздравляем! Теперь вам доступен денежный бонус.\nДенежный бонус выдается каждый час игры. Чтобы его поулчить - зайдите в меню сервера."})
+    Events:Fire("OpenWhatsNew", {titletext = locStrings["bonusmoney"], text = "                                              Поздравляем! Теперь вам доступен денежный бонус.\nДенежный бонус выдается каждый час игры. Чтобы его поулчить - зайдите в меню сервера."})
 end
 
 function Abilities:MoreC4Unlocker()
@@ -304,28 +325,29 @@ function Abilities:MoreC4Unlocker()
     sound:SetParameter(0, 0.75)
     Network:Send("MoreC4Unlock")
 
+    local locStrings = self.locStrings
     local moreC4 = LocalPlayer:GetValue("MoreC4")
 
     if not moreC4 then
-        self.moreC4_5button.unlockstats:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_5 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["unlocked"] .." )")
+        self.moreC4_5button.unlockstats:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_5 .. " " .. locStrings["items"] .. ") ( " .. locStrings["unlocked"] .." )")
         self.moreC4_5button.unlockstats:SetVisible(true)
 
-        self.moreC4_8button:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_8 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_8) .. " )")
+        self.moreC4_8button:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_8 .. " " .. locStrings["items"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_8) .. " )")
         self.moreC4_8button:SetVisible(true)
     elseif moreC4 == self.moreC4Value_5 then
-        self.moreC4_8button.unlockstats:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_8 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+        self.moreC4_8button.unlockstats:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_8 .. " " .. locStrings["items"] .. ") ( " .. locStrings["unlocked"] .. " )")
         self.moreC4_8button.unlockstats:SetVisible(true)
 
-        self.moreC4_10button:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_10 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_10) .. " )")
+        self.moreC4_10button:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_10 .. " " .. locStrings["items"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_10) .. " )")
         self.moreC4_10button:SetVisible(true)
     elseif moreC4 == self.moreC4Value_8 then
-        self.moreC4_10button.unlockstats:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_10 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+        self.moreC4_10button.unlockstats:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_10 .. " " .. locStrings["items"] .. ") ( " .. locStrings["unlocked"] .. " )")
         self.moreC4_10button.unlockstats:SetVisible(true)
 
-        self.moreC4_15button:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_15 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_15) .. " )")
+        self.moreC4_15button:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_15 .. " " .. locStrings["items"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_15) .. " )")
         self.moreC4_15button:SetVisible(true)
     elseif moreC4 == self.moreC4Value_10 then
-        self.moreC4_15button.unlockstats:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_15 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+        self.moreC4_15button.unlockstats:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_15 .. " " .. locStrings["items"] .. ") ( " .. locStrings["unlocked"] .. " )")
         self.moreC4_15button.unlockstats:SetVisible(true)
     end
 end
@@ -359,10 +381,12 @@ function Abilities:SuperNuclearBombUnlocker()
     sound:SetParameter(0, 0.75)
     Network:Send("SuperNuclearBombUnlock")
 
-    self.supernuclearbombbutton.unlockstats:SetToolTip(self.locStrings["supernuclearbomb"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+    local locStrings = self.locStrings
+
+    self.supernuclearbombbutton.unlockstats:SetToolTip(locStrings["supernuclearbomb"] .. " ( " .. locStrings["unlocked"] .. " )")
     self.supernuclearbombbutton.unlockstats:SetVisible(true)
 
-    Events:Fire("OpenWhatsNew", {titletext = self.locStrings["supernuclearbomb"], text = "Попробуйте пролистать список гранат, вы обязательно там её найдете :)\n              Используйте клавишу 'G', чтобы пролистать список гранат."})
+    Events:Fire("OpenWhatsNew", {titletext = locStrings["supernuclearbomb"], text = 'Попробуйте пролистать список гранат, вы обязательно там её найдете :)\n              Используйте клавишу "G", чтобы пролистать список гранат.'})
 end
 
 function Abilities:LongerGrappleUnlocker()
@@ -376,28 +400,29 @@ function Abilities:LongerGrappleUnlocker()
     sound:SetParameter(0, 0.75)
     Network:Send("LongerGrappleUnlock")
 
+    local locStrings = self.locStrings
     local longerGrapple = LocalPlayer:GetValue("LongerGrapple")
 
     if not longerGrapple then
-        self.longergrapple_150button.unlockstats:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_1 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+        self.longergrapple_150button.unlockstats:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_1 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["unlocked"] .. " )")
         self.longergrapple_150button.unlockstats:SetVisible(true)
 
-        self.longergrapple_200button:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_2 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_200) .. " )")
+        self.longergrapple_200button:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_2 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_200) .. " )")
         self.longergrapple_200button:SetVisible(true)
     elseif longerGrapple == self.GrappleLongerValue_1 then
-        self.longergrapple_200button.unlockstats:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_2 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+        self.longergrapple_200button.unlockstats:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_2 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["unlocked"] .. " )")
         self.longergrapple_200button.unlockstats:SetVisible(true)
 
-        self.longergrapple_350button:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_3 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_350) .. " )")
+        self.longergrapple_350button:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_3 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_350) .. " )")
         self.longergrapple_350button:SetVisible(true)
     elseif longerGrapple == self.GrappleLongerValue_2 then
-        self.longergrapple_350button.unlockstats:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_3 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+        self.longergrapple_350button.unlockstats:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_3 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["unlocked"] .. " )")
         self.longergrapple_350button.unlockstats:SetVisible(true)
 
-        self.longergrapple_500button:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_4 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_500) .. " )")
+        self.longergrapple_500button:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_4 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_500) .. " )")
         self.longergrapple_500button:SetVisible(true)
     elseif longerGrapple == self.GrappleLongerValue_3 then
-        self.longergrapple_500button.unlockstats:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_4 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+        self.longergrapple_500button.unlockstats:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_4 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["unlocked"] .. " )")
         self.longergrapple_500button.unlockstats:SetVisible(true)
     end
 end
@@ -413,16 +438,20 @@ function Abilities:JesusModeUnlocker()
     sound:SetParameter(0, 0.75)
     Network:Send("JesusModeUnlock")
 
-    self.jesusmode_button.unlockstats:SetToolTip(self.locStrings["jesusmode"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+    local locStrings = self.locStrings
+
+    self.jesusmode_button.unlockstats:SetToolTip(locStrings["jesusmode"] .. " ( " .. locStrings["unlocked"] .. " )")
     self.jesusmode_button.unlockstats:SetVisible(true)
 
-    Events:Fire("OpenWhatsNew", {titletext = self.locStrings["jesusmode"], text = "                Поздравляем, теперь вы можете ходить и ездить по воде!\nЗайдите в меню сервера, чтобы включить или отключить режим Иисуса."})
+    Events:Fire("OpenWhatsNew", {titletext = locStrings["jesusmode"], text = "                Поздравляем, теперь вы можете ходить и ездить по воде!\nЗайдите в меню сервера, чтобы включить или отключить режим Иисуса."})
 end
 
 function Abilities:Render()
     local is_visible = Game:GetState() == GUIState.Game
+    local window = self.window
+    local windowGetVisible = window:GetVisible()
 
-    if self.window:GetVisible() ~= is_visible then
+    if windowGetVisible ~= is_visible then
         self.window:SetVisible(is_visible)
         Mouse:SetVisible(is_visible)
     end
@@ -460,38 +489,40 @@ function Abilities:SetWindowVisible(visible, sound)
     end
 
     if self.activeWindow then
+        local locStrings = self.locStrings
+
         if not self.isLoad then
             self.isLoad = true
 
             self.buttonsSize = 50
 
             local spaceX, spaceY = 60, 5
-            self.wingsuitbutton = self:AbilityButton(Vector2(10, spaceY), self.locStrings["wingsuit"], self.locStrings["wingsuit_description"], self.WingsuitUnlocker, self.wingsuitIMG)
+            self.wingsuitbutton = self:AbilityButton(true, Vector2(10, spaceY), locStrings["wingsuit"], locStrings["wingsuit_description"], self.WingsuitUnlocker, self.wingsuitIMG)
             local posX = self.wingsuitbutton:GetPosition().x + spaceX
-            self.boost_1button = self:AbilityButton(Vector2(posX, spaceY), self.locStrings["landvehicleboost"], self.locStrings["boost_description"], self.BoostUnlocker, self.boostIMG)
-            self.boost_2button = self:AbilityButton(Vector2(posX, self.boost_1button:GetPosition().y + self.buttonsSize + spaceY), self.locStrings["watervehicleboost"], self.locStrings["boost_description"], self.BoostUnlocker, self.boostIMG)
-            self.boost_3button = self:AbilityButton(Vector2(posX, self.boost_2button:GetPosition().y + self.buttonsSize + spaceY), self.locStrings["airvehicleboost"], self.locStrings["boost_description"], self.BoostUnlocker, self.boostIMG)
-            self.bonusmoneybutton = self:AbilityButton(Vector2(self.boost_1button:GetPosition().x + spaceX, spaceY), self.locStrings["bonusmoney"], self.locStrings["bonusmoney_description"], self.MoneyBonusUnlocker, self.moneyBonusIMG)
+            self.boost_1button = self:AbilityButton(true, Vector2(posX, spaceY), locStrings["landvehicleboost"], locStrings["boost_description"], self.BoostUnlocker, self.boostIMG)
+            self.boost_2button = self:AbilityButton(false, Vector2(posX, self.boost_1button:GetPosition().y + self.buttonsSize + spaceY), locStrings["watervehicleboost"], locStrings["boost_description"], self.BoostUnlocker, self.boostIMG)
+            self.boost_3button = self:AbilityButton(false, Vector2(posX, self.boost_2button:GetPosition().y + self.buttonsSize + spaceY), locStrings["airvehicleboost"], locStrings["boost_description"], self.BoostUnlocker, self.boostIMG)
+            self.bonusmoneybutton = self:AbilityButton(true, Vector2(self.boost_1button:GetPosition().x + spaceX, spaceY), locStrings["bonusmoney"], locStrings["bonusmoney_description"], self.MoneyBonusUnlocker, self.moneyBonusIMG)
             posX = self.bonusmoneybutton:GetPosition().x + spaceX
-            self.moreC4_5button = self:AbilityButton(Vector2(posX, spaceY), self.locStrings["morec4"], self.locStrings["moreC4_description"], self.MoreC4Unlocker, self.moreC4IMG)
-            self.moreC4_8button = self:AbilityButton(Vector2(posX, self.moreC4_5button:GetPosition().y + self.buttonsSize + spaceY), self.locStrings["morec4"], self.locStrings["moreC4_description"], self.MoreC4Unlocker, self.moreC4IMG)
-            self.moreC4_10button = self:AbilityButton(Vector2(posX, self.moreC4_8button:GetPosition().y + self.buttonsSize + spaceY), self.locStrings["morec4"], self.locStrings["moreC4_description"], self.MoreC4Unlocker, self.moreC4IMG)
-            self.moreC4_15button = self:AbilityButton(Vector2(posX, self.moreC4_10button:GetPosition().y + self.buttonsSize + spaceY), self.locStrings["morec4"], self.locStrings["moreC4_description"], self.MoreC4Unlocker, self.moreC4IMG)
-            self.supernuclearbombbutton = self:AbilityButton(Vector2(self.moreC4_5button:GetPosition().x + spaceX, spaceY), self.locStrings["supernuclearbomb"], self.locStrings["supernuclearbomb_description"], self.SuperNuclearBombUnlocker, self.superNuclearBombIMG)
+            self.moreC4_5button = self:AbilityButton(true, Vector2(posX, spaceY), locStrings["morec4"], locStrings["moreC4_description"], self.MoreC4Unlocker, self.moreC4IMG)
+            self.moreC4_8button = self:AbilityButton(false, Vector2(posX, self.moreC4_5button:GetPosition().y + self.buttonsSize + spaceY), locStrings["morec4"], locStrings["moreC4_description"], self.MoreC4Unlocker, self.moreC4IMG)
+            self.moreC4_10button = self:AbilityButton(false, Vector2(posX, self.moreC4_8button:GetPosition().y + self.buttonsSize + spaceY), locStrings["morec4"], locStrings["moreC4_description"], self.MoreC4Unlocker, self.moreC4IMG)
+            self.moreC4_15button = self:AbilityButton(false, Vector2(posX, self.moreC4_10button:GetPosition().y + self.buttonsSize + spaceY), locStrings["morec4"], locStrings["moreC4_description"], self.MoreC4Unlocker, self.moreC4IMG)
+            self.supernuclearbombbutton = self:AbilityButton(true, Vector2(self.moreC4_5button:GetPosition().x + spaceX, spaceY), locStrings["supernuclearbomb"], locStrings["supernuclearbomb_description"], self.SuperNuclearBombUnlocker, self.superNuclearBombIMG)
             posX = self.supernuclearbombbutton:GetPosition().x + spaceX
-            self.longergrapple_150button = self:AbilityButton(Vector2(posX, spaceY), self.locStrings["longergrapple"], self.locStrings["longergrapple_description"], self.LongerGrappleUnlocker, self.longerGrappleIMG)
-            self.longergrapple_200button = self:AbilityButton(Vector2(posX, self.longergrapple_150button:GetPosition().y + self.buttonsSize + spaceY), self.locStrings["longergrapple"], self.locStrings["longergrapple_description"], self.LongerGrappleUnlocker, self.longerGrappleIMG)
-            self.longergrapple_350button = self:AbilityButton(Vector2(posX, self.longergrapple_200button:GetPosition().y + self.buttonsSize + spaceY), self.locStrings["longergrapple"], self.locStrings["longergrapple_description"], self.LongerGrappleUnlocker, self.longerGrappleIMG)
-            self.longergrapple_500button = self:AbilityButton(Vector2(posX, self.longergrapple_350button:GetPosition().y + self.buttonsSize + spaceY), self.locStrings["longergrapple"], self.locStrings["longergrapple_description"], self.LongerGrappleUnlocker, self.longerGrappleIMG)
-            self.jesusmode_button = self:AbilityButton(Vector2(self.longergrapple_150button:GetPosition().x + spaceX, spaceY), self.locStrings["jesusmode"], self.locStrings["jesusmode_description"], self.JesusModeUnlocker, self.jesusModeIMG)
+            self.longergrapple_150button = self:AbilityButton(true, Vector2(posX, spaceY), locStrings["longergrapple"], locStrings["longergrapple_description"], self.LongerGrappleUnlocker, self.longerGrappleIMG)
+            self.longergrapple_200button = self:AbilityButton(false, Vector2(posX, self.longergrapple_150button:GetPosition().y + self.buttonsSize + spaceY), locStrings["longergrapple"], locStrings["longergrapple_description"], self.LongerGrappleUnlocker, self.longerGrappleIMG)
+            self.longergrapple_350button = self:AbilityButton(false, Vector2(posX, self.longergrapple_200button:GetPosition().y + self.buttonsSize + spaceY), locStrings["longergrapple"], locStrings["longergrapple_description"], self.LongerGrappleUnlocker, self.longerGrappleIMG)
+            self.longergrapple_500button = self:AbilityButton(false, Vector2(posX, self.longergrapple_350button:GetPosition().y + self.buttonsSize + spaceY), locStrings["longergrapple"], locStrings["longergrapple_description"], self.LongerGrappleUnlocker, self.longerGrappleIMG)
+            self.jesusmode_button = self:AbilityButton(true, Vector2(self.longergrapple_150button:GetPosition().x + spaceX, spaceY), locStrings["jesusmode"], locStrings["jesusmode_description"], self.JesusModeUnlocker, self.jesusModeIMG)
         end
 
         if self.window then
             self:UpdateButtons(LocalPlayer:GetMoney())
         end
 
-        self.tip_title:SetText(self.locStrings["abilities"])
-        self.tip_descrition:SetText(self.locStrings["noselected_description"])
+        self.tip_title:SetText(locStrings["abilities"])
+        self.tip_descrition:SetText(locStrings["noselected_description"])
         self.tip_descrition:SizeToContents()
         self.tip_descrition:SetWrap(true)
 
@@ -511,184 +542,184 @@ function Abilities:SetWindowVisible(visible, sound)
         end
 
         if LocalPlayer:GetValue("Wingsuit") then
-            self.wingsuitbutton.unlockstats:SetToolTip(self.locStrings["wingsuit"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+            self.wingsuitbutton.unlockstats:SetToolTip(locStrings["wingsuit"] .. " ( " .. locStrings["unlocked"] .. " )")
             self.wingsuitbutton.unlockstats:SetVisible(true)
         else
-            self.wingsuitbutton:SetToolTip(self.locStrings["wingsuit"] .. " ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.Wingsuit) .. " )")
+            self.wingsuitbutton:SetToolTip(locStrings["wingsuit"] .. " ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.Wingsuit) .. " )")
             self.wingsuitbutton.unlockstats:SetVisible(false)
         end
 
         local boost = LocalPlayer:GetValue("Boost")
 
         if boost then
-            self.boost_1button.unlockstats:SetToolTip(self.locStrings["landvehicleboost"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+            self.boost_1button.unlockstats:SetToolTip(locStrings["landvehicleboost"] .. " ( " .. locStrings["unlocked"] .. " )")
             self.boost_1button.unlockstats:SetVisible(true)
 
             if boost == self.boostValue_1 then
-                self.boost_2button:SetToolTip(self.locStrings["watervehicleboost"] .. " ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_2) .. " )")
+                self.boost_2button:SetToolTip(locStrings["watervehicleboost"] .. " ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_2) .. " )")
                 self.boost_2button:SetVisible(true)
             end
 
             if boost >= self.boostValue_2 then
-                self.boost_2button.unlockstats:SetToolTip(self.locStrings["watervehicleboost"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+                self.boost_2button.unlockstats:SetToolTip(locStrings["watervehicleboost"] .. " ( " .. locStrings["unlocked"] .. " )")
                 self.boost_2button:SetVisible(true)
                 self.boost_2button.unlockstats:SetVisible(true)
             end
 
             if boost == self.boostValue_2 then
-                self.boost_3button:SetToolTip(self.locStrings["airvehicleboost"] .. " ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_3) .. " )")
+                self.boost_3button:SetToolTip(locStrings["airvehicleboost"] .. " ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_3) .. " )")
                 self.boost_3button:SetVisible(true)
             end
 
             if boost >= self.boostValue_3 then
-                self.boost_3button.unlockstats:SetToolTip(self.locStrings["airvehicleboost"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+                self.boost_3button.unlockstats:SetToolTip(locStrings["airvehicleboost"] .. " ( " .. locStrings["unlocked"] .. " )")
                 self.boost_3button:SetVisible(true)
                 self.boost_3button.unlockstats:SetVisible(true)
             end
         else
-            self.boost_1button:SetToolTip(self.locStrings["landvehicleboost"] .. " ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_1) .. " )")
+            self.boost_1button:SetToolTip(locStrings["landvehicleboost"] .. " ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_1) .. " )")
             self.boost_1button.unlockstats:SetVisible(false)
 
-            self.boost_2button.unlockstats:SetToolTip(self.locStrings["watervehicleboost"] .. " ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_2) .. " )")
+            self.boost_2button.unlockstats:SetToolTip(locStrings["watervehicleboost"] .. " ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_2) .. " )")
             self.boost_2button:SetVisible(false)
             self.boost_2button.unlockstats:SetVisible(false)
 
-            self.boost_3button.unlockstats:SetToolTip(self.locStrings["airvehicleboost"] .. " ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_3) .. " )")
+            self.boost_3button.unlockstats:SetToolTip(locStrings["airvehicleboost"] .. " ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.Boost_3) .. " )")
             self.boost_3button:SetVisible(false)
             self.boost_3button.unlockstats:SetVisible(false)
         end
 
         if LocalPlayer:GetValue("MoneyBonus") then
-            self.bonusmoneybutton.unlockstats:SetToolTip(self.locStrings["bonusmoney"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+            self.bonusmoneybutton.unlockstats:SetToolTip(locStrings["bonusmoney"] .. " ( " .. locStrings["unlocked"] .. " )")
             self.bonusmoneybutton.unlockstats:SetVisible(true)
         else
-            self.bonusmoneybutton:SetToolTip(self.locStrings["bonusmoney"] .. " ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.BonusMoney) .. " )")
+            self.bonusmoneybutton:SetToolTip(locStrings["bonusmoney"] .. " ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.BonusMoney) .. " )")
             self.bonusmoneybutton.unlockstats:SetVisible(false)
         end
 
         local moreC4 = LocalPlayer:GetValue("MoreC4")
 
         if moreC4 then
-            self.moreC4_5button.unlockstats:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_5 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+            self.moreC4_5button.unlockstats:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_5 .. " " .. locStrings["items"] .. ") ( " .. locStrings["unlocked"] .. " )")
             self.moreC4_5button.unlockstats:SetVisible(true)
 
             if moreC4 == self.moreC4Value_5 then
-                self.moreC4_8button:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_8 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_8) .. " )")
+                self.moreC4_8button:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_8 .. " " .. locStrings["items"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_8) .. " )")
                 self.moreC4_8button:SetVisible(true)
             end
 
             if moreC4 >= self.moreC4Value_8 then
-                self.moreC4_8button.unlockstats:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_8 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+                self.moreC4_8button.unlockstats:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_8 .. " " .. locStrings["items"] .. ") ( " .. locStrings["unlocked"] .. " )")
                 self.moreC4_8button:SetVisible(true)
                 self.moreC4_8button.unlockstats:SetVisible(true)
             end
 
-            if LmoreC4 == self.moreC4Value_8 then
-                self.moreC4_10button:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_10 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_10) .. " )")
+            if moreC4 == self.moreC4Value_8 then
+                self.moreC4_10button:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_10 .. " " .. locStrings["items"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_10) .. " )")
                 self.moreC4_10button:SetVisible(true)
             end
 
             if moreC4 >= self.moreC4Value_10 then
-                self.moreC4_10button.unlockstats:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_10 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+                self.moreC4_10button.unlockstats:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_10 .. " " .. locStrings["items"] .. ") ( " .. locStrings["unlocked"] .. " )")
                 self.moreC4_10button:SetVisible(true)
                 self.moreC4_10button.unlockstats:SetVisible(true)
             end
 
             if moreC4 == self.moreC4Value_10 then
-                self.moreC4_15button:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_15 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_15) .. " )")
+                self.moreC4_15button:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_15 .. " " .. locStrings["items"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_15) .. " )")
                 self.moreC4_15button:SetVisible(true)
             end
 
             if moreC4 >= self.moreC4Value_15 then
-                self.moreC4_15button.unlockstats:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_15 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+                self.moreC4_15button.unlockstats:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_15 .. " " .. locStrings["items"] .. ") ( " .. locStrings["unlocked"] .. " )")
                 self.moreC4_15button:SetVisible(true)
                 self.moreC4_15button.unlockstats:SetVisible(true)
             end
         else
-            self.moreC4_5button:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_5 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_5) .. " )")
+            self.moreC4_5button:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_5 .. " " .. locStrings["items"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_5) .. " )")
             self.moreC4_5button.unlockstats:SetVisible(false)
 
-            self.moreC4_8button:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_8 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_8) .. " )")
+            self.moreC4_8button:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_8 .. " " .. locStrings["items"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_8) .. " )")
             self.moreC4_8button:SetVisible(false)
             self.moreC4_8button.unlockstats:SetVisible(false)
 
-            self.moreC4_10button:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_10 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_10) .. " )")
+            self.moreC4_10button:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_10 .. " " .. locStrings["items"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_10) .. " )")
             self.moreC4_10button:SetVisible(false)
             self.moreC4_10button.unlockstats:SetVisible(false)
 
-            self.moreC4_15button:SetToolTip(self.locStrings["morec4"] .. " (" .. self.moreC4Value_15 .. " " .. self.locStrings["items"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_15) .. " )")
+            self.moreC4_15button:SetToolTip(locStrings["morec4"] .. " (" .. self.moreC4Value_15 .. " " .. locStrings["items"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.MoreC4_15) .. " )")
             self.moreC4_15button:SetVisible(false)
             self.moreC4_15button.unlockstats:SetVisible(false)
         end
 
         if LocalPlayer:GetValue("SuperNuclearBomb") then
-            self.supernuclearbombbutton.unlockstats:SetToolTip(self.locStrings["supernuclearbomb"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+            self.supernuclearbombbutton.unlockstats:SetToolTip(locStrings["supernuclearbomb"] .. " ( " .. locStrings["unlocked"] .. " )")
             self.supernuclearbombbutton.unlockstats:SetVisible(true)
         else
-            self.supernuclearbombbutton:SetToolTip(self.locStrings["supernuclearbomb"] .. " ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.SuperNuclearBomb) .. " )")
+            self.supernuclearbombbutton:SetToolTip(locStrings["supernuclearbomb"] .. " ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.SuperNuclearBomb) .. " )")
             self.supernuclearbombbutton.unlockstats:SetVisible(false)
         end
 
         local longerGrapple = LocalPlayer:GetValue("LongerGrapple")
 
         if longerGrapple then
-            self.longergrapple_150button.unlockstats:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_1 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+            self.longergrapple_150button.unlockstats:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_1 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["unlocked"] .. " )")
             self.longergrapple_150button.unlockstats:SetVisible(true)
 
             if longerGrapple == self.GrappleLongerValue_1 then
-                self.longergrapple_200button:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_2 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_200) .. " )")
+                self.longergrapple_200button:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_2 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_200) .. " )")
                 self.longergrapple_200button:SetVisible(true)
             end
 
             if longerGrapple >= self.GrappleLongerValue_2 then
-                self.longergrapple_200button.unlockstats:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_2 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+                self.longergrapple_200button.unlockstats:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_2 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["unlocked"] .. " )")
                 self.longergrapple_200button:SetVisible(true)
                 self.longergrapple_200button.unlockstats:SetVisible(true)
             end
 
             if longerGrapple == self.GrappleLongerValue_2 then
-                self.longergrapple_350button:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_3 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_350) .. " )")
+                self.longergrapple_350button:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_3 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_350) .. " )")
                 self.longergrapple_350button:SetVisible(true)
             end
 
             if longerGrapple >= self.GrappleLongerValue_3 then
-                self.longergrapple_350button.unlockstats:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_3 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+                self.longergrapple_350button.unlockstats:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_3 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["unlocked"] .. " )")
                 self.longergrapple_350button:SetVisible(true)
                 self.longergrapple_350button.unlockstats:SetVisible(true)
             end
 
             if longerGrapple == self.GrappleLongerValue_3 then
-                self.longergrapple_500button:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_4 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_500) .. " )")
+                self.longergrapple_500button:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_4 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_500) .. " )")
                 self.longergrapple_500button:SetVisible(true)
             end
 
             if longerGrapple >= self.GrappleLongerValue_4 then
-                self.longergrapple_500button.unlockstats:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_4 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["unlocked"] .. " )")
+                self.longergrapple_500button.unlockstats:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_4 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["unlocked"] .. " )")
                 self.longergrapple_500button:SetVisible(true)
                 self.longergrapple_500button.unlockstats:SetVisible(true)
             end
         else
-            self.longergrapple_150button:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_1 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_150) .. " )")
+            self.longergrapple_150button:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_1 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_150) .. " )")
             self.longergrapple_150button.unlockstats:SetVisible(false)
 
-            self.longergrapple_200button:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_2 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_200) .. " )")
+            self.longergrapple_200button:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_2 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_200) .. " )")
             self.longergrapple_200button:SetVisible(false)
             self.longergrapple_200button.unlockstats:SetVisible(false)
 
-            self.longergrapple_350button:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_3 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_350) .. " )")
+            self.longergrapple_350button:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_3 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_350) .. " )")
             self.longergrapple_350button:SetVisible(false)
             self.longergrapple_350button.unlockstats:SetVisible(false)
 
-            self.longergrapple_500button:SetToolTip(self.locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_4 .. " " .. self.locStrings["meters"] .. ") ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_500) .. " )")
+            self.longergrapple_500button:SetToolTip(locStrings["longergrapple"] .. " (" .. self.GrappleLongerValue_4 .. " " .. locStrings["meters"] .. ") ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.LongerGrapple_500) .. " )")
             self.longergrapple_500button:SetVisible(false)
             self.longergrapple_500button.unlockstats:SetVisible(false)
         end
 
         if LocalPlayer:GetValue("JesusModeEnabled") then
-            self.jesusmode_button.unlockstats:SetToolTip(self.locStrings["jesusmode"] .. " ( " .. self.locStrings["unlocked"] .. " )")
+            self.jesusmode_button.unlockstats:SetToolTip(locStrings["jesusmode"] .. " ( " .. locStrings["unlocked"] .. " )")
             self.jesusmode_button.unlockstats:SetVisible(true)
         else
-            self.jesusmode_button:SetToolTip(self.locStrings["jesusmode"] .. " ( " .. self.locStrings["needed"] .. ": $" .. formatNumber(Prices.JesusMode) .. " )")
+            self.jesusmode_button:SetToolTip(locStrings["jesusmode"] .. " ( " .. locStrings["needed"] .. ": $" .. formatNumber(Prices.JesusMode) .. " )")
             self.jesusmode_button.unlockstats:SetVisible(false)
         end
     else

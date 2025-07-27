@@ -52,9 +52,9 @@ end
 function Passive:Lang()
     self.locStrings = {
         name = "Passive",
-        passivemode = "Passive mode ",
-        enabled = "disabled",
-        disabled = "enabled",
+        passivemode = "Passive Mode ",
+        enabled = "Disabled",
+        disabled = "Enabled",
         pvpblock = "You cannot use Passive Mode during combat!",
         w = "Wait ",
         ws = " seconds to toggle passive mode!",
@@ -92,8 +92,10 @@ function Passive:LocalPlayerChat(args)
 end
 
 function Passive:TogglePassive()
+    local locStrings = self.locStrings
+
     if LocalPlayer:GetWorld() ~= DefaultWorld then
-        Events:Fire("CastCenterText", {text = self.locStrings["notusable"], time = 3, color = Color.Red})
+        Events:Fire("CastCenterText", {text = locStrings["notusable"], time = 3, color = Color.Red})
         return
     end
 
@@ -102,19 +104,19 @@ function Passive:TogglePassive()
 
     if not state then
         if LocalPlayer:GetValue("PVPMode") then
-            Events:Fire("CastCenterText", {text = self.locStrings["pvpblock"], time = 6, color = Color.Red})
+            Events:Fire("CastCenterText", {text = locStrings["pvpblock"], time = 6, color = Color.Red})
             return false
         end
 
         if time < self.cooltime then
-            Events:Fire("CastCenterText", {text = self.locStrings["w"] .. math.ceil(self.cooltime - time) .. self.locStrings["ws"], time = 6, color = Color.Red})
+            Events:Fire("CastCenterText", {text = locStrings["w"] .. math.ceil(self.cooltime - time) .. locStrings["ws"], time = 6, color = Color.Red})
             return false
         end
     end
 
     Network:Send("Toggle", not state)
 
-    Events:Fire("CastCenterText", {text = self.locStrings["passivemode"] .. (state and self.locStrings["enabled"] or self.locStrings["disabled"]), time = 3, color = Color(0, 222, 0, 250)})
+    Events:Fire("CastCenterText", {text = locStrings["passivemode"] .. (state and locStrings["enabled"] or locStrings["disabled"]), time = 3, color = Color(0, 222, 0, 250)})
 
     self.cooltime = time + self.cooldown
     return false
@@ -154,7 +156,9 @@ function Passive:NetworkObjectValueChange(args)
 end
 
 function Passive:Render()
-    if self.pvpTimer and self.pvpTimer:GetSeconds() >= 10 then
+    local pvpTimer = self.pvpTimer
+
+    if pvpTimer and pvpTimer:GetSeconds() >= 10 then
         Network:Send("TogglePVPMode", {enabled = false})
         self.pvpTimer = nil
     end
@@ -163,6 +167,7 @@ function Passive:Render()
     if Game:GetState() ~= GUIState.Game then return end
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
     if not LocalPlayer:GetValue("PassiveModeVisible") or LocalPlayer:GetValue("HiddenHUD") then return end
+
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     -- if LocalPlayer:GetValue("Passive") then
@@ -173,20 +178,26 @@ function Passive:Render()
     --	end
     -- end
 
+    local locStrings = self.locStrings
+    local text = locStrings["name"]
     local text_size = 18
-    local text_width = Render:GetTextWidth(self.locStrings["name"], text_size)
-    local text_height = Render:GetTextHeight(self.locStrings["name"], text_size)
-    local posY = math.lerp(-text_height - 2, 0, self.animationValue)
-    local text_pos = Vector2(Render.Width / 1.52 - text_width / 1.8 + text_width / 25, posY + 2)
-    local sett_alpha = math.lerp(0, Game:GetSetting(4) * 2.25, self.animationValue)
+    local text_width = Render:GetTextWidth(text, text_size)
+    local text_height = Render:GetTextHeight(text, text_size)
+
+    local animationValue = self.animationValue
+    local posY = math.lerp(-text_height - 2, 0, animationValue)
+    local width = Render.Width
+    local widthDivided = width / 1.52
+    local text_pos = Vector2(widthDivided - text_width / 1.8 + text_width / 25, posY + 2)
+    local sett_alpha = math.lerp(0, Game:GetSetting(4) * 2.25, animationValue)
     local background_clr = Color(0, 0, 0, sett_alpha / 2.4)
 
-    Render:FillArea(Vector2(Render.Width / 1.52 - text_width / 1.8, posY), Vector2(text_width + 5, text_height + 2), background_clr)
+    Render:FillArea(Vector2(widthDivided - text_width / 1.8, posY), Vector2(text_width + 5, text_height + 2), background_clr)
 
-    Render:FillTriangle(Vector2((Render.Width / 1.52 - text_width / 1.8 - 10), posY), Vector2((Render.Width / 1.52 - text_width / 1.8), posY), Vector2((Render.Width / 1.52 - text_width / 1.8), posY + text_height + 2), background_clr)
-    Render:FillTriangle(Vector2((Render.Width / 1.52 - text_width / 1.8 + text_width + 15), posY), Vector2((Render.Width / 1.52 - text_width / 1.8 + text_width + 5), posY), Vector2((Render.Width / 1.52 - text_width / 1.8 + text_width + 5), posY + text_height + 2), background_clr)
+    Render:FillTriangle(Vector2(widthDivided - text_width / 1.8 - 10, posY), Vector2(widthDivided - text_width / 1.8, posY), Vector2(widthDivided - text_width / 1.8, posY + text_height + 2), background_clr)
+    Render:FillTriangle(Vector2(widthDivided - text_width / 1.8 + text_width + 15, posY), Vector2(widthDivided - text_width / 1.8 + text_width + 5, posY), Vector2(widthDivided - text_width / 1.8 + text_width + 5, posY + text_height + 2), background_clr)
 
-    Render:DrawShadowedText(text_pos, self.locStrings["name"], Color(0, 250, 154, sett_alpha), Color(0, 0, 0, sett_alpha), text_size)
+    Render:DrawShadowedText(text_pos, text, Color(0, 250, 154, sett_alpha), Color(0, 0, 0, sett_alpha), text_size)
 end
 
 local passive = Passive()

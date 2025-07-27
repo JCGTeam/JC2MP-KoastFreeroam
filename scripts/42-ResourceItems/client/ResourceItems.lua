@@ -4,8 +4,6 @@ function ResourceItems:__init()
     self.timer = Timer()
     self.numcrates = 0
 
-    self.outline_clr = Color.White
-
     self.crates = {}
 
     Events:Subscribe("PostTick", self, self.PostTick)
@@ -23,17 +21,23 @@ end
 function ResourceItems:PostTick()
     if self.timer:GetSeconds() > 1 then
         local playerPosition = LocalPlayer:GetPosition()
+        local crates = self.crates
+        local maxRadius = 100
+        local outlineColor = Color.White
 
-        for i = 1, #self.crates do
-            if self.crates[i] then
-                local ent = StaticObject.GetById(self.crates[i].id)
+        for i = 1, #crates do
+            local crate = crates[i]
+
+            if crate then
+                local ent = StaticObject.GetById(crate.id)
+
                 if IsValid(ent) then
                     local radius = ent:GetPosition():Distance(playerPosition)
 
-                    if radius <= 100 then
+                    if radius <= maxRadius then
                         if not ent:GetOutlineEnabled() then
                             ent:SetOutlineEnabled(true)
-                            ent:SetOutlineColor(self.outline_clr)
+                            ent:SetOutlineColor(outlineColor)
                         end
                     else
                         if ent:GetOutlineEnabled() then
@@ -64,15 +68,22 @@ function ResourceItems:CrateTaken()
 end
 
 function ResourceItems:SyncTriggers(args)
+    local crates = self.crates
+    local radius = 1
+
     for i = 1, #args do
-        table.insert(self.crates, {radius = 1, id = args[i].id})
+        table.insert(crates, {radius = radius, id = args[i].id})
     end
 end
 
 function ResourceItems:SyncTriggersRemove(args)
-    for i = 1, #self.crates do
-        if self.crates[i] and self.crates[i].id == args.id then
-            table.remove(self.crates, i)
+    local crates = self.crates
+
+    for i = 1, #crates do
+        local crate = crates[i]
+
+        if crate and crate.id == args.id then
+            table.remove(crates, i)
             break
         end
     end

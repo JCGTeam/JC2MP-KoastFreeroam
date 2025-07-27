@@ -103,8 +103,10 @@ function Map:BroadcastUpdate()
 end
 
 function Map:ModuleLoad()
+    local players = self.players
+
     for player in Server:GetPlayers() do
-        self.players[player:GetId()] = player
+        players[player:GetId()] = player
     end
 end
 

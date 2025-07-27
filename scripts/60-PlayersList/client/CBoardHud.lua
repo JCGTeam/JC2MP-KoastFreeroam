@@ -197,7 +197,9 @@ function CBoardHud:DrawPlayerRow(player)
         Render:SetFont(AssetLocation.Disk, "FontAwesome.ttf")
         Render:DrawBorderedText(Vector2(self.BoardPosition.x - self.fPlayerRowHeight + 5, y + 5), "", Color.White, self.fPlayerRowHeight - 10, 1)
 
-        if LocalPlayer:GetValue("SystemFonts") then
+        local systemFonts = LocalPlayer:GetValue("SystemFonts")
+
+        if systemFonts then
             Render:SetFont(AssetLocation.SystemFont, "Impact")
         else
             Render:ResetFont()
@@ -260,7 +262,10 @@ end
 
 -- Event Handlers:
 function CBoardHud:Render()
-    if not self.CBoardClient:isHudVisible() then return end
+    local cBoardClient = self.CBoardClient
+
+    if not cBoardClient:isHudVisible() then return end
+
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     self:Update()

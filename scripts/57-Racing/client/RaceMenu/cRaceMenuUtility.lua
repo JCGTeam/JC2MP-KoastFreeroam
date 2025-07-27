@@ -126,7 +126,7 @@ RaceMenuUtility.CreateCourseVoteControl = function()
         self.votesDownButton:SetText(string.format("%i", self.votesDown))
 
         if self.votesUp + self.votesDown == 0 then
-            self.percent:SetText("Х/З")
+            self.percent:SetText("?")
         else
             local percent = (self.votesUp / (self.votesUp + self.votesDown)) * 100
             percent = math.floor(percent + 0.5)

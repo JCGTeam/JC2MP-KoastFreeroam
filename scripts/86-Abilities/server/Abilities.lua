@@ -218,8 +218,6 @@ function Abilities:SaveToDB(args, sender)
 end
 
 function Abilities:PlayerJoin(args)
-    -- args.player:SetNetworkValue("Boost", 3)
-
     local qry = SQL:Query("select wings, boost, moneybonus, morec4, supernuclearbomb, longergrapple, jesusmode from players_abilities where steamid = (?)")
     qry:Bind(1, args.player:GetSteamId().id)
     local result = qry:Execute()

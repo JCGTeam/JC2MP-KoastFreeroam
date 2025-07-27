@@ -17,6 +17,7 @@ function Tuner:__init()
     self.thrustIncreaseFactor = 1.05
 
     self:InitGUI()
+    self:UpdateKeyBinds()
 
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
@@ -29,7 +30,9 @@ function Tuner:__init()
             mph = "миль/ч",
             kg_txt = "кг",
             in_txt = "за",
-            seconds = "секунд"
+            seconds = "секунд",
+            verticaltakeoff = "Вертикальный взлёт (Кнопка ",
+            verticaltakeoff2 = ")"
         }
 
         self.gui.window:SetTitle("▧ Тюнинг")
@@ -56,6 +59,7 @@ function Tuner:__init()
     Network:Subscribe("ToggleNeonLight", self, self.ToggleNeonLight)
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.EnterVehicle)
     Events:Subscribe("LocalPlayerExitVehicle", self, self.ExitVehicle)
     Events:Subscribe("EntitySpawn", self, self.EntitySpawn)
@@ -72,7 +76,9 @@ function Tuner:Lang()
         mph = "mph",
         kg_txt = "kg",
         in_txt = "in",
-        seconds = "seconds"
+        seconds = "seconds",
+        verticaltakeoff = "Vertical Takeoff (",
+        verticaltakeoff2 = " key)"
     }
 
     self.gui.window:SetTitle("▧ Tuning")
@@ -180,13 +186,19 @@ function Tuner:Lang()
         end
     end
 
-    if self.gui.aero.flyT then
-        self.gui.aero.flyT:SetText("Vertical takeoff (Z button)")
-    end
-
     if self.neontoggle then
         self.neontoggle:SetText("Toggle Neon")
     end
+end
+
+function Tuner:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local bind = keyBinds and keyBinds["TuningMenu"]
+    local vertialTakeoffBind = keyBinds and keyBinds["VerticalTakeoff"]
+
+    self.expectedKey = bind and bind.type == "Key" and bind.value or 78
+    self.vertialTakeoffKey = vertialTakeoffBind and vertialTakeoffBind.type == "Key" and vertialTakeoffBind.value or 90
+    self.vertialTakeoffStringKey = vertialTakeoffBind and vertialTakeoffBind.type == "Key" and vertialTakeoffBind.valueString or "Z"
 end
 
 function Tuner:CheckList(tableList, modelID)
@@ -202,11 +214,12 @@ function Tuner:CreateNeon(vehicle)
     if not vehicle then return end
 
     local vId = vehicle:GetId()
+    local neons = self.neons
 
-    if not self.neons[vId] then
+    if not neons[vId] then
         local neonPos = vehicle:GetPosition() + Vector3.Up
 
-        self.neons[vId] = ClientLight.Create {
+        neons[vId] = ClientLight.Create {
             position = neonPos,
             color = vehicle:GetValue("NeonColor") or Color.White,
             constant_attenuation = 0,
@@ -222,10 +235,11 @@ function Tuner:RemoveNeon(vehicle)
     if not vehicle then return end
 
     local vId = vehicle:GetId()
+    local neons = self.neons
 
-    if IsValid(self.neons[vId]) then
-        self.neons[vId]:Remove()
-        self.neons[vId] = nil
+    if IsValid(neons[vId]) then
+        neons[vId]:Remove()
+        neons[vId] = nil
     end
 end
 
@@ -238,31 +252,38 @@ function Tuner:ToggleNeonLight(args)
 end
 
 function Tuner:Render()
-    local is_visible = self.activeWindow and (Game:GetState() == GUIState.Game)
+    local activeWindow = self.activeWindow
+    local is_visible = activeWindow and (Game:GetState() == GUIState.Game)
+    local window = self.gui.window
+    local windowGetVisible = window:GetVisible()
 
-    if self.gui.window:GetVisible() ~= is_visible then
+    if windowGetVisible ~= is_visible then
         self.gui.window:SetVisible(is_visible)
         Mouse:SetVisible(is_visible)
     end
 end
 
 function Tuner:PostTick()
-    for v in Client:GetVehicles() do
-        local vId = v:GetId()
-        local neon = self.neons[vId]
+    local vehicles = Client:GetVehicles()
 
-        if neon then
-            local neonPos = v:GetPosition() + Vector3.Up
-            neon:SetPosition(neonPos)
+    for v in vehicles do
+        local vId = v:GetId()
+        local neons = self.neons[vId]
+
+        if neons then
+            local vPos = v:GetPosition()
+            local neonPos = vPos + Vector3.Up
+
+            neons:SetPosition(neonPos)
         end
     end
 
-    if self.syncTimer:GetSeconds() <= 1 then
-        return
-    end
+    if self.syncTimer:GetSeconds() <= 1 then return end
 
-    for v in Client:GetVehicles() do
-        if v:GetValue("vehid") then
+    for v in vehicles do
+        local vehid = v:GetValue("vehid")
+
+        if vehid then
             local vehicleTransmission = v:GetTransmission()
 
             if vehicleTransmission then
@@ -770,10 +791,10 @@ function Tuner:InitAerodynamicsGUI()
     self.gui.aero.fly:SetChecked(self.vehicleFly)
     self.gui.aero.fly:Subscribe("CheckChanged", function() self.vehicleFly = not self.vehicleFly end)
 
+    local locStrings = self.locStrings
+
     self.gui.aero.flyT = Label.Create(self.gui.aero.window)
-    self.gui.aero.flyT:SetText("Вертикальный взлёт ( Кнопка Z )")
     self.gui.aero.flyT:SetPosition(self.gui.aero.fly:GetPosition() + Vector2(20, 3))
-    self.gui.aero.flyT:SizeToContents()
 
     if vehicleClass == VehicleClass.Land then
         for i, label in ipairs(self.gui.aero.labels) do
@@ -1183,9 +1204,10 @@ function Tuner:VehicleUpdate()
     local ratios = self.trans:GetGearRatios()
     local s = self.veh:GetLinearVelocity():Length()
     local wt = t * self.trans:GetPrimaryTransmissionRatio() * ratios[self.trans:GetGear()]
+    local locStrings = self.locStrings
 
     self.gui.veh.getters[7]:SetText(f("%i%s", self.veh:GetHealth() * 100, "%"))
-    self.gui.veh.getters[8]:SetText(f("%s " .. self.locStrings["kg_txt"], self.veh:GetMass()))
+    self.gui.veh.getters[8]:SetText(f("%s " .. locStrings["kg_txt"], self.veh:GetMass()))
     self.gui.veh.getters[11]:SetText(f("%i", self.veh:GetRPM()))
     self.gui.veh.getters[12]:SetText(f("%.f N", t))
 
@@ -1196,12 +1218,12 @@ function Tuner:VehicleUpdate()
     end
 
     self.gui.veh.getters[14]:SetText(f("%.f N", wt))
-    self.gui.veh.getters[16]:SetText(f("%i " .. self.locStrings["ms"] .. ", %i " .. self.locStrings["kmh"] .. ", %i " .. self.locStrings["mph"], s, s * 3.6, s * 2.234))
+    self.gui.veh.getters[16]:SetText(f("%i " .. locStrings["ms"] .. ", %i " .. locStrings["kmh"] .. ", %i " .. locStrings["mph"], s, s * 3.6, s * 2.234))
 
     self.peak_s = self.peak_s or 0
     if s > self.peak_s then
         self.peak_s = s
-        self.gui.veh.getters[17]:SetText(f("%i " .. self.locStrings["ms"] .. ", %i " .. self.locStrings["kmh"] .. ", %i " .. self.locStrings["mph"], self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234))
+        self.gui.veh.getters[17]:SetText(f("%i " .. locStrings["ms"] .. ", %i " .. locStrings["kmh"] .. ", %i " .. locStrings["mph"], self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234))
     end
 
     if s < 0.1 then
@@ -1209,7 +1231,7 @@ function Tuner:VehicleUpdate()
         self.gui.veh.getters[18]:SetText("")
     elseif self.timer and s > 100 / 3.6 then
         self.time = self.timer:GetSeconds()
-        self.gui.veh.getters[18]:SetText(f(self.locStrings["in_txt"] .. " %.3f " .. self.locStrings["seconds"], self.time))
+        self.gui.veh.getters[18]:SetText(f(locStrings["in_txt"] .. " %.3f " .. locStrings["seconds"], self.time))
         self.timer = nil
     end
 end
@@ -1220,9 +1242,10 @@ function Tuner:OtherVehicleUpdate()
     local f = string.format
     local t = self.veh:GetTorque()
     local s = self.veh:GetLinearVelocity():Length()
+    local locStrings = self.locStrings
 
     self.gui.veh.getters[7]:SetText(f("%i%s", self.veh:GetHealth() * 100, "%"))
-    self.gui.veh.getters[8]:SetText(f("%s " .. self.locStrings["kg_txt"], self.veh:GetMass()))
+    self.gui.veh.getters[8]:SetText(f("%s " .. locStrings["kg_txt"], self.veh:GetMass()))
     self.gui.veh.getters[11]:SetText(f("%i", self.veh:GetRPM()))
     self.gui.veh.getters[12]:SetText(f("%i N", t))
 
@@ -1232,12 +1255,12 @@ function Tuner:OtherVehicleUpdate()
         self.gui.veh.getters[13]:SetText(f("%i N", self.peak_t))
     end
 
-    self.gui.veh.getters[16]:SetText(f("%i " .. self.locStrings["ms"] .. ", %i " .. self.locStrings["kmh"] .. ", %i " .. self.locStrings["mph"], s, s * 3.6, s * 2.234))
+    self.gui.veh.getters[16]:SetText(f("%i " .. locStrings["ms"] .. ", %i " .. locStrings["kmh"] .. ", %i " .. locStrings["mph"], s, s * 3.6, s * 2.234))
 
     self.peak_s = self.peak_s or 0
     if s > self.peak_s then
         self.peak_s = s
-        self.gui.veh.getters[17]:SetText(f("%i " .. self.locStrings["ms"] .. ", %i " .. self.locStrings["kmh"] .. ", %i " .. self.locStrings["mph"], self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234))
+        self.gui.veh.getters[17]:SetText(f("%i " .. locStrings["ms"] .. ", %i " .. locStrings["kmh"] .. ", %i " .. locStrings["mph"], self.peak_s, self.peak_s * 3.6, self.peak_s * 2.234))
     end
 
     if s < 0.1 then
@@ -1245,7 +1268,7 @@ function Tuner:OtherVehicleUpdate()
         self.gui.veh.getters[18]:SetText("")
     elseif self.timer and s > 100 / 3.6 then
         self.time = self.timer:GetSeconds()
-        self.gui.veh.getters[18]:SetText(f(self.locStrings["in_txt"] .. " %.3f " .. self.locStrings["seconds"], self.time))
+        self.gui.veh.getters[18]:SetText(f(locStrings["in_txt"] .. " %.3f " .. locStrings["seconds"], self.time))
         self.timer = nil
     end
 end
@@ -1322,7 +1345,7 @@ function Tuner:KeyUp(args)
     if Game:GetState() ~= GUIState.Game then return end
 
     if IsValid(self.veh) then
-        if args.key == string.byte("N") then
+        if args.key == self.expectedKey then
             self:SetWindowVisible(not self.activeWindow, true)
             self.timer = nil
         end
@@ -1373,7 +1396,7 @@ function Tuner:LocalPlayerInput(args)
     local vehicle = LocalPlayer:GetVehicle()
 
     if vehicle and LocalPlayer:InVehicle() then
-        if Key:IsDown(90) then
+        if Key:IsDown(self.vertialTakeoffKey) then
             local vehicleVelocity = vehicle:GetLinearVelocity()
 
             self:CheckThrust()
@@ -1404,6 +1427,11 @@ function Tuner:SetWindowVisible(visible, sound)
 
         self.gui.aero.button:SetVisible(pWorld)
         self.gui.tabs:SetCurrentTab(self.gui.veh.button)
+
+        local locStrings = self.locStrings
+
+        self.gui.aero.flyT:SetText(locStrings["verticaltakeoff"] .. self.vertialTakeoffStringKey .. locStrings["verticaltakeoff2"])
+        self.gui.aero.flyT:SizeToContents()
     end
 
     if sound then
@@ -1444,7 +1472,9 @@ function Tuner:ExitVehicle(args)
     if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
     if self.KeyUpEvent then Events:Unsubscribe(self.KeyUpEvent) self.KeyUpEvent = nil end
 
-    if self.veh and args.vehicle == self.veh then
+    local veh = self.veh
+
+    if veh and args.vehicle == veh then
         self:Disable()
     end
 end
@@ -1472,7 +1502,9 @@ function Tuner:EntityDespawn(args)
 end
 
 function Tuner:ModuleUnload()
-    for k, v in pairs(self.neons) do
+    local neons = self.neons
+
+    for k, v in pairs(neons) do
         if IsValid(v) then
             v:Remove()
         end

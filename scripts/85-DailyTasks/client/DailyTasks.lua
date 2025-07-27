@@ -129,24 +129,26 @@ function DailyTasks:CreateWindowObjects()
     container:SetDock(GwenPosition.Fill)
     container:SetMargin(Vector2(0, 2), Vector2(0, 4))
 
+    local locStrings = self.locStrings
+
     self.prize_btn = Button.Create(container)
     self.prize_btn:SetDock(GwenPosition.Bottom)
     self.prize_btn:SetSize(Vector2(0, 30))
-    self.prize_btn:SetText(self.locStrings["getreward"] .. " ( $10.000 )")
+    self.prize_btn:SetText(locStrings["getreward"] .. " ( $10.000 )")
     self.prize_btn:Subscribe("Press", self, self.GetPrize)
 
     self.hidetexttip = Label.Create(container)
     self.hidetexttip:SetDock(GwenPosition.Top)
     self.hidetexttip:SetMargin(Vector2(0, 2), Vector2(0, 4))
-    self.hidetexttip:SetText(self.locStrings["toptip"])
+    self.hidetexttip:SetText(locStrings["toptip"])
     self.hidetexttip:SizeToContents()
 
     self.list = SortedList.Create(container)
     self.list:SetDock(GwenPosition.Fill)
     self.list:SetBackgroundVisible(false)
-    self.list:AddColumn(self.locStrings["task"])
+    self.list:AddColumn(locStrings["task"])
     self.list:AddColumn("√/x", 50)
-    -- self.list:AddColumn(self.locStrings["reward"], 65)
+    -- self.list:AddColumn(locStrings["reward"], 65)
 end
 
 function DailyTasks:Task(text, completed, tip, rewarded)
@@ -192,8 +194,10 @@ end
 
 function DailyTasks:Render()
     local is_visible = Game:GetState() == GUIState.Game
+    local window = self.window
+    local windowGetVisible = window:GetVisible()
 
-    if self.window:GetVisible() ~= is_visible then
+    if windowGetVisible ~= is_visible then
         self.window:SetVisible(is_visible)
         Mouse:SetVisible(is_visible)
     end
@@ -234,13 +238,15 @@ function DailyTasks:SetWindowVisible(visible, sound)
             self.prize_btn:SetEnabled(false)
         end
 
-        self:Task(self.locStrings["taskstask"] .. self.completedTasksNeeded .. self.locStrings["taskstask2"], self.completedTasks, self.locStrings["taskstip"], true)
-        self:Task(self.locStrings["trontask"] .. self.tronWinsNeeded .. self.locStrings["trontask2"], self.tronWins, self.locStrings["trontip"], true)
-        self:Task(self.locStrings["earn"] .. self.tetrisRecordNeeded .. self.locStrings["tetristask"], self.tetrisRecord, self.locStrings["tetristip"], true)
-        self:Task(self.locStrings["earn"] .. self.driftRecordNeeded .. self.locStrings["drifttask"], self.driftRecord, nil, true)
-        self:Task(self.locStrings["earn"] .. self.flyingRecordNeeded .. self.locStrings["wingtask"], self.flyingRecord, self.locStrings["wingtip"], true)
-        self:Task(self.locStrings["bloozingtask"], self.bloozing, self.locStrings["bloozingtip"])
-        self:Task(self.locStrings["fireworkstask"] .. self.fireworksNeeded .. self.locStrings["fireworkstask2"], self.fireworksTossed, self.locStrings["fireworkstip"])
+        local locStrings = self.locStrings
+
+        self:Task(locStrings["taskstask"] .. self.completedTasksNeeded .. locStrings["taskstask2"], self.completedTasks, locStrings["taskstip"], true)
+        self:Task(locStrings["trontask"] .. self.tronWinsNeeded .. locStrings["trontask2"], self.tronWins, locStrings["trontip"], true)
+        self:Task(locStrings["earn"] .. self.tetrisRecordNeeded .. locStrings["tetristask"], self.tetrisRecord, locStrings["tetristip"], true)
+        self:Task(locStrings["earn"] .. self.driftRecordNeeded .. locStrings["drifttask"], self.driftRecord, nil, true)
+        self:Task(locStrings["earn"] .. self.flyingRecordNeeded .. locStrings["wingtask"], self.flyingRecord, locStrings["wingtip"], true)
+        self:Task(locStrings["bloozingtask"], self.bloozing, locStrings["bloozingtip"])
+        self:Task(locStrings["fireworkstask"] .. self.fireworksNeeded .. locStrings["fireworkstask2"], self.fireworksTossed, locStrings["fireworkstip"])
 
         if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
         if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end

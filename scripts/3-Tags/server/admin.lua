@@ -515,7 +515,7 @@ function isCreator(player)
 end
 
 function confirmationMessage(player, message)
-    Chat:Send(player, "[Сервер] ", Color.White, message, Color(124, 242, 0))
+    Chat:Send(player, "[Сервер] ", Color.White, message, Color(255, 250, 150))
 end
 
 function deniedMessage(player, message)
@@ -604,13 +604,13 @@ function Admin:PlayerChat(args)
     local cmd_args = args.text:split(" ")
     local sender = args.player
 
-    local HideTagCommand = function()
+    local hideTagCommand = function()
         if cmd_args[1] == "/hidetag" then
             if sender:GetValue("TagHide") then
-                Chat:Send(sender, "[Сервер] ", Color.White, "Тэг над головой включён.", Color(124, 242, 0))
+                confirmationMessage(sender, "Скрытие тега отключено")
                 sender:SetNetworkValue("TagHide", false)
             else
-                Chat:Send(sender, "[Сервер] ", Color.White, "Тэг над головой отключён.", Color(124, 242, 0))
+                confirmationMessage(sender, "Скрытие тега включено")
                 sender:SetNetworkValue("TagHide", true)
             end
         end
@@ -618,12 +618,12 @@ function Admin:PlayerChat(args)
 
     if sender:GetValue("NT_TagName") then
         if sender:GetValue("NT_TagName") == "Наблюдатель" then
-            HideTagCommand()
+            hideTagCommand()
         end
     end
 
     if isCreator(sender) or isGlAdmin(sender) or isAdmin(sender) or isAdminD(sender) or isModerD(sender) then
-        HideTagCommand()
+        hideTagCommand()
 
         if cmd_args[1] == "/petyx" then
             if #cmd_args < 2 then
@@ -643,12 +643,10 @@ function Admin:PlayerChat(args)
             end
 
             Chat:Broadcast("[Сервер] ", Color.White, player:GetName() .. " стал петухом на этом сервере!", Color(255, 0, 200))
-            Chat:Send(sender, "[Сервер] ", Color.White, "Вы сделали " .. player:GetName() .. " петухом!", Color(124, 242, 0))
+            confirmationMessage(sender, "Вы сделали " .. player:GetName() .. " петухом!")
             confirmationMessage(player, sender:GetName() .. playerSetPetyx)
 
             player:SetValue("Petux", 1)
-
-            return true
         elseif cmd_args[1] == "/unpetyx" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -666,11 +664,10 @@ function Admin:PlayerChat(args)
             end
 
             Chat:Broadcast("[Сервер] ", Color.White, player:GetName() .. " больше не петух на этом сервере!", Color(0, 255, 0))
-            Chat:Send(sender, "[Сервер] ", Color.White, player:GetName() .. " больше не петух!", Color(124, 242, 0))
+            confirmationMessage(sender, player:GetName() .. " больше не петух!")
             confirmationMessage(player, sender:GetName() .. playerUnpetyx)
 
             player:SetValue("Petux", nil)
-            return true
         elseif cmd_args[1] == "/bb" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -684,7 +681,6 @@ function Admin:PlayerChat(args)
             end
 
             Chat:Broadcast("[Сервер] ", Color.White, "Администрация: ", Color(250, 255, 130), player:GetName() .. ", прощай, удачи! ", Color.White)
-            return true
         elseif cmd_args[1] == "/hi" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -698,7 +694,6 @@ function Admin:PlayerChat(args)
             end
 
             Chat:Broadcast("[Сервер] ", Color.White, "Администрация: ", Color(250, 255, 130), player:GetName() .. ", привет! Приятной игры :3", Color.White)
-            return true
         elseif cmd_args[1] == "/getmoney" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -712,7 +707,6 @@ function Admin:PlayerChat(args)
             end
 
             confirmationMessage(sender, player:GetName() .. " имеет $" .. player:GetMoney() .. ".")
-            return true
         end
     end
 
@@ -733,7 +727,6 @@ function Admin:PlayerChat(args)
                 end
 
                 Events:Fire("BoomToSky", {player = player, sender = sender, type = 1})
-                return true
             end
         elseif cmd_args[1] == "/down" then
             if #cmd_args > 2 then
@@ -744,7 +737,6 @@ function Admin:PlayerChat(args)
                 end
 
                 Events:Fire("BoomToSky", {player = player, sender = sender, type = 2 })
-                return true
             end
         elseif cmd_args[1] == "/debugrepair" then
             if not sender:GetVehicle() then
@@ -759,7 +751,6 @@ function Admin:PlayerChat(args)
                 vehicle:SetColors(Color(255, 62, 150), Color(205, 41, 144))
                 vehicle:Respawn()
                 sender:EnterVehicle(vehicle, VehicleSeat.Driver)
-                return true
             end
         elseif cmd_args[1] == "/skick" then
             if #cmd_args < 2 then
@@ -776,7 +767,6 @@ function Admin:PlayerChat(args)
             confirmationMessage(sender, player:GetName() .. " беспалевно кикнут по причине " .. args.text:sub(7))
             player:Kick("\nВы были бесшумно выгнаны по причине:\n" .. args.text:sub(7))
             Events:Fire("ToDiscordConsole", {text = player:GetName() .. " has invisibly kicked by " .. sender:GetName() .. " Reason: " .. args.text:sub(7)})
-            return true
         elseif cmd_args[1] == "/ptphere" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -796,7 +786,6 @@ function Admin:PlayerChat(args)
 
                     confirmationMessage(sender, "Все игроки были телепортированы к вам.")
                     Events:Fire("ToDiscordConsole", {text = sName .. " warp all players to yourself."})
-                    return true
                 end
             end
 
@@ -809,7 +798,6 @@ function Admin:PlayerChat(args)
             player:Teleport(sender:GetPosition(), sender:GetAngle())
             confirmationMessage(player, sender:GetName() .. playerTele)
             confirmationMessage(sender, player:GetName() .. playerTele2)
-            return true
         end
     end
 
@@ -820,7 +808,6 @@ function Admin:PlayerChat(args)
             end
 
             confirmationMessage(sender, "Все транспортные средства на сервере были удалены.")
-            return true
         elseif cmd_args[1] == "/ban" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -837,7 +824,6 @@ function Admin:PlayerChat(args)
             Events:Fire("ToDiscordConsole", {text = "[Admin] " .. player:GetName() .. " has been banned from the server by " .. sender:GetName()})
             Server:AddBan(player:GetSteamId())
             player:Kick("You have been banned from the server.")
-            return true
         elseif cmd_args[1] == "/addmoney" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -857,7 +843,6 @@ function Admin:PlayerChat(args)
 
                 Chat:Broadcast("[Сервер] ", Color.White, "У всех теперь есть дополнительные $" .. tonumber(amount) .. "! Любезно предоставлено " .. sender:GetName() .. ".", Color(0, 255, 45))
                 Events:Fire("ToDiscordConsole", {text = "[Admin] " .. "У всех теперь есть дополнительные $" .. tonumber(amount) .. "! Любезно предоставлено " .. sender:GetName() .. "."})
-                return true
             end
 
             local player = Player.Match(cmd_args[2])[1]
@@ -869,7 +854,6 @@ function Admin:PlayerChat(args)
             player:SetMoney(player:GetMoney() + tonumber(cmd_args[3]))
             confirmationMessage(sender, "Вы добавили $" .. cmd_args[3] .. " игроку " .. player:GetName() .. "!")
             confirmationMessage(player, sender:GetName() .. " добавил вам $" .. cmd_args[3] .. "!")
-            return true
             --[[elseif (cmd_args[1]) == "/addexp" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
@@ -889,7 +873,6 @@ function Admin:PlayerChat(args)
 
 				Chat:Broadcast( "[Сервер] ", Color.White, "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName() .. ".", Color( 0, 255, 45 ) )
 				Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName() .. "." } )
-				return true
 			end
 
 			local player = Player.Match(cmd_args[2])[1]
@@ -901,7 +884,6 @@ function Admin:PlayerChat(args)
 			player:SetExp( player:GetExp()  + tonumber( cmd_args[3] ) )
 			confirmationMessage( sender, "Вы добавили " .. cmd_args[3] .. " ОП игроку " .. player:GetName() .. "!" )
 			confirmationMessage( player, sender:GetName() .. " добавил вам " .. cmd_args[3] .. " ОП!" )
-			return true
 		elseif (cmd_args[1]) == "/setexp" then
 			if #cmd_args < 2 then
 				deniedMessage( sender, invalidArgs )
@@ -921,7 +903,6 @@ function Admin:PlayerChat(args)
 
 				Chat:Broadcast( "[Сервер] ", Color.White, args.player:GetName() .. " установил всем " .. tonumber(cmd_args[3]) .. " ОП!", Color( 0, 255, 45 ) )
 				Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. args.player:GetName() .. " установил всем " .. tonumber(cmd_args[3]) .. " ОП!" } )
-				return true
 			end
 
 			local player = Player.Match(cmd_args[2])[1]
@@ -932,8 +913,7 @@ function Admin:PlayerChat(args)
 
 			player:SetExp( tonumber(cmd_args[3]))
 			confirmationMessage( sender, "Вы установили " .. cmd_args[3] .. " ОП игроку " .. player:GetName() .. "!" )
-			confirmationMessage( player, sender:GetName() .. " установил вам " .. cmd_args[3] .. " ОП!" )
-			return true]] --
+			confirmationMessage( player, sender:GetName() .. " установил вам " .. cmd_args[3] .. " ОП!" )]] --
         elseif cmd_args[1] == "/setgm" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -948,7 +928,6 @@ function Admin:PlayerChat(args)
 
             confirmationMessage(sender, "Установлен режим: " .. cmd_args[3] .. " для " .. player:GetName())
             player:SetNetworkValue("GameMode", cmd_args[3])
-            return true
         elseif cmd_args[1] == "/setlang" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -968,7 +947,6 @@ function Admin:PlayerChat(args)
 
             confirmationMessage(sender, "Установлен язык: " .. cmd_args[3] .. " для " .. player:GetName())
             player:SetNetworkValue("Lang", cmd_args[3])
-            return true
         elseif cmd_args[1] == "/setlevel" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -988,7 +966,6 @@ function Admin:PlayerChat(args)
 
             confirmationMessage(sender, "Установлен уровень: " .. cmd_args[3] .. " для " .. player:GetName())
             player:SetNetworkValue("PlayerLevel", tonumber(cmd_args[3]))
-            return true
         end
     end
 
@@ -1126,7 +1103,6 @@ function Admin:PlayerChat(args)
         else
             deniedMessage(sender, inVehicle)
         end
-        return true
     elseif cmd_args[1] == "/down" then
         if sender:GetValue("PVPMode") then
             deniedMessage(sender, "Вы не можете использовать это во время боя!")

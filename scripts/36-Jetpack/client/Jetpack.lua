@@ -22,7 +22,7 @@ function Jetpack:__init()
 
     Events:Subscribe("Lang", self, self.Lang)
     Events:Subscribe("UseJetpack", self, self.UseJetpack)
-    Events:Subscribe("Render", self, self.onRender)
+    Events:Subscribe("Render", self, self.Render)
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
     Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
     Events:Subscribe("ModuleUnload", self, self.onModuleUnload)
@@ -46,35 +46,44 @@ end
 function Jetpack:UseJetpack()
     Network:Send("EnableJetpack")
 
-    Events:Fire("CastCenterText", {text = LocalPlayer:GetValue("JP") and self.locStrings["off"] or self.locStrings["on"], time = 2})
+    local locStrings = self.locStrings
+
+    Events:Fire("CastCenterText", {text = LocalPlayer:GetValue("JP") and locStrings["off"] or locStrings["on"], time = 2})
 end
 
-function Jetpack:onRender()
-    if LocalPlayer:GetWorld() ~= DefaultWorld then return end
+function Jetpack:Render()
+    local lpWorld = LocalPlayer:GetWorld()
+
+    if lpWorld ~= DefaultWorld then return end
 
     local checked = {}
     local players = {LocalPlayer}
+    local streamedPlayers = Client:GetStreamedPlayers()
+    local jetpacksBottom = self.jetpacksBottom
+    local jetpacksTop = self.jetpacksTop
+    local pi = math.pi
+    local lpVehicle = LocalPlayer:GetVehicle()
 
-    for player in Client:GetStreamedPlayers() do
-        table.insert(players, player)
+    for p in streamedPlayers do
+        table.insert(players, p)
     end
 
-    for _, player in pairs(players) do
-        if IsValid(player) then
-            local playerId = player:GetId() + 1
+   for _, p in pairs(players) do
+        if IsValid(p) then
+            local pId = p:GetId() + 1
 
-            if player:GetValue("JP") then
-                if self.jetpacksBottom[playerId] then
-                    local pos = player:GetBonePosition("ragdoll_Spine1")
-                    local angle = player:GetBoneAngle("ragdoll_Spine1")
+            if p:GetValue("JP") then
+                if jetpacksBottom[pId] then
+                    local pos = p:GetBonePosition("ragdoll_Spine1")
+                    local angle = p:GetBoneAngle("ragdoll_Spine1")
 
-                    self.jetpacksBottom[playerId]:SetPosition(pos + angle * Vector3(0.001, 0.4, 0.2))
-                    self.jetpacksBottom[playerId]:SetAngle(angle * Angle(0, 0, math.pi))
-                    self.jetpacksTop[playerId]:SetPosition(pos + angle * Vector3(0, -0.4, 0.2))
-                    self.jetpacksTop[playerId]:SetAngle(angle)
-                    local velocity = player:GetLinearVelocity()
+                    self.jetpacksBottom[pId]:SetPosition(pos + angle * Vector3(0.001, 0.4, 0.2))
+                    self.jetpacksBottom[pId]:SetAngle(angle * Angle(0, 0, pi))
+                    self.jetpacksTop[pId]:SetPosition(pos + angle * Vector3(0, -0.4, 0.2))
+                    self.jetpacksTop[pId]:SetAngle(angle)
+                    local velocity = p:GetLinearVelocity()
 
-                    if not LocalPlayer:GetVehicle() then
+                    if not lpVehicle then
                         local effect = ClientEffect.Play(AssetLocation.Game, {
                             effect_id = (velocity.y > 1) and 41 or 42,
                             position = pos + angle * Vector3(0, -0.5, 0.2) + velocity * 0.11,
@@ -83,49 +92,62 @@ function Jetpack:onRender()
                         })
                     end
                 else
-                    self.jetpacksBottom[playerId] = ClientStaticObject.Create({
+                    self.jetpacksBottom[pId] = ClientStaticObject.Create({
                         model = "general.bl/rotor1-axelsmall.lod",
                         collision = "",
-                        position = player:GetPosition(),
+                        position = p:GetPosition(),
                         angle = Angle(),
                         fixed = true
                     })
-                    self.jetpacksTop[playerId] = ClientStaticObject.Create({
+                    self.jetpacksTop[pId] = ClientStaticObject.Create({
                         model = "general.bl/rotor1-axelsmall.lod",
                         collision = "",
-                        position = player:GetPosition(),
+                        position = p:GetPosition(),
                         angle = Angle(),
                         fixed = true
                     })
                 end
-                checked[playerId] = true
+                checked[pId] = true
             end
         end
     end
 
-    for playerId, _ in pairs(self.jetpacksBottom) do
-        if not checked[playerId] then
-            if IsValid(self.jetpacksBottom[playerId], false) then
-                self.jetpacksBottom[playerId]:Remove()
+    for pId, _ in pairs(jetpacksBottom) do
+        if not checked[pId] then
+            if IsValid(jetpacksBottom[pId], false) then
+                self.jetpacksBottom[pId]:Remove()
             end
 
-            if IsValid(self.jetpacksTop[playerId], false) then
-                self.jetpacksTop[playerId]:Remove()
+            if IsValid(jetpacksTop[pId], false) then
+                self.jetpacksTop[pId]:Remove()
             end
 
-            self.jetpacksBottom[playerId] = nil
-            self.jetpacksTop[playerId] = nil
+            self.jetpacksBottom[pId] = nil
+            self.jetpacksTop[pId] = nil
         end
     end
 
-    if not LocalPlayer:GetValue("JP") then return end
-    if LocalPlayer:GetVehicle() then return end
-    if self.impulse == Vector3.Zero then return end
+    local JP = LocalPlayer:GetValue("JP")
 
-    LocalPlayer:SetBaseState(AnimationState.SUprightIdle)
-    LocalPlayer:SetAngle(Angle.Slerp(LocalPlayer:GetAngle(), Angle(Camera:GetAngle().yaw, 0, 0), 0.1))
+    if not JP then return end
+    if lpVehicle then return end
 
-    self.impulse = self.impulse + Vector3(0, math.sin(self.timer:GetSeconds()) * 0.02, 0)
+    local impulse = self.impulse
+
+    if impulse == Vector3.Zero then return end
+
+    local pAngle = LocalPlayer:GetAngle()
+    local cameraAngle = Camera:GetAngle()
+    local cameraAngleYaw = cameraAngle.yaw
+    local angle = Angle.Slerp(pAngle, Angle(cameraAngleYaw, 0, 0), 0.1)
+
+
+    LocalPlayer:SetAngle(angle)
+
+    local timer = self.timer
+    local seconds = timer:GetSeconds()
+
+    self.impulse = self.impulse + Vector3(0, math.sin(seconds) * 0.02, 0)
 end
 
 function Jetpack:onInputPoll()

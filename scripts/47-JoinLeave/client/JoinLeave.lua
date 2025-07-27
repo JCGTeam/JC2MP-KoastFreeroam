@@ -36,12 +36,14 @@ function JoinLeave:PlayerJoin(args)
     -- if not visibleJoinMessages then return end
     if LocalPlayer:GetName() == args.player:GetName() then return end
 
+    local locStrings = self.locStrings
+
     if visibleJoinMessages and visibleJoinMessages == 1 then
         if LocalPlayer:IsFriend(args.player) then
-            Chat:Print(self.locStrings["tag"], self.tag_clr, args.player:GetName(), args.player:GetColor(), self.locStrings["join"], self.join_clr)
+            Chat:Print(locStrings["tag"], self.tag_clr, args.player:GetName(), args.player:GetColor(), locStrings["join"], self.join_clr)
         end
     elseif not visibleJoinMessages then
-        Chat:Print(self.locStrings["tag"], self.tag_clr, args.player:GetName(), args.player:GetColor(), self.locStrings["join"], self.join_clr)
+        Chat:Print(locStrings["tag"], self.tag_clr, args.player:GetName(), args.player:GetColor(), locStrings["join"], self.join_clr)
     end
 end
 
@@ -51,12 +53,14 @@ function JoinLeave:PlayerQuit(args)
     -- if not visibleJoinMessages then return end
     if LocalPlayer:GetName() == args.player:GetName() then return end
 
+    local locStrings = self.locStrings
+
     if visibleJoinMessages and visibleJoinMessages == 1 then
         if LocalPlayer:IsFriend(args.player) then
-            Chat:Print(self.locStrings["tag"], self.tag_clr, args.player:GetName() .. self.locStrings["left"], self.left_clr)
+            Chat:Print(locStrings["tag"], self.tag_clr, args.player:GetName() .. locStrings["left"], self.left_clr)
         end
     elseif not visibleJoinMessages then
-        Chat:Print(self.locStrings["tag"], self.tag_clr, args.player:GetName() .. self.locStrings["left"], self.left_clr)
+        Chat:Print(locStrings["tag"], self.tag_clr, args.player:GetName() .. locStrings["left"], self.left_clr)
     end
 end
 

@@ -23,7 +23,9 @@ function AchievementUnlock:Lang()
 end
 
 function AchievementUnlock:PlayerAchievementUnlock(args)
-    Chat:Print(self.locStrings["tag"], Color.White, args.player:GetName(), args.player:GetColor(), self.locStrings["unlock"], Color.White, args.name, Color(255, 215, 0))
+    local locStrings = self.locStrings
+
+    Chat:Print(locStrings["tag"], Color.White, args.player:GetName(), args.player:GetColor(), locStrings["unlock"], Color.White, args.name, Color(255, 215, 0))
     return false
 end
 

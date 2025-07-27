@@ -117,14 +117,23 @@ function Grenades:FireGrenade(args)
 end
 
 function Grenades:PostTick()
-    if not self.thrown then
-        local cameraAngle = Camera:GetAngle()
-        local position = LocalPlayer:GetBonePosition("ragdoll_LeftForeArm") + LocalPlayer:GetBoneAngle("ragdoll_LeftForeArm") * Grenades.GrenadeOffset
+    local thrown = self.thrown
 
-        self.thrownVelocity = (cameraAngle * Vector3.Forward * 25) * ((cameraAngle.pitch + (math.pi / 2)) / (math.pi / 2))
+    if not thrown then
+        local cameraAngle = Camera:GetAngle()
+        local grenadeOffset = Grenades.GrenadeOffset
+        local underThrowTime = Grenades.UnderThrowTime
+        local overThrowTime = Grenades.OverThrowTime
+        local position = LocalPlayer:GetBonePosition("ragdoll_LeftForeArm") + LocalPlayer:GetBoneAngle("ragdoll_LeftForeArm") * grenadeOffset
+        local pi = math.pi
+
+        self.thrownVelocity = (cameraAngle * Vector3.Forward * 25) * ((cameraAngle.pitch + (pi / 2)) / (pi / 2))
         self.thrownPosition = position
 
-        if self.thrownTimer and self.thrownTimer:GetSeconds() > (self.thrownUnder and Grenades.UnderThrowTime or Grenades.OverThrowTime) then
+        local thrownTimer = self.thrownTimer
+        local thrownUnder = self.thrownUnder
+
+        if thrownTimer and thrownTimer:GetSeconds() > (thrownUnder and underThrowTime or overThrowTime) then
             local grenade = {
                 ["position"] = self.thrownPosition,
                 ["velocity"] = self.thrownVelocity,
@@ -139,11 +148,13 @@ function Grenades:PostTick()
         end
     end
 
-    for k, grenade in ipairs(self.grenades) do
+    local grenades = self.grenades
+
+    for k, grenade in ipairs(grenades) do
         grenade:Update()
 
         if not IsValid(grenade.object) or not IsValid(grenade.effect) then
-            table.remove(self.grenades, k)
+            table.remove(grenades, k)
         end
     end
 end

@@ -1,6 +1,8 @@
 class 'VehicleRadio'
 
 function VehicleRadio:__init()
+    self:UpdateKeyBinds()
+
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
         self:Lang()
@@ -24,6 +26,7 @@ function VehicleRadio:__init()
     end
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
     Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
 end
@@ -33,6 +36,13 @@ function VehicleRadio:Lang()
         title = "Radio: ",
         off = "Disabled"
     }
+end
+
+function VehicleRadio:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local bind = keyBinds and keyBinds["ToggleVehicleRadio"]
+
+    self.expectedKey = bind and bind.type == "Key" and bind.value or 190
 end
 
 function VehicleRadio:LocalPlayerInput(args)
@@ -59,7 +69,7 @@ end
 function VehicleRadio:KeyUp(args)
     if Game:GetState() ~= GUIState.Game then return end
 
-    if args.key == VirtualKey.OemPeriod then
+    if args.key == self.expectedKey then
         if LocalPlayer:InVehicle() then
             self:ToggleRadio()
         end
@@ -126,21 +136,29 @@ function VehicleRadio:ToggleRadio()
         self.radio = nil
         self.check = 0
 
-        Game:ShowPopup(self.locStrings["title"] .. self.locStrings["off"], false)
+        local locStrings = self.locStrings
+
+        Game:ShowPopup(locStrings["title"] .. locStrings["off"], false)
     end
 end
 
 function VehicleRadio:PreTick()
     if self.radio then
-        if LocalPlayer:InVehicle() then
-            self.sound:SetPosition(Camera:GetPosition())
+        local inVehicle = LocalPlayer:InVehicle()
+
+        if inVehicle then
+            local cameraPos = Camera:GetPosition()
+
+            self.sound:SetPosition(cameraPos)
             self.sound:SetParameter(0, Game:GetSetting(GameSetting.MusicVolume) / 100)
         end
     end
 end
 
 function VehicleRadio:LocalPlayerEnterVehicle()
-    Game:ShowPopup(self.locStrings["title"] .. self.locStrings["off"], false)
+    local locStrings = self.locStrings
+
+    Game:ShowPopup(locStrings["title"] .. locStrings["off"], false)
     self.check = 0
 
     if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe("PreTick", self, self.PreTick) end

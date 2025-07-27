@@ -140,10 +140,12 @@ function Lobby:NetworkBroadcast(event, args)
 end
 
 function Lobby:Collision(args, sender)
+    local deathPosition = self.deathPosition
+
     for player in self:GetPlayers() do
         if player == sender then
             player:SetHealth(1)
-            player:SetPosition(self.deathPosition)
+            player:SetPosition(deathPosition)
         end
     end
 end
@@ -160,10 +162,14 @@ function Lobby:PreTick()
     local state = self:GetState()
 
     if state == GamemodeState.WAITING then
-        if self.timer:GetSeconds() >= self.startingTime and self.startingTime ~= 0 then
+        local timer = self.timer
+        local seconds = timer:GetSeconds()
+        local startingTime = self.startingTime
+
+        if seconds >= startingTime and startingTime ~= 0 then
             self:Broadcast("Запуск Царь Горы с " .. self:GetQueue():GetSize() .. " игроками!", Color(185, 215, 255))
             self:SetState(GamemodeState.PREPARING)
-        elseif self.startingTime == 0 and self.timer:GetSeconds() > 900 then
+        elseif startingTime == 0 and seconds > 900 then
             local playerCount = self:GetQueue():GetSize()
 
             if playerCount == 0 then
@@ -201,9 +207,12 @@ function Lobby:PreTick()
 
             self:GetQueue():Clear()
         else
+            local timer = self.timer
+            local seconds = timer:GetSeconds()
+            local startingTime = self.startingTime
             local playerCount = self:GetPlayerCount()
 
-            if (self.timer:GetSeconds() - self.startingTime) >= self.waitingTime then
+            if (seconds - startingTime) >= self.waitingTime then
                 if self.minPlayers then
                     self.timer:Restart()
                     self:SetState(GamemodeState.COUNTDOWN)
@@ -214,7 +223,10 @@ function Lobby:PreTick()
             end
         end
     elseif state == GamemodeState.COUNTDOWN then
-        if self.timer:GetSeconds() > 5 then
+        local timer = self.timer
+        local seconds = timer:GetSeconds()
+
+        if seconds > 5 then
             self:SetState(GamemodeState.INPROGRESS, {
                 position = self.position,
                 finish = self.finish,
@@ -223,9 +235,10 @@ function Lobby:PreTick()
         end
     elseif state == GamemodeState.INPROGRESS then
         local playerCount = self:GetPlayerCount()
+        local finish = self.finish
 
         for player in self:GetPlayers() do
-            if self.finish:Distance(player:GetPosition()) < 20 then
+            if finish:Distance(player:GetPosition()) < 20 then
                 self:Disband(player)
             elseif playerCount == 0 then
                 self:Disband()

@@ -44,7 +44,9 @@ function FreeCamManager:TeleportPlayer(args, client)
 end
 
 function FreeCamManager:SendPermissionAll(args)
-    for player in Server:GetPlayers() do
+    local players = Server:GetPlayers()
+
+    for player in players do
         if FreeCamManager.CheckWhiteList(player) then
             Network:Send(player, "FreeCam", {["perm"] = true})
         end

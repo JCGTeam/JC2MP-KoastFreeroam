@@ -10,12 +10,11 @@ local Render = Render
 class 'Autopilot'
 
 function Autopilot:__init()
-    self.draw_target = true -- Whether to draw a target indicator for target-hold
-    self.draw_approach = true -- Whether to draw a path for approach-hold
+    self.drawTarget = true -- Whether to draw a target indicator for target-hold
+    self.drawApproach = true -- Whether to draw a path for approach-hold
 
-    self.two_keys = false -- If false then panel toggle button toggles both the panel and mouse
-    self.panel_toggle_button = "R"
-    self.mouse_toggle_button = "M"
+    self.twoKeys = false -- If false then panel toggle button toggles both the panel and mouse
+    self.mouseToggleButton = "M"
 
     local vehicle = LocalPlayer:GetVehicle()
     if vehicle and vehicle:GetDriver() == LocalPlayer then
@@ -27,15 +26,10 @@ function Autopilot:__init()
     end
 
     self:InitGUI()
-
-    local lang = LocalPlayer:GetValue("Lang")
-    if lang and lang == "EN" then
-        self:Lang()
-    else
-        self.namept = "Нажмите R чтобы включить автопилот."
-    end
+    self:UpdateKeyBinds()
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("ModuleLoad", self, self.WindowResize)
     Events:Subscribe("ResolutionChange", self, self.ResolutionChange)
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.EnterPlane)
@@ -56,7 +50,22 @@ function Autopilot:__init()
 end
 
 function Autopilot:Lang()
-    self.namept = "Press R to enable autopilot panel."
+    self.namept = "Press " .. self.stringKey .. " to enable autopilot panel."
+end
+
+function Autopilot:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local bind = keyBinds and keyBinds["AutopilotMenu"]
+
+    self.expectedKey = bind and bind.type == "Key" and bind.value or 82
+    self.stringKey = bind and bind.type == "Key" and bind.valueString or "R"
+
+    local lang = LocalPlayer:GetValue("Lang")
+    if lang and lang == "EN" then
+        self:Lang()
+    else
+        self.namept = "Нажмите " .. self.stringKey .. " чтобы включить автопилот."
+    end
 end
 
 function Autopilot:InitGUI()
@@ -421,16 +430,16 @@ function Autopilot:PanelOpen(args)
     if LocalPlayer:GetWorld() ~= DefaultWorld then
         return
     end
-    if self.two_keys then
-        if args.key == string.byte(self.panel_toggle_button) and self.vehicle then
+    if self.twoKeys then
+        if args.key == self.expectedKey and self.vehicle then
             self.gui.window:SetVisible(not self.gui.window:GetVisible())
             self:SettingsOff()
         end
-        if args.key == string.byte(self.mouse_toggle_button) and self.vehicle then
+        if args.key == string.byte(self.mouseToggleButton) and self.vehicle then
             Mouse:SetVisible(not Mouse:GetVisible())
         end
     else
-        if args.key == string.byte(self.panel_toggle_button) and self.vehicle then
+        if args.key == self.expectedKey and self.vehicle then
             self.gui.window:SetVisible(not self.gui.window:GetVisible())
             self:SettingsOff()
             Mouse:SetVisible(self.gui.window:GetVisible())
@@ -870,7 +879,7 @@ function Autopilot:ApproachHold()
 end
 
 function Autopilot:DrawApproach() -- Subscribed to GameRender
-    if config[8].on and self.draw_approach then
+    if config[8].on and self.drawApproach then
         local approach = self.approach
 
         if approach then
@@ -883,18 +892,20 @@ end
 
 function Autopilot:TargetHold()
     if not self.target and self.target_timer:GetMilliseconds() > 1000 then
-        local position = self.vehicle:GetPosition()
+        local vehicle = self.vehicle
+        local position = vehicle:GetPosition()
         local nearest_target = nil
         local nearest_target_distance = huge
+        local vehicles = Client:GetVehicles()
 
-        for target in Client:GetVehicles() do
-            if IsValid(target) and target:GetClass() == VehicleClass.Air and target ~= self.vehicle and
+        for target in vehicles do
+            if IsValid(target) and target:GetClass() == VehicleClass.Air and target ~= vehicle and
                 target:GetDriver() then
                 local target_position = target:GetPosition()
                 local target_distance = Vector3.DistanceSqr(position, target_position)
 
                 if target_distance < nearest_target_distance then
-                    if deg(acos(Vector3.Dot(self.vehicle:GetAngle() * Vector3.Forward, (target_position - position):Normalized()))) < 0.5 * planes[self.model].cone_angle then
+                    if deg(acos(Vector3.Dot(vehicle:GetAngle() * Vector3.Forward, (target_position - position):Normalized()))) < 0.5 * planes[self.model].cone_angle then
                         nearest_target = target
                         nearest_target_distance = target_distance
                     end
@@ -934,7 +945,9 @@ function Autopilot:TargetHold()
 end
 
 function Autopilot:Render()
-    if self.hinttimer and self.hinttimer:GetSeconds() >= 7 then
+    local hinttimer = self.hinttimer
+
+    if hinttimer and hinttimer:GetSeconds() >= 7 then
         self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.15, easeIOnut, function(value) self.animationValue = value end, function() self.animationValue = nil end)
 
         self.hinttimer = nil
@@ -942,7 +955,7 @@ function Autopilot:Render()
 
     if Game:GetState() ~= GUIState.Game then return end
 
-    if config[9].on and self.draw_target then
+    if config[9].on and self.drawTarget then
         local target = self.target
 
         if target and IsValid(target.vehicle) then
@@ -968,17 +981,21 @@ function Autopilot:Render()
 
     if LocalPlayer:GetValue("HiddenHUD") then return end
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
-    if not self.animationValue then return end
+
+    local animationValue = self.animationValue
+
+    if not animationValue then return end
 
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     local boost = LocalPlayer:GetValue("Boost")
+    local text = self.namept
     local textSize = 14
-    local size = Render:GetTextSize(self.namept, textSize)
-    local pos = Vector2((Render.Width - size.x) / 2, math.lerp(boost and (Render.Height - size.y - 10) or Render.Height, Render.Height - size.y - (boost and 17 + size.y or 10), self.animationValue))
-    local alpha = math.lerp(0, 255, self.animationValue)
+    local size = Render:GetTextSize(text, textSize)
+    local pos = Vector2((Render.Width - size.x) / 2, math.lerp(boost and (Render.Height - size.y - 10) or Render.Height, Render.Height - size.y - (boost and 17 + size.y or 10), animationValue))
+    local alpha = math.lerp(0, 255, animationValue)
 
-    Render:DrawShadowedText(pos, self.namept, Color(255, 255, 255, alpha), Color(0, 0, 0, alpha), textSize)
+    Render:DrawShadowedText(pos, text, Color(255, 255, 255, alpha), Color(0, 0, 0, alpha), textSize)
 end
 
 function Autopilot:FollowTargetXZ(target_position) -- Heading-hold must be on

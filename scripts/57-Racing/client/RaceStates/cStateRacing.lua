@@ -17,11 +17,14 @@ function StateRacing:__init(race, args)
 
     Events:Fire("RaceStart")
 
+    self:UpdateKeyBinds()
+
+    self:EventSubscribe("UpdateKeyBinds")
     self:EventSubscribe("Render")
     self:EventSubscribe("PostTick")
     self:EventSubscribe("LocalPlayerEnterVehicle")
     self:EventSubscribe("LocalPlayerInput")
-    self:EventSubscribe("ControlDown")
+    self:EventSubscribe("KeyUp")
 
     self:NetworkSubscribe("SetTargetCheckpoint")
     self:NetworkSubscribe("UpdateRacePositions")
@@ -49,7 +52,7 @@ function StateRacing:ExitVehicleCoroutineFunction()
     end
 
     while timer:GetSeconds() <= 7 do
-        DrawText(Vector2(Render.Width * 0.5, Render.Height * 0.29), "Нажмите " .. Controls.GetInputNameByControl("Возродиться") .. ", чтобы возродиться", settings.textColor, 24, "center")
+        DrawText(Vector2(Render.Width * 0.5, Render.Height * 0.29), "Нажмите " .. self.stringKey .. ", чтобы возродиться", settings.textColor, 24, "center")
         coroutine.yield()
     end
 
@@ -59,6 +62,14 @@ function StateRacing:ExitVehicleCoroutineFunction()
 end
 
 -- Events
+
+function StateRacing:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local bind = keyBinds and keyBinds["Respawn"]
+
+    self.expectedKey = bind and bind.type == "Key" and bind.value or 82
+    self.stringKey = bind and bind.type == "Key" and bind.valueString or "R"
+end
 
 function StateRacing:Render()
     self.numTicks = self.numTicks + 1
@@ -211,8 +222,8 @@ function StateRacing:LocalPlayerInput(args)
     return true
 end
 
-function StateRacing:ControlDown(control)
-    if control.name == "Возродиться" then
+function StateRacing:KeyUp(args)
+    if args.key == self.expectedKey then
         Network:Send("RequestRespawn", ".")
     end
 end

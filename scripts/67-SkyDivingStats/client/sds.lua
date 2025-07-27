@@ -45,10 +45,6 @@ function SkydivingStats:__init()
     self.text_size = TextSize.VeryLarge
     self.x_offset = 1
 
-    self.text_clr = Color.White
-    self.text_clr2 = Color.DarkGray
-    self.text_shadow = Color(0, 0, 0, 100)
-
     if not LocalPlayer:InVehicle() then
         self.RenderEvent = Events:Subscribe("Render", self, self.Render)
     end
@@ -85,11 +81,12 @@ end
 function SkydivingStats:CreateWindow()
     if self.window then return end
 
+    local locStrings = self.locStrings
+
     self.window = Window.Create()
     self.window:SetSize(Vector2(300, 70))
     self.window:SetPosition((Render.Size - self.window:GetSize()) / 2)
-
-    self.window:SetTitle(self.locStrings["title"])
+    self.window:SetTitle(locStrings["title"])
     self.window:Subscribe("WindowClosed", function() self:SetWindowVisible(false) end)
 
     self.widgets = {}
@@ -97,7 +94,7 @@ function SkydivingStats:CreateWindow()
     local enabled_checkbox = LabeledCheckBox.Create(self.window)
     enabled_checkbox:SetSize(Vector2(300, 20))
     enabled_checkbox:SetDock(GwenPosition.Top)
-    enabled_checkbox:GetLabel():SetText(self.locStrings["enabled"])
+    enabled_checkbox:GetLabel():SetText(locStrings["enabled"])
     enabled_checkbox:GetCheckBox():SetChecked(self.enabled)
     enabled_checkbox:GetCheckBox():Subscribe("CheckChanged", function() self.enabled = enabled_checkbox:GetCheckBox():GetChecked() end)
 
@@ -105,7 +102,7 @@ function SkydivingStats:CreateWindow()
     rbc:SetSize(Vector2(300, 20))
     rbc:SetDock(GwenPosition.Top)
 
-    local units = {self.locStrings["ms"], self.locStrings["kmh"], self.locStrings["mph"]}
+    local units = {locStrings["ms"], locStrings["kmh"], locStrings["mph"]}
     for i, v in ipairs(units) do
         local option = rbc:AddOption(v)
         option:SetSize(Vector2(100, 20))
@@ -140,23 +137,31 @@ function SkydivingStats:GetMultiplier()
 end
 
 function SkydivingStats:GetUnitString()
+    local locStrings = self.locStrings
+
     if self.unit == 0 then
-        return self.locStrings["ms"]
+        return locStrings["ms"]
     elseif self.unit == 1 then
-        return self.locStrings["kmh"]
+        return locStrings["kmh"]
     elseif self.unit == 2 then
-        return self.locStrings["mph"]
+        return locStrings["mph"]
     end
 end
 
 function SkydivingStats:DrawText(text, textTw)
-    Render:DrawText(Vector3(2, 2, 1), text .. textTw, self.text_shadow, self.text_size)
-    Render:DrawText(Vector3.Zero, text, self.text_clr, self.text_size)
-    Render:DrawText(Vector3.Zero + Vector3(Render:GetTextWidth(text, self.text_size), 0, 0), textTw, self.text_clr2, self.text_size)
+    local text_clr = Color.White
+    local text_clr2 = Color.DarkGray
+    local text_shadow = Color(0, 0, 0, 100)
+    local text_size = self.text_size
+
+    Render:DrawText(Vector3(2, 2, 1), text .. textTw, text_shadow, text_size)
+    Render:DrawText(Vector3.Zero, text, text_clr, text_size)
+    Render:DrawText(Vector3.Zero + Vector3(Render:GetTextWidth(text, text_size), 0, 0), textTw, text_clr2, text_size)
 end
 
 function SkydivingStats:DrawSpeedometer(t)
     local speed = LocalPlayer:GetLinearVelocity():Length()
+    local text_size = self.text_size
 
     if not self.average_speed then
         self.average_speed = speed
@@ -166,13 +171,17 @@ function SkydivingStats:DrawSpeedometer(t)
 
     local text = string.format("%.02f", speed * self:GetMultiplier())
     local textTw = " " .. self:GetUnitString()
-    local text_vsize = Render:GetTextSize(text, self.text_size)
+    local text_vsize = Render:GetTextSize(text, text_size)
     local text_vsize_3d = Vector3(text_vsize.x, text_vsize.y, 0)
     local ang = Camera:GetAngle()
 
     local right = Copy(t)
-    right:Translate(Vector3(self.x_offset, -0.4, -5))
-    right:Rotate(Angle(math.pi - math.rad(30), 0, math.pi))
+    local pi = math.pi
+    local x_offset = self.x_offset
+    local rad = math.rad(30)
+
+    right:Translate(Vector3(x_offset, -0.4, -5))
+    right:Rotate(Angle(pi - rad, 0, pi))
     right:Scale(0.002)
 
     Render:SetTransform(right)
@@ -182,6 +191,7 @@ end
 
 function SkydivingStats:DrawAngle(t)
     local angle = math.deg(LocalPlayer:GetAngle().pitch)
+    local text_size = self.text_size
 
     if self.average_angle == nil then
         self.average_angle = angle
@@ -191,13 +201,17 @@ function SkydivingStats:DrawAngle(t)
 
     local text = string.format("%.02f", angle)
     local textTw = string.format(" \176")
-    local text_vsize = Render:GetTextSize(text, self.text_size)
+    local text_vsize = Render:GetTextSize(text, text_size)
     local text_vsize_3d = Vector3(text_vsize.x, text_vsize.y, 0)
     local ang = Camera:GetAngle()
 
     local right = Copy(t)
-    right:Translate(Vector3(self.x_offset, -0.6, -5))
-    right:Rotate(Angle(math.pi - math.rad(30), 0, math.pi))
+    local pi = math.pi
+    local x_offset = self.x_offset
+    local rad = math.rad(30)
+
+    right:Translate(Vector3(x_offset, -0.6, -5))
+    right:Rotate(Angle(pi - rad, 0, pi))
     right:Scale(0.002)
 
     Render:SetTransform(right)
@@ -208,18 +222,24 @@ end
 function SkydivingStats:DrawDistance(t)
     local pos = LocalPlayer:GetBonePosition("ragdoll_Spine")
     local dir = LocalPlayer:GetAngle() * Vector3(0, -1, 1)
+    local text_size = self.text_size
 
     local distance = pos.y - (math.max(200, Physics:GetTerrainHeight(pos)))
 
+    local locStrings = self.locStrings
     local text = string.format("%.02f", distance)
-    local textTw = self.locStrings["nameFo"]
-    local text_vsize = Render:GetTextSize(text, self.text_size)
+    local textTw = locStrings["nameFo"]
+    local text_vsize = Render:GetTextSize(text, text_size)
     local text_vsize_3d = Vector3(text_vsize.x, text_vsize.y, 0)
     local ang = Camera:GetAngle()
 
     local right = Copy(t)
-    right:Translate(Vector3(self.x_offset, -0.8, -5))
-    right:Rotate(Angle(math.pi - math.rad(30), 0, math.pi))
+    local pi = math.pi
+    local x_offset = self.x_offset
+    local rad = math.rad(30)
+
+    right:Translate(Vector3(x_offset, -0.8, -5))
+    right:Rotate(Angle(pi - rad, 0, pi))
     right:Scale(0.002)
 
     Render:SetTransform(right)
@@ -228,15 +248,21 @@ function SkydivingStats:DrawDistance(t)
 end
 
 function SkydivingStats:DrawTimer(t)
+    local locStrings = self.locStrings
     local text = string.format("%.02f", self.flight_timer:GetSeconds())
-    local textTw = self.locStrings["nameFi"]
-    local text_vsize = Render:GetTextSize(text, self.text_size)
+    local textTw = locStrings["nameFi"]
+    local text_size = self.text_size
+    local text_vsize = Render:GetTextSize(text, text_size)
     local text_vsize_3d = Vector3(text_vsize.x, text_vsize.y, 0)
     local ang = Camera:GetAngle()
 
     local right = Copy(t)
-    right:Translate(Vector3(self.x_offset, -0.2, -5))
-    right:Rotate(Angle(math.pi - math.rad(30), 0, math.pi))
+    local pi = math.pi
+    local x_offset = self.x_offset
+    local rad = math.rad(30)
+
+    right:Translate(Vector3(x_offset, -0.2, -5))
+    right:Rotate(Angle(pi - rad, 0, pi))
     right:Scale(0.002)
 
     Render:SetTransform(right)
@@ -249,15 +275,18 @@ function SkydivingStats:Render()
     if Game:GetState() ~= GUIState.Game then return end
     if LocalPlayer:GetValue("SpectatorMode") then return end
 
-    if LocalPlayer:GetBaseState() ~= AnimationState.SSkydive and LocalPlayer:GetBaseState() ~= AnimationState.SSkydiveDash then return end
+    local bs = LocalPlayer:GetBaseState()
 
-    local position = LocalPlayer:GetBonePosition("ragdoll_Head")
+    if bs ~= AnimationState.SSkydive and bs ~= AnimationState.SSkydiveDash then return end
 
     Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
 
     local t = Transform3()
-    t:Translate(Camera:GetPosition())
-    t:Rotate(Camera:GetAngle())
+    local cameraPos = Camera:GetPosition()
+    local cameraAngle = Camera:GetAngle()
+
+    t:Translate(cameraPos)
+    t:Rotate(cameraAngle)
 
     self:DrawSpeedometer(t)
     self:DrawAngle(t)
@@ -267,13 +296,16 @@ end
 
 function SkydivingStats:PostTick()
     if not self.enabled or LocalPlayer:GetValue("HiddenHUD") then return end
-    if LocalPlayer:GetBaseState() == last_bs then return end
+
+    local bs = LocalPlayer:GetBaseState()
+
+    if bs == self.last_bs then return end
 
     if not LocalPlayer:GetValue("IsPigeonMod") then
         self.flight_timer:Restart()
     end
 
-    last_bs = LocalPlayer:GetBaseState()
+    self.last_bs = bs
 end
 
 function SkydivingStats:ToggleWindowVisible()

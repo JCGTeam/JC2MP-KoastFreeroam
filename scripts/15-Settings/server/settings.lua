@@ -6,7 +6,7 @@ function Settings:__init()
     -- SQL:Execute( "CREATE TABLE IF NOT EXISTS players_binds (steamid VARCHAR UNIQUE, servermenu INTEGER, actionsmenu INTEGER, quicktp INTEGER, togglegrenades INTEGER, freecam INTEGER, opendoors INTEGER, playerslist INTEGER, firstperson INTEGER, toggleserverui INTEGER, boost INTEGER, airboost INTEGER, vehcamera INTEGER, nexttrack INTEGER, tuning INTEGER)" )
 
     -- for p in Server:GetPlayers() do
-    --	self:GetDBSettings( p )
+    --	self:GetDBSettings(p)
     -- end
 
     Events:Subscribe("PlayerJoin", self, self.PlayerJoin)

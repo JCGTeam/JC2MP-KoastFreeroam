@@ -3,74 +3,95 @@ BindMenu = {}
 -- Controls can only be assigned to these if using a gamepad.
 BindMenu.blockedMouseActions = {Action.LookUp, Action.LookDown, Action.LookLeft, Action.LookRight, Action.HeliTurnLeft, Action.HeliTurnRight}
 
-BindMenu.Create = function(...)
-    local window = Rectangle.Create(...)
-    window:SetColor(Color(16, 16, 16))
-    window:SetPadding(Vector2(2, 2), Vector2(2, 2))
-    window:SetSize(Vector2(276, 128))
+BindMenu.Create = function(locStrings)
+    local window = SortedList.Create()
+    window:SetDock(GwenPosition.Fill)
 
     -- Array of tables. See Controls.
     window.controls = {}
     window.buttons = {}
+    window.resetButtons = {}
+    window.labelByName = {}
+
     window.state = "Idle"
-    window.eventInput = nil
-    window.eventKeyUp = nil
-    window.eventMouseUp = nil
-    window.eventMouseWheel = nil
-    window.eventPostTick = nil
-    window.activatedButton = nil
-    window.receiveEvent = nil
-    window.tickEvent = nil
     window.dirtySettings = false
     window.saveTimer = Timer()
     -- These two are used to delay Actions so it prefers keys or mouse buttons.
-    window.activeAction = nil
     window.ticksSinceAction = 0
     -- Used to determine mouse delta.
-    window.mousePositionStart = nil
 
     -- defaultControl can be an Action name, a Key name, or nil.
     -- Examples: "SoundHornSiren", "LShift", "C", "Mouse3", nil
-    function window:AddControl(name, defaultControl)
+    function window:AddControl(name, defaultControl, title)
         if not name then
             error("Invalid arguments")
         end
 
         local control = Controls.Add(name, defaultControl)
 
-        local button = Button.Create(self)
-        button:SetDock(GwenPosition.Top)
-        button:SetAlignment(GwenPosition.CenterV)
-        button:SetText(name)
-        button:SetDataObject("control", control)
-        button:Subscribe("Press", self, self.ButtonPressed)
-        button:Subscribe("RightPress", self, self.ButtonPressed)
-        local baseButton = button
-        table.insert(self.buttons, baseButton)
+        local item = self:AddItem("")
+    
+        local label = Label.Create(window)
+        label:SetAlignment(GwenPosition.CenterV)
+        label:SetDock(GwenPosition.Fill)
+        label:SetPadding(Vector2(10, 0), Vector2(10, 0))
+        if title then
+            label:SetText(title)
+        end
+        label:SetDataObject("control", control)
+        label:SetDataObject("defaultControl", defaultControl)
 
-        -- Unassign button
-        local button = Button.Create(baseButton)
-        button:SetDock(GwenPosition.Right)
-        button:SetText(" X ")
-        button:SizeToContents()
-        button:SetToolTip("Сбросить")
-        button:SetTextNormalColor(Color(220, 50, 50))
-        button:SetTextPressedColor(Color(150, 40, 40))
-        button:SetTextHoveredColor(Color(255, 70, 70))
-        button:Subscribe("Down", self, self.UnassignButtonPressed)
+        local baseLabel = label
+        self.labelByName[name] = label
 
-        -- Value label
-        local label = Label.Create(baseButton)
-        label:SetTextColor(baseButton:GetTextColor())
-        label:SetAlignment(GwenPosition.Right)
-        label:SetDock(GwenPosition.Right)
-        label:SetPadding(Vector2(4, 4), Vector2(4, 4))
-        label:SetText(control.valueString)
-        label:SizeToContents()
+        local keyButton = Button.Create(baseLabel)
+        keyButton:SetDock(GwenPosition.Fill)
+        keyButton:SetPadding(Vector2(10, 0), Vector2(10, 0))
+        keyButton:SetText(control.valueString)
+        keyButton:Subscribe("Press", self, function() self:ButtonPressed(baseLabel) end)
 
-        baseButton:SetDataObject("label", label)
+        baseLabel:SetDataObject("label", keyButton)
 
-        self:Assign(baseButton)
+        local resetButton = Button.Create(baseLabel)
+        resetButton:SetDock(GwenPosition.Fill)
+        resetButton:SetText(locStrings["reset"])
+        local color = Color(255, 150, 150)
+        resetButton:SetTextNormalColor(color)
+        resetButton:SetTextPressedColor(color)
+        resetButton:SetTextHoveredColor(color)
+        resetButton:SetDataObject("activeButton", baseLabel)
+        resetButton:Subscribe("Down", self, self.UnassignButtonPressed)
+        table.insert(self.resetButtons, resetButton)
+
+        table.insert(self.controls, {
+            item = item,
+            label = label,
+            button = keyButton,
+            reset = resetButton
+        })
+
+        item:SetHeight(30)
+
+        self:Assign(baseLabel)
+
+        return baseLabel
+    end
+
+    function window:SetColumns(locStrings)
+        window:AddColumn(locStrings["action"])
+
+        local lsReset = locStrings["reset"]
+
+        window:AddColumn(locStrings["key"], Render:GetTextWidth(InputNames.Key[74]) + 25)
+        window:AddColumn(lsReset, Render:GetTextWidth(lsReset) + 15)
+
+        for _, control in ipairs(self.controls) do
+            local item = control.item
+
+            item:SetCellContents(0, control.label)
+            item:SetCellContents(1, control.button)
+            item:SetCellContents(2, control.reset)
+        end
     end
 
     function window:Assign(activeButton)
@@ -81,29 +102,27 @@ BindMenu.Create = function(...)
         local control = activeButton:GetDataObject("control")
         local label = activeButton:GetDataObject("label")
         label:SetText(control.valueString)
-        label:SizeToContents()
-        if control.type == "Unassigned" then
-            label:SetTextColor(Color(255, 127, 127))
-        else
-            label:SetTextColor(activeButton:GetTextColor())
-        end
 
         Controls.Set(control)
 
-        if IsValid(self.eventInput) then
-            Events:Unsubscribe(self.eventInput)
-            Events:Unsubscribe(self.eventKeyUp)
-            Events:Unsubscribe(self.eventMouseUp)
-            Events:Unsubscribe(self.eventMouseWheel)
+        self:ClearSubscriptions()
+    end
+
+    function window:ClearSubscriptions()
+        if self.PreTickEvent then Events:Unsubscribe(self.PreTickEvent) self.PreTickEvent = nil end
+    
+        if self.eventKeyUp then
+            --Events:Unsubscribe(self.eventInput) self.eventInput = nil
+            Events:Unsubscribe(self.eventKeyUp) self.eventKeyUp = nil
+            --Events:Unsubscribe(self.eventMouseUp) self.eventMouseUp = nil
+            --Events:Unsubscribe(self.eventMouseWheel) self.eventMouseWheel = nil
         end
     end
 
     -- GWEN events
 
     function window:ButtonPressed(button)
-        if self.state ~= "Idle" then
-            return
-        end
+        if self.state ~= "Idle" then return end
 
         self.state = "Activated"
 
@@ -114,26 +133,21 @@ BindMenu.Create = function(...)
 
         self.activatedButton = button
         self.activeAction = nil
-        self.mousePositionStart = Mouse:GetPosition()
 
-        self.eventInput = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+        --self.eventInput = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
         self.eventKeyUp = Events:Subscribe("KeyUp", self, self.KeyUp)
-        self.eventMouseUp = Events:Subscribe("MouseUp", self, self.MouseButtonUp)
-        self.eventMouseWheel = Events:Subscribe("MouseScroll", self, self.MouseScroll)
+        --self.eventMouseUp = Events:Subscribe("MouseUp", self, self.MouseButtonUp)
+        --self.eventMouseWheel = Events:Subscribe("MouseScroll", self, self.MouseScroll)
     end
 
     function window:MouseMovementButtonPressed(button)
-        if self.state ~= "Idle" then
-            return
-        end
+        if self.state ~= "Idle" then return end
 
         self.state = "ActivatedMouse"
 
         BindMenu.SetEnabledRecursive(self, false)
 
         self.activatedButton = button:GetParent()
-
-        self.mousePositionStart = Mouse:GetPosition()
 
         local label = self.activatedButton:GetDataObject("label")
         label:SetText("...")
@@ -142,16 +156,29 @@ BindMenu.Create = function(...)
     function window:UnassignButtonPressed(button)
         if self.state ~= "Idle" then return end
 
-        local activeButton = button:GetParent()
-        local control = activeButton:GetDataObject("control")
+        local activeButton = button:GetDataObject("activeButton")
+        local defaultControl = activeButton:GetDataObject("defaultControl")
+        local control = Controls.Add(activeButton:GetDataObject("control").name, defaultControl)
 
-        control.type = "Unassigned"
-        control.value = -1
-        control.valueString = "Unassigned"
-
+        activeButton:SetDataObject("control", control)
         self:Assign(activeButton)
 
         self.dirtySettings = true
+
+        Controls.UpdateBindings()
+    end
+
+    function window:ResetAllControls()
+        for name, label in pairs(self.labelByName) do
+            local defaultControl = label:GetDataObject("defaultControl")
+            local control = Controls.Add(name, defaultControl)
+
+            label:SetDataObject("control", control)
+            self:Assign(label)
+        end
+
+        self.dirtySettings = true
+        Controls.UpdateBindings()
     end
 
     function window:RequestSettings()
@@ -205,16 +232,51 @@ BindMenu.Create = function(...)
     end
 
     function window:KeyUp(args)
+        if not self.activatedButton then return end
+
         local control = self.activatedButton:GetDataObject("control")
 
-        control.type = "Key"
-        control.value = args.key
-        control.valueString = InputNames.GetKeyName(args.key)
+        if args.key == VirtualKey.Escape then
+            local label = self.activatedButton:GetDataObject("label")
 
-        self:Assign(self.activatedButton)
-        self.activatedButton = nil
+            label:SetText(control.valueString)
 
-        self.dirtySettings = true
+            self.activatedButton = nil
+            self.state = "Idle"
+
+            BindMenu.SetEnabledRecursive(self, true)
+
+            self:ClearSubscriptions()
+            return
+        end
+
+        local pressedKey = args.key
+
+        self:ClearSubscriptions()
+
+        self.keyDelayTimer = Timer()
+
+        self.PreTickEvent = Events:Subscribe("PreTick", function()
+            if self.keyDelayTimer and self.keyDelayTimer:GetSeconds() > 0.1 then
+                control.type = "Key"
+                control.value = pressedKey
+                control.valueString = InputNames.GetKeyName(pressedKey)
+
+                self:Assign(self.activatedButton)
+                self.activatedButton = nil
+                self.state = "Idle"
+
+                self.dirtySettings = true
+
+                BindMenu.SetEnabledRecursive(self, true)
+
+                self.keyDelayTimer = nil
+
+                Controls.UpdateBindings()
+
+                self:ClearSubscriptions()
+            end
+        end)
     end
 
     function window:MouseButtonUp(args)
@@ -228,6 +290,8 @@ BindMenu.Create = function(...)
         self.activatedButton = nil
 
         self.dirtySettings = true
+
+        Controls.UpdateBindings()
     end
 
     function window:MouseScroll(args)
@@ -245,6 +309,8 @@ BindMenu.Create = function(...)
         self.activatedButton = nil
 
         self.dirtySettings = true
+
+        Controls.UpdateBindings()
     end
 
     function window:PostTick()
@@ -319,19 +385,24 @@ BindMenu.Create = function(...)
                 })[control.value]
             end
 
-            for index, button in ipairs(self.buttons) do
-                local controlToAssign = button:GetDataObject("control")
-                if controlToAssign.name == control.name then
-                    button:SetDataObject("control", control)
-                    self:Assign(button)
-                    break
-                end
+            local button = self.labelByName and self.labelByName[control.name]
+            if button then
+                button:SetDataObject("control", control)
+                self:Assign(button)
             end
         end
+
+        Controls.UpdateBindings()
     end
 
     window.tickEvent = Events:Subscribe("PostTick", window, window.PostTick)
     window.receiveEvent = Network:Subscribe("BindMenuReceiveSettings", window, window.ReceiveSettings)
+
+    function window:SetResetText(text)
+        for _, button in ipairs(self.resetButtons) do
+            button:SetText(text)
+        end
+    end
 
     return window
 end

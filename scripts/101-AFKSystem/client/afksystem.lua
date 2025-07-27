@@ -32,7 +32,8 @@ function AFKSystem:LocalPlayerInput()
     local seconds = self.timer:GetSeconds()
 
     if seconds >= self.secondsToEnterAFK then
-        local text = self.locStrings["welcomeback"] .. " " .. tostring(LocalPlayer:GetName()) .. "! " .. self.locStrings["pausetime"] .. " " .. self:SecondsToClock(seconds)
+        local locStrings = self.locStrings
+        local text = locStrings["welcomeback"] .. " " .. tostring(LocalPlayer:GetName()) .. "! " .. locStrings["pausetime"] .. " " .. self:SecondsToClock(seconds)
 
         Chat:Print(self.tag, Color.White, text, Color.DarkGray)
     end
@@ -41,6 +42,8 @@ function AFKSystem:LocalPlayerInput()
 end
 
 function AFKSystem:ModuleUnload()
+    if not IsValid(LocalPlayer) then return end
+
     self:LocalPlayerInput()
 end
 

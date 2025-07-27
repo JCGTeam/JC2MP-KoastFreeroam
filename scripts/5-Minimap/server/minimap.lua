@@ -11,13 +11,14 @@ function BetterMinimap:PostTick()
     if self.timer:GetSeconds() > self.interval then
         local playerPositions = {}
 
-        for player in Server:GetPlayers() do
-            local playerId = player:GetId()
-            if not player:GetValue("HideMe") then
+        for p in Server:GetPlayers() do
+            local playerId = p:GetId()
+
+            if not p:GetValue("HideMe") then
                 playerPositions[playerId] = {
-                    position = player:GetPosition(),
-                    color = player:GetColor(),
-                    worldId = player:GetWorld():GetId(),
+                    position = p:GetPosition(),
+                    color = p:GetColor(),
+                    worldId = p:GetWorld():GetId(),
                     tringle = "none"
                 }
             end

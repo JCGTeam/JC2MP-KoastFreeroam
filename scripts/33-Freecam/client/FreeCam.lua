@@ -8,18 +8,15 @@ function FreeCam:__init()
     self.speedUp = 8
     self.speedDown = 4
     self.teleport = false
-    self.activateKey = 'O'
     self.mouseSensitivity = 0.15
     self.gamepadSensitivity = 0.08
     self.permitted = true
 
+    self:UpdateKeyBinds()
+
     self.locStrings = {
         controltip = "[WASD] - Перемещение\n[Shift] - Ускорить движение\n[Ctrl] - Замедлить движение\n[<>] - Изменить угол камеры\n[{}] - Изменить поле зрения камеры\n[X] - Сбросить угол и поле зрения камеры\n[L] - Показать/скрыть черные полосы\n[Z] - Скрыть/показать подсказки"
     }
-
-    self.controltip_clr = Color.White
-    self.controltip_shadow = Color.Black
-    self.controltip_size = 15
 
     self.active = false
     self.translation = Vector3.Zero
@@ -29,6 +26,7 @@ function FreeCam:__init()
     self.gamepadPressed = {false, false, false}
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("KeyUp", self, self.KeyUp)
 
     -- Change permission/force activate
@@ -57,8 +55,17 @@ function FreeCam:Lang()
     }
 end
 
+function FreeCam:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local bind = keyBinds and keyBinds["Freecam"]
+
+    self.expectedKey = bind and bind.type == "Key" and bind.value or 79
+end
+
 function FreeCam:Render()
-    if self.blackLines then
+    local blackLines = self.blackLines
+
+    if blackLines then
         local blacklinesize = Render.Size.x / 20
         local linescolor = Color.Black
 
@@ -66,23 +73,35 @@ function FreeCam:Render()
         Render:FillArea(Vector2(0, Render.Size.y - blacklinesize), Vector2(Render.Size.x, blacklinesize), linescolor)
     end
 
-    if Game:GetState() ~= 0 then
-        if Game:GetState() ~= GUIState.Game then return end
+    local gameState = Game:GetState()
+
+    if gameState ~= 0 then
+        if gameState ~= GUIState.Game then return end
     end
 
     Game:FireEvent("gui.hud.hide")
 
-    if self.tip then
+    local tip = self.tip
+
+    if tip then
         Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
-        Render:DrawShadowedText(Vector2(50, 50), self.locStrings["controltip"], self.controltip_clr, self.controltip_shadow, self.controltip_size)
+
+        local locStrings = self.locStrings
+        local controltip_clr = Color.White
+        local controltip_shadow = Color.Black
+        local controltip_size = 15
+
+        Render:DrawShadowedText(Vector2(50, 50), locStrings["controltip"], controltip_clr, controltip_shadow, controltip_size)
     end
 end
 
 function FreeCam:UpdateCamera()
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-    if Game:GetState() ~= 0 then
-        if Game:GetState() ~= GUIState.Game then return end
+    local gameState = Game:GetState()
+
+    if gameState ~= 0 then
+        if gameState ~= GUIState.Game then return end
     end
 
     -- Set speed
@@ -210,11 +229,13 @@ end
 function FreeCam:KeyUp(args)
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-    if Game:GetState() ~= 0 then
-        if Game:GetState() ~= GUIState.Game then return end
+    local gameState = Game:GetState()
+
+    if gameState ~= 0 then
+        if gameState ~= GUIState.Game then return end
     end
 
-    if args.key == string.byte(self.activateKey) and self.permitted then
+    if args.key == self.expectedKey and self.permitted then
         if not self.active then
             self:Activate()
         else
@@ -243,8 +264,10 @@ function FreeCam:MouseDown(args)
 end
 
 function FreeCam:PlayerInput(args)
-    if Game:GetState() ~= 0 then
-        if Game:GetState() ~= GUIState.Game then return end
+    local gameState = Game:GetState()
+
+    if gameState ~= 0 then
+        if gameState ~= GUIState.Game then return end
     end
 
     local sensitivity = self.mouseSensitivity

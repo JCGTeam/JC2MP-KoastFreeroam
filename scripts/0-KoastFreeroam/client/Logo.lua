@@ -17,7 +17,10 @@ end
 function Logo:Render()
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
-    Render:DrawText(Vector2(20, Render.Height - Render:GetTextHeight(self.logo_txt) - 15), self.logo_txt, self.logo_clr)
+    local logo_txt = self.logo_txt
+    local logo_clr = self.logo_clr
+
+    Render:DrawText(Vector2(20, Render.Height - Render:GetTextHeight(logo_txt) - 15), logo_txt, logo_clr)
 end
 
 local logo = Logo()

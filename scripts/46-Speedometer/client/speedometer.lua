@@ -105,11 +105,12 @@ end
 function Speedometer:CreateWindow()
     if self.window then return end
 
+    local locStrings = self.locStrings
+
     self.window = Window.Create()
     self.window:SetSize(Vector2(300, 135))
     self.window:SetPosition((Render.Size - self.window:GetSize()) / 2)
-
-    self.window:SetTitle(self.locStrings["title"])
+    self.window:SetTitle(locStrings["title"])
     self.window:Subscribe("WindowClosed", self, function() self:SetWindowVisible(false) end)
 
     self.widgets = {}
@@ -121,19 +122,19 @@ function Speedometer:CreateWindow()
 
     enabled_checkbox:SetSize(Vector2(300, 20))
     enabled_checkbox:SetDock(GwenPosition.Top)
-    enabled_checkbox:GetLabel():SetText(self.locStrings["enabled"])
+    enabled_checkbox:GetLabel():SetText(locStrings["enabled"])
     enabled_checkbox:GetCheckBox():SetChecked(self.enabled)
     enabled_checkbox:GetCheckBox():Subscribe("CheckChanged", function() self.enabled = enabled_checkbox:GetCheckBox():GetChecked() end)
 
     peredacha_checkbox:SetSize(Vector2(300, 20))
     peredacha_checkbox:SetDock(GwenPosition.Top)
-    peredacha_checkbox:GetLabel():SetText(self.locStrings["gear"])
+    peredacha_checkbox:GetLabel():SetText(locStrings["gear"])
     peredacha_checkbox:GetCheckBox():SetChecked(self.peredacha)
     peredacha_checkbox:GetCheckBox():Subscribe("CheckChanged", function() self.peredacha = peredacha_checkbox:GetCheckBox():GetChecked() end)
 
     bottom_checkbox:SetSize(Vector2(300, 20))
     bottom_checkbox:SetDock(GwenPosition.Top)
-    bottom_checkbox:GetLabel():SetText(self.locStrings["onscreenmode"])
+    bottom_checkbox:GetLabel():SetText(locStrings["onscreenmode"])
     bottom_checkbox:GetCheckBox():SetChecked(self.bottom_aligned)
     bottom_checkbox:GetCheckBox():Subscribe("CheckChanged", function()
         self.bottom_aligned = bottom_checkbox:GetCheckBox():GetChecked()
@@ -153,7 +154,7 @@ function Speedometer:CreateWindow()
 
     center_checkbox:SetSize(Vector2(300, 20))
     center_checkbox:SetDock(GwenPosition.Top)
-    center_checkbox:GetLabel():SetText(self.locStrings["firstpersonmode"])
+    center_checkbox:GetLabel():SetText(locStrings["firstpersonmode"])
     center_checkbox:GetCheckBox():SetChecked(self.center_aligned)
     center_checkbox:GetCheckBox():Subscribe("CheckChanged", function()
         self.center_aligned = center_checkbox:GetCheckBox():GetChecked()
@@ -167,7 +168,7 @@ function Speedometer:CreateWindow()
     rbc:SetSize(Vector2(300, 20))
     rbc:SetDock(GwenPosition.Top)
 
-    local units = {self.locStrings["ms"], self.locStrings["kmh"], self.locStrings["mph"]}
+    local units = {locStrings["ms"], locStrings["kmh"], locStrings["mph"]}
     for i, v in ipairs(units) do
         local option = rbc:AddOption(v)
         option:SetSize(Vector2(100, 20))
@@ -204,12 +205,14 @@ function Speedometer:GetSpeed(vehicle)
 end
 
 function Speedometer:GetUnitString()
+    local locStrings = self.locStrings
+
     if self.unit == 0 then
-        return self.locStrings["ms"]
+        return locStrings["ms"]
     elseif self.unit == 1 then
-        return self.locStrings["kmh"]
+        return locStrings["kmh"]
     elseif self.unit == 2 then
-        return self.locStrings["mph"]
+        return locStrings["mph"]
     end
 end
 
@@ -251,20 +254,22 @@ function Speedometer:Render()
 
     local speed = self:GetSpeed(vehicle)
     local speed_text = string.format("%.f", speed)
-    local speed_size = Render:GetTextSize(speed_text, self.speed_text_size)
+    local speed_text_size = self.speed_text_size
+    local speed_size = Render:GetTextSize(speed_text, speed_text_size)
 
     local vehicleAngle = vehicle:GetAngle()
     local vehicleVelocity = -vehicleAngle * vehicle:GetLinearVelocity()
     local currentGear = vehicle:GetTransmission():GetGear()
 
     local gearString = "1"
+    local peredacha = self.peredacha
 
-    if self.peredacha then
+    if peredacha then
         if currentGear >= 4 then
             gearString = tostring(currentGear)
         elseif currentGear == 3 then
             gearString = "3"
-        elseif vehicle:GetTransmission():GetGear() == 2 then
+        elseif currentGear == 2 then
             gearString = "2"
         elseif vehicleVelocity.z > 1 then
             gearString = "R"
@@ -272,17 +277,25 @@ function Speedometer:Render()
     end
 
     local unit_text = self:GetUnitString()
-    local unit_size = Render:GetTextSize(unit_text, self.unit_text_size)
-    local angle = vehicleAngle * Angle(math.pi, 0, math.pi)
+    local unit_text_size = self.unit_text_size
+    local unit_size = Render:GetTextSize(unit_text, unit_text_size)
+    local pi = math.pi
+    local angle = vehicleAngle * Angle(pi, 0, pi)
+    local vHelath = vehicle:GetHealth()
 
-    local factor = math.clamp(vehicle:GetHealth() - 0.4, 0.0, 0.6) * 2.5
+    local factor = math.clamp(vHelath - 0.4, 0.0, 0.6) * 2.5
 
     local vehBrake = LocalPlayer:GetValue("VehBrake")
-    local col = math.lerp(vehBrake and self.bHealth or self.zHealth, vehBrake and self.bHealth or self.fHealth, factor)
+
+    local fHealth = self.fHealth
+    local zHealth = self.zHealth
+    local bHealth = self.bHealth
+    local col = math.lerp(vehBrake and bHealth or zHealth, vehBrake and bHealth or fHealth, factor)
     local textcol = col
 
     local text_col = Color.White
     local text_size = speed_size + Vector2(unit_size.x + 16, 0)
+    local text_shadow = self.text_shadow
 
     local speed_position = Vector2(Render.Width / 2, Render.Height)
 
@@ -294,20 +307,20 @@ function Speedometer:Render()
     unit_position.x = speed_position.x + speed_size.x + 10
     unit_position.y = speed_position.y + ((speed_size.y - unit_size.y) / 2)
 
-    self:DrawShadowedText2(speed_position, speed_text, textcol, self.speed_text_size)
-    self:DrawShadowedText2(unit_position, unit_text, text_col, self.unit_text_size)
+    self:DrawShadowedText2(speed_position, speed_text, textcol, speed_text_size)
+    self:DrawShadowedText2(unit_position, unit_text, text_col, unit_text_size)
 
     local bar_len = 300
     local bar_start = (Render.Width - bar_len) / 2
 
     local bar_pos = Vector2(bar_start, speed_position.y + text_size.y)
     local final_pos = Vector2(bar_len, 6)
-    if self.peredacha then
-        self:DrawShadowedText2(bar_pos - Vector2(30, 20), gearString, text_col, self.unit_text_size)
+    if peredacha then
+        self:DrawShadowedText2(bar_pos - Vector2(30, 20), gearString, text_col, unit_text_size)
     end
 
-    bar_len = bar_len * vehicle:GetHealth()
-    Render:FillArea(bar_pos, final_pos, self.text_shadow)
+    bar_len = bar_len * vHelath
+    Render:FillArea(bar_pos, final_pos, text_shadow)
     Render:FillArea(bar_pos, Vector2(bar_len, 5), col)
 end
 
@@ -322,20 +335,22 @@ function Speedometer:GameRender()
 
     local speed = self:GetSpeed(vehicle)
     local speed_text = string.format("%.f", speed)
-    local speed_size = Render:GetTextSize(speed_text, self.speed_text_size)
+    local speed_text_size = self.speed_text_size
+    local speed_size = Render:GetTextSize(speed_text, speed_text_size)
 
     local vehicleAngle = vehicle:GetAngle()
     local vehicleVelocity = -vehicleAngle * vehicle:GetLinearVelocity()
     local currentGear = vehicle:GetTransmission():GetGear()
 
     local gearString = "1"
+    local peredacha = self.peredacha
 
-    if self.peredacha then
+    if peredacha then
         if currentGear >= 4 then
             gearString = tostring(currentGear)
         elseif currentGear == 3 then
             gearString = "3"
-        elseif vehicle:GetTransmission():GetGear() == 2 then
+        elseif currentGear == 2 then
             gearString = "2"
         elseif vehicleVelocity.z > 1 then
             gearString = "R"
@@ -343,22 +358,32 @@ function Speedometer:GameRender()
     end
 
     local unit_text = self:GetUnitString()
-    local unit_size = Render:GetTextSize(unit_text, self.unit_text_size)
-    local angle = vehicleAngle * Angle(math.pi, 0, math.pi)
+    local unit_text_size = self.unit_text_size
+    local unit_size = Render:GetTextSize(unit_text, unit_text_size)
+    local pi = math.pi
+    local angle = vehicleAngle * Angle(pi, 0, pi)
+    local vHelath = vehicle:GetHealth()
 
-    local factor = math.clamp(vehicle:GetHealth() - 0.4, 0.0, 0.6) * 2.5
+    local factor = math.clamp(vHelath - 0.4, 0.0, 0.6) * 2.5
 
     local vehBrake = LocalPlayer:GetValue("VehBrake")
-    local alpha = math.lerp(0, 255, self.animationValue)
-    local zHealth = Color(self.zHealth.r, self.zHealth.g, self.zHealth.b, alpha)
-    local fHealth = Color(self.fHealth.r, self.fHealth.g, self.fHealth.b, alpha)
-    local bHealth = Color(self.bHealth.r, self.bHealth.g, self.bHealth.b, alpha)
-    local col = math.lerp(vehBrake and bHealth or zHealth, vehBrake and bHealth or fHealth, factor)
+
+    local fHealth = self.fHealth
+    local zHealth = self.zHealth
+    local bHealth = self.bHealth
+    local animationValue = self.animationValue
+    local alpha = math.lerp(0, 255, animationValue)
+
+    local zHealthCol = Color(zHealth.r, zHealth.g, zHealth.b, alpha)
+    local fHealthCol = Color(fHealth.r, fHealth.g, fHealth.b, alpha)
+    local bHealthCol = Color(bHealth.r, bHealth.g, bHealth.b, alpha)
+    local col = math.lerp(vehBrake and bHealthCol or zHealthCol, vehBrake and bHealthCol or fHealthCol, factor)
     local textcol = col
 
     local text_col = Color(255, 255, 255, alpha)
     local text_size = speed_size + Vector2(unit_size.x + 24, 0)
-    local text_shadow = Color(self.text_shadow.r, self.text_shadow.g, self.text_shadow.b, math.lerp(0, self.text_shadow.a, self.animationValue))
+    local text_shadow = self.text_shadow
+    local text_shadow_col = Color(text_shadow.r, text_shadow.g, text_shadow.b, math.lerp(0, text_shadow.a, animationValue))
 
     local t = Transform3()
 
@@ -389,17 +414,17 @@ function Speedometer:GameRender()
 
     Render:SetTransform(t)
 
-    self:DrawShadowedText3(Vector3.Zero, speed_text, textcol, self.speed_text_size)
-    self:DrawShadowedText3(Vector3(speed_size.x + 24, (speed_size.y - unit_size.y) / 2, 0), unit_text, text_col, self.unit_text_size)
+    self:DrawShadowedText3(Vector3.Zero, speed_text, textcol, speed_text_size)
+    self:DrawShadowedText3(Vector3(speed_size.x + 24, (speed_size.y - unit_size.y) / 2, 0), unit_text, text_col, unit_text_size)
 
     local bar_pos = Vector3(0, text_size.y + 4, 0)
-    local bar_len = text_size.x * vehicle:GetHealth()
-    if self.peredacha then
-        self:DrawShadowedText3(Vector3(bar_pos.x - 60, (speed_size.y - unit_size.y) / 0.5, 0), gearString, text_col, self.unit_text_size)
+    local bar_len = text_size.x * vHelath
+    if peredacha then
+        self:DrawShadowedText3(Vector3(bar_pos.x - 60, (speed_size.y - unit_size.y) / 0.5, 0), gearString, text_col, unit_text_size)
     end
 
     Render:FillArea(bar_pos + Vector3(1, 1, 4), Vector3(bar_len, 16, 0), col)
-    Render:FillArea(bar_pos + Vector3(1, 1, 3), Vector3(text_size.x, 20, 0), text_shadow)
+    Render:FillArea(bar_pos + Vector3(1, 1, 3), Vector3(text_size.x, 20, 0), text_shadow_col)
     Render:FillArea(bar_pos, Vector3(bar_len, 16, 0), col)
 end
 

@@ -10,9 +10,6 @@ function CenterText:CastCenterText(args)
     self.textF = args.text
     self.timeF = args.time or 1
     self.color = args.color or Color.White
-    self.shadowColor = Color(0, 0, 0, 80)
-    self.size = 30
-    self.pos = Vector2(Render.Width / 2, Render.Height * 0.42) - Render:GetTextSize(self.textF, self.size) / 2
 
     if self.fadeOutAnimation then Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil end
 
@@ -24,7 +21,9 @@ end
 function CenterText:Render()
     if Game:GetState() ~= GUIState.Game then return end
 
-    if not self.textF then return end
+    local textF = self.textF
+
+    if not textF then return end
 
     if self.timerF then
         local timerFSeconds = self.timerF:GetSeconds()
@@ -34,9 +33,6 @@ function CenterText:Render()
                 self.textF = nil
                 self.timeF = nil
                 self.color = nil
-                self.shadowColor = nil
-                self.size = nil
-                self.pos = nil
                 self.animationValue = nil
                 self.fadeOutAnimation = nil
 
@@ -49,10 +45,16 @@ function CenterText:Render()
 
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
-    local textColor = Color(self.color.r, self.color.g, self.color.b, math.lerp(0, self.color.a, self.animationValue))
-    local textShadow = Color(self.shadowColor.r, self.shadowColor.g, self.shadowColor.b, math.lerp(0, self.shadowColor.a, self.animationValue))
+    local size = 30
+    local pos = Vector2(Render.Width / 2, Render.Height * 0.42) - Render:GetTextSize(textF, size) / 2
+    local color = self.color
+    local shadowColor = Color(0, 0, 0, 80)
 
-    Render:DrawShadowedText(self.pos, self.textF, textColor, textShadow, self.size)
+    local animationValue = self.animationValue
+    local textColor = Color(color.r, color.g, color.b, math.lerp(0, color.a, animationValue))
+    local textShadow = Color(shadowColor.r, shadowColor.g, shadowColor.b, math.lerp(0, shadowColor.a, animationValue))
+
+    Render:DrawShadowedText(pos, textF, textColor, textShadow, size)
 end
 
 local centertext = CenterText()

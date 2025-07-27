@@ -126,11 +126,14 @@ function ServerHealth:PreTick()
 end
 
 function ServerHealth:PlayerJoin(args)
-    if self.iKnowWhatImDoingWarning then
-        args.player:Kick(self.iKnowWhatImDoingWarning)
+    local iKnowWhatImDoingWarning = self.iKnowWhatImDoingWarning
+
+    if iKnowWhatImDoingWarning then
+        args.player:Kick(iKnowWhatImDoingWarning)
     end
 
     local current_count = Server:GetPlayerCount()
+
     if current_count > self.serverStatus:GetValue("MaxPlayers") then
         self.serverStatus:SetValue("MaxPlayers", current_count)
     end

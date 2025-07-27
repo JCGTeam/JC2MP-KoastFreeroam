@@ -7,11 +7,11 @@ function CBoardClient:__init()
     self.fBoardWidth = SCOREBOARD_CONFIGURATION.WIDTH
     self.fBoardHeight = SCOREBOARD_CONFIGURATION.HEIGHT
 
-    self.iActivationButton = SCOREBOARD_CONFIGURATION.ACTIVATION_BUTTON
-
     self.tBorderCols = SCOREBOARD_CONFIGURATION.COLUMNS
 
     self.fScrollKoeff = SCOREBOARD_CONFIGURATION.SCROLL_SPEED
+
+    self:UpdateKeyBinds()
 
     self.tServerPlayersData = {}
     self.iServerSlots = 0
@@ -20,6 +20,7 @@ function CBoardClient:__init()
     self.CBoardGUI = CBoardHud(self, self.fBoardWidth, self.fBoardHeight, self.tBorderCols)
 
     -- Attach events handlers
+    Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("MouseScroll", self, self.onMouseScroll)
     Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
 
@@ -80,13 +81,15 @@ end
 function CBoardClient:isHudVisible()
     if Game:GetState() ~= GUIState.Game then return end
 
-    if Key:IsDown(self.iActivationButton) then
-        if not LocalPlayer:GetValue("VehCameraScroll") then
+    local vehCameraScroll = LocalPlayer:GetValue("VehCameraScroll")
+
+    if Key:IsDown(self.expectedKey) then
+        if not vehCameraScroll then
             LocalPlayer:SetValue("VehCameraScroll", 1)
         end
         return true
     else
-        if LocalPlayer:GetValue("VehCameraScroll") then
+        if vehCameraScroll then
             LocalPlayer:SetValue("VehCameraScroll", nil)
         end
         return false
@@ -94,6 +97,13 @@ function CBoardClient:isHudVisible()
 end
 
 -- Event Handlers:
+function CBoardClient:UpdateKeyBinds()
+    local keyBinds = LocalPlayer:GetValue("KeyBinds")
+    local bind = keyBinds and keyBinds["PlayersList"]
+
+    self.expectedKey = bind and bind.type == "Key" and bind.value or 116
+end
+
 function CBoardClient:onMouseScroll(args)
     if self:isHudVisible() then
         self:setStartShowRow(self:getStartShowRow() - (args.delta * self.fScrollKoeff))

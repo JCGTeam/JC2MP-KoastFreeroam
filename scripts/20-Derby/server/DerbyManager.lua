@@ -86,13 +86,15 @@ function DerbyManager:ChatMessage(args)
         end
 
         if cmdargs[1] == "/derbyjoinall" then
+            local currentDerby = self.currentDerby
+
             for player in Server:GetPlayers() do
-                if not self.currentDerby:HasPlayer(player) then
-                    self.currentDerby:JoinPlayer(player)
+                if not currentDerby:HasPlayer(player) then
+                    currentDerby:JoinPlayer(player)
                 end
             end
 
-            self.currentDerby:Start()
+            currentDerby:Start()
         end
     end
     return false

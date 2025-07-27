@@ -341,17 +341,21 @@ end
 
 function Tasks:PreTick()
     if self.jobCancelTimer:GetSeconds() > 2 then
+        local jobsToCancel = self.jobsToCancel
+        local playerJobTimers = self.playerJobTimers
+        local playerJobs = self.playerJobs
+
         self.jobCancelTimer:Restart()
         -- cancel jobs in queue
         for player in Server:GetPlayers() do
             local pId = player:GetId()
 
-            if self.jobsToCancel[pId] == true then
-                if IsValid(self.playerJobTimers[pId]) then
+            if jobsToCancel[pId] == true then
+                if IsValid(playerJobTimers[pId]) then
                     self.playerJobTimers[pId]:Restart()
                 end
-                if self.playerJobs[pId] and self.playerJobs[pId] ~= nil then
-                    if IsValid(self.playerJobs[pId].vehiclePointer) then
+                if playerJobs[pId] and playerJobs[pId] ~= nil then
+                    if IsValid(playerJobs[pId].vehiclePointer) then
                         self.playerJobs[pId].vehiclePointer:Remove()
                     end
                     self.playerJobs[pId] = nil
@@ -476,14 +480,16 @@ function Tasks:PlayerQuit(args)
 end
 
 function Tasks:ModuleUnload()
+    local playerJobs = self.playerJobs
+
     for p in Server:GetPlayers() do
-        if not self.playerJobs[p:GetId()] then return end
+        if not playerJobs[p:GetId()] then return end
 
         local pVehicle = p:GetVehicle()
 
         if not pVehicle then return end
 
-        if IsValid(self.playerJobs[p:GetId()].vehiclePointer) and pVehicle == self.playerJobs[p:GetId()].vehiclePointer then
+        if IsValid(playerJobs[p:GetId()].vehiclePointer) and pVehicle == playerJobs[p:GetId()].vehiclePointer then
             pVehicle:Remove()
         end
     end

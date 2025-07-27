@@ -3,8 +3,6 @@ SCOREBOARD_CONFIGURATION =
 	WIDTH = 0.55, -- Width of the board. Scale from Screen Size.
 	HEIGHT = 0.75, -- Heigth of the board. Scale from Screen Size.
 
-	ACTIVATION_BUTTON = 116, -- Show scoreboard button.
-
 	COLUMNS = -- Scoreboard collumns
 	{	
 		{name = " ", width = 35, getter = function() return " " end},

@@ -117,9 +117,9 @@ function KingHil:LocalPlayerInput()
     if not self.inLobby then return end
     if Game:GetState() ~= GUIState.Game then return end
 
-    local gamepad = Game:GetSetting(GameSetting.GamepadInUse) == 1
+    local state = self.state
 
-    if self.state == GamemodeState.PREPARING or self.state == GamemodeState.COUNTDOWN then
+    if state == GamemodeState.PREPARING or state == GamemodeState.COUNTDOWN then
         return false
     end
 end
@@ -158,42 +158,47 @@ function KingHil:Render()
     if not self.inLobby or Game:GetState() ~= GUIState.Game then return end
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
-    local gamepad = Game:GetSetting(GameSetting.GamepadInUse) == 1
+    local locStrings = self.locStrings
+    local state = self.state
 
-    if self.state == GamemodeState.WAITING then
-        local playersNeeded = math.max(self.queueMin - #self.queue, 0)
+    if state == GamemodeState.WAITING then
+        local queue = self.queue
+        local playersNeeded = math.max(self.queueMin - #queue, 0)
 
-        DrawCenteredShadowedText(Vector2(Render.Width / 2, 70), #self.queue .. ' / ' .. self.queueMax, Color.White, TextSize.Large)
+        DrawCenteredShadowedText(Vector2(Render.Width / 2, 70), #queue .. ' / ' .. self.queueMax, Color.White, TextSize.Large)
 
         if playersNeeded > 0 then
-            DrawCenteredShadowedText(Vector2(Render.Width / 2, 70 + TextSize.Large), '(' .. self.locStrings["lobbyneeds"] .. playersNeeded .. self.locStrings["lobbymore"] .. (playersNeeded ~= 1 and self.locStrings["lobbyplayer"] or " " .. self.locStrings["lobbyplayer"]), Color(165, 165, 165), 25)
+            DrawCenteredShadowedText(Vector2(Render.Width / 2, 70 + TextSize.Large), '(' .. locStrings["lobbyneeds"] .. playersNeeded .. locStrings["lobbymore"] .. (playersNeeded ~= 1 and locStrings["lobbyplayer"] or " " .. locStrings["lobbyplayer"]), Color(165, 165, 165), 25)
         end
 
-        if self.queue then
-            for k, player in ipairs(self.queue) do
+        if queue then
+            for k, player in ipairs(queue) do
                 DrawCenteredShadowedText(Vector2(Render.Width - 75, Render.Height - 75 - (k * 20)), player:GetName(), player:GetColor())
             end
 
-            DrawCenteredShadowedText(Vector2(Render.Width - 75, Render.Height - 75 - ((#self.queue + 1) * 20)), self.locStrings["nameTTw"], Color.White, 20)
+            DrawCenteredShadowedText(Vector2(Render.Width - 75, Render.Height - 75 - ((#queue + 1) * 20)), locStrings["nameTTw"], Color.White, 20)
         end
-    elseif self.state == GamemodeState.PREPARING then
-        DrawCenteredShadowedText(Vector2(Render.Width / 2, 70), self.locStrings["nameTTh"], Color.White, TextSize.Large)
-    elseif self.state == GamemodeState.COUNTDOWN then
+    elseif state == GamemodeState.PREPARING then
+        DrawCenteredShadowedText(Vector2(Render.Width / 2, 70), locStrings["nameTTh"], Color.White, TextSize.Large)
+    elseif state == GamemodeState.COUNTDOWN then
         DrawCenteredShadowedText(Vector2(Render.Width / 2, 70), math.max(math.ceil(5 - self.timer:GetSeconds()), 1) .. "", Color.White, TextSize.Huge)
-    elseif self.state == GamemodeState.INPROGRESS then
-        DrawCenteredShadowedText(Vector2(Render.Width / 2, Render.Height - 35), self.locStrings["nameTFo"], Color.Yellow)
+    elseif state == GamemodeState.INPROGRESS then
+        local textColor = Color.Yellow
+
+        DrawCenteredShadowedText(Vector2(Render.Width / 2, Render.Height - 35), locStrings["nameTFo"], textColor)
 
         Waypoint:SetPosition(self.stateArgs.finish)
 
         local distance = LocalPlayer:GetPosition():Distance(self.stateArgs.position)
-        local timerSeconds = self.timer:GetSeconds()
+        local timer = self.timer
+        local seconds = timer:GetSeconds()
 
-        if timerSeconds > 0 and distance >= self.stateArgs.maxRadius then
-            DrawCenteredShadowedText(Render.Size / 2, self.locStrings["nameTFi"] .. math.max(math.ceil(5 - timerSeconds), 1) .. "...", Color.Red, TextSize.Huge)
+        if seconds > 0 and distance >= self.stateArgs.maxRadius then
+            DrawCenteredShadowedText(Render.Size / 2, locStrings["nameTFi"] .. math.max(math.ceil(5 - seconds), 1) .. "...", Color.Red, TextSize.Huge)
         end
     end
 
-    if self.state >= GamemodeState.PREPARING and self.state <= GamemodeState.ENDING then
+    if state >= GamemodeState.PREPARING and state <= GamemodeState.ENDING then
         local players = {LocalPlayer}
 
         local lpWorld = LocalPlayer:GetWorld()
@@ -209,7 +214,7 @@ function KingHil:Render()
             DrawCenteredShadowedText(Vector2(Render.Width - 75, Render.Height - 75 - (k * 20)), player:GetName(), color)
         end
 
-        DrawCenteredShadowedText(Vector2(Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20)), self.locStrings["nameT"], Color.White, 20)
+        DrawCenteredShadowedText(Vector2(Render.Width - 75, Render.Height - 75 - ((#players + 1) * 20)), locStrings["nameT"], Color.White, 20)
     end
 end
 

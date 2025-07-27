@@ -6,15 +6,22 @@ end
 
 function Hook:GameRenderOpaque()
     local cameraPos = Camera:GetPosition()
+    local streamedPlayers = Client:GetStreamedPlayers()
 
-    for player in Client:GetStreamedPlayers() do
-        if player:GetVehicle() and player:GetSeat() ~= 8 then return end
+    for p in streamedPlayers do
+        local pVehicle = p:GetVehicle()
+        local pSeat = p:GetSeat()
 
-        local bs = player:GetBaseState()
-        local las = player:GetLeftArmState()
+        if pVehicle and pSeat ~= 8 then return end
 
-        if bs == 207 or las == 400 or bs == 208 and player:GetAimTarget() and player:GetAimTarget().position then
-            hookAimTarget = player:GetAimTarget()
+        local bs = p:GetBaseState()
+        local las = p:GetLeftArmState()
+
+        local effect_played
+        local hookAimTarget
+
+        if bs == 207 or las == 400 or bs == 208 and p:GetAimTarget() and p:GetAimTarget().position then
+            hookAimTarget = p:GetAimTarget()
         end
 
         if bs == 207 or las == 400 then
@@ -23,8 +30,8 @@ function Hook:GameRenderOpaque()
 
                 local effect = ClientEffect.Play(AssetLocation.Game, {
                     effect_id = 11,
-                    position = player:GetBonePosition("ragdoll_AttachHandLeft"),
-                    angle = player:GetBoneAngle("ragdoll_AttachHandLeft")
+                    position = p:GetBonePosition("ragdoll_AttachHandLeft"),
+                    angle = p:GetBoneAngle("ragdoll_AttachHandLeft")
                 })
 
                 if hookAimTarget and hookAimTarget.player or hookAimTarget.entity and hookAimTarget.entity.__type == 'ClientActor' then
@@ -34,7 +41,7 @@ function Hook:GameRenderOpaque()
                         angle = Angle()
                     })
 
-                    --[[if not hookAimTarget.entity:GetVehicle() and not (hookAimTarget.entity:GetValue("Passive") or player:GetValue("Passive")) then
+                    --[[if not hookAimTarget.entity:GetVehicle() and not (hookAimTarget.entity:GetValue("Passive") or p:GetValue("Passive")) then
 						hookAimTarget.entity:SetBaseState(AnimationState.SHitreactStumbleHead)
 					end]] --
                 elseif hookAimTarget and hookAimTarget.position then
@@ -49,12 +56,12 @@ function Hook:GameRenderOpaque()
             if effect_played then effect_played = nil end
         end
 
-        if IsValid(player) then
+        if IsValid(p) then
             if bs == 208 and hookAimTarget and hookAimTarget.position then
-                Render:DrawLine(player:GetBonePosition("ragdoll_AttachHandLeft"), hookAimTarget.position, Color(100, 100, 100, 255 * math.max(0, 1 - (Vector3.Distance(player:GetPosition(), cameraPos) / 1024))))
+                Render:DrawLine(p:GetBonePosition("ragdoll_AttachHandLeft"), hookAimTarget.position, Color(100, 100, 100, 255 * math.max(0, 1 - (Vector3.Distance(p:GetPosition(), cameraPos) / 1024))))
             elseif las == 400 and hookAimTarget and hookAimTarget.entity and hookAimTarget.entity.__type ~= "Vehicle" and
                 hookAimTarget.entity.__type == "ClientActor" then
-                Render:DrawLine(player:GetBonePosition("ragdoll_AttachHandLeft"), hookAimTarget.entity:GetBonePosition("ragdoll_Spine"), Color(100, 100, 100, 255 * math.max(0, 1 - (Vector3.Distance(player:GetPosition(), cameraPos) / 1024))))
+                Render:DrawLine(p:GetBonePosition("ragdoll_AttachHandLeft"), hookAimTarget.entity:GetBonePosition("ragdoll_Spine"), Color(100, 100, 100, 255 * math.max(0, 1 - (Vector3.Distance(p:GetPosition(), cameraPos) / 1024))))
             end
         end
     end

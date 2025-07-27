@@ -32,7 +32,9 @@ end
 
 function MHCMusicFix:PostTick()
     if self.sound then
-        self.sound:SetParameter(0, Game:GetSetting(GameSetting.MusicVolume) / 100)
+        local musicVolume = Game:GetSetting(GameSetting.MusicVolume) / 100
+
+        self.sound:SetParameter(0, musicVolume)
     end
 
     if self.timer:GetSeconds() <= 1 then return end
@@ -44,10 +46,7 @@ function MHCMusicFix:PostTick()
     if dist >= self.mhc_dist then
         self:ModuleUnload()
 
-        if self.PostTickEvent then
-            Events:Unsubscribe(self.PostTickEvent) self.PostTickEvent = nil
-            self.timer = nil
-        end
+        if self.PostTickEvent then Events:Unsubscribe(self.PostTickEvent) self.PostTickEvent = nil self.timer = nil end
     end
 end
 

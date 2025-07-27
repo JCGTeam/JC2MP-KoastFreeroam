@@ -494,6 +494,7 @@ end
 function Tetris:ShowScore()
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
+    local locStrings = self.locStrings
     local text_clr = Color.White
     local shadow_clr = Color(25, 25, 25)
     local totalScore = tostring(LocalPlayer:GetValue("TetrisTotalScore"))
@@ -502,37 +503,37 @@ function Tetris:ShowScore()
         local text_size = 32
 
         if self.firstGo then
-            local pos = (Render.Size - Render:GetTextSize(self.locStrings["tSetHelp"], text_size)) / 2
-            Render:DrawShadowedText(pos, self.locStrings["tSetHelp"], text_clr, shadow_clr, text_size)
-            pos = (Render.Size - Render:GetTextSize(self.locStrings["tSetHelp2"], text_size)) / 2
-            Render:DrawShadowedText(pos, self.locStrings["tSetHelp2"], text_clr, shadow_clr, text_size)
+            local pos = (Render.Size - Render:GetTextSize(locStrings["tSetHelp"], text_size)) / 2
+            Render:DrawShadowedText(pos, locStrings["tSetHelp"], text_clr, shadow_clr, text_size)
+            pos = (Render.Size - Render:GetTextSize(locStrings["tSetHelp2"], text_size)) / 2
+            Render:DrawShadowedText(pos, locStrings["tSetHelp2"], text_clr, shadow_clr, text_size)
         else
-            local pos = (Render.Size - Render:GetTextSize(self.locStrings["tDied"], text_size)) / 2
-            Render:DrawShadowedText(pos, self.locStrings["tDied"], Color.Red, shadow_clr, text_size)
-            local msg = self.locStrings["tSetGOver"] .. totalScore
+            local pos = (Render.Size - Render:GetTextSize(locStrings["tDied"], text_size)) / 2
+            Render:DrawShadowedText(pos, locStrings["tDied"], Color.Red, shadow_clr, text_size)
+            local msg = locStrings["tSetGOver"] .. totalScore
             pos = (Render.Size - Render:GetTextSize(msg, text_size)) / 2
             Render:DrawShadowedText(pos, msg, text_clr, shadow_clr, text_size)
-            pos = (Render.Size - Render:GetTextSize(self.locStrings["tSetGOver2"], text_size)) / 2
-            Render:DrawShadowedText(pos, self.locStrings["tSetGOver2"], text_clr, shadow_clr, text_size)
-            pos = (Render.Size - Render:GetTextSize(self.locStrings["tSetGOver3"], text_size)) / 2
-            Render:DrawShadowedText(pos, self.locStrings["tSetGOver3"], text_clr, shadow_clr, text_size)
+            pos = (Render.Size - Render:GetTextSize(locStrings["tSetGOver2"], text_size)) / 2
+            Render:DrawShadowedText(pos, locStrings["tSetGOver2"], text_clr, shadow_clr, text_size)
+            pos = (Render.Size - Render:GetTextSize(locStrings["tSetGOver3"], text_size)) / 2
+            Render:DrawShadowedText(pos, locStrings["tSetGOver3"], text_clr, shadow_clr, text_size)
         end
     end
 
-    local score = self.locStrings["tScores"] .. totalScore
+    local score = locStrings["tScores"] .. totalScore
     local pos = Vector2(self.offset.x + 11.5 * self.tileWidthV.x, self.offset.y - self.tileHeightV.y + 40)
     local text_size = 20
     local text_size2 = 15
     local padding = 10
 
-    Render:FillArea(pos, Vector2(Render:GetTextWidth(self.locStrings["controltip"], text_size2) * 1.15, (Render:GetTextHeight(score, text_size) + 5 + Render:GetTextHeight(self.locStrings["controltip"], text_size2)) + padding * 2), self.backgroundCol)
+    Render:FillArea(pos, Vector2(Render:GetTextWidth(locStrings["controltip"], text_size2) * 1.15, (Render:GetTextHeight(score, text_size) + 5 + Render:GetTextHeight(locStrings["controltip"], text_size2)) + padding * 2), self.backgroundCol)
 
     pos = pos + Vector2(padding, padding)
-    Render:DrawShadowedText(pos, self.locStrings["tScores"], text_clr, shadow_clr, text_size)
-    Render:DrawShadowedText(pos + Vector2(Render:GetTextWidth(self.locStrings["tScores"], text_size), 0), totalScore, Color(185, 215, 255), shadow_clr, text_size)
+    Render:DrawShadowedText(pos, locStrings["tScores"], text_clr, shadow_clr, text_size)
+    Render:DrawShadowedText(pos + Vector2(Render:GetTextWidth(locStrings["tScores"], text_size), 0), totalScore, Color(185, 215, 255), shadow_clr, text_size)
 
     Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
-    Render:DrawShadowedText(pos + Vector2(0, Render:GetTextHeight(score, text_size) + 5), self.locStrings["controltip"], text_clr, shadow_clr, text_size2)
+    Render:DrawShadowedText(pos + Vector2(0, Render:GetTextHeight(score, text_size) + 5), locStrings["controltip"], text_clr, shadow_clr, text_size2)
 end
 
 function Tetris:GameOver()
