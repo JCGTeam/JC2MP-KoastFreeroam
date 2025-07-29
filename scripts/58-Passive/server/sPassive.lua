@@ -61,6 +61,8 @@ function Passive:ClientModuleLoad(args)
 end
 
 function Passive:PlayerEnterVehicle(args)
+    if args.player:GetWorld() ~= DefaultWorld then return end
+
     if args.is_driver then
         args.vehicle:SetInvulnerable(args.player:GetValue("Passive") == true)
     end

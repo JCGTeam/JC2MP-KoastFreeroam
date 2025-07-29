@@ -299,13 +299,16 @@ function Boost:Render(args)
             vehicle:SetLinearVelocity(vectorZero)
             vehicle:SetAngularVelocity(vectorZero)
 
-            local vPos = vehicle:GetPosition()
-            local vAngle = vehicle:GetAngle()
+            self.vPos = self.vPos or vehicle:GetPosition()
+            self.vAngle = self.vAngle or vehicle:GetAngle()
 
-            vehicle:SetPosition(vPos)
-            vehicle:SetAngle(vAngle)
+            vehicle:SetPosition(self.vPos)
+            vehicle:SetAngle(self.vAngle)
         elseif vehBrake then
             LocalPlayer:SetValue("VehBrake", nil)
+
+            self.vPos = nil
+            self.vAngle = nil
         end
     end
 

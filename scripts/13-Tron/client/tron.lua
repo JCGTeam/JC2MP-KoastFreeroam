@@ -20,10 +20,10 @@ function Tron:__init()
             lobbyneeds = "Нужно на ",
             lobbymore = " больше",
             lobbyplayer = "игроков)",
-            tip1 = "Нажмите RB, чтобы заморозить свой след.",
-            tip2 = "Нажмите правой кнопкой мыши, чтобы заморозить свой след.",
+            tip1 = "Нажмите RB, чтобы заморозить свой след",
+            tip2 = "Нажмите правую кнопку мыши, чтобы заморозить свой след",
             tip3 = "Вы проиграли. Нажмите LB или RB, чтобы начать слежку за другим игроком.",
-            tip4 = "Вы проиграли. Нажмите левой или правой кнопкой мыши, чтобы начать слежку за другим игроком."
+            tip4 = "Вы проиграли. Нажмите левой или правую кнопку мыши, чтобы начать слежку за другим игроком."
         }
     end
 
@@ -102,6 +102,8 @@ function Tron:EnterLobby()
     }
     self.collisionFired = false
 
+    Input:Clear()
+
     if not self.GameRenderOpaqueEvent then self.GameRenderOpaqueEvent = Events:Subscribe("GameRenderOpaque", self, self.GameRenderOpaque) end
     if not self.CaclViewEvent then self.CaclViewEvent = Events:Subscribe("CalcView", self, self.CalcView) end
     if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe("InputPoll", self, self.InputPoll) end
@@ -156,7 +158,7 @@ function Tron:CalcView()
 
                 local player = players[self.spec.listOffset + 1]
 
-                if IsValid(self.spec.player) and player ~= self.spec.player then
+                if self.spec.player and IsValid(self.spec.player) and player ~= self.spec.player then
                     self.spec.listOffset = table.find(players, self.spec.player)
 
                     if self.spec.listOffset then
@@ -264,22 +266,24 @@ function Tron:LocalPlayerInput(args)
                 self.spec.angle.pitch = self.spec.angle.pitch + (args.state * sensitivity.y)
             end
 
-            if gamepad then
-                if args.input == Action.MoveForward then
-                    self.spec.zoom = self.spec.zoom + (args.state * sensitivity.y)
-                elseif args.input == Action.MoveBackward then
-                    self.spec.zoom = self.spec.zoom - (args.state * sensitivity.y)
+            if not LocalPlayer:GetValue("DisableCameraScroll") then
+                if gamepad then
+                    if args.input == Action.MoveForward then
+                        self.spec.zoom = self.spec.zoom + (args.state * sensitivity.y)
+                    elseif args.input == Action.MoveBackward then
+                        self.spec.zoom = self.spec.zoom - (args.state * sensitivity.y)
+                    end
+                else
+                    if args.input == Action.NextWeapon then
+                        self.spec.zoom = self.spec.zoom - 0.1
+                    elseif args.input == Action.PrevWeapon then
+                        self.spec.zoom = self.spec.zoom + 0.1
+                    end
                 end
-            else
-                if args.input == Action.NextWeapon then
-                    self.spec.zoom = self.spec.zoom + 0.1
-                elseif args.input == Action.PrevWeapon then
-                    self.spec.zoom = self.spec.zoom - 0.1
-                end
-            end
 
-            self.spec.zoom = math.clamp(self.spec.zoom, 0.15, 1.5)
-            self.spec.angle.pitch = math.clamp(self.spec.angle.pitch, -1.5, -0.4)
+                self.spec.zoom = math.clamp(self.spec.zoom, 0.15, 1.5)
+                self.spec.angle.pitch = math.clamp(self.spec.angle.pitch, -1.5, -0.4)
+            end
         end
     end
 end
@@ -366,19 +370,19 @@ function Tron:PreTick()
                         segment.endPoint = point
                     end
 
-                    local vehicle = LocalPlayer:GetVehicle()
+                    local pVehicle = LocalPlayer:GetVehicle()
 
-                    if vehicle and vehicle:GetDriver() == LocalPlayer and LocalPlayer:InVehicle() then
-                        if vehicle ~= vehicle or k < #segments then
-                            local vehPos = vehicle:GetPosition()
-                            local vehAngle = vehicle:GetAngle()
+                    if LocalPlayer:InVehicle() and IsValid(pVehicle) and pVehicle:GetDriver() == LocalPlayer then
+                        if pVehicle ~= vehicle or k < #segments then
+                            local vehPos = pVehicle:GetPosition()
+                            local vehAngle = pVehicle:GetAngle()
 
                             local startPoint = Point(vehPos - vehAngle * Vector3.Forward * 1.5, vehAngle)
                             local endPoint = Point(vehPos + vehAngle * Vector3.Forward * 1.5, vehAngle)
 
                             if segment:Intersects(LineSegment(startPoint, endPoint, height, color)) then
                                 if not self.collisionFired then
-                                    Network:Send("Collision", {vehicle = vehicle, killer = vehicle})
+                                    Network:Send("Collision", {vehicle = pVehicle, killer_id = vehicle:GetDriver() and vehicle:GetDriver():GetId()})
 
                                     self.collisionFired = true
                                     self.spec.player = vehicle:GetDriver()

@@ -6,7 +6,9 @@ function HADMCommands:__init()
 end
 
 function HADMCommands:LoadAdminsTab()
-	if LocalPlayer:GetValue("Tag") == "Creator" or LocalPlayer:GetValue("Tag") == "GlAdmin" or LocalPlayer:GetValue("Tag") == "Admin" or LocalPlayer:GetValue("Tag") == "Organizer" then
+	local tag = LocalPlayer:GetValue("Tag")
+
+	if tag == "Creator" or tag == "GlAdmin" or tag == "Admin" or tag == "Organizer" then
 		Events:Fire("HelpAddItem",
 		{
 			name = "Админское :3",
@@ -17,22 +19,13 @@ function HADMCommands:LoadAdminsTab()
 				"    /hi                       Поприветствовать игрока в общий чат (анонимно)\n" ..
 				"    /bb                      Попрощаться с игроком в общий чат (анонимно)\n" ..
 				"    /clearchat           Очистить чат (не очищает историю)\n" ..
-				"    /warn                  Дать проста варн\n" ..
 				"    /getmoney         Узнать сколько бабла\n" ..
-				"    /kick                   Кикнуть игрока\n" ..
 				"    /skick                 Беспалевно кикнуть игрока\n" ..
-				"    /boton                Включить бота-чистильщика\n" ..
-				"    /botoff                Выключить бота-чистильщика\n" ..
 				"    /sky                    Отправить игрока в небо\n" ..
 				"    /down                 Отправить игрока вниз\n" ..
-				"    /notice                Сообщение на экраны игроков.\n" ..
-				"    /joinnotice         Установить сообщение при подключении игроков на сервер\n" ..
-				"    /clearjoinnotice Удалить сообщение при подключении игроков на сервер\n" ..
 				"    /hidetag             Скрыть/показать тэг над головой\n" ..
 				"    /rnb                    Вкл/выкл переливание цветов для транспорта\n" ..
-				"    /ptphere             Телепортировать к себе (all* - всех)\n" ..
-				"    /addcustomtp   Добавить точку для телепортации\n" ..
-				"    /clearallcustomtp   Очистить все созданные точки для телепортации\n \n" ..
+				"    /ptphere             Телепортировать к себе (all* - всех)\n \n" ..
 				"> Гл. Админам:\n" ..
 				"    /ban                    Добавить игрока в ЧС (разбан только владельцем)\n" ..
 				"    /remveh              Удалить весь ТС с сервера до его рестарта (В САМЫХ КРАЙНИХ СЛУЧАЯХ)\n" ..
@@ -52,13 +45,15 @@ function HADMCommands:LoadAdminsTab()
 				"    /kick                   Кикнуть игрока\n" ..
 				"    /boton                Включить бота-чистильщика\n" ..
 				"    /botoff                Выключить бота-чистильщика\n" ..
+				"    /forcepassive     Вкл/выкл принудительный мирный режим игрокам рядом\n" ..
+				"    /togvehcol          Вкл/выкл столкновения для транспортных средств\n" ..
 				"    /notice                Сообщение на экраны игроков\n" ..
 				"    /joinnotice         Установить сообщение при подключении игроков на сервер\n" ..
 				"    /clearjoinnotice Удалить сообщение при подключении игроков на сервер\n" ..
 				"    /addcustomtp   Добавить точку для телепортации\n" ..
 				"    /clearallcustomtp   Очистить все созданные точки для телепортации"
 		})
-	elseif LocalPlayer:GetValue("Tag") == "AdminD" or LocalPlayer:GetValue("Tag") == "ModerD" then
+	elseif tag == "AdminD" or tag == "ModerD" then
 		Events:Fire("HelpAddItem",
 		{
 			name = "Админское :3",
@@ -81,7 +76,9 @@ function HADMCommands:LoadAdminsTab()
 end
 
 function HADMCommands:UnloadAdminsTab()
-    if LocalPlayer:GetValue("Tag") == "Creator" or LocalPlayer:GetValue("Tag") == "GlAdmin" or LocalPlayer:GetValue("Tag") == "Admin" then
+	local tag = LocalPlayer:GetValue("Tag")
+
+    if tag == "Creator" or tag == "GlAdmin" or tag == "Admin" then
         Events:Fire("HelpRemoveItem", {name = "Админское :3"})
     end
 end

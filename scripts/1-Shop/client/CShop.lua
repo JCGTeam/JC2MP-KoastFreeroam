@@ -1100,9 +1100,9 @@ function Shop:SetWindowVisible(visible, sound)
 
         if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
 
-        local gettag = LocalPlayer:GetValue("Tag")
+        local tag = LocalPlayer:GetValue("Tag")
 
-		self.toggleH:SetEnabled( self.permissions[gettag] and true or false )
+		self.toggleH:SetEnabled( self.permissions[tag] and true or false )
     else
         if self.LocalPlayerInputEvent then Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil end
     end

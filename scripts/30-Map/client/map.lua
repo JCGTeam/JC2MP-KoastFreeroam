@@ -584,7 +584,7 @@ function Map:Draw()
     local text_clr = Color(255, 255, 255, math.lerp(0, 255, animationValue))
     local text_shadow = Color(0, 0, 0, math.lerp(0, 255, animationValue))
 
-    if rendermap then
+    if PDA.RenderMap then
         local text_size = 14
         local pId = LocalPlayer:GetId()
         local pWorldId = LocalPlayer:GetWorld():GetId()
@@ -599,7 +599,7 @@ function Map:Draw()
                 Render:DrawCircle(position, Render.Size.y * 0.0055, text_shadow)
                 Render:FillCircle(position, Render.Size.y * 0.005, player.col)
 
-                if labels ~= 0 then
+                if PDA.labels ~= 0 then
                     Render:FillArea(position + Render.Size * 0.003, Vector2(Render:GetTextWidth(str, text_size), Render:GetTextHeight(str, text_size)), background_clr)
                     Render:DrawShadowedText(position + Render.Size * 0.003, str, player.col, text_shadow, text_size)
                 end
@@ -663,8 +663,8 @@ function Map:Draw()
         Render:DrawShadowedText(tips_pos - Vector2.One, locStrings["MTSetWp"] .. "\n" .. locStrings["MTPToggle"] .. "\n" .. locStrings["MTExtract"], text_clr, text_shadow, 15)
     end
 
-    if extraction_timer then
-        local position = math.lerp(Map:WorldToScreen(previous_position), Map:WorldToScreen(next_position), extraction_timer:GetSeconds() / extraction_delay)
+    if PDA.extraction_timer then
+        local position = math.lerp(Map:WorldToScreen(PDA.previous_position), Map:WorldToScreen(PDA.next_position), PDA.extraction_timer:GetSeconds() / extraction_delay)
         Map.Heli:SetPosition(position - 0.5 * Map.Heli:GetSize())
         Map.Heli:Draw()
     end

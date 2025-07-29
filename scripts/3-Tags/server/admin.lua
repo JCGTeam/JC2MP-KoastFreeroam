@@ -193,6 +193,7 @@ end
 
 function Admin:__init()
     Network:Subscribe("EffectPlay", self, self.EffectPlay)
+    Network:Subscribe("ToggleForcePassive", self, self.ToggleForcePassive)
 
     Events:Subscribe("PlayerJoin", self, self.PlayerJoin)
     Events:Subscribe("ModuleLoad", self, self.ModuleLoad)
@@ -224,6 +225,41 @@ function Admin:EffectPlay(args, sender)
     Network:SendNearby(sender, "BoomToSkyEffect", {targerp = sender})
 end
 
+function Admin:ToggleForcePassive(enabled, sender)
+    if sender:GetWorld() ~= DefaultWorld then return end
+
+    if enabled then
+        local pPos = sender:GetPosition()
+        local maxDist = 500
+
+        for p in Server:GetPlayers() do
+            local dist = pPos:Distance(p:GetPosition())
+
+            if dist <= maxDist then
+                if not p:GetValue("Passive") then
+                    Network:Send(p, "EnableForcePassive")
+                end
+
+                if not p:GetValue("TogglePassiveDisabled") then
+                    p:SetNetworkValue("TogglePassiveDisabled", 1)
+                end
+            else
+                self:DisableForcePassive(p)
+            end
+        end
+    else
+        for p in Server:GetPlayers() do
+            self:DisableForcePassive(p)
+        end
+    end
+end
+
+function Admin:DisableForcePassive(player)
+    if player:GetValue("TogglePassiveDisabled") then
+        player:SetNetworkValue("TogglePassiveDisabled", nil)
+    end
+end
+
 function Admin:GetRoles(args)
     if args.text == "vips" or args.text == "parthers" or args.text == "organizers" or args.text == "modersD" or args.text == "adminsD" or args.text == "admins" or args.text == "gladmins" or args.text == "creators" then
         local file = io.open("server/" .. args.text .. ".txt", "r")
@@ -234,10 +270,9 @@ function Admin:GetRoles(args)
 
         if s then
             print(args.text .. ":\n" .. s)
-            Events:Fire("ToDiscordConsole", {
-                text = "**" .. args.text .. ":**\n" .. s
-            })
+            Events:Fire("ToDiscordConsole", {text = "**" .. args.text .. ":**\n" .. s})
         end
+
         file:close()
     else
         print("getroles <rolename>")
@@ -597,6 +632,10 @@ function Admin:PlayerJoin(args)
             end
             break
         end
+    end
+
+    if self.noCollision then
+        args.player:DisableCollision(CollisionGroup.Vehicle)
     end
 end
 
@@ -1030,6 +1069,49 @@ function Admin:PlayerChat(args)
             local console_text = sender:GetName() .. " cleared all custom teleports"
             print(console_text)
             Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
+        elseif cmd_args[1] == "/forcepassive" then
+            local forcePassive = sender:GetValue("ForcePassive")
+
+            if forcePassive then
+                sender:SetNetworkValue("ForcePassive", nil)
+            else
+                sender:SetNetworkValue("ForcePassive", 1)
+            end
+
+            Network:Send(sender, "ToggleForcePassive", forcePassive)
+
+            local enabled = forcePassive and "отключен" or "включен"
+            confirmationMessage(sender, "Приндительный мирный игрокам рядом " .. enabled)
+
+            enabled = forcePassive and "disable" or "enable"
+            local console_text = sender:GetName() .. " " .. enabled .. " force passive"
+            print(console_text)
+            Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
+        elseif cmd_args[1] == "/togvehcol" then
+            local noCollision = self.noCollision
+
+            self.noCollision = not noCollision
+
+            local players = Server:GetPlayers()
+            local collisionGroup = CollisionGroup.Vehicle
+
+            if noCollision then
+                for p in players do
+                    p:EnableCollision(collisionGroup)
+                end
+            else
+                for p in players do
+                    p:DisableCollision(collisionGroup)
+                end
+            end
+
+            local enabled = noCollision and "включено" or "отключено"
+            confirmationMessage(sender, "Столкновения транспорта игрокам " .. enabled)
+
+            enabled = noCollision and "enable" or "disable"
+            local console_text = sender:GetName() .. " " .. enabled .. " vehicles collision"
+            print(console_text)
+            Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
         elseif cmd_args[1] == "/boton" then
             if not self.boton then
                 Chat:Send(sender, "[Админ-система] ", Color.White, "НА РАБОТУ! ГОВНО ЧИСТИТЬ!", Color.Brown)
@@ -1200,6 +1282,14 @@ function Admin:ModuleUnload()
     for p in Server:GetPlayers() do
         if p:GetValue("Tag") ~= nil then
             p:SetNetworkValue("Tag", nil)
+        end
+    end
+
+    if self.noCollision then
+        local collisionGroup = CollisionGroup.Vehicle
+
+        for p in Server:GetPlayers() do
+            p:EnableCollision(collisionGroup)
         end
     end
 end

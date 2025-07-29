@@ -392,9 +392,9 @@ function ActionsMenu:VehicleBoom()
 end
 
 function ActionsMenu:Sky()
-    local gettag = LocalPlayer:GetValue("Tag")
+    local tag = LocalPlayer:GetValue("Tag")
 
-    if self.permissions[gettag] then
+    if self.permissions[tag] then
         Network:Send("Sky")
     else
         Events:Fire("CastCenterText", {text = self.locStrings["novip"], time = 3, color = Color.Red})
@@ -404,9 +404,9 @@ function ActionsMenu:Sky()
 end
 
 function ActionsMenu:Down()
-    local gettag = LocalPlayer:GetValue("Tag")
+    local tag = LocalPlayer:GetValue("Tag")
 
-    if self.permissions[gettag] then
+    if self.permissions[tag] then
         Network:Send("Down")
     else
         Events:Fire("CastCenterText", {text = self.locStrings["novip"], time = 3, color = Color.Red})

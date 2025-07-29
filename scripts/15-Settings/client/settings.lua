@@ -807,9 +807,9 @@ function Settings:CreateWindow()
     self.getBonusBtn:Subscribe("Press", function() Events:Fire("ApplyPromocode", {type = 0, name = self.promocode:GetText()}) end)
 
     --[[
-    local gettag = LocalPlayer:GetValue("Tag")
+    local tag = LocalPlayer:GetValue("Tag")
 
-    if self.debug_permissions[gettag] then
+    if self.debug_permissions[tag] then
         local debug = BaseWindow.Create(self.window)
         tab:AddPage("DEBUG", debug)
 
@@ -1107,9 +1107,9 @@ function Settings:SetWindowVisible(visible, sound)
             self.buttonLH:GetCheckBox():SetEnabled(false)
         end
 
-        local gettag = LocalPlayer:GetValue("Tag")
+        local tag = LocalPlayer:GetValue("Tag")
 
-        if self.permissions[gettag] then
+        if self.permissions[tag] then
             local pWorld = LocalPlayer:GetWorld() == DefaultWorld
 
             self.subcategory2:SetVisible(true)

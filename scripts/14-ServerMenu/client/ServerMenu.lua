@@ -608,9 +608,11 @@ function ServerMenu:SetWindowVisible(visible, sound)
         self.level:SizeToContents()
 
         local pWorld = LocalPlayer:GetWorld() == DefaultWorld
+        local togglePassiveDisabled = not LocalPlayer:GetValue("TogglePassiveDisabled")
+
         self.shop_button:SetEnabled(pWorld)
         self.tp_button:SetEnabled(pWorld)
-        self.passiveon_btn:SetEnabled(pWorld)
+        self.passiveon_btn:SetEnabled(togglePassiveDisabled and pWorld or false)
         self.jesusmode_btn:SetEnabled(LocalPlayer:GetValue("JesusModeEnabled") and pWorld or false)
         self.hideme_btn:SetEnabled(pWorld)
         self.pigeonmod_btn:SetEnabled(LocalPlayer:GetValue("Wingsuit") and pWorld or false)

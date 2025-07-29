@@ -91,7 +91,7 @@ function Passive:LocalPlayerChat(args)
     end
 end
 
-function Passive:TogglePassive()
+function Passive:TogglePassive(force)
     local locStrings = self.locStrings
 
     if LocalPlayer:GetWorld() ~= DefaultWorld then
@@ -102,7 +102,7 @@ function Passive:TogglePassive()
     local state = LocalPlayer:GetValue("Passive")
     local time = Client:GetElapsedSeconds()
 
-    if not state then
+    if not (force or state) then
         if LocalPlayer:GetValue("PVPMode") then
             Events:Fire("CastCenterText", {text = locStrings["pvpblock"], time = 6, color = Color.Red})
             return false

@@ -1,7 +1,6 @@
 class 'CameraView'
 
 function CameraView:__init()
-    self.enabled = true
     self.camera = 3
     self.selectedViews = {
         [0] = true,
@@ -38,7 +37,6 @@ function CameraView:__init()
     end
 
     Events:Subscribe("Lang", self, self.Lang)
-    Events:Subscribe("ToggleCamZoom", self, self.ToggleCamZoom)
     Events:Subscribe("ZoomReset", self, self.ZoomReset)
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.EnterVehicle)
     Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
@@ -157,10 +155,6 @@ function CameraView:Lang()
     }
 end
 
-function CameraView:ToggleCamZoom(args)
-    self.enabled = args.zoomcam
-end
-
 function CameraView:CastCenterText(text)
     self.timerF = Timer()
     self.textF = text
@@ -188,10 +182,7 @@ function CameraView:Render()
                 self.animationValue = nil
                 self.fadeOutAnimation = nil
 
-                if self.RenderEvent then
-                    Events:Unsubscribe(self.RenderEvent)
-                    self.RenderEvent = nil
-                end
+                if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
             end)
 
             self.timerF = nil
@@ -230,7 +221,7 @@ function CameraView:CalcView()
     local t = Vector3()
     local s = 0
 
-    if Game:GetState() == GUIState.Game and self.enabled then
+    if Game:GetState() == GUIState.Game and not LocalPlayer:GetValue("DisableCameraScroll") then
         local keyDown = Key:IsDown(4)
 
         if keyDown and not self.keyWasDown then
@@ -238,13 +229,13 @@ function CameraView:CalcView()
                 self:ZoomReset()
             else
                 self.reverse = true
-                Events:Fire("CameraState", {enabled = self.enabled, camera = self.names[camera], altview = reverse})
+                Events:Fire("CameraState", {camera = self.names[camera], altview = reverse})
             end
         end
 
         if not keyDown and self.keyWasDown and reverse then
             self.reverse = false
-            Events:Fire("CameraState", {enabled = self.enabled, camera = self.names[camera], altview = reverse})
+            Events:Fire("CameraState", {camera = self.names[camera], altview = reverse})
         end
 
         self.keyWasDown = keyDown
@@ -310,7 +301,7 @@ function CameraView:ZoomReset()
 end
 
 function CameraView:InputPoll()
-    if self.enabled then
+    if LocalPlayer:GetValue("DisableCameraScroll") then
         if self.antiSnap and Game:GetState() == GUIState.Game and LocalPlayer:InVehicle() and self.camera == 3 and Input:GetValue(Action.LookLeft) == 0 and Input:GetValue(Action.LookRight) == 0 then
             if self.as_toggle then
                 Input:SetValue(Action.LookLeft, 0.0005)
@@ -326,15 +317,13 @@ end
 function CameraView:MouseScroll(args)
     if Game:GetState() ~= GUIState.Game then return end
     if LocalPlayer:GetValue("SpectatorMode") then return end
-    if LocalPlayer:GetValue("VehCameraScroll") then return end
+    if LocalPlayer:GetValue("DisableCameraScroll") then return end
 
-    if self.enabled then
-        self.zoom = math.clamp(self.zoom + (args.delta * 0.25), 0, 15)
-    end
+    self.zoom = math.clamp(self.zoom + (args.delta * 0.25), 0, 15)
 end
 
 function CameraView:EnterVehicle()
-    Events:Fire("CameraState", {enabled = self.enabled, camera = self.names[self.camera], altview = self.reverse})
+    Events:Fire("CameraState", {camera = self.names[self.camera], altview = self.reverse})
 
     if not self.CalcViewEvent then self.CalcViewEvent = Events:Subscribe("CalcView", self, self.CalcView) end
     if not self.MouseScrollEvent then self.MouseScrollEvent = Events:Subscribe("MouseScroll", self, self.MouseScroll) end
@@ -367,7 +356,7 @@ function CameraView:LocalPlayerInput(args)
                 if (milliseconds - self.lastTime) > 50 then
                     self:CycleViews()
 
-                    Events:Fire("CameraState", {enabled = self.enabled, camera = self.names[self.camera], altview = self.reverse})
+                    Events:Fire("CameraState", {camera = self.names[self.camera], altview = self.reverse})
                 end
 
                 self.lastTime = milliseconds

@@ -442,9 +442,9 @@ function Pigeon:Input(args)
 end
 
 function Pigeon:Superspeed()
-    local gettag = LocalPlayer:GetValue("Tag")
+    local tag = LocalPlayer:GetValue("Tag")
 
-    if self.permissions[gettag] then
+    if self.permissions[tag] then
         self.superspeed = not self.superspeed
 
         if self.superspeed then

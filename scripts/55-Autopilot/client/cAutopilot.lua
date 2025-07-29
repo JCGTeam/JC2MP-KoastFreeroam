@@ -308,7 +308,7 @@ function Autopilot:WaypointHoldOn()
         self:HeadingHoldOn()
         config[7].on = true
     else
-        Events:Fire("CastCenterText", {text = "Точку не поставил.", time = 4, color = Color.LightGreen})
+        Events:Fire("CastCenterText", {text = "Точку не поставил", time = 4, color = Color.LightGreen})
         return
     end
 end
