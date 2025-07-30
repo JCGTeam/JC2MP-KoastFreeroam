@@ -64,6 +64,76 @@ settings.gamemodeDescription = [====[Введите /race, чтобы зайти
 ----------------------------------------------------------------------------------------------------
 -- GUI
 ----------------------------------------------------------------------------------------------------
+Events:Subscribe("ModuleLoad", function()
+    local lang = LocalPlayer:GetValue("Lang")
+    if lang and lang == "EN" then
+        Lang()
+    else
+		settings.locStrings = {
+			loading = "Загрузка…",
+			go = "Поихали!",
+			racePosLabel = "Позиция",
+			raceLapLabel = "Круг",
+			raceCPLabel = "Чекпоинты",
+			PreviousLabel = "Предыдущий:",
+			CurrentLabel = "Текущий:",
+			racePlayersLabel = "Игроки: %s/%s",
+			collisionsEnabled = "Столкновения включены",
+			collisionsDisabled = "Столкновения отключены",
+			press = "Нажмите ",
+			torespawn = ", чтобы возродиться",
+			respawning = "Возрождение…",
+			garage = "Гараж",
+			model = "Модель",
+			version = "Версия",
+			color = "Цвет",
+			untilracestart = "до начала гонки",
+			untilnextracestart = "до начала следующей гонки",
+			use = "Используйте /",
+			toopenracemenu = ", чтобы открыть меню гонок",
+			place = " на финише!",
+			finishes = " заканчивает ",
+			suffix = "-й",
+			suffix2 = "-й",
+			suffix3 = "-й",
+			suffix4 = "-й"
+		}
+	end
+end)
+
+function Lang()
+	settings.locStrings = {
+		loading = "Loading…",
+		go = "Go!",
+		racePosLabel = "Pos",
+		raceLapLabel = "Lap",
+		raceCPLabel = "CP",
+		PreviousLabel = "Previous:",
+		CurrentLabel = "Current:",
+		racePlayersLabel = "Players: %s/%s",
+		collisionsEnabled = "Collisions Enabled",
+		collisionsDisabled = "Collisions Disabled",
+		press = "Press ",
+		torespawn = " to respawn",
+		respawning = "Respawning…",
+		garage = "Garage",
+		model = "Model",
+		version = "Version",
+		color = "Color",
+		untilracestart = "until race start",
+		untilnextracestart = "until next race start",
+		use = "Use /",
+		toopenracemenu = " to open Race Menu",
+		place = " place!",
+		finishes = " finishes ",
+		suffix = "st",
+		suffix2 = "nd",
+		suffix3 = "rd",
+		suffix4 = "th"
+	}
+end
+
+Events:Subscribe("Lang", Lang)
 
 settings.shadowColor = Color(25, 25, 25, 150)
 settings.textColor = Color(255, 255, 255, 250)
@@ -81,21 +151,10 @@ settings.lapLabelSize = 30
 settings.lapCounterPos = Vector2(0.33, -0.58)
 settings.lapCounterSize = 35
 
-settings.racePosLabel = "Позиция"
 settings.racePosLabelPos = Vector2(-0.33, -0.68)
 settings.racePosLabelSize = 30
 settings.racePosPos = Vector2(-0.33, -0.58)
 settings.racePosSize = 35
-
-settings.raceLapLabel = "Круг"
-
-settings.raceCPLabel = "Чекпоинты"
-
-settings.PreviousLabel = "Предыдущий:"
-
-settings.CurrentLabel = "Текущий:"
-
-settings.racePlayersLabel = "Игроки: %s/%s"
 
 settings.timerLabelsStart = Vector2( 0.95 , -0.39 )
 settings.timerLabelsSize = TextSize.Default

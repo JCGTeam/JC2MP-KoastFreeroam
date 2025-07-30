@@ -8,7 +8,10 @@ function RaceManagerMode:__init(args)
     self.voteSkipLabel = nil
     self.adminSkipButton = nil
     self.adminNextCourseTextBox = nil
-    self.raceMenuHelpText = "Используйте /" .. settings.command .. ", чтобы открыть меню гонок"
+
+    local locStrings = settings.locStrings
+
+    self.raceMenuHelpText = locStrings["use"] .. settings.command .. locStrings["toopenracemenu"]
 
     self:AddToRaceMenu()
 

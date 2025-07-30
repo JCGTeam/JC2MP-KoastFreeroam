@@ -14,7 +14,7 @@ function Tron:__init()
         self.locStrings = {
             nameT = "Игроки",
             nameTTw = "Очередь",
-            nameTTh = "Ожидание других игроков...",
+            nameTTh = "Ожидание других игроков…",
             nameTFo = "Самоуничтожиться через ",
             nameTFi = "За границами ",
             lobbyneeds = "Нужно на ",
@@ -56,7 +56,7 @@ function Tron:Lang()
     self.locStrings = {
         nameT = "Players",
         nameTTw = "Current Queue",
-        nameTTh = "Waiting for other players...",
+        nameTTh = "Waiting for other players…",
         nameTFo = "Self-destruct in ",
         nameTFi = "Out of bounds ",
         lobbyneeds = "We need ",
@@ -445,7 +445,7 @@ function Tron:Render()
     elseif state == GamemodeState.INPROGRESS then
         local inVehicle = LocalPlayer:InVehicle()
         local gamepad = Game:GetSetting(GameSetting.GamepadInUse) == 1
-        local textColor = Color.Yellow
+        local textColor = Color.White
 
         if inVehicle then
             if gamepad then
@@ -467,9 +467,9 @@ function Tron:Render()
             local seconds = timer:GetSeconds()
 
             if seconds > 2 and distance < self.stateArgs.maxRadius then
-                DrawCenteredShadowedText(Render.Size / 2, locStrings["nameTFo"] .. math.max(math.ceil(5 - seconds), 1) .. "...", Color.Red, TextSize.Huge)
+                DrawCenteredShadowedText(Render.Size / 2, locStrings["nameTFo"] .. math.max(math.ceil(5 - seconds), 1) .. "…", Color.Red, TextSize.Huge)
             elseif seconds > 0 and distance >= self.stateArgs.maxRadius then
-                DrawCenteredShadowedText(Render.Size / 2, locStrings["nameTFi"] .. math.max(math.ceil(5 - seconds), 1) .. "...", Color.Red, TextSize.Huge)
+                DrawCenteredShadowedText(Render.Size / 2, locStrings["nameTFi"] .. math.max(math.ceil(5 - seconds), 1) .. "…", Color.Red, TextSize.Huge)
             end
         end
 

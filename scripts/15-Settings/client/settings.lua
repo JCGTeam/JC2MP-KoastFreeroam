@@ -664,7 +664,7 @@ function Settings:CreateWindow()
 
     self.accountInfoText = Label.Create(accountInfo)
     self.accountInfoText:SetDock(GwenPosition.Fill)
-    self.accountInfoText:SetText("...")
+    self.accountInfoText:SetText("…")
 
     local avatar = ImagePanel.Create(self.subcategory7)
     avatar:SetSize(Vector2(100, 100))
@@ -682,7 +682,7 @@ function Settings:CreateWindow()
 
     self.moreInfoText = Label.Create(self.subcategory8)
     self.moreInfoText:SetDock(GwenPosition.Fill)
-    self.moreInfoText:SetText("...")
+    self.moreInfoText:SetText("…")
 
     self.moreInfoText:SizeToContents()
     self.subcategory8:SetHeight((self.moreInfoText:GetSize().y + 4 * 4))
@@ -694,7 +694,7 @@ function Settings:CreateWindow()
 
     self.statsText = Label.Create(self.subcategory9)
     self.statsText:SetDock(GwenPosition.Fill)
-    self.statsText:SetText("...")
+    self.statsText:SetText("…")
     self.statsText:SizeToContents()
 
     self.subcategory9:SetHeight((self.statsText:GetSize().y + 4 * 4))
@@ -757,7 +757,7 @@ function Settings:CreateWindow()
     local btnColor = Color.Yellow
     self.getInvitationsBonusBtn:SetTextHoveredColor(btnColor)
     self.getInvitationsBonusBtn:SetTextPressedColor(btnColor)
-    self.getInvitationsBonusBtn:SetText("...")
+    self.getInvitationsBonusBtn:SetText("…")
     self.getInvitationsBonusBtn:Subscribe("Press", function()
         Network:Send("GetInvitationPromocodesReward")
         Network:Send("RequestPromocodes")

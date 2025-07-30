@@ -417,7 +417,7 @@ function Casino:ReadyCoinflip()
                 self:StartCoinflip()
             else
                 self.coinflip.okay:SetEnabled(false)
-                self.coinflip.okay:SetText(self.locStrings["waiting"] .. self.secondPlayer:GetName() .. "...")
+                self.coinflip.okay:SetText(self.locStrings["waiting"] .. self.secondPlayer:GetName() .. "…")
 
                 Network:Send("FinalReadyCoinflip", {secondPlayer = self.secondPlayer})
             end

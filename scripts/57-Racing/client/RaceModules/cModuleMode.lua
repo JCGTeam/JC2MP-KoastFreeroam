@@ -25,6 +25,6 @@ function RaceModules.Mode:RaceWillEndIn(endTime)
     if self.timerControl then
         self.timerControl:Restart()
     else
-        self.timerControl = RaceMenuUtility.CreateTimer("до начала следующей гонки", endTime)
+        self.timerControl = RaceMenuUtility.CreateTimer(settings.locStrings["untilnextracestart"], endTime)
     end
 end

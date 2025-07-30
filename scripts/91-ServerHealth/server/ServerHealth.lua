@@ -144,7 +144,7 @@ function ServerHealth:KickX()
         p:Kick("\nServer was shut down, please join later.\n\nСервер был отключен, перезайдите позже.\nВ случае перезапуска, максимальное время ожидания 2 минуты.")
     end
 
-    local serverstopped_txt = "All players has been kicked\nSTOPPING..."
+    local serverstopped_txt = "All players has been kicked\nSTOPPING…"
 
     print(serverstopped_txt)
     Events:Fire("ToDiscordConsole", {text = serverstopped_txt})

@@ -4,7 +4,7 @@ function GodCheck:__init()
     self.max_lag_strikes = 7
 
     self.ACPrefix = "[Анти-Чит] "
-    self.CHText = "Выполняется проверка на наличие читов..."
+    self.CHText = "Выполняется проверка на наличие читов…"
     self.FCText = "Читы найдены! Если вы не используете их, напишите администрации сервера."
     self.NFCText = "Читы не найдены."
 

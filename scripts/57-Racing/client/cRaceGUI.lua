@@ -15,7 +15,7 @@ end
 function RaceGUI.DrawPlayerCount(args)
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
     local textHeight = Render:GetTextHeight("|", TextSize.Large)
-    DrawText(Vector2(0.5 * Render.Width, textHeight * 2 + 1), string.format(settings.racePlayersLabel, args.numPlayers, args.maxPlayers), settings.textColor, TextSize.Large, "center")
+    DrawText(Vector2(0.5 * Render.Width, textHeight * 2 + 1), string.format(settings.locStrings["racePlayersLabel"], args.numPlayers, args.maxPlayers), settings.textColor, TextSize.Large, "center")
 end
 
 -- Draws a 3D arrow at the top of the screen that points to the target checkpoint.
@@ -48,14 +48,16 @@ function RaceGUI.DrawLapCounter(args)
     local count
     local total
 
+    local locStrings = settings.locStrings
+
     -- If the course is a circuit, draw the laps.
     -- If the course is linear, draw checkpoint counter.
     if args.courseType == "Circuit" then
-        label = settings.raceLapLabel
+        label = locStrings["raceLapLabel"]
         count = args.currentLap
         total = args.totalLaps
     elseif args.courseType == "Linear" then
-        label = settings.raceCPLabel
+        label = locStrings["raceCPLabel"]
         count = args.targetCheckpoint - 1
         total = args.numCheckpoints
     end
@@ -70,7 +72,7 @@ end
 
 function RaceGUI.DrawRacePosition(args)
     -- "Pos" label
-    DrawText(NormVector2(settings.racePosLabelPos.x, settings.racePosLabelPos.y), settings.racePosLabel, settings.textColor, settings.racePosLabelSize, "center")
+    DrawText(NormVector2(settings.racePosLabelPos.x, settings.racePosLabelPos.y), settings.locStrings["racePosLabel"], settings.textColor, settings.racePosLabelSize, "center")
     -- Race position (ie "5/21")
     DrawText(NormVector2(settings.racePosPos.x, settings.racePosPos.y), string.format("%i/%i", args.position, args.numPlayers), settings.textColor2, settings.racePosSize, "center")
 end
@@ -88,12 +90,14 @@ function RaceGUI.DrawTimers(args)
 
     AddLine(args.recordTimePlayerName .. ":", Utility.LapTimeString(args.recordTime))
 
+    local locStrings = settings.locStrings
+
     if args.courseType == "Circuit" and args.previousTime then
-        AddLine(settings.PreviousLabel, Utility.LapTimeString(args.previousTime))
+        AddLine(locStrings["PreviousLabel"], Utility.LapTimeString(args.previousTime))
     end
 
     if args.currentTime then
-        AddLine(settings.CurrentLabel, Utility.LapTimeString(args.currentTime))
+        AddLine(locStrings["CurrentLabel"], Utility.LapTimeString(args.currentTime))
     end
 end
 

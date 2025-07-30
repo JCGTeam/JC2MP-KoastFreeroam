@@ -18,7 +18,7 @@ function CoursesTab:__init(...)
     self.coursesList:SetDock(GwenPosition.Fill)
     self.coursesList:SetAutoHideBars(false)
     self.coursesList:Subscribe("RowSelected", self, self.CourseSelected)
-    self.coursesList:AddItem("Загружаем список карт...")
+    self.coursesList:AddItem("Загружаем список карт…")
     self.coursesList:SetDataBool("isValid", false)
 
     self.courseGroupBox = RaceMenu.CreateGroupBox(self.page)
@@ -191,7 +191,7 @@ function CoursesTab:CourseSelected()
     self.recordsList:Clear()
     local row = self.recordsList:AddItem("")
     row:SetColumnCount(2)
-    row:SetCellText(1, "Загрузка...")
+    row:SetCellText(1, settings.locStrings["loading"])
 
     self.recordsIndex = 1
     RaceMenu.instance:AddRequest("RequestCourseRecords", {courseInfo[1], 1})

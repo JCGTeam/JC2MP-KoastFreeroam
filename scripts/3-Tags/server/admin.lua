@@ -390,8 +390,8 @@ function Admin:AddMoney(args)
     local player = Player.Match(text[1])[1]
 
     if not IsValid(player) then
-        print(text[1] .. " not found.")
-        Events:Fire("ToDiscordConsole", {text = text[1] .. " not found."})
+        print(text[1] .. " not found")
+        Events:Fire("ToDiscordConsole", {text = text[1] .. " not found"})
         return false
     elseif text[3] == "" then
         print("Use: addmoney <player> <money>")
@@ -745,7 +745,7 @@ function Admin:PlayerChat(args)
                 return false
             end
 
-            confirmationMessage(sender, player:GetName() .. " имеет $" .. player:GetMoney() .. ".")
+            confirmationMessage(sender, player:GetName() .. " имеет $" .. player:GetMoney())
         end
     end
 
@@ -755,8 +755,8 @@ function Admin:PlayerChat(args)
                 Chat:Broadcast("", Color.White)
             end
 
-            Chat:Broadcast("[Сервер] ", Color.White, "Чат очищен администратором " .. sender:GetName() .. ".", Color.White)
-            Events:Fire("ToDiscordConsole", {text = "[Admin] Chat has been cleared by " .. sender:GetName() .. "."})
+            Chat:Broadcast("[Сервер] ", Color.White, "Чат очищен администратором " .. sender:GetName(), Color.White)
+            Events:Fire("ToDiscordConsole", {text = "[Admin] Chat has been cleared by " .. sender:GetName()})
         elseif cmd_args[1] == "/sky" then
             if #cmd_args > 2 then
                 local player = Player.Match(cmd_args[2])[1]
@@ -820,11 +820,11 @@ function Admin:PlayerChat(args)
 
                     for p in Server:GetPlayers() do
                         p:Teleport(sPos, sAngle)
-                        confirmationMessage(p, sName .. " телепортировал всех игроков к себе.")
+                        confirmationMessage(p, sName .. " телепортировал всех игроков к себе")
                     end
 
-                    confirmationMessage(sender, "Все игроки были телепортированы к вам.")
-                    Events:Fire("ToDiscordConsole", {text = sName .. " warp all players to yourself."})
+                    confirmationMessage(sender, "Все игроки были телепортированы к вам")
+                    Events:Fire("ToDiscordConsole", {text = sName .. " warp all players to yourself"})
                 end
             end
 
@@ -846,7 +846,7 @@ function Admin:PlayerChat(args)
                 v:Remove()
             end
 
-            confirmationMessage(sender, "Все транспортные средства на сервере были удалены.")
+            confirmationMessage(sender, "Все транспортные средства на сервере были удалены")
         elseif cmd_args[1] == "/ban" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -859,7 +859,7 @@ function Admin:PlayerChat(args)
                 return false
             end
 
-            Chat:Broadcast("[Сервер] ", Color.White, player:GetName() .. " был внесён в черный список сервера.", Color(255, 0, 0))
+            Chat:Broadcast("[Сервер] ", Color.White, player:GetName() .. " был внесён в черный список сервера", Color(255, 0, 0))
             Events:Fire("ToDiscordConsole", {text = "[Admin] " .. player:GetName() .. " has been banned from the server by " .. sender:GetName()})
             Server:AddBan(player:GetSteamId())
             player:Kick("You have been banned from the server.")
@@ -880,8 +880,8 @@ function Admin:PlayerChat(args)
                     p:SetMoney(p:GetMoney() + tonumber(amount))
                 end
 
-                Chat:Broadcast("[Сервер] ", Color.White, "У всех теперь есть дополнительные $" .. tonumber(amount) .. "! Любезно предоставлено " .. sender:GetName() .. ".", Color(0, 255, 45))
-                Events:Fire("ToDiscordConsole", {text = "[Admin] " .. "У всех теперь есть дополнительные $" .. tonumber(amount) .. "! Любезно предоставлено " .. sender:GetName() .. "."})
+                Chat:Broadcast("[Сервер] ", Color.White, "У всех теперь есть дополнительные $" .. tonumber(amount) .. "! Любезно предоставлено " .. sender:GetName(), Color(0, 255, 45))
+                Events:Fire("ToDiscordConsole", {text = "[Admin] " .. "У всех теперь есть дополнительные $" .. tonumber(amount) .. "! Любезно предоставлено " .. sender:GetName()})
             end
 
             local player = Player.Match(cmd_args[2])[1]
@@ -910,8 +910,8 @@ function Admin:PlayerChat(args)
 					p:SetExp( p:GetExp() + tonumber(cmd_args[3]) )
 				end
 
-				Chat:Broadcast( "[Сервер] ", Color.White, "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName() .. ".", Color( 0, 255, 45 ) )
-				Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName() .. "." } )
+				Chat:Broadcast( "[Сервер] ", Color.White, "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName(), Color( 0, 255, 45 ) )
+				Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName() } )
 			end
 
 			local player = Player.Match(cmd_args[2])[1]
@@ -1040,7 +1040,7 @@ function Admin:PlayerChat(args)
         elseif cmd_args[1] == "/clearjoinnotice" then
             Events:Fire("SetJoinNotice", nil)
 
-            confirmationMessage(sender, "Сообщение при входе успешно удалено.")
+            confirmationMessage(sender, "Сообщение при входе успешно удалено")
 
             local console_text = sender:GetName() .. " cleared join notice"
             print(console_text)
@@ -1057,14 +1057,14 @@ function Admin:PlayerChat(args)
             end
 
             Events:Fire("AddCustomTeleport", {name = cmd_args[2], pos = sender:GetPosition()})
-            confirmationMessage(sender, "Точка для телепортации /tp " .. cmd_args[2] .. " успешно создана.")
+            confirmationMessage(sender, "Точка для телепортации /tp " .. cmd_args[2] .. " успешно создана")
 
             local console_text = sender:GetName() .. " added custom teleport: /tp " .. cmd_args[2]
             print(console_text)
             Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
         elseif cmd_args[1] == "/clearallcustomtp" then
             Events:Fire("ClearCustomTeleports")
-            confirmationMessage(sender, "Созданные точки для телепортации очищены.")
+            confirmationMessage(sender, "Созданные точки для телепортации очищены")
 
             local console_text = sender:GetName() .. " cleared all custom teleports"
             print(console_text)

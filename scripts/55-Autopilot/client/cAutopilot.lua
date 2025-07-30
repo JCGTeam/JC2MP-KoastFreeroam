@@ -321,7 +321,7 @@ function Autopilot:ApproachHoldOn()
     config[8].on = true
     self.scanning = true
     self.approach_timer = Timer()
-    Events:Fire("CastCenterText", {text = "Сканирование взлетно-посадочных полос...", time = 4, color = Color.LightGreen})
+    Events:Fire("CastCenterText", {text = "Сканирование взлетно-посадочных полос…", time = 4, color = Color.LightGreen})
     return
 end
 
@@ -333,7 +333,7 @@ function Autopilot:TargetHoldOn()
     config[9].on = true
     self.scanning = true
     self.target_timer = Timer()
-    Events:Fire("CastCenterText", {text = "Сканирование целей...", time = 4, color = Color.LightGreen})
+    Events:Fire("CastCenterText", {text = "Сканирование целей…", time = 4, color = Color.LightGreen})
     return
 end
 

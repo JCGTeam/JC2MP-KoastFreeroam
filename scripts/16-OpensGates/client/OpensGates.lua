@@ -153,6 +153,7 @@ function OpenGates:OpenDoors()
     Game:FireEvent("km04.pumpdoor.open")
     Game:FireEvent("km04.hangarGateOpen")
     Game:FireEvent("km04.baseCliffGateOpen")
+    Game:FireEvent("km06.gate.forceDestroy")
 end
 
 local opengates = OpenGates()

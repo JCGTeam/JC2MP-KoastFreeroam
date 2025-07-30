@@ -79,17 +79,18 @@ Utility.PrintTable = function(t, depth, tableList)
 end
 
 Utility.NumberToPlaceString = function(number)
-    local suffix = "-й"
+    local locStrings = settings.locStrings
+    local suffix = locStrings["suffix4"]
     local lastChar = string.format("%i", number)
     lastChar = lastChar:sub(lastChar:len())
 
     if not (number >= 10 and number <= 20) then
         if lastChar == "1" then
-            suffix = "-й"
+            suffix = locStrings["suffix"]
         elseif lastChar == "2" then
-            suffix = "-й"
+            suffix = locStrings["suffix2"]
         elseif lastChar == "3" then
-            suffix = "-й"
+            suffix = locStrings["suffix3"]
         end
     end
 

@@ -41,112 +41,18 @@ function Shop:__init()
     self.home = true
     self.unit = 0
 
-    self.BuyMenuLineColor = Color(155, 205, 255)
+    local vehicleColor = Color.White
 
-    self.tone1 = Color.White
-    self.tone2 = Color.White
-    self.pcolor = LocalPlayer:GetColor()
-
-    self.HomeImage = Image.Create(AssetLocation.Resource, "HomeImage")
-
-    self.window = Window.Create()
-    self.window:SetSizeRel(Vector2(0.5, 0.63))
-    self.window:SetPositionRel(Vector2(0.7, 0.5) - self.window:GetSizeRel() / 2)
-    self.window:SetVisible(self.activeWindow)
-    self.window:SetTitle("▧ Чёрный рынок")
-    self.window:Subscribe("WindowClosed", self, function() self:SetWindowVisible(false, true) end)
-
-    self.tab_control = TabControl.Create(self.window)
-    self.tab_control:SetDock(GwenPosition.Fill)
-
-    self.tab_control:Subscribe("TabSwitch", function()
-        local current_tab = self.tab_control:GetCurrentTab():GetText()
-        local locStrings = self.locStrings
-
-        if current_tab == locStrings["vehicles"] then
-            self.decalBW:SetVisible(true)
-        else
-            self.decalBW:SetVisible(false)
-            self.vehColorWindow:SetVisible(false)
-        end
-
-        if current_tab == locStrings["homepoints"] then
-            self.buy_button:SetEnabled(false)
-        else
-            self.buy_button:SetEnabled(true)
-        end
-    end)
-
-    local base1 = BaseWindow.Create(self.window)
-    base1:SetDock(GwenPosition.Bottom)
-    base1:SetSize(Vector2(self.window:GetSize().x, 32))
-
-    self.buy_button = Button.Create(base1)
-    self.buy_button:SetWidthAutoRel(0.5)
-    self.buy_button:SetText("Взять")
-    local btnColor = Color(185, 215, 255)
-    self.buy_button:SetTextHoveredColor(btnColor)
-    self.buy_button:SetTextPressedColor(btnColor)
-    self.buy_button:SetTextSize(15)
-    self.buy_button:SetHeight(30)
-    self.buy_button:SetDock(GwenPosition.Bottom)
-    self.buy_button:Subscribe("Press", self, self.Buy)
-
-    self.decalBW = BaseWindow.Create(self.window)
-    self.decalBW:SetDock(GwenPosition.Bottom)
-    local margin = Vector2(5, 5)
-    self.decalBW:SetMargin(margin, margin)
-    self.decalBW:SetHeight(20)
-
-    local decal = ComboBox.Create(self.decalBW)
-    decal:SetDock(GwenPosition.Right)
-
-    self.decalText = Label.Create(self.decalBW)
-    self.decalText:SetDock(GwenPosition.Right)
-    self.decalText:SetMargin(Vector2.Zero, Vector2(2, 0))
-    self.decalText:SetAlignment(GwenPosition.Center)
-
-    self.vehColorText = Label.Create(self.decalBW)
-    self.vehColorText:SetDock(GwenPosition.Left)
-    self.vehColorText:SetMargin(Vector2.Zero, Vector2(2, 0))
-    self.vehColorText:SetAlignment(GwenPosition.Center)
-
-    local vehColor = Label.Create(self.decalBW)
-    vehColor:SetDock(GwenPosition.Left)
-    vehColor:SetWidth(60)
-
-    local vehColorsPreview = Label.Create(vehColor)
-    vehColorsPreview:SetDock(GwenPosition.Fill)
-
-    self.vehColorPreview = Rectangle.Create(vehColorsPreview)
-    self.vehColorPreview:SetDock(GwenPosition.Top)
-    self.vehColorPreview:SetColor(self.tone1)
-
-    self.vehColor2Preview = Rectangle.Create(vehColorsPreview)
-    self.vehColor2Preview:SetDock(GwenPosition.Bottom)
-    self.vehColor2Preview:SetColor(self.tone2)
-
-    local vehColorArrow = Label.Create(vehColor)
-    vehColorArrow:SetDock(GwenPosition.Right)
-    vehColorArrow:SetAlignment(GwenPosition.Center)
-    local margin = Vector2(4, 0)
-    vehColorArrow:SetMargin(margin, margin)
-    vehColorArrow:SetText(">")
-    vehColorArrow:SizeToContents()
-
-    local vehColorButton = MenuItem.Create(vehColor)
-    vehColorButton:SetDock(GwenPosition.None)
-    vehColorButton:Subscribe("Press", function()
-        self.vehColorWindow:SetSize(Vector2(500, 350))
-        self.vehColorWindow:SetPosition(Vector2(Mouse:GetPosition().x - self.vehColorWindow:GetSize().x / 2, Mouse:GetPosition().y - self.vehColorWindow:GetSize().y - 15))
-        self.vehColorWindow:SetVisible(not self.vehColorWindow:GetVisible())
-    end)
+    self.tone1 = vehicleColor
+    self.tone2 = vehicleColor
 
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
         self:Lang()
     else
         self.locStrings = {
+            title = "▧ Черный рынок",
+            get = "Взять",
             vehicles = "Транспорт",
             weapon = "Оружие",
             character = "Персонаж",
@@ -191,31 +97,17 @@ function Shop:__init()
             pvpblock = "Вы не можете использовать это во время боя!",
             dlcwarning = "ВАЖНО: DLC-контент не сможет наносить урон и не будет виден игрокам, которые его не имеют",
             w = "Пожалуйста, подождите ",
-            ws = " секунд."
+            ws = " секунд.",
+            decal = "Декаль: ",
+            decaldefault = "По умолчанию",
+            decalpanau = "Панау",
+            decaljapan = "Японцы",
+            decalreapers = "Жнецы",
+            decalroaches = "Тараканы",
+            decalularboys = "Улары",
+            decaltaxi = "Такси"
         }
-
-        self.vehColorText:SetText(self.locStrings["vehiclecolor"] .. ": ")
-        self.vehColorText:SizeToContents()
-
-        self.decalText:SetText("Декаль: ")
-        self.decalText:SizeToContents()
-
-        self.decalNames = {"По умолчанию", "Панау", "Японцы", "Жнецы", "Тараканы", "Улары", "Такси"}
     end
-
-    for i, v in ipairs(self.decalNames) do
-        decal:AddItem(v, tostring(i))
-    end
-
-    decal:SetWidth(Render:GetTextWidth("По умолчанию"))
-    decal:Subscribe("Selection", function() self.unit = tonumber(decal:GetSelectedItem():GetName()) end)
-
-    self.categories = {}
-
-    self:CreateItems()
-
-    self.sort_dir = false
-    self.last_column = -1
 
     self.player_hats = {}
     self.player_coverings = {}
@@ -231,9 +123,8 @@ function Shop:__init()
     self.player_leftfoot = {}
 
     Events:Subscribe("Lang", self, self.Lang)
-    Events:Subscribe("Render", self, self.Render)
     Events:Subscribe("OpenShop", self, self.OpenShop)
-    Events:Subscribe("CloseShop", self, function() self:SetWindowVisible(false) end)
+    Events:Subscribe("CloseShop", self, self.CloseShop)
     Events:Subscribe("Render", self, self.RenderAppearanceHat)
     Events:Subscribe("PlayerNetworkValueChange", self, self.PlayerValueChangeAppearance)
     Events:Subscribe("EntitySpawn", self, self.EntitySpawnAppearance)
@@ -249,11 +140,9 @@ function Shop:__init()
 end
 
 function Shop:Lang()
-    if self.buy_button then
-        self.buy_button:SetText("Get")
-    end
-
     self.locStrings = {
+        title = "▧ Black Market",
+        get = "Get",
         vehicles = "Vehicles",
         weapon = "Weapon",
         character = "Character",
@@ -298,17 +187,16 @@ function Shop:Lang()
         pvpblock = "You cannot use this during combat!",
         dlcwarning = "WARNING: DLC content will not be able to deal damage and will not be visible to players who do not have it",
         w = "Please, wait ",
-        ws = " seconds."
+        ws = " seconds.",
+        decal = "Decal: ",
+        decaldefault = "Default",
+        decalpanau = "Panau",
+        decaljapan = "Japan",
+        decalreapers = "Reapers",
+        decalroaches = "Roaches",
+        decalularboys = "Ular Boys",
+        decaltaxi = "Taxi"
     }
-
-    self.window:SetTitle("▧ Black Market")
-    self.vehColorText:SetText(self.locStrings["vehiclecolor"] .. ": ")
-    self.vehColorText:SizeToContents()
-
-    self.decalText:SetText("Decal: ")
-    self.decalText:SizeToContents()
-
-    self.decalNames = {"Default", "Panau", "Japan", "Reapers", "Roaches", "Ular Boys", "Taxi"}
 end
 
 function Shop:RenderAppearanceHat()
@@ -886,7 +774,7 @@ function Shop:LoadCategories()
             for _, entry in pairs(subcategory) do
                 item_id = item_id + 1
                 local row = subcategory_table.listbox:AddItem(entry:GetName())
-                row:SetTextColor(self.BuyMenuLineColor)
+                row:SetTextColor(self.buyMenuLineColor)
                 row:SetDataNumber("id", item_id)
 
                 entry:SetListboxItem(row)
@@ -997,20 +885,24 @@ function Shop:LoadCategories()
     local height = textWidth * 16
 
     local home_img = ImagePanel.Create(window)
-    home_img:SetImage(self.HomeImage)
+    home_img:SetImage(self.homeImage)
     home_img:SetPosition(Vector2(5, spawninhome:GetSize().y + Render:GetTextHeight(self.toggleH:GetText(), self.toggleH:GetTextSize()) + 35))
     home_img:SetSize(Vector2(textWidth * 27, height))
 
-    self.Home_button = MenuItem.Create(window)
-    self.Home_button:SetPosition(home_img:GetPosition())
-    self.Home_button:SetSize(Vector2(home_img:GetSize().x, height * 1.25))
-    self.Home_button:SetText(locStrings["gohome"])
+    local home_button = MenuItem.Create(window)
+    home_button:SetPosition(home_img:GetPosition())
+    home_button:SetSize(Vector2(home_img:GetSize().x, height * 1.25))
+    home_button:SetText(locStrings["gohome"])
     local btnColor = Color.LightGreen
-    self.Home_button:SetTextHoveredColor(btnColor)
-    self.Home_button:SetTextPressedColor(btnColor)
-    self.Home_button:SetTextPadding(Vector2(0, height), Vector2.Zero)
-    self.Home_button:SetTextSize(19)
-    self.Home_button:Subscribe("Press", self, self.GoHome)
+    home_button:SetTextHoveredColor(btnColor)
+    home_button:SetTextPressedColor(btnColor)
+    home_button:SetTextPadding(Vector2(0, height), Vector2.Zero)
+    home_button:SetTextSize(19)
+    home_button:Subscribe("Press", self, self.GoHome)
+
+    if LocalPlayer:GetValue("SystemFonts") then
+        home_button:SetFont(AssetLocation.SystemFont, "Impact")
+    end
 
     Network:Send("BuyMenuGetSaveColor")
 end
@@ -1036,7 +928,9 @@ function Shop:ToggleHome()
 
     self.texter:SizeToContents()
     self.buttonHB:SetPosition(Vector2(self.texter:GetSize().x + 12, 10))
-    self.toggleH:SetPosition(Vector2(self.buttonHB:GetPosition().x + self.buttonHB:GetSize().x + 5, 10))
+
+    local buttonHB = self.buttonHB
+    self.toggleH:SetPosition(Vector2(buttonHB:GetPosition().x + buttonHB:GetSize().x + 5, 10))
 end
 
 function Shop:GoHome()
@@ -1077,34 +971,159 @@ function Shop:GetUnitString()
     end
 end
 
+function Shop:CreateWindow()
+    if self.window then return end
+
+    local locStrings = self.locStrings
+
+    self.window = Window.Create()
+    self.window:SetSizeRel(Vector2(0.5, 0.63))
+    self.window:SetPositionRel(Vector2(0.7, 0.5) - self.window:GetSizeRel() / 2)
+    self.window:SetTitle(locStrings["title"])
+    self.window:Subscribe("WindowClosed", self, function() self:SetWindowVisible(false, true) end)
+
+    self.tab_control = TabControl.Create(self.window)
+    self.tab_control:SetDock(GwenPosition.Fill)
+
+    local base1 = BaseWindow.Create(self.window)
+    base1:SetDock(GwenPosition.Bottom)
+    base1:SetSize(Vector2(self.window:GetSize().x, 32))
+
+    self.buy_button = Button.Create(base1)
+    self.buy_button:SetWidthAutoRel(0.5)
+    self.buy_button:SetText(locStrings["get"])
+    local btnColor = Color(185, 215, 255)
+    self.buy_button:SetTextHoveredColor(btnColor)
+    self.buy_button:SetTextPressedColor(btnColor)
+    self.buy_button:SetTextSize(15)
+    self.buy_button:SetHeight(30)
+    self.buy_button:SetDock(GwenPosition.Bottom)
+    self.buy_button:Subscribe("Press", self, self.Buy)
+
+    if LocalPlayer:GetValue("SystemFonts") then
+        self.buy_button:SetFont(AssetLocation.SystemFont, "Impact")
+    end
+
+    local decalBW = BaseWindow.Create(self.window)
+    decalBW:SetDock(GwenPosition.Bottom)
+    local margin = Vector2(5, 5)
+    decalBW:SetMargin(margin, margin)
+    decalBW:SetHeight(20)
+
+    local decal = ComboBox.Create(decalBW)
+    decal:SetDock(GwenPosition.Right)
+
+    local decalText = Label.Create(decalBW)
+    decalText:SetDock(GwenPosition.Right)
+    decalText:SetMargin(Vector2.Zero, Vector2(2, 0))
+    decalText:SetAlignment(GwenPosition.Center)
+    decalText:SetText(locStrings["decal"])
+    decalText:SizeToContents()
+
+    local vehColorText = Label.Create(decalBW)
+    vehColorText:SetDock(GwenPosition.Left)
+    vehColorText:SetMargin(Vector2.Zero, Vector2(2, 0))
+    vehColorText:SetAlignment(GwenPosition.Center)
+    vehColorText:SetText(locStrings["vehiclecolor"] .. ": ")
+    vehColorText:SizeToContents()
+
+    local vehColor = Label.Create(decalBW)
+    vehColor:SetDock(GwenPosition.Left)
+    vehColor:SetWidth(60)
+
+    local vehColorsPreview = Label.Create(vehColor)
+    vehColorsPreview:SetDock(GwenPosition.Fill)
+
+    self.vehColorPreview = Rectangle.Create(vehColorsPreview)
+    self.vehColorPreview:SetDock(GwenPosition.Top)
+    self.vehColorPreview:SetColor(self.tone1)
+
+    self.vehColor2Preview = Rectangle.Create(vehColorsPreview)
+    self.vehColor2Preview:SetDock(GwenPosition.Bottom)
+    self.vehColor2Preview:SetColor(self.tone2)
+
+    local vehColorArrow = Label.Create(vehColor)
+    vehColorArrow:SetDock(GwenPosition.Right)
+    vehColorArrow:SetAlignment(GwenPosition.Center)
+    local margin = Vector2(4, 0)
+    vehColorArrow:SetMargin(margin, margin)
+    vehColorArrow:SetText(">")
+    vehColorArrow:SizeToContents()
+
+    local vehColorButton = MenuItem.Create(vehColor)
+    vehColorButton:SetDock(GwenPosition.None)
+    vehColorButton:Subscribe("Press", function()
+        self.vehColorWindow:SetSize(Vector2(500, 350))
+        self.vehColorWindow:SetPosition(Vector2(Mouse:GetPosition().x - self.vehColorWindow:GetSize().x / 2, Mouse:GetPosition().y - self.vehColorWindow:GetSize().y - 15))
+        self.vehColorWindow:SetVisible(not self.vehColorWindow:GetVisible())
+    end)
+
+    local decalNames = {locStrings["decaldefault"], locStrings["decalpanau"], locStrings["decaljapan"], locStrings["decalreapers"], locStrings["decalroaches"], locStrings["decalularboys"], locStrings["decaltaxi"]}
+
+    for i, v in ipairs(decalNames) do
+        decal:AddItem(v, tostring(i))
+    end
+
+    decal:SetWidth(Render:GetTextWidth("По умолчанию"))
+    decal:Subscribe("Selection", function() self.unit = tonumber(decal:GetSelectedItem():GetName()) end)
+
+    self.tab_control:Subscribe("TabSwitch", function()
+        local current_tab = self.tab_control:GetCurrentTab():GetText()
+
+        if current_tab == locStrings["vehicles"] then
+            decalBW:SetVisible(true)
+        else
+            decalBW:SetVisible(false)
+            self.vehColorWindow:SetVisible(false)
+        end
+
+        if current_tab == locStrings["homepoints"] then
+            self.buy_button:SetEnabled(false)
+        else
+            self.buy_button:SetEnabled(true)
+        end
+    end)
+
+    self.homeImage = Image.Create(AssetLocation.Resource, "HomeImage")
+
+    self.buyMenuLineColor = Color(155, 205, 255)
+
+    self.categories = {}
+
+    self:CreateItems()
+    self:LoadCategories()
+
+    self.sort_dir = false
+    self.last_column = -1
+end
+
 function Shop:SetWindowVisible(visible, sound)
+    self:CreateWindow()
+
     if self.activeWindow ~= visible then
         self.activeWindow = visible
+        self.window:SetVisible(visible)
         Mouse:SetVisible(visible)
 
-        self:LoadCategories()
-
-        self.vehColorWindow:SetVisible(false)
 
         if not self.activeWindow and self.colorChanged then
             self.colorChanged = false
-            Network:Send("BuyMenuSaveColor", { tone1 = self.tone1, tone2 = self.tone2})
+            Network:Send("BuyMenuSaveColor", {tone1 = self.tone1, tone2 = self.tone2})
         end
     end
 
     if self.activeWindow then
-        if LocalPlayer:GetValue("SystemFonts") then
-            self.Home_button:SetFont(AssetLocation.SystemFont, "Impact")
-            self.buy_button:SetFont(AssetLocation.SystemFont, "Impact")
-        end
-
         if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
+        if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
 
         local tag = LocalPlayer:GetValue("Tag")
 
-		self.toggleH:SetEnabled( self.permissions[tag] and true or false )
+		self.toggleH:SetEnabled(self.permissions[tag] and true or false)
     else
+        self.vehColorWindow:SetVisible(false)
+
         if self.LocalPlayerInputEvent then Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil end
+        if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
     end
 
     if sound then
@@ -1134,6 +1153,12 @@ function Shop:OpenShop()
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
     self:SetWindowVisible(not self.activeWindow, true)
+end
+
+function Shop:CloseShop()
+    if self.window and self.window:GetVisible() then
+        self:SetWindowVisible(false)
+    end
 end
 
 function Shop:LocalPlayerInput(args)

@@ -14,7 +14,7 @@ function KingHil:__init()
         self.locStrings = {
             nameT = "Игроки",
             nameTTw = "Очередь",
-            nameTTh = "Ожидание других игроков...",
+            nameTTh = "Ожидание других игроков…",
             nameTFo = "Доберитесь до чекпоинта первым и отбивайтесь ракетницей от соперников!",
             nameTFi = "За границами ",
             lobbyneeds = "Нужно на ",
@@ -49,7 +49,7 @@ function KingHil:Lang()
     self.locStrings = {
         nameT = "Players",
         nameTTw = "Current Queue",
-        nameTTh = "Waiting for other players...",
+        nameTTh = "Waiting for other players…",
         nameTFo = "Get to checkpoint first and fight off your rivals with a rocket launcher!",
         nameTFi = "Out of bounds ",
         lobbyneeds = "We need ",
@@ -183,7 +183,7 @@ function KingHil:Render()
     elseif state == GamemodeState.COUNTDOWN then
         DrawCenteredShadowedText(Vector2(Render.Width / 2, 70), math.max(math.ceil(5 - self.timer:GetSeconds()), 1) .. "", Color.White, TextSize.Huge)
     elseif state == GamemodeState.INPROGRESS then
-        local textColor = Color.Yellow
+        local textColor = Color.White
 
         DrawCenteredShadowedText(Vector2(Render.Width / 2, Render.Height - 35), locStrings["nameTFo"], textColor)
 
@@ -194,7 +194,7 @@ function KingHil:Render()
         local seconds = timer:GetSeconds()
 
         if seconds > 0 and distance >= self.stateArgs.maxRadius then
-            DrawCenteredShadowedText(Render.Size / 2, locStrings["nameTFi"] .. math.max(math.ceil(5 - seconds), 1) .. "...", Color.Red, TextSize.Huge)
+            DrawCenteredShadowedText(Render.Size / 2, locStrings["nameTFi"] .. math.max(math.ceil(5 - seconds), 1) .. "…", Color.Red, TextSize.Huge)
         end
     end
 

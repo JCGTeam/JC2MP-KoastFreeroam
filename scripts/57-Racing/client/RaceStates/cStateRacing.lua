@@ -13,7 +13,7 @@ function StateRacing:__init(race, args)
     self.respawnState = "None"
     self.exitVehicleCoroutine = nil
 
-    LargeMessage("Поихали!", 2)
+    LargeMessage(settings.locStrings["go"], 2)
 
     Events:Fire("RaceStart")
 
@@ -52,7 +52,9 @@ function StateRacing:ExitVehicleCoroutineFunction()
     end
 
     while timer:GetSeconds() <= 7 do
-        DrawText(Vector2(Render.Width * 0.5, Render.Height * 0.29), "Нажмите " .. self.stringKey .. ", чтобы возродиться", settings.textColor, 24, "center")
+        local locStrings = settings.locStrings
+
+        DrawText(Vector2(Render.Width * 0.5, Render.Height * 0.29), locStrings["press"] .. self.stringKey .. locStrings["torespawn"], settings.textColor, 24, "center")
         coroutine.yield()
     end
 
@@ -153,7 +155,7 @@ function StateRacing:Render()
         if self.respawnState == "Waiting" then
             self.exitVehicleCoroutine = nil
 
-            DrawText(Vector2(Render.Width * 0.5, Render.Height * 0.29), " Возрождение. . .", settings.textColor, 24, "center")
+            DrawText(Vector2(Render.Width * 0.5, Render.Height * 0.29), settings.locStrings["respawning"], settings.textColor, 24, "center")
         elseif self.respawnState == "None" and self.exitVehicleCoroutine then
             local success, returnValue = coroutine.resume(self.exitVehicleCoroutine, self)
             if success == false then

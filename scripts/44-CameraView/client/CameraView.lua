@@ -343,7 +343,7 @@ function CameraView:LocalPlayerInput(args)
     if LocalPlayer:GetValue("SpectatorMode") then return end
 
     if LocalPlayer:InVehicle() then
-        if args.input == Action.VehicleCam then
+        if args.input == Action.VehicleCam and Input:GetValue(Action.ShoulderCam) ~= 0 then
             local elapsedSeconds = Client:GetElapsedSeconds()
             local time = elapsedSeconds
 
