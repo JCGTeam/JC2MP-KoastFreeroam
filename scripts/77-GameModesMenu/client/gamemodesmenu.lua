@@ -92,6 +92,12 @@ function GameModesMenu:SetWindowVisible(visible, sound)
             end
         end
 
+        local customGameModeButton = self.customGameModeButton
+
+        if customGameModeButton then
+            self:CreateCustomGameModeButton(customGameModeButton.title, customGameModeButton.description, customGameModeButton.fireevent)
+        end
+
         if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
         if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
     else
@@ -233,6 +239,14 @@ function GameModesMenu:CreateWindow()
 end
 
 function GameModesMenu:AddCustomGameModeButton(args)
+    self.customGameModeButton = {
+        title = args.title,
+        description = args.description,
+        fireevent = args.fireevent
+    }
+end
+
+function GameModesMenu:CreateCustomGameModeButton(title, description, fireevent)
     if not self.mainButton.custom then
         local textSize = 19
         local textWidth = Render:GetTextWidth(self.resizer_txt, textSize)
@@ -247,23 +261,19 @@ function GameModesMenu:AddCustomGameModeButton(args)
         self.mainButton.custom = MenuItem.Create(self.mainButton.scroll_mg)
         self.mainButton.custom:SetPosition(self.mainButton.custom_IMG:GetPosition())
         self.mainButton.custom:SetSize(Vector2(self.mainButton.custom_IMG:GetSize().x, textWidth * 1.25 / 1.15))
-        self.mainButton.custom:SetText((args and args.title) or self.customButton_txt)
+        self.mainButton.custom:SetText(title or self.customButton_txt)
         self.mainButton.custom:SetTextPadding(Vector2(0, textWidth / 1.15), Vector2.Zero)
         self.mainButton.custom:SetTextSize(textSize)
-        if args then
-            if args.description then self.mainButton.custom:SetToolTip(args.description) end
-            if args.fireevent then self.customButtonEvent = self.mainButton.custom:Subscribe("Press", function() self:CustomToggle(args.fireevent) end) end
-        end
+        if description then self.mainButton.custom:SetToolTip(description) end
+        if fireevent then self.customButtonEvent = self.mainButton.custom:Subscribe("Press", function() self:CustomToggle(fireevent) end) end
 
         if LocalPlayer:GetValue("SystemFonts") then self.mainButton.custom:SetFont(AssetLocation.SystemFont, "Impact") end
     else
-        self.mainButton.custom:SetText((args and args.title) or self.customButton_txt)
-        if args then
-            if args.description then self.mainButton.custom:SetToolTip(args.description) end
-            if args.fireevent then
-                if self.customButtonEvent then self.mainButton.custom:Unsubscribe(self.customButtonEvent) end
-                self.customButtonEvent = self.mainButton.custom:Subscribe("Press", function() self:CustomToggle(args.fireevent) end)
-            end
+        self.mainButton.custom:SetText(title or self.customButton_txt)
+        if description then self.mainButton.custom:SetToolTip(description) end
+        if fireevent then
+            if self.customButtonEvent then self.mainButton.custom:Unsubscribe(self.customButtonEvent) end
+            self.customButtonEvent = self.mainButton.custom:Subscribe("Press", function() self:CustomToggle(fireevent) end)
         end
     end
 end

@@ -81,10 +81,12 @@ function ServerHealth:ServerStart()
     Events:Fire("ToDiscordConsole", {text = "**[Status] " .. msg .. "**"})
     Events:Fire("ToDiscord", {text = "**[Status] " .. msg .. "**"})
 
-    if self.iKnowWhatImDoingWarning then
-        warn(self.iKnowWhatImDoingWarning)
+    local iKnowWhatImDoingWarning = self.iKnowWhatImDoingWarning
 
-        Events:Fire("ToDiscordConsole", {text = "**[Status] " .. self.iKnowWhatImDoingWarning .. "**"})
+    if iKnowWhatImDoingWarning then
+        warn(iKnowWhatImDoingWarning)
+
+        Events:Fire("ToDiscordConsole", {text = "**[Status] " .. iKnowWhatImDoingWarning .. "**"})
     end
 end
 

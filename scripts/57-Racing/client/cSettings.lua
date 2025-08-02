@@ -89,6 +89,7 @@ Events:Subscribe("ModuleLoad", function()
 			color = "Цвет",
 			untilracestart = "до начала гонки",
 			untilnextracestart = "до начала следующей гонки",
+			waitingplayers = "Игроки выбирают транспортные средства. Подождите...",
 			use = "Используйте /",
 			toopenracemenu = ", чтобы открыть меню гонок",
 			place = " на финише!",
@@ -96,7 +97,8 @@ Events:Subscribe("ModuleLoad", function()
 			suffix = "-й",
 			suffix2 = "-й",
 			suffix3 = "-й",
-			suffix4 = "-й"
+			suffix4 = "-й",
+			raceprogress ="Прогресс гонки: %i%%"
 		}
 	end
 end)
@@ -122,6 +124,7 @@ function Lang()
 		color = "Color",
 		untilracestart = "until race start",
 		untilnextracestart = "until next race start",
+		waitingplayers = "Players are selecting vehicles. Please wait..",
 		use = "Use /",
 		toopenracemenu = " to open Race Menu",
 		place = " place!",
@@ -129,7 +132,8 @@ function Lang()
 		suffix = "st",
 		suffix2 = "nd",
 		suffix3 = "rd",
-		suffix4 = "th"
+		suffix4 = "th",
+		raceprogress ="Race Progress: %i%%"
 	}
 end
 

@@ -18,7 +18,7 @@ function VehicleRadio:__init()
     self.cooldown = 0.5
     self.cooltime = 0
 
-    if LocalPlayer:InVehicle() then
+    if LocalPlayer:InVehicle() and not LocalPlayer:GetValue("DisableVehicleRadio") then
         self.PreTickEvent = Events:Subscribe("PreTick", self, self.PreTick)
         self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
         self.KeyUpEvent = Events:Subscribe("KeyUp", self, self.KeyUp)
@@ -156,6 +156,8 @@ function VehicleRadio:PreTick()
 end
 
 function VehicleRadio:LocalPlayerEnterVehicle()
+    if LocalPlayer:GetValue("DisableVehicleRadio") then return end
+
     local locStrings = self.locStrings
 
     Game:ShowPopup(locStrings["title"] .. locStrings["off"], false)

@@ -57,24 +57,36 @@ function WhatsNew:Open(args)
     if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
     if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
 
-    self.continueButton = ModernGUI.Button.Create()
-    self.continueButton:SetSize(Vector2(Render:GetTextWidth(self.continue_txt, self.continueButton:GetTextSize()) + 30, 40))
-    self.continueButton:SetPosition(Vector2(Render.Size.x / 2 - self.continueButton:GetSize().x / 2, Render.Size.y))
-    self.continueButton:SetText(self.continue_txt)
-    if LocalPlayer:GetValue("SystemFonts") then
-        self.continueButton:SetFont(AssetLocation.SystemFont, "Impact")
+    if not self.continueButton then
+        self.continueButton = ModernGUI.Button.Create()
+        self.continueButton:SetSize(Vector2(Render:GetTextWidth(self.continue_txt, self.continueButton:GetTextSize()) + 30, 40))
+        self.continueButton:SetPosition(Vector2(Render.Size.x / 2 - self.continueButton:GetSize().x / 2, Render.Size.y))
+        self.continueButton:SetText(self.continue_txt)
+        if LocalPlayer:GetValue("SystemFonts") then
+            self.continueButton:SetFont(AssetLocation.SystemFont, "Impact")
+        end
+        self.continueButton:Subscribe("Press", self, self.Close)
     end
-    self.continueButton:Subscribe("Press", self, self.Close)
 
     local finalPos = Render.Size.x / 2.7
-    Animation:Play(self.continueButton:GetPosition().x, finalPos, 0.25, easeInOut, function(value)
-        if self.continueButton then self.continueButton:SetPosition(Vector2(Render.Size.x / 2 - self.continueButton:GetSize().x / 2, value)) end
+
+    Animation:Play(self.continueButton:GetPosition().x, finalPos, 0.25, easeInOut,
+    function(value)
+        if self.continueButton then self.continueButton:SetPosition(Vector2(Render.Size.x / 2 - self.continueButton:GetSize().x / 2, value)) end end,
+    function()
+        self.finished = true
     end)
 end
 
 function WhatsNew:LocalPlayerInput(args)
     if self.actions[args.input] then
         return false
+    end
+
+    if args.input == Action.GuiOk then
+        if self.finished then
+            self:Close()
+        end
     end
 end
 
@@ -132,6 +144,8 @@ function WhatsNew:Close()
     self.text_clr = nil
     self.background_clr = nil
 
+    self.finished = nil
+
     Game:FireEvent("gui.hud.show.force")
     Mouse:SetVisible(false)
     Chat:SetEnabled(true)
@@ -145,6 +159,8 @@ function WhatsNew:Close()
 
     sound:SetParameter(0, 0.75)
     sound:SetParameter(1, 0)
+
+    Events:Fire("WNContinuePressed")
 end
 
 local whatsnew = WhatsNew()

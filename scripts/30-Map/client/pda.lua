@@ -108,7 +108,7 @@ function PDA:Toggle()
         self.circleTimer = Timer()
         self.fadeInTimer = Timer()
 
-        Animation:Play(0, 1, 0.15, easeIOnut, function(value) animationValue = value end)
+        Animation:Play(0, 1, 0.15, easeInOut, function(value) animationValue = value end)
     else
         LocalPlayer:SetValue("ServerMap", nil)
         LocalPlayer:SetValue("DisableCameraScroll", nil)

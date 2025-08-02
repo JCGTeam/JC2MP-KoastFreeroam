@@ -137,7 +137,7 @@ function Tron:PlayerChat(args)
                 local lobby = Lobby(config)
 
                 for player in Server:GetPlayers() do
-                    if player:GetWorld() == DefaultWorld then
+                    if player:GetWorld() == DefaultWorld and player:GetValue("Joined") then
                         lobby:GetQueue():Add(player)
                         Network:Send(player, "EnterLobby")
                     end

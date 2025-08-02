@@ -74,6 +74,8 @@ function OrbitCamera:CalcView()
 end
 
 function OrbitCamera:LocalPlayerInput(args)
+    if Game:GetState() ~= GUIState.Game then return end
+
     if self.isInputEnabled == false then
         return true
     end
@@ -110,9 +112,12 @@ function OrbitCamera:LocalPlayerInput(args)
 end
 
 function OrbitCamera:MouseScroll(args)
+    if Game:GetState() ~= GUIState.Game then return end
     if self.isInputEnabled == false then return end
 
-    self.distanceDeltaBuffer = args.delta
+    if not LocalPlayer:GetValue("DisableCameraScroll") then
+        self.distanceDeltaBuffer = -args.delta
+    end
 end
 
 function OrbitCamera:PreClientTick()

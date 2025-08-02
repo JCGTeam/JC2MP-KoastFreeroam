@@ -71,7 +71,6 @@ function ActionsMenu:__init()
     Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("KeyUp", self, self.KeyUp)
     Events:Subscribe("LocalPlayerChat", self, self.LocalPlayerChat)
-    Events:Subscribe("LocalPlayerWorldChange", self, function() self:SetWindowVisible(false) end)
 end
 
 function ActionsMenu:Lang()
@@ -236,6 +235,8 @@ function ActionsMenu:CreateWindow()
 
     self.SkyBtn = self:CreateActionButton(locStrings["sky"], self.Sky)
     self.DownBtn = self:CreateActionButton(locStrings["down"], self.Down)
+
+    Events:Subscribe("LocalPlayerWorldChange", self, function() self:SetWindowVisible(false) end)
 end
 
 function ActionsMenu:Heal()

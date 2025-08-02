@@ -27,6 +27,23 @@ function Autopilot:__init()
 
     self:InitGUI()
     self:UpdateKeyBinds()
+    
+    local lang = LocalPlayer:GetValue("Lang")
+    if lang and lang == "EN" then
+        self:Lang()
+    else
+        self.locStrings = {
+            press = "Нажмите ",
+            toopenpanel = " чтобы открыть панель автопилота.",
+            nowaypoint = "Точку не поставил",
+            scanningrunways = "Сканирование взлетно-посадочных полос…",
+            scanningtargets = "Сканирование целей…",
+            approachto = "Подход к ",
+            set = " установке",
+            target = "Цель: ",
+            targetllost = "Цель потеряна!"
+        }
+    end
 
     Events:Subscribe("Lang", self, self.Lang)
     Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
@@ -50,7 +67,17 @@ function Autopilot:__init()
 end
 
 function Autopilot:Lang()
-    self.namept = "Press " .. self.stringKey .. " to enable autopilot panel."
+    self.locStrings = {
+        press = "Press ",
+        toopenpanel = " to open autopilot panel.",
+        nowaypoint = "No waypoint",
+        scanningrunways = "Scanning runways…",
+        scanningtargets = "Scanning targets…",
+        approachto = "Approach to ",
+        set = " set",
+        target = "Target: ",
+        targetlost = "Target lost!"
+    }
 end
 
 function Autopilot:UpdateKeyBinds()
@@ -59,13 +86,6 @@ function Autopilot:UpdateKeyBinds()
 
     self.expectedKey = bind and bind.type == "Key" and bind.value or 82
     self.stringKey = bind and bind.type == "Key" and bind.valueString or "R"
-
-    local lang = LocalPlayer:GetValue("Lang")
-    if lang and lang == "EN" then
-        self:Lang()
-    else
-        self.namept = "Нажмите " .. self.stringKey .. " чтобы включить автопилот."
-    end
 end
 
 function Autopilot:InitGUI()
@@ -308,7 +328,7 @@ function Autopilot:WaypointHoldOn()
         self:HeadingHoldOn()
         config[7].on = true
     else
-        Events:Fire("CastCenterText", {text = "Точку не поставил", time = 4, color = Color.LightGreen})
+        Events:Fire("CastCenterText", {text = self.locStrings["nowaypoint"], time = 4, color = Color.LightGreen})
         return
     end
 end
@@ -321,7 +341,7 @@ function Autopilot:ApproachHoldOn()
     config[8].on = true
     self.scanning = true
     self.approach_timer = Timer()
-    Events:Fire("CastCenterText", {text = "Сканирование взлетно-посадочных полос…", time = 4, color = Color.LightGreen})
+    Events:Fire("CastCenterText", {text = self.locStrings["scanningrunways"], time = 4, color = Color.LightGreen})
     return
 end
 
@@ -333,7 +353,7 @@ function Autopilot:TargetHoldOn()
     config[9].on = true
     self.scanning = true
     self.target_timer = Timer()
-    Events:Fire("CastCenterText", {text = "Сканирование целей…", time = 4, color = Color.LightGreen})
+    Events:Fire("CastCenterText", {text = self.locStrings["scanningtargets"], time = 4, color = Color.LightGreen})
     return
 end
 
@@ -638,7 +658,7 @@ function Autopilot:EnterPlane(args)
 
                 if self.fadeOutAnimation then Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil end
 
-                Animation:Play(0, 1, 0.15, easeIOnut, function(value) self.animationValue = value end)
+                Animation:Play(0, 1, 0.15, easeInOut, function(value) self.animationValue = value end)
 
                 if not self.hinttimer then
                     self.hinttimer = Timer()
@@ -662,7 +682,7 @@ function Autopilot:ExitPlane()
 
         if self.animationValue then
             if self.RenderEvent then
-                self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.15, easeIOnut, function(value) self.animationValue = value end, function()
+                self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.15, easeInOut, function(value) self.animationValue = value end, function()
                     self.animationValue = nil
 
                     if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
@@ -833,7 +853,11 @@ function Autopilot:ApproachHold()
             self:HeadingHoldOn()
             self:AlitudeHoldOn()
             self:SpeedHoldOn()
-            Events:Fire("CastCenterText", {text = "Подход к " .. airport_name .. " RWY" .. runway_name .. " установке.", time = 4, color = Color.LightGreen})
+
+            local locStrings = self.locStrings
+
+            Events:Fire("CastCenterText", {text = locStrings["approachto"] .. airport_name .. " RWY" .. runway_name .. locStrings["set"], time = 4, color = Color.LightGreen})
+
             self.approach = {
                 near_marker = airports[airport_name][runway_name].near_marker,
                 far_marker = airports[airport_name][runway_name].far_marker,
@@ -915,7 +939,7 @@ function Autopilot:TargetHold()
 
         if nearest_target then
             self.scanning = nil
-            Events:Fire("CastCenterText", {text = "Цель: " .. tostring(nearest_target:GetDriver()), time = 4, color = Color.LightGreen})
+            Events:Fire("CastCenterText", {text = self.locStrings["target"] .. tostring(nearest_target:GetDriver()), time = 4, color = Color.LightGreen})
             self.target = {vehicle = nearest_target, follow_distance = 100}
             self:SpeedHoldOn()
             self:HeadingHoldOn()
@@ -929,7 +953,7 @@ function Autopilot:TargetHold()
 
     if target then
         if not IsValid(target.vehicle) or not target.vehicle:GetDriver() then
-            Events:Fire("CastCenterText", {text = "Цель потеряна!", time = 4, color = Color.LightGreen})
+            Events:Fire("CastCenterText", {text = self.locStrings["targetlost"], time = 4, color = Color.LightGreen})
             return self:TargetHoldOff()
         end
 
@@ -948,7 +972,7 @@ function Autopilot:Render()
     local hinttimer = self.hinttimer
 
     if hinttimer and hinttimer:GetSeconds() >= 7 then
-        self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.15, easeIOnut, function(value) self.animationValue = value end, function() self.animationValue = nil end)
+        self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.15, easeInOut, function(value) self.animationValue = value end, function() self.animationValue = nil end)
 
         self.hinttimer = nil
     end
@@ -989,7 +1013,8 @@ function Autopilot:Render()
     if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     local boost = LocalPlayer:GetValue("Boost")
-    local text = self.namept
+    local locStrings = self.locStrings
+    local text = locStrings["press"] .. self.stringKey .. locStrings["toopenpanel"]
     local textSize = 14
     local size = Render:GetTextSize(text, textSize)
     local pos = Vector2((Render.Width - size.x) / 2, math.lerp(boost and (Render.Height - size.y - 10) or Render.Height, Render.Height - size.y - (boost and 17 + size.y or 10), animationValue))
@@ -1012,4 +1037,4 @@ function Autopilot:FollowTargetY(target_position) -- Pitch-hold must be on
     config[3].setting = deg(asin(-dy / distance))
 end
 
-autopilot = Autopilot()
+local autopilot = Autopilot()

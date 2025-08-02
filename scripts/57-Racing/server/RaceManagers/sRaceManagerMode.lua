@@ -57,7 +57,12 @@ function RaceManagerMode:CreateRace()
             self:Message("Перенос " .. tostring(player) .. " в режим наблюдателя, потому что у них нет DLC")
             table.insert(spectators, player)
         else
-            table.insert(players, player)
+            if not player:GetValue("Joined") then
+                self:Message("Перенос " .. tostring(player) .. " в режим наблюдателя")
+                table.insert(spectators, player)
+            else
+                table.insert(players, player)
+            end
         end
     end)
 

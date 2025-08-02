@@ -7,7 +7,7 @@ function Lobby:__init(config)
     self.queue = Set()
     self.playerOrigins = {}
     self.startingTime = 0
-    self.waitingTime = 30
+    self.waitingTime = 15
 
     self.values = {100, 150, 200, 250, 300, 350, 400, 450, 500}
     self.bonus = table.randomvalue(self.values)
@@ -38,6 +38,7 @@ function Lobby:__init(config)
 		Events:Subscribe("PreTick", self, self.PreTick),
 		Events:Subscribe("PlayerQuit", self, self.PlayerQuit),
 		Events:Subscribe("PlayerDeath", self, self.PlayerDeath),
+        Events:Subscribe("PlayerSpawn", self, self.PlayerSpawn),
 		Events:Subscribe("PlayerWorldChange", self, self.PlayerWorldChange)
 	}
 end
@@ -275,6 +276,12 @@ function Lobby:PlayerDeath(args)
         if args.killer and args.killer:GetSteamId() ~= player:GetSteamId() then
             args.killer:SetMoney(args.killer:GetMoney() + 30)
         end
+    end
+end
+
+function Lobby:PlayerSpawn()
+    for player in self:GetPlayers() do
+        return false
     end
 end
 

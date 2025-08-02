@@ -88,6 +88,7 @@ function Shop:__init()
             accessories = "Принадлежности",
             parachutes = "Парашюты",
             vehiclecolor = "Цвет транспорта",
+            tone = "Тон",
             save = "Сохранить",
             novip = "У вас отсувствует VIP-статус :(",
             home = "Дом",
@@ -178,6 +179,7 @@ function Shop:Lang()
         accessories = "Accessories",
         parachutes = "Parachutes",
         vehiclecolor = "Vehicle Color",
+        tone = "Tone",
         save = "Save",
         novip = "Needed VIP status not found.",
         home = "Home",
@@ -794,7 +796,7 @@ function Shop:LoadCategories()
     tab_control:SetMargin(Vector2(1, 0), Vector2(1, 5))
 
     self.tone1Picker = HSVColorPicker.Create()
-    tab_control:AddPage("▧ Тон 1", self.tone1Picker)
+    tab_control:AddPage("▧ " .. locStrings["tone"] .. " 1", self.tone1Picker)
     self.tone1Picker:SetDock(GwenPosition.Fill)
 
     self.tone1Picker:Subscribe("ColorChanged", function()
@@ -806,7 +808,7 @@ function Shop:LoadCategories()
     self.tone1 = self.tone1Picker:GetColor()
 
     self.tone2Picker = HSVColorPicker.Create()
-    tab_control:AddPage("▨ Тон 2", self.tone2Picker)
+    tab_control:AddPage("▨ " .. locStrings["tone"] .. " 2", self.tone2Picker)
     self.tone2Picker:SetDock(GwenPosition.Fill)
 
     self.tone2Picker:Subscribe("ColorChanged", function()

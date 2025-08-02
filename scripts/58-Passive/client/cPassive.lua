@@ -145,12 +145,12 @@ function Passive:NetworkObjectValueChange(args)
             self.visible = true
 
             if self.fadeOutAnimation then Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil end
-            Animation:Play(0, 1, 0.05, easeIOnut, function(value) self.animationValue = value end)
+            Animation:Play(0, 1, 0.05, easeInOut, function(value) self.animationValue = value end)
         else
             Game:FireEvent("ply.vulnerable")
             Events:Fire("AntiCheat", true)
 
-            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeIOnut, function(value) self.animationValue = value end, function() self.visible = nil end)
+            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeInOut, function(value) self.animationValue = value end, function() self.visible = nil end)
         end
     end
 end
