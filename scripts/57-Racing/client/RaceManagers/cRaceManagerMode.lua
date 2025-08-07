@@ -43,6 +43,7 @@ end
 
 function RaceManagerMode:AddToRaceMenu()
     local fontSize = 16
+    local locStrings = settings.locStrings
 
     --
     -- Current race info
@@ -51,7 +52,7 @@ function RaceManagerMode:AddToRaceMenu()
     local groupBox = RaceMenu.CreateGroupBox(RaceMenu.instance.addonArea)
     groupBox:SetDock(GwenPosition.Left)
     groupBox:SetWidthAutoRel(0.5)
-    groupBox:SetText("Текущая гонка")
+    groupBox:SetText(locStrings["currentrace"])
 
     local tableControl
 	local tableArgs = {
@@ -67,7 +68,7 @@ function RaceManagerMode:AddToRaceMenu()
     tableControl:SetParent(groupBox)
     tableControl:SetDock(GwenPosition.Top)
     self.currentRaceLabels["Карта"]:SetTextColor(settings.textColor)
-    self.currentRaceRows["Чекпоинтов"]:SetToolTip("Чекпоинты на круг")
+    self.currentRaceRows["Чекпоинтов"]:SetToolTip(locStrings["checkpointsperlap"])
 
     -- Voteskip control
 
@@ -80,7 +81,7 @@ function RaceManagerMode:AddToRaceMenu()
     button:SetDock(GwenPosition.Left)
     button:SetToggleable(true)
     button:SetTextSize(16)
-    button:SetText("Пропустить")
+    button:SetText(locStrings["skip"])
     button:SizeToContents()
     button:Subscribe("ToggleOn", self, self.VoteSkipButtonPressed)
     button:Subscribe("ToggleOff", self, self.VoteSkipButtonUnpressed)
@@ -104,7 +105,7 @@ function RaceManagerMode:AddToRaceMenu()
     button:SetPadding(Vector2(24, 0), Vector2(24, 0))
     button:SetDock(GwenPosition.Left)
     button:SetTextSize(16)
-    button:SetText("Наблюдать")
+    button:SetText(locStrings["spectate"])
     button:SizeToContents()
     button:Subscribe("Press", self, self.SpectateButtonPressed)
     self.spectateButton = button
@@ -115,7 +116,7 @@ function RaceManagerMode:AddToRaceMenu()
 
     groupBox = RaceMenu.CreateGroupBox(RaceMenu.instance.addonArea)
     groupBox:SetDock(GwenPosition.Fill)
-    groupBox:SetText("Следующая гонка")
+    groupBox:SetText(locStrings["nextrace"])
 
     tableArgs = {"Карта", "Столкновения"}
     tableControl, self.nextRaceLabels, self.nextRaceRows = RaceMenuUtility.CreateTable(fontSize, tableArgs)
@@ -241,7 +242,7 @@ end
 -- Network events
 
 function RaceManagerMode:UpdateVoteSkipInfo(args)
-    local text = string.format("%i/%i голосов", args.skipVotes, args.skipVotesRequired)
+    local text = string.format(settings.locStrings["votes"], args.skipVotes, args.skipVotesRequired)
     self.voteSkipLabel:SetText(text)
 end
 
@@ -262,7 +263,7 @@ end
 
 function RaceManagerMode:RaceSkipped()
     self.voteSkipButton:SetEnabled(false)
-    self.voteSkipLabel:SetText("Пропуск гонки!")
+    self.voteSkipLabel:SetText(settings.locStrings["skippingrace"])
     self.voteSkipLabel:SetTextColor(Color.Green)
 end
 

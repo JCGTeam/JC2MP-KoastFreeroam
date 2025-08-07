@@ -46,69 +46,7 @@ function Shop:__init()
     self.tone1 = vehicleColor
     self.tone2 = vehicleColor
 
-    local lang = LocalPlayer:GetValue("Lang")
-    if lang and lang == "EN" then
-        self:Lang()
-    else
-        self.locStrings = {
-            title = "▧ Черный рынок",
-            get = "Взять",
-            vehicles = "Транспорт",
-            weapon = "Оружие",
-            character = "Персонаж",
-            appearance = "Внешность",
-            homepoints = "Точки дома",
-            cars = "Машины",
-            bikes = "Мотоциклы",
-            jeeps = "Джипы",
-            pickups = "Пикапы",
-            buses = "Автобусы",
-            heavy = "Тяжи",
-            tractors = "Трактора",
-            helicopters = "Вертолёты",
-            planes = "Самолёты",
-            boats = "Лодки",
-            righthand = "Правая рука",
-            lefthand = "Левая рука",
-            primary = "Основное",
-            boys = "Мальчики",
-            girls = "Девочки",
-            roaches = "Тараканы",
-            ulars = "Улары",
-            reapers = "Жнецы",
-            gov = "Правительство",
-            agency = "Агентство",
-            misc = "Прочее",
-            hats = "Головные уборы",
-            capshelmets = "Фуражки и шлемы",
-            shawls = "Платки",
-            wigs = "Парики",
-            face = "Лицо",
-            neck = "Шея",
-            accessories = "Принадлежности",
-            parachutes = "Парашюты",
-            vehiclecolor = "Цвет транспорта",
-            tone = "Тон",
-            save = "Сохранить",
-            novip = "У вас отсувствует VIP-статус :(",
-            home = "Дом",
-            sethomebutton = "Установить точку дома здесь ( $500 )",
-            spawnonhomepoint = "Появляться на точке дома после подключения к серверу",
-            gohome = "Переместиться домой »",
-            pvpblock = "Вы не можете использовать это во время боя!",
-            dlcwarning = "ВАЖНО: DLC-контент не сможет наносить урон и не будет виден игрокам, которые его не имеют",
-            w = "Пожалуйста, подождите ",
-            ws = " секунд.",
-            decal = "Декаль: ",
-            decaldefault = "По умолчанию",
-            decalpanau = "Панау",
-            decaljapan = "Японцы",
-            decalreapers = "Жнецы",
-            decalroaches = "Тараканы",
-            decalularboys = "Улары",
-            decaltaxi = "Такси"
-        }
-    end
+    self:Lang(LocalPlayer:GetValue("Lang") or "RU")
 
     self.player_hats = {}
     self.player_coverings = {}
@@ -134,71 +72,14 @@ function Shop:__init()
     Events:Subscribe("ModuleUnload", self, self.ModuleUnloadAppearance)
     Events:Subscribe("RestoreParachute", self, self.RestoreParachute)
 
-    Network:Subscribe("PlayerFired", self, self.Sound)
+    Network:Subscribe("PlayerFired", self, self.PlayerFired)
     Network:Subscribe("NoVipText", self, self.NoVipText)
     Network:Subscribe("SetParachute", self, self.SetParachute)
     Network:Subscribe("BuyMenuSavedColor", self, self.SavedColor)
 end
 
-function Shop:Lang()
-    self.locStrings = {
-        title = "▧ Black Market",
-        get = "Get",
-        vehicles = "Vehicles",
-        weapon = "Weapon",
-        character = "Character",
-        appearance = "Appearance",
-        homepoints = "Home Points",
-        cars = "Cars",
-        bikes = "Bikes",
-        jeeps = "Jeeps",
-        pickups = "Pickups",
-        buses = "Buses",
-        heavy = "Heavy",
-        tractors = "Tractors",
-        helicopters = "Helicopters",
-        planes = "Planes",
-        boats = "Boats",
-        righthand = "Right Hand",
-        lefthand = "Left Hand",
-        primary = "Primary",
-        boys = "Boys",
-        girls = "Girls",
-        roaches = "Roaches",
-        ulars = "Ular Boys",
-        reapers = "Reapers",
-        gov = "Government",
-        agency = "Agency",
-        misc = "Misc",
-        hats = "Hats",
-        capshelmets = "Caps and Helmets",
-        shawls = "Shawls",
-        wigs = "Wigs",
-        face = "Face",
-        neck = "Neck",
-        accessories = "Accessories",
-        parachutes = "Parachutes",
-        vehiclecolor = "Vehicle Color",
-        tone = "Tone",
-        save = "Save",
-        novip = "Needed VIP status not found.",
-        home = "Home",
-        sethomebutton = "Set home point here ( $500 )",
-        spawnonhomepoint = "Spawn on home point after connecting to the server",
-        gohome = "Go home »",
-        pvpblock = "You cannot use this during combat!",
-        dlcwarning = "WARNING: DLC content will not be able to deal damage and will not be visible to players who do not have it",
-        w = "Please, wait ",
-        ws = " seconds.",
-        decal = "Decal: ",
-        decaldefault = "Default",
-        decalpanau = "Panau",
-        decaljapan = "Japan",
-        decalreapers = "Reapers",
-        decalroaches = "Roaches",
-        decalularboys = "Ular Boys",
-        decaltaxi = "Taxi"
-    }
+function Shop:Lang(lang)
+    self.locStrings = locStrings[lang]
 end
 
 function Shop:RenderAppearanceHat()
@@ -775,7 +656,8 @@ function Shop:LoadCategories()
 
             for _, entry in pairs(subcategory) do
                 item_id = item_id + 1
-                local row = subcategory_table.listbox:AddItem(entry:GetName())
+                local entryName = entry:GetName()
+                local row = subcategory_table.listbox:AddItem(self.locStrings[entryName] or entryName)
                 row:SetTextColor(self.buyMenuLineColor)
                 row:SetDataNumber("id", item_id)
 
@@ -1233,7 +1115,12 @@ function Shop:RestoreParachute()
     Network:Send("GiveMeParachute")
 end
 
-function Shop:Sound()
+function Shop:PlayerFired(itemName)
+    local locStrings = self.locStrings
+    local str = string.format(locStrings["ordered"] .. " %s!", locStrings[itemName] or itemName)
+
+    Events:Fire("CastCenterText", {target = self, text = str, time = 6, color = Color.Gold})
+
     Game:FireEvent("ply.blackmarket.item_ordered")
 
     local sound = ClientSound.Create(AssetLocation.Game, {

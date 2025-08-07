@@ -98,7 +98,16 @@ Events:Subscribe("ModuleLoad", function()
 			suffix2 = "-й",
 			suffix3 = "-й",
 			suffix4 = "-й",
-			raceprogress ="Прогресс гонки: %i%%"
+			raceprogress = "Прогресс гонки: %i%%",
+			currentrace = "Текущая гонка",
+			nextrace = "Следующая гонка",
+			checkpointsperlap = "Чекпоинты на круг",
+			join = "Присоединиться",
+			left = "Выйти",
+			skip = "Пропустить",
+			spectate = "Наблюдать",
+			votes = "%i/%i голосов",
+			skippingrace = "Пропуск гонки!"
 		}
 	end
 end)
@@ -133,7 +142,16 @@ function Lang()
 		suffix2 = "nd",
 		suffix3 = "rd",
 		suffix4 = "th",
-		raceprogress ="Race Progress: %i%%"
+		raceprogress = "Race Progress: %i%%",
+		currentrace = "Current Race",
+		nextrace = "Next Race",
+		checkpointsperlap = "Checkpoints per lap",
+		join = "Join",
+		left = "Left",
+		skip = "Skip",
+		spectate = "Spectate",
+		votes = "%i/%i votes",
+		skippingrace = "Skipping Race!"
 	}
 end
 

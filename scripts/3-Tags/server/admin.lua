@@ -411,6 +411,16 @@ function Admin:AddMoney(args)
 end
 
 function Admin:PostTick(args)
+    if self.endTimer and self.endTimer:GetSeconds() >= 1 then
+        self.endTimer:Restart()
+
+        Network:Broadcast("SetTimer", {text = self.timerText, endTime = self.endTime, duration = self.timerDuration})
+
+        if os.time() >= self.endTime then
+            self:StopTimer()
+        end
+    end
+
     if paydayCash == 0 then return end
 
     if paydayCash ~= "0" then
@@ -870,7 +880,7 @@ function Admin:PlayerChat(args)
             end
 
             local amount = cmd_args[3]
-            if tonumber(amount) == nil then
+            if not tonumber(amount) then
                 deniedMessage(sender, invalidNum)
                 return false
             end
@@ -900,7 +910,7 @@ function Admin:PlayerChat(args)
 			end
 
 			amount = cmd_args[3]
-			if(tonumber(amount) == nil) then
+			if(not tonumber(amount)) then
 				deniedMessage( sender, invalidNum )
 				return false
 			end
@@ -930,7 +940,7 @@ function Admin:PlayerChat(args)
 			end
 
 			amount = cmd_args[3]
-			if(tonumber(amount) == nil) then
+			if(not tonumber(amount)) then
 				deniedMessage( sender, invalidNum )
 				return false
 			end
@@ -1017,7 +1027,7 @@ function Admin:PlayerChat(args)
 
             local stringname = args.text:sub(9, 256)
 
-            Network:Broadcast("Notice", {text = stringname})
+            Network:Broadcast("Notice", stringname)
 
             local console_text = sender:GetName() .. " made notice: " .. stringname
             print(console_text)
@@ -1043,6 +1053,50 @@ function Admin:PlayerChat(args)
             confirmationMessage(sender, "Сообщение при входе успешно удалено")
 
             local console_text = sender:GetName() .. " cleared join notice"
+            print(console_text)
+            Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
+        elseif cmd_args[1] == "/settimer" then
+            if #cmd_args < 2 then
+                deniedMessage(sender, invalidArgs)
+                return false
+            end
+
+            local time = tonumber(cmd_args[3])
+            if not time or time <= 0 then
+                deniedMessage(sender, invalidNum)
+                return false
+            end
+
+            self.timerDuration = cmd_args[3]
+            self.timerText = cmd_args[2]
+
+            local now = os.time()
+            self.endTime = now + time
+
+            if not self.endTimer then
+                self.endTimer = Timer()
+            end
+
+            confirmationMessage(sender, "Таймер установлен. Заголовок: " .. self.timerText .. " | Время: " .. self.timerDuration .. " секунд(ы).")
+
+            Network:Broadcast("SetTimer", {text = self.timerText, endTime = self.endTime, duration = self.timerDuration})
+
+            local console_text = sender:GetName() .. " set timer. Title: " .. self.timerText .. " | Time: " .. self.timerDuration .. " second(s)"
+            print(console_text)
+            Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
+        elseif cmd_args[1] == "/stoptimer" then
+            if not self.endTimer then
+                confirmationMessage(sender, "Таймер не установлен")
+                return false
+            end
+
+            confirmationMessage(sender, "Таймер остановлен")
+
+            self:StopTimer()
+
+            Network:Broadcast("SetTimer", {endTime = 0})
+
+            local console_text = sender:GetName() .. " stop timer"
             print(console_text)
             Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
         elseif cmd_args[1] == "/addcustomtp" then
@@ -1271,6 +1325,13 @@ function Admin:PlayerChat(args)
             end
         end
     end
+end
+
+function Admin:StopTimer()
+    self.endTimer = nil
+    self.endTime = nil
+    self.timerText = nil
+    self.timerDuration = nil
 end
 
 function Admin:ModuleUnload()

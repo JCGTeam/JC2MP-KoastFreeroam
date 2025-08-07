@@ -2,10 +2,6 @@ function Player:SendErrorMessage(str)
     Events:Fire("CastCenterText", {target = self, text = str, time = 3, color = Color.Red})
 end
 
-function Player:SendSuccessMessage(str)
-    Events:Fire("CastCenterText", {target = self, text = str, time = 6, color = Color.Gold})
-end
-
 function Shop:__init()
     self.items = {}
     self.vehicles = {}
@@ -243,11 +239,7 @@ function Shop:PlayerFired(args, player)
     end
 
     if success then
-        Network:Send(player, "PlayerFired")
-
-        local str = string.format((player:GetValue("Lang") == "EN" and "You ordered:" or "Вы заказали:") .. " %s!", item:GetName())
-
-        player:SendSuccessMessage(str)
+        Network:Send(player, "PlayerFired", item:GetName())
     else
         player:SendErrorMessage(err)
     end
