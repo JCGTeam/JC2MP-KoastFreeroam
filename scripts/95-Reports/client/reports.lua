@@ -33,7 +33,7 @@ function Reports:__init()
         self:Lang()
     else
         self.locStrings = {
-            sendbuttonsending = "Отправка...",
+            sendbuttonsending = "Отправка…",
             messageSuccessfullySended = "Ваше сообщение успешно отправлено!"
         }
     end
@@ -142,7 +142,7 @@ function Reports:Lang()
     self.sendbutton_txt = "SEND"
 
     self.locStrings = {
-        sendbuttonsending = "SENDING...",
+        sendbuttonsending = "SENDING…",
         messageSuccessfullySended = "Your message was successfully sent!"
     }
 

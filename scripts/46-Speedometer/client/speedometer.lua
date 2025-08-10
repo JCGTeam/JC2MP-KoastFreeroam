@@ -78,7 +78,7 @@ function Speedometer:LocalPlayerEnterVehicle()
     if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe("Render", self, self.GameRender) end
 
     self.animationValue = 1
-    -- Animation:Play( 0, 1, 0.25, easeIOnut, function( value ) self.animationValue = value end )
+    -- Animation:Play( 0, 1, 0.25, easeInOut, function( value ) self.animationValue = value end )
 end
 
 function Speedometer:LocalPlayerExitVehicle()

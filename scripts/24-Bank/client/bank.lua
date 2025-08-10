@@ -288,7 +288,7 @@ function Bank:Render()
         local message_timer_seconds = message_timer:GetSeconds()
 
         if message_timer_seconds >= 5 then
-            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.75, easeIOnut, function(value) self.animationValue = value end, function()
+            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.75, easeInOut, function(value) self.animationValue = value end, function()
                 self.message_timer = nil
                 self.message = nil
                 self.submessage = nil
@@ -334,7 +334,7 @@ function Bank:MoneyChange(args)
     if diff ~= 0 and self.timer:GetSeconds() > 2 then
         if self.fadeOutAnimation then Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil end
 
-        Animation:Play(0, 1, 0.2, easeIOnut, function(value) self.animationValue = value self.posY = value end)
+        Animation:Play(0, 1, 0.2, easeInOut, function(value) self.animationValue = value self.posY = value end)
 
         self.message_timer = Timer()
         self.message = (diff > 0 and "+" or "-") .. " $" .. formatNumber(math.abs(diff))

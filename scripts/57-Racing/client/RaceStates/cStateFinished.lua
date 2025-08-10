@@ -5,7 +5,7 @@ function StateFinished:__init(race, args)
     self.race = race
     self.place = args.place
 
-    local message = Utility.NumberToPlaceString(args.place) .. " на финише!"
+    local message = Utility.NumberToPlaceString(args.place) .. settings.locStrings["place"]
     self.largeMessage = LargeMessage(message, 7.5)
 
     Events:Fire("RaceFinish")

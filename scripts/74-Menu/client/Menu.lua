@@ -138,7 +138,7 @@ function Menu:LangItem(langCode, langFull, flag)
     langArrow:SizeToContents()
 
     langItem:Subscribe("HoverEnter", function()
-        Animation:Play(20, 17, 0.1, easeIOnut, function(value)
+        Animation:Play(20, 17, 0.1, easeInOut, function(value)
             if IsValid(langArrow) then
                 langArrow:SetMargin(Vector2(15, 0), Vector2(value, 0))
             end
@@ -146,7 +146,7 @@ function Menu:LangItem(langCode, langFull, flag)
     end)
 
     langItem:Subscribe("HoverLeave", function()
-        Animation:Play(17, 20, 0.1, easeIOnut, function(value)
+        Animation:Play(17, 20, 0.1, easeInOut, function(value)
             if IsValid(langArrow) then
                 langArrow:SetMargin(Vector2(15, 0), Vector2(value, 0))
             end
@@ -260,7 +260,7 @@ function Menu:Render()
 
                 Animation:Play(0, 255, 2, easeInOut, function(value) self.welcomeTextAlpha = value end)
                 Animation:Play(Render.Size.y, Render.Size.y / 1.2 - rico:GetSize().y / 2, 2, easeInOut, function(value) self.rico:SetPosition(Vector2(rico:GetPosition().x, value)) end)
-                Animation:Play(rico:GetAlpha(), 1, 1, easeIOnut, function(value) self.rico:SetAlpha(value) end)
+                Animation:Play(rico:GetAlpha(), 1, 1, easeInOut, function(value) self.rico:SetAlpha(value) end)
             end
         end
 
@@ -344,8 +344,22 @@ function Menu:ResolutionChange(args)
     end
 end
 
-function Menu:LocalPlayerInput()
-    return false
+function Menu:LocalPlayerInput(args)
+    local action = Action.GuiOk
+
+    local inputDown = Input:GetValue(action) > 0
+
+    if inputDown and not self.inputWasDown then
+        if self.PressFunction then
+            self:PressFunction()
+        end
+    end
+
+    self.inputWasDown = inputDown
+
+    if args.input ~= action then
+        return false
+    end
 end
 
 function Menu:CalcView()
@@ -615,7 +629,10 @@ function Menu:ChangeStep(step)
         padding = Vector2(5, 5)
         self.nicknameColorScreen.nextButton:SetMargin(padding, padding)
         self.nicknameColorScreen.nextButton:SetHeight(40)
-        self.nicknameColorScreen.nextButton:Subscribe("Press", function() Network:Send("SetPlayerColor", {color = lpColor}) self:NextStep() end)
+
+        self.PressFunction = function() Network:Send("SetPlayerColor", {color = lpColor}) self:NextStep() end
+
+        self.nicknameColorScreen.nextButton:Subscribe("Press", self, self.PressFunction)
 
         Animation:Play(self.nicknameColorScreen.bw:GetPosition().y, (Render.Size.y / 2 - self.nicknameColorScreen.bw:GetSize().y / 2) + 50, 1, easeInOut, function(value)
             if self.nicknameColorScreen then
@@ -664,13 +681,13 @@ function Menu:ChangeStep(step)
         self.linksScreen.youtube.window:SetSize(size)
 
         local linksTable = {
-            [0] = self.linksScreen.telegram.window,
-            [1] = self.linksScreen.discord.window,
-            [2] = self.linksScreen.steam.window,
-            [3] = self.linksScreen.youtube.window
+            self.linksScreen.telegram.window,
+            self.linksScreen.discord.window,
+            self.linksScreen.steam.window,
+            self.linksScreen.youtube.window
         }
 
-        self:PlayLinkAnimation(0, linksTable, (Render.Size.y / 2 - size.x / 2) - 20, size)
+        self:PlayLinkAnimation(1, linksTable, (Render.Size.y / 2 - size.x / 2) - 20, size)
     elseif step == 5 then
         Mouse:SetVisible(true)
 
@@ -702,6 +719,8 @@ function Menu:ChangeStep(step)
         local finalPos = (Render.Size.y / 2 - size.x / 2) - 20
         Animation:Play(Render.Size.y, finalPos, 0.35, easeInOut, function(value)
             if self.donateScreen then self.donateScreen.boosty.window:SetPosition(Vector2(self.donateScreen.boosty.window:GetPosition().x, value)) end end, function()
+                if not self.donateScreen then return end
+
                 self.donateScreen.nextButton = ModernGUI.Button.Create()
                 self.donateScreen.nextButton:SetSize(Vector2(Render:GetTextWidth(locStrings["continue"], self.donateScreen.nextButton:GetTextSize()) + 30, 40))
                 self.donateScreen.nextButton:SetPosition(Vector2(Render.Size.x / 2 - self.donateScreen.nextButton:GetSize().x / 2, Render.Size.y))
@@ -709,9 +728,10 @@ function Menu:ChangeStep(step)
                 if LocalPlayer:GetValue("SystemFonts") then
                     self.donateScreen.nextButton:SetFont(AssetLocation.SystemFont, "Impact")
                 end
-                self.donateScreen.nextButton:Subscribe("Press", function() self:NextStep()
-            end)
 
+                self.PressFunction = function() self:NextStep() end
+
+                self.donateScreen.nextButton:Subscribe("Press", self, self.PressFunction)
             Animation:Play(self.donateScreen.nextButton:GetPosition().x, finalPos + size.y + 60, 0.25, easeInOut, function(value)
                 if self.donateScreen then
                     self.donateScreen.nextButton:SetPosition(Vector2(Render.Size.x / 2 - self.donateScreen.nextButton:GetSize().x / 2, value))
@@ -742,6 +762,8 @@ function Menu:ChangeStep(step)
         if self.LocalPlayerInputEvent then Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil end
         -- if self.CalcViewEvent then Events:Unsubscribe(self.CalcViewEvent) self.CalcViewEvent = nil end
 
+        self.PressFunction = nil
+
         self.step = nil
 
         self.locStrings = nil
@@ -762,6 +784,8 @@ function Menu:ChangeStep(step)
         if self.settingsLabel then self.settingsLabel:Remove() self.settingsLabel = nil end
 
         self:ModuleUnload()
+
+        Events:Fire("MenuClosed")
 
         Network:Send("SetFreeroam")
 
@@ -794,26 +818,37 @@ function Menu:NextStep()
 end
 
 function Menu:PlayLinkAnimation(currentLink, linksTable, finalPos, size)
-    Animation:Play(Render.Size.y, finalPos, 0.35, easeInOut, function(value) linksTable[currentLink]:SetPosition(Vector2(linksTable[currentLink]:GetPosition().x, value)) end, function()
+    Animation:Play(Render.Size.y, finalPos, 0.35, easeInOut, function(value)
+        local pos = linksTable[currentLink]:GetPosition()
+
+        if pos then
+            linksTable[currentLink]:SetPosition(Vector2(pos.x, value))
+        end
+    end, function()
         if currentLink < #linksTable then
             self:PlayLinkAnimation(currentLink + 1, linksTable, finalPos, size)
         else
             local locStrings = self.locStrings
 
-            self.linksScreen.nextButton = ModernGUI.Button.Create()
-            self.linksScreen.nextButton:SetSize(Vector2(Render:GetTextWidth(locStrings["next"], self.linksScreen.nextButton:GetTextSize()) + 30, 40))
-            self.linksScreen.nextButton:SetPosition(Vector2( Render.Size.x / 2 - self.linksScreen.nextButton:GetSize().x / 2, Render.Size.y))
-            self.linksScreen.nextButton:SetText(locStrings["next"])
-            if LocalPlayer:GetValue("SystemFonts") then
-                self.linksScreen.nextButton:SetFont(AssetLocation.SystemFont, "Impact")
-            end
-            self.linksScreen.nextButton:Subscribe("Press", function() self:NextStep() end)
-
-            Animation:Play(self.linksScreen.nextButton:GetPosition().x, finalPos + size.y + 60, 0.25, easeInOut, function(value)
-                if self.linksScreen then
-                    self.linksScreen.nextButton:SetPosition(Vector2(Render.Size.x / 2 - self.linksScreen.nextButton:GetSize().x / 2, value))
+            if self.linksScreen then
+                self.linksScreen.nextButton = ModernGUI.Button.Create()
+                self.linksScreen.nextButton:SetSize(Vector2(Render:GetTextWidth(locStrings["next"], self.linksScreen.nextButton:GetTextSize()) + 30, 40))
+                self.linksScreen.nextButton:SetPosition(Vector2( Render.Size.x / 2 - self.linksScreen.nextButton:GetSize().x / 2, Render.Size.y))
+                self.linksScreen.nextButton:SetText(locStrings["next"])
+                if LocalPlayer:GetValue("SystemFonts") then
+                    self.linksScreen.nextButton:SetFont(AssetLocation.SystemFont, "Impact")
                 end
-            end)
+
+                self.PressFunction = function() self:NextStep() end
+
+                self.linksScreen.nextButton:Subscribe("Press", self, self.PressFunction)
+
+                Animation:Play(self.linksScreen.nextButton:GetPosition().x, finalPos + size.y + 60, 0.25, easeInOut, function(value)
+                    if self.linksScreen then
+                        self.linksScreen.nextButton:SetPosition(Vector2(Render.Size.x / 2 - self.linksScreen.nextButton:GetSize().x / 2, value))
+                    end
+                end)
+            end
         end
     end)
 end

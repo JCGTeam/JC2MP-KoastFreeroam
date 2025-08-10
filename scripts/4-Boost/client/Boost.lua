@@ -245,7 +245,7 @@ function Boost:Render(args)
     local hinttimer = self.hinttimer
 
     if hinttimer and hinttimer:GetSeconds() >= 8 then
-        self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.15, easeIOnut, function(value) self.animationValue = value end, function() self.animationValue = nil end)
+        self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.15, easeInOut, function(value) self.animationValue = value end, function() self.animationValue = nil end)
         self.hinttimer = nil
     end
 
@@ -299,13 +299,16 @@ function Boost:Render(args)
             vehicle:SetLinearVelocity(vectorZero)
             vehicle:SetAngularVelocity(vectorZero)
 
-            local vPos = vehicle:GetPosition()
-            local vAngle = vehicle:GetAngle()
+            self.vPos = self.vPos or vehicle:GetPosition()
+            self.vAngle = self.vAngle or vehicle:GetAngle()
 
-            vehicle:SetPosition(vPos)
-            vehicle:SetAngle(vAngle)
+            vehicle:SetPosition(self.vPos)
+            vehicle:SetAngle(self.vAngle)
         elseif vehBrake then
             LocalPlayer:SetValue("VehBrake", nil)
+
+            self.vPos = nil
+            self.vAngle = nil
         end
     end
 
@@ -425,7 +428,7 @@ function Boost:LocalPlayerEnterVehicle(args)
         self.fadeOutAnimation = nil
     end
 
-    Animation:Play(0, 1, 0.15, easeIOnut, function(value) self.animationValue = value end)
+    Animation:Play(0, 1, 0.15, easeInOut, function(value) self.animationValue = value end)
 
     if not self.hinttimer then
         self.hinttimer = Timer()
@@ -439,7 +442,7 @@ function Boost:LocalPlayerExitVehicle()
 
     if self.animationValue then
         if self.RenderEvent then
-            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.15, easeIOnut, function(value) self.animationValue = value end, function()
+            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.15, easeInOut, function(value) self.animationValue = value end, function()
                 self.animationValue = nil
 
                 if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end

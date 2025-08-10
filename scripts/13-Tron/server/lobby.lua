@@ -140,26 +140,29 @@ end
 
 function Lobby:Collision(args, sender)
     local deathPosition = self.deathPosition
+    local killer = args.killer_id and Player.GetById(args.killer_id)
 
     for player in self:GetPlayers() do
         if player == sender then
             if args.fell then
-                self:Broadcast(player:GetName() .. " упал со своего транспортного средства.", Color(185, 215, 255), player)
-                Tron.SendMessage(player, "Ты упал со своего транспортного средства.", Color(185, 215, 255), player)
+                self:Broadcast(player:GetName() .. " упал со своего транспортного средства", Color(185, 215, 255), player)
+                Tron.SendMessage(player, "Вы упали со своего транспортного средства :(", Color(185, 215, 255), player)
 
-                args.vehicle:Remove()
+                if args.vehicle then
+                    args.vehicle:Remove()
+                end
             else
-                if args.killer and args.killer:GetDriver() then
-                    if args.killer:GetDriver() == player then
-                        self:Broadcast(player:GetName() .. " врезался в собственный след! Эпический провал!", Color(185, 215, 255), player)
-                        Tron.SendMessage(player, "Вы врезались в свой собственный след! Эпический провал!", Color(185, 215, 255), player)
+                if killer then
+                    if killer == player then
+                        self:Broadcast(player:GetName() .. " врезался в собственный след ( ͡° ͜ʖ ͡°)", Color(185, 215, 255), player)
+                        Tron.SendMessage(player, "Вы врезались в свой собственный след ( ͡° ͜ʖ ͡°)", Color(185, 215, 255), player)
                     else
-                        self:Broadcast(player:GetName() .. " врезался в след " .. args.killer:GetDriver():GetName() .. ".", Color(185, 215, 255), player)
-                        Tron.SendMessage(player, "Вы врезались в след " .. args.killer:GetDriver():GetName() .. ". Сожалеем, но вы проиграли :(", Color(185, 215, 255), player)
+                        self:Broadcast(player:GetName() .. " врезался в след " .. killer:GetName(), Color(185, 215, 255), player)
+                        Tron.SendMessage(player, "Вы врезались в след " .. killer:GetName(), Color(185, 215, 255), player)
                     end
                 else
-                    self:Broadcast(player:GetName() .. " взорвался.", Color(185, 215, 255), player)
-                    Tron.SendMessage(player, "Вы взорвались", Color(185, 215, 255), player)
+                    self:Broadcast(player:GetName() .. " взорвался", Color(185, 215, 255), player)
+                    Tron.SendMessage(player, "Вы взорвались :(", Color(185, 215, 255), player)
                 end
 
                 args.vehicle:SetHealth(0)

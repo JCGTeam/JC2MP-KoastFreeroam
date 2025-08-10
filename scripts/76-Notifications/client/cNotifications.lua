@@ -90,35 +90,54 @@ function Notifications:PostRender()
         local backgroundColor = Color(0, 0, 0, self.renderAlpha1)
         local outlinesColor = Color(70, 200, 255, self.renderAlpha2)
 
-        Render:FillArea(Vector2((Render.Width - 255), 50), Vector2(250, 40), Color(0, 0, 0, self.renderAlpha1))
-        Render:FillArea(Vector2((Render.Width - 255), 50), Vector2(1, 40), outlinesColor)
-        Render:FillArea(Vector2((Render.Width - 210), 50), Vector2(1, 40), outlinesColor)
-        Render:FillArea(Vector2((Render.Width - 5), 50), Vector2(1, 40), outlinesColor)
-        Render:FillArea(Vector2((Render.Width - 255), 50), Vector2(250, 1), outlinesColor)
-        Render:FillArea(Vector2((Render.Width - 255), 90), Vector2(250, 1), outlinesColor)
+        local renderWidth = Render.Width
+        local pos = Vector2(renderWidth - 255, 50)
+        local size = Vector2(1, 40)
+        local size2 = Vector2(250, 1)
 
-        if self.imageType == "Upgrade" or self.imageType == "3" then
-            self.upgrade:SetAlpha(self.imageAlpha)
-            self.upgrade:Draw(Vector2((Render.Width - 249), 52.5), Vector2(35, 35), Vector2.Zero, Vector2.One)
-        elseif self.imageType == "Information" or self.imageType == "1" then
-            self.information:SetAlpha(self.imageAlpha)
-            self.information:Draw(Vector2((Render.Width - 249), 52.5), Vector2(35, 35), Vector2.Zero, Vector2.One)
-        elseif self.imageType == "Warning" or self.imageType == "2" then
-            self.warning:SetAlpha(self.imageAlpha)
-            self.warning:Draw(Vector2((Render.Width - 249), 52.5), Vector2(35, 35), Vector2.Zero, Vector2.One)
+        Render:FillArea(pos, Vector2(250, 40), backgroundColor)
+        Render:FillArea(pos, size, outlinesColor)
+        Render:FillArea(Vector2(renderWidth - 210, 50), size, outlinesColor)
+        Render:FillArea(Vector2(renderWidth - 5, 50), size, outlinesColor)
+        Render:FillArea(pos, size2, outlinesColor)
+        Render:FillArea(Vector2(renderWidth - 255, 90), size2, outlinesColor)
+
+        pos = Vector2(renderWidth - 249, 52.5)
+        size = Vector2(35, 35)
+
+        local one = Vector2.One
+        local zero = Vector2.Zero
+
+        local imageType = self.imageType
+        local imageAlpha = self.imageAlpha
+
+        if imageType == "Upgrade" or imageType == "3" then
+            self.upgrade:SetAlpha(imageAlpha)
+            self.upgrade:Draw(pos, size, zero, one)
+        elseif imageType == "Information" or imageType == "1" then
+            self.information:SetAlpha(imageAlpha)
+            self.information:Draw(pos, size, zero, one)
+        elseif imageType == "Warning" or imageType == "2" then
+            self.warning:SetAlpha(imageAlpha)
+            self.warning:Draw(pos, size, zero, one)
         else
-            self.information:SetAlpha(self.imageAlpha)
-            self.information:Draw(Vector2((Render.Width - 249), 52.5), Vector2(35, 35), Vector2.Zero, Vector2.One)
+            self.information:SetAlpha(imageAlpha)
+            self.information:Draw(pos, size, zero, one)
         end
+
+        local posX = renderWidth - 107.5
+        local txtAlpha = self.txtAlpha
 
         if self.subTxt ~= nil then
-            Render:DrawText(Vector2((Render.Width - 107.5) - (Render:GetTextWidth(self.mainTxt, mainTxtSize) / 2), 56), self.mainTxt, Color(210, 210, 210, self.txtAlpha), mainTxtSize)
-            Render:DrawText(Vector2((Render.Width - 107.5) - (Render:GetTextWidth(self.subTxt, subTxtSize) / 2), 73), self.subTxt, Color(140, 140, 140, self.txtAlpha), subTxtSize)
+            Render:DrawText(Vector2(posX - (Render:GetTextWidth(self.mainTxt, mainTxtSize) / 2), 56), self.mainTxt, Color(210, 210, 210, txtAlpha), mainTxtSize)
+            Render:DrawText(Vector2(posX - (Render:GetTextWidth(self.subTxt, subTxtSize) / 2), 73), self.subTxt, Color(140, 140, 140, txtAlpha), subTxtSize)
         else
-            Render:DrawText(Vector2((Render.Width - 107.5) - (Render:GetTextWidth(self.mainTxt, mainTxtSize) / 2), 64), self.mainTxt, Color(210, 210, 210, self.txtAlpha), mainTxtSize)
+            Render:DrawText(Vector2(posX - (Render:GetTextWidth(self.mainTxt, mainTxtSize) / 2), 64), self.mainTxt, Color(210, 210, 210, txtAlpha), mainTxtSize)
         end
     else
-		if self.processTimer and self.processTimer:GetSeconds() >= 1 then
+        local processTimer = self.processTimer
+
+		if processTimer and processTimer:GetSeconds() >= 1 then
 			self:ProcessQueue()
 			self.processTimer:Restart()
 		end

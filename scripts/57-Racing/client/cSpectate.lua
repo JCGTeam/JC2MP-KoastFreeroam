@@ -57,7 +57,7 @@ end
 -- Events
 
 function Spectate:RenderVehicleSelection()
-    local text = "Игроки выбирают транспортные средства. Подождите..."
+    local text = settings.locStrings["waitingplayers"]
     Render:FillArea(Vector2(), Render.Size, Color(12, 12, 12))
     local fontSize = TextSize.Large
     local textSize = Render:GetTextSize(text, fontSize)
@@ -132,6 +132,8 @@ function Spectate:LocalPlayerInput(args)
 end
 
 function Spectate:ChangeTarget(delta)
+    if self.target then return end
+
     local position = 0
 
     for index, entry in ipairs(self.leaderboard) do
@@ -150,8 +152,6 @@ function Spectate:ChangeTarget(delta)
     else
         self.target.id = -1
     end
-
-    print("Target changed to " .. self.target.id)
 end
 
 function Spectate:RequestTarget()

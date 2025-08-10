@@ -31,13 +31,14 @@ function StateStartingGrid:__init(race, args)
     -- Set up the IconPresenter.
 
     local icons = self.race.icons
+    local locStrings = settings.locStrings
 
     local icon = Icon("Models/Collision")
     if self.race.collisions then
-        icon:SetText("Столкновения включены")
+        icon:SetText(locStrings["collisionsEnabled"])
         icon:SetType(Icon.Type.Enabled)
     else
-        icon:SetText("Столкновения отключены")
+        icon:SetText(locStrings["collisionsDisabled"])
         icon:SetType(Icon.Type.Disabled)
     end
     table.insert(icons, icon)

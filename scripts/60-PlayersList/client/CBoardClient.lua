@@ -81,16 +81,16 @@ end
 function CBoardClient:isHudVisible()
     if Game:GetState() ~= GUIState.Game then return end
 
-    local vehCameraScroll = LocalPlayer:GetValue("VehCameraScroll")
+    local disableCameraScroll = LocalPlayer:GetValue("DisableCameraScroll")
 
     if Key:IsDown(self.expectedKey) then
-        if not vehCameraScroll then
-            LocalPlayer:SetValue("VehCameraScroll", 1)
+        if not disableCameraScroll then
+            LocalPlayer:SetValue("DisableCameraScroll", 2)
         end
         return true
     else
-        if vehCameraScroll then
-            LocalPlayer:SetValue("VehCameraScroll", nil)
+        if disableCameraScroll and disableCameraScroll == 2 then
+            LocalPlayer:SetValue("DisableCameraScroll", nil)
         end
         return false
     end

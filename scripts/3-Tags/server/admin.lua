@@ -193,6 +193,7 @@ end
 
 function Admin:__init()
     Network:Subscribe("EffectPlay", self, self.EffectPlay)
+    Network:Subscribe("ToggleForcePassive", self, self.ToggleForcePassive)
 
     Events:Subscribe("PlayerJoin", self, self.PlayerJoin)
     Events:Subscribe("ModuleLoad", self, self.ModuleLoad)
@@ -224,6 +225,41 @@ function Admin:EffectPlay(args, sender)
     Network:SendNearby(sender, "BoomToSkyEffect", {targerp = sender})
 end
 
+function Admin:ToggleForcePassive(enabled, sender)
+    if sender:GetWorld() ~= DefaultWorld then return end
+
+    if enabled then
+        local pPos = sender:GetPosition()
+        local maxDist = 500
+
+        for p in Server:GetPlayers() do
+            local dist = pPos:Distance(p:GetPosition())
+
+            if dist <= maxDist then
+                if not p:GetValue("Passive") then
+                    Network:Send(p, "EnableForcePassive")
+                end
+
+                if not p:GetValue("TogglePassiveDisabled") then
+                    p:SetNetworkValue("TogglePassiveDisabled", 1)
+                end
+            else
+                self:DisableForcePassive(p)
+            end
+        end
+    else
+        for p in Server:GetPlayers() do
+            self:DisableForcePassive(p)
+        end
+    end
+end
+
+function Admin:DisableForcePassive(player)
+    if player:GetValue("TogglePassiveDisabled") then
+        player:SetNetworkValue("TogglePassiveDisabled", nil)
+    end
+end
+
 function Admin:GetRoles(args)
     if args.text == "vips" or args.text == "parthers" or args.text == "organizers" or args.text == "modersD" or args.text == "adminsD" or args.text == "admins" or args.text == "gladmins" or args.text == "creators" then
         local file = io.open("server/" .. args.text .. ".txt", "r")
@@ -234,10 +270,9 @@ function Admin:GetRoles(args)
 
         if s then
             print(args.text .. ":\n" .. s)
-            Events:Fire("ToDiscordConsole", {
-                text = "**" .. args.text .. ":**\n" .. s
-            })
+            Events:Fire("ToDiscordConsole", {text = "**" .. args.text .. ":**\n" .. s})
         end
+
         file:close()
     else
         print("getroles <rolename>")
@@ -355,8 +390,8 @@ function Admin:AddMoney(args)
     local player = Player.Match(text[1])[1]
 
     if not IsValid(player) then
-        print(text[1] .. " not found.")
-        Events:Fire("ToDiscordConsole", {text = text[1] .. " not found."})
+        print(text[1] .. " not found")
+        Events:Fire("ToDiscordConsole", {text = text[1] .. " not found"})
         return false
     elseif text[3] == "" then
         print("Use: addmoney <player> <money>")
@@ -376,6 +411,16 @@ function Admin:AddMoney(args)
 end
 
 function Admin:PostTick(args)
+    if self.endTimer and self.endTimer:GetSeconds() >= 1 then
+        self.endTimer:Restart()
+
+        Network:Broadcast("SetTimer", {text = self.timerText, endTime = self.endTime, duration = self.timerDuration})
+
+        if os.time() >= self.endTime then
+            self:StopTimer()
+        end
+    end
+
     if paydayCash == 0 then return end
 
     if paydayCash ~= "0" then
@@ -598,6 +643,10 @@ function Admin:PlayerJoin(args)
             break
         end
     end
+
+    if self.noCollision then
+        args.player:DisableCollision(CollisionGroup.Vehicle)
+    end
 end
 
 function Admin:PlayerChat(args)
@@ -706,7 +755,7 @@ function Admin:PlayerChat(args)
                 return false
             end
 
-            confirmationMessage(sender, player:GetName() .. " имеет $" .. player:GetMoney() .. ".")
+            confirmationMessage(sender, player:GetName() .. " имеет $" .. player:GetMoney())
         end
     end
 
@@ -716,8 +765,8 @@ function Admin:PlayerChat(args)
                 Chat:Broadcast("", Color.White)
             end
 
-            Chat:Broadcast("[Сервер] ", Color.White, "Чат очищен администратором " .. sender:GetName() .. ".", Color.White)
-            Events:Fire("ToDiscordConsole", {text = "[Admin] Chat has been cleared by " .. sender:GetName() .. "."})
+            Chat:Broadcast("[Сервер] ", Color.White, "Чат очищен администратором " .. sender:GetName(), Color.White)
+            Events:Fire("ToDiscordConsole", {text = "[Admin] Chat has been cleared by " .. sender:GetName()})
         elseif cmd_args[1] == "/sky" then
             if #cmd_args > 2 then
                 local player = Player.Match(cmd_args[2])[1]
@@ -781,11 +830,11 @@ function Admin:PlayerChat(args)
 
                     for p in Server:GetPlayers() do
                         p:Teleport(sPos, sAngle)
-                        confirmationMessage(p, sName .. " телепортировал всех игроков к себе.")
+                        confirmationMessage(p, sName .. " телепортировал всех игроков к себе")
                     end
 
-                    confirmationMessage(sender, "Все игроки были телепортированы к вам.")
-                    Events:Fire("ToDiscordConsole", {text = sName .. " warp all players to yourself."})
+                    confirmationMessage(sender, "Все игроки были телепортированы к вам")
+                    Events:Fire("ToDiscordConsole", {text = sName .. " warp all players to yourself"})
                 end
             end
 
@@ -807,7 +856,7 @@ function Admin:PlayerChat(args)
                 v:Remove()
             end
 
-            confirmationMessage(sender, "Все транспортные средства на сервере были удалены.")
+            confirmationMessage(sender, "Все транспортные средства на сервере были удалены")
         elseif cmd_args[1] == "/ban" then
             if #cmd_args < 2 then
                 deniedMessage(sender, invalidArgs)
@@ -820,7 +869,7 @@ function Admin:PlayerChat(args)
                 return false
             end
 
-            Chat:Broadcast("[Сервер] ", Color.White, player:GetName() .. " был внесён в черный список сервера.", Color(255, 0, 0))
+            Chat:Broadcast("[Сервер] ", Color.White, player:GetName() .. " был внесён в черный список сервера", Color(255, 0, 0))
             Events:Fire("ToDiscordConsole", {text = "[Admin] " .. player:GetName() .. " has been banned from the server by " .. sender:GetName()})
             Server:AddBan(player:GetSteamId())
             player:Kick("You have been banned from the server.")
@@ -831,7 +880,7 @@ function Admin:PlayerChat(args)
             end
 
             local amount = cmd_args[3]
-            if tonumber(amount) == nil then
+            if not tonumber(amount) then
                 deniedMessage(sender, invalidNum)
                 return false
             end
@@ -841,8 +890,8 @@ function Admin:PlayerChat(args)
                     p:SetMoney(p:GetMoney() + tonumber(amount))
                 end
 
-                Chat:Broadcast("[Сервер] ", Color.White, "У всех теперь есть дополнительные $" .. tonumber(amount) .. "! Любезно предоставлено " .. sender:GetName() .. ".", Color(0, 255, 45))
-                Events:Fire("ToDiscordConsole", {text = "[Admin] " .. "У всех теперь есть дополнительные $" .. tonumber(amount) .. "! Любезно предоставлено " .. sender:GetName() .. "."})
+                Chat:Broadcast("[Сервер] ", Color.White, "У всех теперь есть дополнительные $" .. tonumber(amount) .. "! Любезно предоставлено " .. sender:GetName(), Color(0, 255, 45))
+                Events:Fire("ToDiscordConsole", {text = "[Admin] " .. "У всех теперь есть дополнительные $" .. tonumber(amount) .. "! Любезно предоставлено " .. sender:GetName()})
             end
 
             local player = Player.Match(cmd_args[2])[1]
@@ -861,7 +910,7 @@ function Admin:PlayerChat(args)
 			end
 
 			amount = cmd_args[3]
-			if(tonumber(amount) == nil) then
+			if(not tonumber(amount)) then
 				deniedMessage( sender, invalidNum )
 				return false
 			end
@@ -871,8 +920,8 @@ function Admin:PlayerChat(args)
 					p:SetExp( p:GetExp() + tonumber(cmd_args[3]) )
 				end
 
-				Chat:Broadcast( "[Сервер] ", Color.White, "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName() .. ".", Color( 0, 255, 45 ) )
-				Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName() .. "." } )
+				Chat:Broadcast( "[Сервер] ", Color.White, "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName(), Color( 0, 255, 45 ) )
+				Events:Fire( "ToDiscordConsole", { text = "[Admin] " .. "У всех теперь есть дополнительные " .. tonumber(cmd_args[3]) .. " ОП! Любезно предоставлено " .. args.player:GetName() } )
 			end
 
 			local player = Player.Match(cmd_args[2])[1]
@@ -891,7 +940,7 @@ function Admin:PlayerChat(args)
 			end
 
 			amount = cmd_args[3]
-			if(tonumber(amount) == nil) then
+			if(not tonumber(amount)) then
 				deniedMessage( sender, invalidNum )
 				return false
 			end
@@ -978,7 +1027,7 @@ function Admin:PlayerChat(args)
 
             local stringname = args.text:sub(9, 256)
 
-            Network:Broadcast("Notice", {text = stringname})
+            Network:Broadcast("Notice", stringname)
 
             local console_text = sender:GetName() .. " made notice: " .. stringname
             print(console_text)
@@ -1001,9 +1050,53 @@ function Admin:PlayerChat(args)
         elseif cmd_args[1] == "/clearjoinnotice" then
             Events:Fire("SetJoinNotice", nil)
 
-            confirmationMessage(sender, "Сообщение при входе успешно удалено.")
+            confirmationMessage(sender, "Сообщение при входе успешно удалено")
 
             local console_text = sender:GetName() .. " cleared join notice"
+            print(console_text)
+            Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
+        elseif cmd_args[1] == "/settimer" then
+            if #cmd_args < 2 then
+                deniedMessage(sender, invalidArgs)
+                return false
+            end
+
+            local time = tonumber(cmd_args[3])
+            if not time or time <= 0 then
+                deniedMessage(sender, invalidNum)
+                return false
+            end
+
+            self.timerDuration = cmd_args[3]
+            self.timerText = cmd_args[2]
+
+            local now = os.time()
+            self.endTime = now + time
+
+            if not self.endTimer then
+                self.endTimer = Timer()
+            end
+
+            confirmationMessage(sender, "Таймер установлен. Заголовок: " .. self.timerText .. " | Время: " .. self.timerDuration .. " секунд(ы).")
+
+            Network:Broadcast("SetTimer", {text = self.timerText, endTime = self.endTime, duration = self.timerDuration})
+
+            local console_text = sender:GetName() .. " set timer. Title: " .. self.timerText .. " | Time: " .. self.timerDuration .. " second(s)"
+            print(console_text)
+            Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
+        elseif cmd_args[1] == "/stoptimer" then
+            if not self.endTimer then
+                confirmationMessage(sender, "Таймер не установлен")
+                return false
+            end
+
+            confirmationMessage(sender, "Таймер остановлен")
+
+            self:StopTimer()
+
+            Network:Broadcast("SetTimer", {endTime = 0})
+
+            local console_text = sender:GetName() .. " stop timer"
             print(console_text)
             Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
         elseif cmd_args[1] == "/addcustomtp" then
@@ -1018,16 +1111,59 @@ function Admin:PlayerChat(args)
             end
 
             Events:Fire("AddCustomTeleport", {name = cmd_args[2], pos = sender:GetPosition()})
-            confirmationMessage(sender, "Точка для телепортации /tp " .. cmd_args[2] .. " успешно создана.")
+            confirmationMessage(sender, "Точка для телепортации /tp " .. cmd_args[2] .. " успешно создана")
 
             local console_text = sender:GetName() .. " added custom teleport: /tp " .. cmd_args[2]
             print(console_text)
             Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
         elseif cmd_args[1] == "/clearallcustomtp" then
             Events:Fire("ClearCustomTeleports")
-            confirmationMessage(sender, "Созданные точки для телепортации очищены.")
+            confirmationMessage(sender, "Созданные точки для телепортации очищены")
 
             local console_text = sender:GetName() .. " cleared all custom teleports"
+            print(console_text)
+            Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
+        elseif cmd_args[1] == "/forcepassive" then
+            local forcePassive = sender:GetValue("ForcePassive")
+
+            if forcePassive then
+                sender:SetNetworkValue("ForcePassive", nil)
+            else
+                sender:SetNetworkValue("ForcePassive", 1)
+            end
+
+            Network:Send(sender, "ToggleForcePassive", forcePassive)
+
+            local enabled = forcePassive and "отключен" or "включен"
+            confirmationMessage(sender, "Приндительный мирный игрокам рядом " .. enabled)
+
+            enabled = forcePassive and "disable" or "enable"
+            local console_text = sender:GetName() .. " " .. enabled .. " force passive"
+            print(console_text)
+            Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
+        elseif cmd_args[1] == "/togvehcol" then
+            local noCollision = self.noCollision
+
+            self.noCollision = not noCollision
+
+            local players = Server:GetPlayers()
+            local collisionGroup = CollisionGroup.Vehicle
+
+            if noCollision then
+                for p in players do
+                    p:EnableCollision(collisionGroup)
+                end
+            else
+                for p in players do
+                    p:DisableCollision(collisionGroup)
+                end
+            end
+
+            local enabled = noCollision and "включено" or "отключено"
+            confirmationMessage(sender, "Столкновения транспорта игрокам " .. enabled)
+
+            enabled = noCollision and "enable" or "disable"
+            local console_text = sender:GetName() .. " " .. enabled .. " vehicles collision"
             print(console_text)
             Events:Fire("ToDiscordConsole", {text = "[Admin] " .. console_text})
         elseif cmd_args[1] == "/boton" then
@@ -1191,6 +1327,13 @@ function Admin:PlayerChat(args)
     end
 end
 
+function Admin:StopTimer()
+    self.endTimer = nil
+    self.endTime = nil
+    self.timerText = nil
+    self.timerDuration = nil
+end
+
 function Admin:ModuleUnload()
     if self.boton then
         print("Server - Bot Disabled")
@@ -1200,6 +1343,14 @@ function Admin:ModuleUnload()
     for p in Server:GetPlayers() do
         if p:GetValue("Tag") ~= nil then
             p:SetNetworkValue("Tag", nil)
+        end
+    end
+
+    if self.noCollision then
+        local collisionGroup = CollisionGroup.Vehicle
+
+        for p in Server:GetPlayers() do
+            p:EnableCollision(collisionGroup)
         end
     end
 end

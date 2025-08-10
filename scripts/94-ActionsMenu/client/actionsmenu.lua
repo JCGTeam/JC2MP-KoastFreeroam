@@ -71,7 +71,6 @@ function ActionsMenu:__init()
     Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("KeyUp", self, self.KeyUp)
     Events:Subscribe("LocalPlayerChat", self, self.LocalPlayerChat)
-    Events:Subscribe("LocalPlayerWorldChange", self, function() self:SetWindowVisible(false) end)
 end
 
 function ActionsMenu:Lang()
@@ -236,6 +235,8 @@ function ActionsMenu:CreateWindow()
 
     self.SkyBtn = self:CreateActionButton(locStrings["sky"], self.Sky)
     self.DownBtn = self:CreateActionButton(locStrings["down"], self.Down)
+
+    Events:Subscribe("LocalPlayerWorldChange", self, function() self:SetWindowVisible(false) end)
 end
 
 function ActionsMenu:Heal()
@@ -392,9 +393,9 @@ function ActionsMenu:VehicleBoom()
 end
 
 function ActionsMenu:Sky()
-    local gettag = LocalPlayer:GetValue("Tag")
+    local tag = LocalPlayer:GetValue("Tag")
 
-    if self.permissions[gettag] then
+    if self.permissions[tag] then
         Network:Send("Sky")
     else
         Events:Fire("CastCenterText", {text = self.locStrings["novip"], time = 3, color = Color.Red})
@@ -404,9 +405,9 @@ function ActionsMenu:Sky()
 end
 
 function ActionsMenu:Down()
-    local gettag = LocalPlayer:GetValue("Tag")
+    local tag = LocalPlayer:GetValue("Tag")
 
-    if self.permissions[gettag] then
+    if self.permissions[tag] then
         Network:Send("Down")
     else
         Events:Fire("CastCenterText", {text = self.locStrings["novip"], time = 3, color = Color.Red})

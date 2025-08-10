@@ -68,6 +68,7 @@ function Menu:SetFreeroam(args, sender)
 	end]] --
 
     sender:SetNetworkValue("GameMode", "FREEROAM")
+    sender:SetNetworkValue("Joined", true)
 
     if sender:GetValue("Registered") then return end
 

@@ -88,7 +88,7 @@ function ClanSystem:ModuleLoad()
             preview = "Предосмотр:",
             clantype = "Тип клана:",
             notice = "Сообщение дня",
-            loading = "Загрузка...",
+            loading = "Загрузка…",
             leaveclan = "Покинуть клан",
             membermanagement = "Управление участниками",
             setrank = "Установить ранг",
@@ -158,7 +158,7 @@ function ClanSystem:Lang()
         preview = "Preview:",
         clantype = "Clan type:",
         notice = "Notice",
-        loading = "Loading...",
+        loading = "Loading…",
         leaveclan = "Leave from Clan",
         membermanagement = "Member Management",
         setrank = "Set Rank",
@@ -277,7 +277,7 @@ function ClanSystem:CreateWindow()
     self.clanMenu.bkpanelsLabel = Label.Create(self.clanMenu.scrollpanelLabel)
     self.clanMenu.bkpanelsLabel:SetWrap(true)
     self.clanMenu.bkpanelsLabel:SetDock(GwenPosition.Fill)
-    self.clanMenu.bkpanelsLabel:SetText("...")
+    self.clanMenu.bkpanelsLabel:SetText("…")
 
     self.clanMenu.searchClansEdit = TextBox.Create(clanslist)
     self.clanMenu.searchClansEdit:SetDock(GwenPosition.Bottom)
@@ -331,7 +331,7 @@ function ClanSystem:CreateWindow()
     self.createClan.nEdit = TextBox.Create(clancreate)
     self.createClan.nEdit:SetDock(GwenPosition.Top)
     self.createClan.nEdit:SetSize(Vector2(260, 25))
-    self.createClan.nEdit:Subscribe("TextChanged", function() self.createClan.clanColorPreview:SetText(self.createClan.nEdit:GetText() ~= "" and self.createClan.nEdit:GetText() or "...") end)
+    self.createClan.nEdit:Subscribe("TextChanged", function() self.createClan.clanColorPreview:SetText(self.createClan.nEdit:GetText() ~= "" and self.createClan.nEdit:GetText() or "…") end)
     self.createClan.nEdit:Subscribe("Focus", self, self.Focus)
     self.createClan.nEdit:Subscribe("Blur", self, self.Blur)
     self.createClan.nEdit:Subscribe("EscPressed", self, self.EscPressed)
@@ -369,7 +369,7 @@ function ClanSystem:CreateWindow()
     self.createClan.subcategory2:SetMargin(Vector2(5, 10), Vector2.Zero)
 
     self.createClan.clanColorPreview = Label.Create(self.createClan.subcategory)
-    self.createClan.clanColorPreview:SetText("...")
+    self.createClan.clanColorPreview:SetText("…")
     self.createClan.clanColorPreview:SetDock(GwenPosition.Top)
     self.createClan.clanColorPreview:SetMargin(Vector2(5, 0), Vector2(0, 4))
 
@@ -592,7 +592,7 @@ function ClanSystem:CreateWindow()
     local row = self.clanMenu.list:GetSelectedRow()
 
     self.manageClan.clanColorPreview = Label.Create(self.manageClan.subcategory)
-    self.manageClan.clanColorPreview:SetText(row and row:GetCellText(0) or "...")
+    self.manageClan.clanColorPreview:SetText(row and row:GetCellText(0) or "…")
     self.manageClan.clanColorPreview:SetDock(GwenPosition.Top)
     self.manageClan.clanColorPreview:SetMargin(Vector2(5, 0), Vector2(0, 4))
 

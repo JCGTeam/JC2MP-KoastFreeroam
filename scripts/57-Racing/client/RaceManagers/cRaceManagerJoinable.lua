@@ -18,9 +18,11 @@ function RaceManagerJoinable:__init(args)
 end
 
 function RaceManagerJoinable:AddToRaceMenu()
+    local locStrings = settings.locStrings
+
     local groupBox = RaceMenu.CreateGroupBox(RaceMenu.instance.addonArea)
     groupBox:SetDock(GwenPosition.Fill)
-    groupBox:SetText("Следующая гонка:")
+    groupBox:SetText(locStrings["nextrace"])
 
     local fontSize = 16
 
@@ -40,7 +42,7 @@ function RaceManagerJoinable:AddToRaceMenu()
     tableControl:SetParent(groupBox)
     tableControl:SetDock(GwenPosition.Top)
     self.labels["Карта"]:SetTextColor(settings.textColor)
-    self.rows["Чекпоинтов"]:SetToolTip("Чекпоинты на круг")
+    self.rows["Чекпоинтов"]:SetToolTip(locStrings["checkpointsperlap"])
 
     local buttonsBase = BaseWindow.Create(groupBox)
     buttonsBase:SetDock(GwenPosition.Top)
@@ -50,7 +52,7 @@ function RaceManagerJoinable:AddToRaceMenu()
     self.joinButton:SetPadding(Vector2(8, 8), Vector2(8, 8))
     self.joinButton:SetDock(GwenPosition.Left)
     self.joinButton:SetTextSize(fontSize)
-    self.joinButton:SetText("Присоединиться")
+    self.joinButton:SetText(locStrings["join"])
     self.joinButton:SizeToContents()
     self.joinButton:SetWidthAutoRel(0.475)
     self.joinButton:Subscribe("Press", self, self.JoinButtonPressed)
@@ -59,7 +61,7 @@ function RaceManagerJoinable:AddToRaceMenu()
     self.leaveButton:SetPadding(Vector2(8, 8), Vector2(8, 8))
     self.leaveButton:SetDock(GwenPosition.Fill)
     self.leaveButton:SetTextSize(fontSize)
-    self.leaveButton:SetText("Выйти")
+    self.leaveButton:SetText(locStrings["left"])
     self.leaveButton:SizeToContents()
     self.leaveButton:SetEnabled(false)
     self.leaveButton:Subscribe("Press", self, self.LeaveButtonPressed)
@@ -72,7 +74,7 @@ function RaceManagerJoinable:JoinButtonPressed()
         self.joinButton:SetText("Выйдите из других режимов")
         return
     else
-        self.joinButton:SetText("Присоединиться")
+        self.joinButton:SetText(settings.locStrings["join"])
     end
 
     Network:Send("JoinRace", ".")

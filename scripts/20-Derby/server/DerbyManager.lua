@@ -89,7 +89,7 @@ function DerbyManager:ChatMessage(args)
             local currentDerby = self.currentDerby
 
             for player in Server:GetPlayers() do
-                if not currentDerby:HasPlayer(player) then
+                if not currentDerby:HasPlayer(player) and player:GetValue("Joined") then
                     currentDerby:JoinPlayer(player)
                 end
             end

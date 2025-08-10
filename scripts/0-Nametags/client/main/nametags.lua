@@ -371,9 +371,9 @@ function Nametags:NetworkObjectValueChange(args)
                 Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil
             end
 
-            Animation:Play(0, 1, 0.05, easeIOnut, function(value) self.animationValue = value end)
+            Animation:Play(0, 1, 0.05, easeInOut, function(value) self.animationValue = value end)
         else
-            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeIOnut, function(value) self.animationValue = value end, function() self.visible = nil end)
+            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeInOut, function(value) self.animationValue = value end, function() self.visible = nil end)
         end
     end
 end

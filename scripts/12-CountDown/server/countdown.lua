@@ -36,7 +36,7 @@ function Countdown:PlayerChat(args)
             return false
         end
 
-        if not cmdargs[2] then
+        if cmdargs[2] then
             local secondsCommandNumber = tonumber(cmdargs[2])
             if secondsCommandNumber == nil then
                 Chat:Send(args.player, self.prefix, Color.White, "Не является доступным числом!", Color.DarkGray)
@@ -53,7 +53,7 @@ function Countdown:PlayerChat(args)
         local seconds = self.countdownTimer:GetSeconds()
 
         local timeout = self.timeouts[args.player:GetId()]
-        if not timeout then
+        if timeout then
             if seconds - timeout < self.playerTimeout then
                 Chat:Send(args.player, self.prefix, Color.White, "Вы не можете запустить отсчет в течении: " .. self.playerTimeout .. " секунд!", Color.DarkGray)
                 return false

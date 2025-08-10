@@ -13,7 +13,7 @@ function CenterText:CastCenterText(args)
 
     if self.fadeOutAnimation then Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil end
 
-    Animation:Play(0, 1, 0.15, easeIOnut, function(value) self.animationValue = value end)
+    Animation:Play(0, 1, 0.15, easeInOut, function(value) self.animationValue = value end)
 
     if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
 end
@@ -29,7 +29,7 @@ function CenterText:Render()
         local timerFSeconds = self.timerF:GetSeconds()
 
         if timerFSeconds > self.timeF then
-            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.75, easeIOnut, function(value) self.animationValue = value end, function()
+            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.75, easeInOut, function(value) self.animationValue = value end, function()
                 self.textF = nil
                 self.timeF = nil
                 self.color = nil

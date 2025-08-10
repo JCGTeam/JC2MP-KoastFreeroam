@@ -81,10 +81,12 @@ function ServerHealth:ServerStart()
     Events:Fire("ToDiscordConsole", {text = "**[Status] " .. msg .. "**"})
     Events:Fire("ToDiscord", {text = "**[Status] " .. msg .. "**"})
 
-    if self.iKnowWhatImDoingWarning then
-        warn(self.iKnowWhatImDoingWarning)
+    local iKnowWhatImDoingWarning = self.iKnowWhatImDoingWarning
 
-        Events:Fire("ToDiscordConsole", {text = "**[Status] " .. self.iKnowWhatImDoingWarning .. "**"})
+    if iKnowWhatImDoingWarning then
+        warn(iKnowWhatImDoingWarning)
+
+        Events:Fire("ToDiscordConsole", {text = "**[Status] " .. iKnowWhatImDoingWarning .. "**"})
     end
 end
 
@@ -144,7 +146,7 @@ function ServerHealth:KickX()
         p:Kick("\nServer was shut down, please join later.\n\nСервер был отключен, перезайдите позже.\nВ случае перезапуска, максимальное время ожидания 2 минуты.")
     end
 
-    local serverstopped_txt = "All players has been kicked\nSTOPPING..."
+    local serverstopped_txt = "All players has been kicked\nSTOPPING…"
 
     print(serverstopped_txt)
     Events:Fire("ToDiscordConsole", {text = serverstopped_txt})

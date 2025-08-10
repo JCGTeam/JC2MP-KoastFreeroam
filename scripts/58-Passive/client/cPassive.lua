@@ -91,7 +91,7 @@ function Passive:LocalPlayerChat(args)
     end
 end
 
-function Passive:TogglePassive()
+function Passive:TogglePassive(force)
     local locStrings = self.locStrings
 
     if LocalPlayer:GetWorld() ~= DefaultWorld then
@@ -102,7 +102,7 @@ function Passive:TogglePassive()
     local state = LocalPlayer:GetValue("Passive")
     local time = Client:GetElapsedSeconds()
 
-    if not state then
+    if not (force or state) then
         if LocalPlayer:GetValue("PVPMode") then
             Events:Fire("CastCenterText", {text = locStrings["pvpblock"], time = 6, color = Color.Red})
             return false
@@ -145,12 +145,12 @@ function Passive:NetworkObjectValueChange(args)
             self.visible = true
 
             if self.fadeOutAnimation then Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil end
-            Animation:Play(0, 1, 0.05, easeIOnut, function(value) self.animationValue = value end)
+            Animation:Play(0, 1, 0.05, easeInOut, function(value) self.animationValue = value end)
         else
             Game:FireEvent("ply.vulnerable")
             Events:Fire("AntiCheat", true)
 
-            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeIOnut, function(value) self.animationValue = value end, function() self.visible = nil end)
+            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeInOut, function(value) self.animationValue = value end, function() self.visible = nil end)
         end
     end
 end

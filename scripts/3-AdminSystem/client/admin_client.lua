@@ -1,10 +1,10 @@
 class "Admin"
 
 local ChatTag = "[Сервер] "
-local NoSelected = "Игрок не выбран."
+local NoSelected = "Игрок не выбран"
 
-local err = Color(255, 0, 0)
-local info = Color(0, 255, 0)
+local err = Color.DarkGray
+local info = Color(255, 250, 150)
 
 function Admin:__init()
     self.actions = {
@@ -148,14 +148,14 @@ function Admin:LoadPanel()
     self.panel.main.playersSearch = GUI:TextBox("", Vector2(0.0, 0.67), Vector2(0.16, 0.035), "text", self.panel.main.playersTab)
     self.panel.main.playersSearch:SetToolTip("Поиск")
     self.panel.main.playersSearch:Subscribe("TextChanged", self, self.searchPlayer)
-    GUI:Label("Игрок:", Vector2(0.165, 0.01), Vector2(0.2, 0.1), self.panel.main.playersTab):SetTextColor(err)
+    GUI:Label("Игрок:", Vector2(0.165, 0.01), Vector2(0.2, 0.1), self.panel.main.playersTab):SetTextColor(Color(185, 215, 255))
     self.panel.main.playerName = GUI:Label("Имя: ?", Vector2(0.17, 0.04), Vector2(0.2, 0.03), self.panel.main.playersTab)
     self.panel.main.playerSteamID = GUI:Label("Steam ID: ?", Vector2(0.17, 0.07), Vector2(0.2, 0.03), self.panel.main.playersTab)
     self.panel.main.playerIP = GUI:Label("IP: ?", Vector2(0.17, 0.1), Vector2(0.2, 0.03), self.panel.main.playersTab)
     self.panel.main.playerPing = GUI:Label("Пинг: ?", Vector2(0.17, 0.13), Vector2(0.2, 0.03), self.panel.main.playersTab)
     self.panel.main.playerGroups = GUI:Label("Группы: ?", Vector2(0.17, 0.16), Vector2(0.185, 0.03), self.panel.main.playersTab)
     self.panel.main.playerGroups:SetWrap(true)
-    GUI:Label("Игра:", Vector2(0.165, 0.2), Vector2(0.2, 0.1), self.panel.main.playersTab):SetTextColor(err)
+    GUI:Label("Игра:", Vector2(0.165, 0.2), Vector2(0.2, 0.1), self.panel.main.playersTab):SetTextColor(Color(185, 215, 255))
     self.panel.main.playerHealth = GUI:Label("Жизнь: ?", Vector2(0.17, 0.23), Vector2(0.2, 0.03), self.panel.main.playersTab)
     self.panel.main.playerMoney = GUI:Label("Баланс: ?", Vector2(0.17, 0.26), Vector2(0.2, 0.5), self.panel.main.playersTab)
     self.panel.main.playerPosition = GUI:Label("Позиция: ?", Vector2(0.17, 0.29), Vector2(0.2, 0.03), self.panel.main.playersTab)
@@ -164,7 +164,7 @@ function Admin:LoadPanel()
     self.panel.main.playerWorld = GUI:Label("Мир: ?", Vector2(0.17, 0.38), Vector2(0.2, 0.03), self.panel.main.playersTab)
     self.panel.main.playerWeapon = GUI:Label("Оружие: ?", Vector2(0.17, 0.41), Vector2(0.2, 0.03), self.panel.main.playersTab)
     self.panel.main.playerWeaponAmmo = GUI:Label("Патроны: ?", Vector2(0.17, 0.44), Vector2(0.2, 0.03), self.panel.main.playersTab)
-    GUI:Label("Транспорт:", Vector2(0.165, 0.48), Vector2(0.2, 0.1), self.panel.main.playersTab):SetTextColor(err)
+    GUI:Label("Транспорт:", Vector2(0.165, 0.48), Vector2(0.2, 0.1), self.panel.main.playersTab):SetTextColor(Color(185, 215, 255))
     self.panel.main.playerVehicle = GUI:Label("Имя: ?", Vector2(0.17, 0.51), Vector2(0.2, 0.03), self.panel.main.playersTab)
     self.panel.main.playerVehicleHealth = GUI:Label("Жизнь: ?", Vector2(0.17, 0.54), Vector2(0.2, 0.03), self.panel.main.playersTab)
 
@@ -219,13 +219,13 @@ function Admin:LoadPanel()
     self.panel.main.shout = GUI:Button("Сообщение на экран", Vector2(0.36, 0.63), Vector2(0.123, 0.03), self.panel.main.playersTab, "player.shout")
     self.panel.main.shout:Subscribe("Press", self, self.showShoutWindow)
 
-    GUI:Label("Сервер:", Vector2(0.0, 0.01), Vector2(0.2, 0.1), self.panel.main.serverTab):SetTextColor(Color(255, 0, 0))
+    GUI:Label("Сервер:", Vector2(0.0, 0.01), Vector2(0.2, 0.1), self.panel.main.serverTab):SetTextColor(Color(185, 215, 255))
     self.panel.main.serverName = GUI:Label("Название сервера: ?", Vector2(0.005, 0.04), Vector2.Zero, self.panel.main.serverTab)
     self.panel.main.serverPlayers = GUI:Label("Игроки: ?", Vector2(0.005, 0.07), Vector2.Zero, self.panel.main.serverTab)
     self.panel.main.serverTimeout = GUI:Label("Время на восстановление: ? мс", Vector2(0.005, 0.10), Vector2(0.1, 0.03), self.panel.main.serverTab)
     self.panel.main.serverTime = GUI:Label("Время на сервере: ?", Vector2(0.005, 0.13), Vector2(0.1, 0.03), self.panel.main.serverTab)
     self.panel.main.serverAnnounce = GUI:Label("Публичный: ?", Vector2(0.005, 0.16), Vector2(0.1, 0.03), self.panel.main.serverTab)
-    GUI:Label("Игра:", Vector2(0.0, 0.19), Vector2(0.2, 0.13), self.panel.main.serverTab):SetTextColor(Color(255, 0, 0))
+    GUI:Label("Игра:", Vector2(0.0, 0.19), Vector2(0.2, 0.13), self.panel.main.serverTab):SetTextColor(Color(185, 215, 255))
     self.panel.main.serverGameTime = GUI:Label("Игровое время: ?", Vector2(0.005, 0.22), Vector2.Zero, self.panel.main.serverTab)
     self.panel.main.serverGameTimeField = GUI:TextBox("", Vector2(0.14, 0.219), Vector2(0.03, 0.023), "numeric", self.panel.main.serverTab)
     self.panel.main.setGameTime = GUI:Button("Уст.", Vector2(0.175, 0.218), Vector2(0.031, 0.029), self.panel.main.serverTab, "general.settime")
@@ -245,11 +245,11 @@ function Admin:LoadPanel()
     self.panel.ban.window = GUI:Window("Заблокировать игрока", Vector2.Zero, Vector2(0.22, 0.24))
     self.panel.ban.window:SetVisible(false)
     GUI:Center(self.panel.ban.window)
-    self.panel.ban.reasonLabel = GUI:Label("Выберите причину или напишите свою", Vector2(0.02, 0.01), Vector2(0.19, 0.03), self.panel.ban.window):SetTextColor(Color(0, 200, 0))
+    self.panel.ban.reasonLabel = GUI:Label("Выберите причину или напишите свою", Vector2(0.02, 0.01), Vector2(0.19, 0.03), self.panel.ban.window):SetTextColor(Color.LightGreen)
     self.panel.ban.reasonCheck = GUI:CheckBox("", Vector2(0.0, 0.04), Vector2(0.018, 0.03), self.panel.ban.window)
     self.panel.ban.reasonEdit = GUI:TextBox("Своя причина", Vector2(0.02, 0.04), Vector2(0.19, 0.03), "text", self.panel.ban.window)
     self.panel.ban.reasonsBox = GUI:ComboBox(Vector2(-0.001, 0.08), Vector2(0.21, 0.03), self.panel.ban.window, self.reasons)
-    self.panel.ban.durationLabel = GUI:Label("Выберите продолжительность бана", Vector2(0.05, 0.13), Vector2(0.19, 0.03), self.panel.ban.window):SetTextColor(Color(0, 200, 0))
+    self.panel.ban.durationLabel = GUI:Label("Выберите продолжительность бана", Vector2(0.05, 0.13), Vector2(0.19, 0.03), self.panel.ban.window):SetTextColor(Color.LightGreen)
     self.panel.ban.duration = GUI:TextBox("", Vector2(0.0, 0.16), Vector2(0.05, 0.03), "numeric", self.panel.ban.window)
     self.panel.ban.durationBox = GUI:ComboBox(Vector2(0.06, 0.16), Vector2(0.08, 0.03), self.panel.ban.window, {"Дней", "Часов", "Минут", "Перманентный"})
     self.panel.ban.ban = GUI:Button("Бан", Vector2(0.15, 0.16), Vector2(0.06, 0.03), self.panel.ban.window)
@@ -258,7 +258,7 @@ function Admin:LoadPanel()
     self.panel.kick.window = GUI:Window("Выгнать игрока", Vector2.Zero, Vector2(0.22, 0.2))
     self.panel.kick.window:SetVisible(false)
     GUI:Center(self.panel.kick.window)
-    self.panel.kick.reasonLabel = GUI:Label("Выберите причину или напишите свою", Vector2(0.02, 0.01), Vector2(0.19, 0.03), self.panel.kick.window):SetTextColor(Color(0, 200, 0))
+    self.panel.kick.reasonLabel = GUI:Label("Выберите причину или напишите свою", Vector2(0.02, 0.01), Vector2(0.19, 0.03), self.panel.kick.window):SetTextColor(Color.LightGreen)
     self.panel.kick.reasonCheck = GUI:CheckBox("", Vector2(0.0, 0.04), Vector2(0.018, 0.03), self.panel.kick.window)
     self.panel.kick.reasonEdit = GUI:TextBox("Своя причина", Vector2(0.02, 0.04), Vector2(0.19, 0.03), "text", self.panel.kick.window)
     self.panel.kick.reasonsBox = GUI:ComboBox(Vector2(-0.001, 0.08), Vector2(0.21, 0.03), self.panel.kick.window, self.reasons)
@@ -268,7 +268,7 @@ function Admin:LoadPanel()
     self.panel.warn.window = GUI:Window("Предупреждение игроку", Vector2.Zero, Vector2(0.22, 0.2))
     self.panel.warn.window:SetVisible(false)
     GUI:Center(self.panel.warn.window)
-    self.panel.warn.reasonLabel = GUI:Label("Выберите причину или напишите свою", Vector2(0.02, 0.01), Vector2(0.19, 0.03), self.panel.warn.window):SetTextColor(Color(0, 200, 0))
+    self.panel.warn.reasonLabel = GUI:Label("Выберите причину или напишите свою", Vector2(0.02, 0.01), Vector2(0.19, 0.03), self.panel.warn.window):SetTextColor(Color.LightGreen)
     self.panel.warn.reasonCheck = GUI:CheckBox("", Vector2(0.0, 0.04), Vector2(0.018, 0.03), self.panel.warn.window)
     self.panel.warn.reasonEdit = GUI:TextBox("Своя причина", Vector2(0.02, 0.04), Vector2(0.19, 0.03), "text", self.panel.warn.window)
     self.panel.warn.reasonsBox = GUI:ComboBox(Vector2(-0.001, 0.08), Vector2(0.21, 0.03), self.panel.warn.window, self.reasons)
@@ -278,11 +278,11 @@ function Admin:LoadPanel()
     self.panel.mute.window = GUI:Window("Заткнуть игрока", Vector2.Zero, Vector2(0.22, 0.24))
     self.panel.mute.window:SetVisible(false)
     GUI:Center(self.panel.mute.window)
-    self.panel.mute.reasonLabel = GUI:Label("Выберите причину или напишите свою", Vector2(0.02, 0.01), Vector2(0.19, 0.03), self.panel.mute.window):SetTextColor(Color(0, 200, 0))
+    self.panel.mute.reasonLabel = GUI:Label("Выберите причину или напишите свою", Vector2(0.02, 0.01), Vector2(0.19, 0.03), self.panel.mute.window):SetTextColor(Color.LightGreen)
     self.panel.mute.reasonCheck = GUI:CheckBox("", Vector2(0.0, 0.04), Vector2(0.018, 0.03), self.panel.mute.window)
     self.panel.mute.reasonEdit = GUI:TextBox("Своя причина", Vector2(0.02, 0.04), Vector2(0.19, 0.03), "text", self.panel.mute.window)
     self.panel.mute.reasonsBox = GUI:ComboBox(Vector2(-0.001, 0.08), Vector2(0.21, 0.03), self.panel.mute.window, self.reasons)
-    self.panel.mute.durationLabel = GUI:Label("Выберите продолжительность мута", Vector2(0.05, 0.13), Vector2(0.19, 0.03), self.panel.mute.window):SetTextColor(Color(0, 200, 0))
+    self.panel.mute.durationLabel = GUI:Label("Выберите продолжительность мута", Vector2(0.05, 0.13), Vector2(0.19, 0.03), self.panel.mute.window):SetTextColor(Color.LightGreen)
     self.panel.mute.duration = GUI:TextBox("", Vector2(0.0, 0.16), Vector2(0.05, 0.03), "numeric", self.panel.mute.window)
     self.panel.mute.durationBox = GUI:ComboBox(Vector2(0.06, 0.16), Vector2(0.08, 0.03), self.panel.mute.window, {"Минут", "Часов", "Дней"})
     self.panel.mute.mute = GUI:Button("Заткнуть", Vector2(0.15, 0.16), Vector2(0.06, 0.03), self.panel.mute.window)
@@ -301,7 +301,7 @@ function Admin:LoadPanel()
     self.panel.main.bansList:Subscribe("RowSelected", self, self.getBanInformation)
     self.panel.main.bansSearch = GUI:TextBox("", Vector2(0.0, 0.67), Vector2(0.16, 0.035), "text", self.panel.main.bansTab)
     self.panel.main.bansSearch:Subscribe("TextChanged", self, self.searchBan)
-    GUI:Label("Бан подробности:", Vector2(0.165, 0.01), Vector2(0.2, 0.1), self.panel.main.bansTab):SetTextColor(Color(255, 0, 0))
+    GUI:Label("Бан подробности:", Vector2(0.165, 0.01), Vector2(0.2, 0.1), self.panel.main.bansTab):SetTextColor(Color(185, 215, 255))
     self.panel.main.banSteamID = GUI:Label("Steam ID: ?", Vector2(0.17, 0.04), Vector2(0.2, 0.03), self.panel.main.bansTab)
     self.panel.main.banName = GUI:Label("Имя: ?", Vector2(0.17, 0.07), Vector2(0.2, 0.03), self.panel.main.bansTab)
     self.panel.main.banDuration = GUI:Label("Продолжительность: ?", Vector2(0.17, 0.1), Vector2(0.2, 0.03), self.panel.main.bansTab)
@@ -322,13 +322,13 @@ function Admin:LoadPanel()
     self.panel.manualBan.window = GUI:Window("Ручной бан", Vector2.Zero, Vector2(0.22, 0.3))
     self.panel.manualBan.window:SetVisible(false)
     GUI:Center(self.panel.manualBan.window)
-    GUI:Label("Введите Steam ID для бана", Vector2(0.05, 0.001), Vector2(0.19, 0.03), self.panel.manualBan.window):SetTextColor(Color(0, 200, 0))
+    GUI:Label("Введите Steam ID для бана", Vector2(0.05, 0.001), Vector2(0.19, 0.03), self.panel.manualBan.window):SetTextColor(Color.LightGreen)
     self.panel.manualBan.steamID = GUI:TextBox("", Vector2(0.0, 0.025), Vector2(0.21, 0.03), "text", self.panel.manualBan.window)
-    GUI:Label("Выберите причину или напишите свою", Vector2(0.02, 0.07), Vector2(0.19, 0.03), self.panel.manualBan.window):SetTextColor(Color(0, 200, 0))
+    GUI:Label("Выберите причину или напишите свою", Vector2(0.02, 0.07), Vector2(0.19, 0.03), self.panel.manualBan.window):SetTextColor(Color.LightGreen)
     self.panel.manualBan.reasonCheck = GUI:CheckBox("", Vector2(0.0, 0.1), Vector2(0.018, 0.03), self.panel.manualBan.window)
     self.panel.manualBan.reasonEdit = GUI:TextBox("Своя причина", Vector2(0.02, 0.1), Vector2(0.19, 0.03), "text", self.panel.manualBan.window)
     self.panel.manualBan.reasonsBox = GUI:ComboBox(Vector2(-0.001, 0.14), Vector2(0.21, 0.03), self.panel.manualBan.window, self.reasons)
-    GUI:Label("Выберите продолжительность бана", Vector2(0.05, 0.19), Vector2(0.19, 0.03), self.panel.manualBan.window):SetTextColor(Color(0, 200, 0))
+    GUI:Label("Выберите продолжительность бана", Vector2(0.05, 0.19), Vector2(0.19, 0.03), self.panel.manualBan.window):SetTextColor(Color.LightGreen)
     self.panel.manualBan.duration = GUI:TextBox("", Vector2(0.0, 0.22), Vector2(0.05, 0.03), "numeric", self.panel.manualBan.window)
     self.panel.manualBan.durationBox = GUI:ComboBox(Vector2(0.06, 0.22), Vector2(0.08, 0.03), self.panel.manualBan.window, {"Дней", "Часов", "Минут", "Перманентный"})
     self.panel.manualBan.ban = GUI:Button("Бан", Vector2(0.15, 0.22), Vector2(0.06, 0.03), self.panel.manualBan.window)
@@ -414,7 +414,7 @@ function Admin:LoadPanel()
     self.panel.main.modulesList = GUI:SortedList(Vector2(0.0, 0.0), Vector2(0.16, 0.66), self.panel.main.modulesTab, {{name = "Модуль"}})
     self.panel.main.modulesSearch = GUI:TextBox("", Vector2(0.0, 0.67), Vector2(0.16, 0.035), "text", self.panel.main.modulesTab)
     self.panel.main.modulesSearch:Subscribe("TextChanged", self, self.searchModule)
-    GUI:Label("Журнал модуля:", Vector2(0.165, 0.01), Vector2(0.2, 0.1), self.panel.main.modulesTab):SetTextColor(Color(255, 0, 0))
+    GUI:Label("Журнал модуля:", Vector2(0.165, 0.01), Vector2(0.2, 0.1), self.panel.main.modulesTab):SetTextColor(Color(185, 215, 255))
     self.panel.main.modulesLogScroll = GUI:ScrollControl(Vector2(0.17, 0.04), Vector2(0.34, 0.5), self.panel.main.modulesTab)
     self.panel.main.modulesLog = GUI:Label("", Vector2(0.0, 0.0), Vector2(0.34, 0.5), self.panel.main.modulesLogScroll)
     self.panel.main.modulesLog:SetWrap(true)
@@ -489,22 +489,24 @@ function Admin:LocalPlayerInput(args)
             self.spec.angle.pitch = self.spec.angle.pitch + (args.state * sensitivity.y)
         end
 
-        if gamepad then
-            if args.input == Action.MoveForward then
-                self.spec.zoom = self.spec.zoom + (args.state * sensitivity.y)
-            elseif args.input == Action.MoveBackward then
-                self.spec.zoom = self.spec.zoom - (args.state * sensitivity.y)
+        if not LocalPlayer:GetValue("DisableCameraScroll") then
+            if gamepad then
+                if args.input == Action.MoveForward then
+                    self.spec.zoom = self.spec.zoom + (args.state * sensitivity.y)
+                elseif args.input == Action.MoveBackward then
+                    self.spec.zoom = self.spec.zoom - (args.state * sensitivity.y)
+                end
+            else
+                if args.input == Action.NextWeapon then
+                    self.spec.zoom = self.spec.zoom - 0.1
+                elseif args.input == Action.PrevWeapon then
+                    self.spec.zoom = self.spec.zoom + 0.1
+                end
             end
-        else
-            if args.input == Action.NextWeapon then
-                self.spec.zoom = self.spec.zoom - 0.1
-            elseif args.input == Action.PrevWeapon then
-                self.spec.zoom = self.spec.zoom + 0.1
-            end
-        end
 
-        self.spec.zoom = math.clamp(self.spec.zoom, 0.15, 1.5)
-        self.spec.angle.pitch = math.clamp(self.spec.angle.pitch, -1.5, -0.4)
+            self.spec.zoom = math.clamp(self.spec.zoom, 0.15, 1.5)
+            self.spec.angle.pitch = math.clamp(self.spec.angle.pitch, -1.5, -0.4)
+        end
     end
 
     if self.activeWindow then
@@ -917,7 +919,7 @@ function Admin:warpPlayerTo()
             Network:Send("admin.executeAction", {"player.warpto", self.victim, player})
             self.panel.warp.window:SetVisible(false)
         else
-            Chat:Print("Выбранный игрок находится в автономном режиме.", err)
+            Chat:Print("Выбранный игрок находится в автономном режиме", err)
         end
     else
         Chat:Print(ChatTag, Color.White, NoSelected, err)
@@ -994,7 +996,7 @@ end
 
 function Admin:spectateCamera()
     if self.victim and self.spVictimPos and self.spVictimAng and IsValid(self.victim, false) then
-        if self.updTimer and self.updTimer:GetSeconds() >= 3 then
+        if self.updTimer and self.updTimer:GetSeconds() >= 2 then
             self.updTimer = nil
         end
 
@@ -1125,7 +1127,7 @@ function Admin:showVehicleColourSelector()
             self.panel.vehColor.window:SetVisible(true)
             self.victim = player
         else
-            Chat:Print("Этот игрок не находится в транспортном средстве.", err)
+            Chat:Print("Этот игрок не находится в транспортном средстве", err)
         end
     else
         Chat:Print(ChatTag, Color.White, NoSelected, err)
@@ -1140,7 +1142,7 @@ function Admin:setVehicleTone1Colour()
             self.panel.vehColor.window:SetVisible(false)
             self.victim = nil
         else
-            Chat:Print("Этот игрок не находится в транспортном средстве.", err)
+            Chat:Print("Этот игрок не находится в транспортном средстве", err)
         end
     else
         Chat:Print(ChatTag, Color.White, NoSelected, err)
@@ -1155,7 +1157,7 @@ function Admin:setVehicleTone2Colour()
             self.panel.vehColor.window:SetVisible(false)
             self.victim = nil
         else
-            Chat:Print("Этот игрок не находится в транспортном средстве.", err)
+            Chat:Print("Этот игрок не находится в транспортном средстве", err)
         end
     else
         Chat:Print(ChatTag, Color.White, NoSelected, err)
@@ -1281,9 +1283,9 @@ function Admin:getBanInformation()
                 local expired = false
 
                 if duration <= self.serverInfo.time and duration ~= 0 then
-                    self.panel.main.banDuration:SetText("Продолжительность: уже истек.")
+                    self.panel.main.banDuration:SetText("Продолжительность: уже истек")
                 elseif duration == 0 then
-                    self.panel.main.banDuration:SetText("Продолжительность: перманентно.")
+                    self.panel.main.banDuration:SetText("Продолжительность: перманентно")
                 else
                     local timeLeft = duration - self.serverInfo.time
                     local minutes = math.floor(timeLeft / 60)
@@ -1336,7 +1338,7 @@ function Admin:removeBan()
             Network:Send("admin.executeAction", {"ban.remove", id})
         end
     else
-        Chat:Print("Бан не выбран.", err)
+        Chat:Print("Бан не выбран", err)
     end
 end
 
@@ -1367,7 +1369,7 @@ function Admin:manualBan()
         Network:Send("admin.executeAction", {"ban.add", steamID, reason, duration})
         self.panel.manualBan.window:SetVisible(false)
     else
-        Chat:Print("No steam ID given.", err)
+        Chat:Print("No steam ID given", err)
     end
 end
 
@@ -1474,7 +1476,7 @@ function Admin:modifyACLPermission()
     if value == "true" or value == "false" then
         Network:Send("admin.executeAction", {"acl.modifypermission", group, perm, value})
     else
-        Chat:Print("Недопустимое значение, используйте: true/false.", err)
+        Chat:Print("Недопустимое значение, используйте: true/false", err)
     end
 
     self.panel.permChange.window:SetVisible(false)
@@ -1526,7 +1528,7 @@ function Admin:createACLGroup()
         Network:Send("admin.executeAction", {"acl.creategroup", name, perms})
         self.panel.aclCreate.window:SetVisible(false)
     else
-        Chat:Print("Напишите имя группы.", err)
+        Chat:Print("Напишите имя группы", err)
     end
 end
 
@@ -1558,7 +1560,7 @@ function Admin:addACLObject()
             Network:Send("admin.executeAction", {"acl.addobject", group, steamID})
             self.panel.aclObject.window:SetVisible(false)
         else
-            Chat:Print("Напишите steam ID, чтобы добавить.", err)
+            Chat:Print("Напишите SteamID, чтобы добавить", err)
         end
     end
 end
@@ -1590,7 +1592,7 @@ function Admin:displayModules(modules)
     if modules then
         for name, state in pairs(modules[1]) do
             local item = self.panel.main.modulesList:AddItem(tostring(name))
-            item:SetTextColor((state and Color(0, 255, 0) or Color(255, 0, 0)))
+            item:SetTextColor((state and Color.LightGreen or err))
             self.modules[name] = item
         end
 
@@ -1635,7 +1637,7 @@ function Admin:loadModule()
             Network:Send("admin.executeAction", {"module.load", name})
         end
     else
-        Chat:Print("Пожалуйста, выберите модуль.", Color.Yellow)
+        Chat:Print("Пожалуйста, выберите модуль", err)
     end
 end
 
@@ -1649,7 +1651,7 @@ function Admin:reloadModule()
             Network:Send("admin.executeAction", {"module.load", "module.reload", name})
         end
     else
-        Chat:Print("Пожалуйста, выберите модуль.", Color.Yellow)
+        Chat:Print("Пожалуйста, выберите модуль", err)
     end
 end
 
@@ -1662,7 +1664,7 @@ function Admin:unloadModule()
             Network:Send("admin.executeAction", {"module.unload", name})
         end
     else
-        Chat:Print("Пожалуйста, выберите модуль.", Color.Yellow)
+        Chat:Print("Пожалуйста, выберите модуль", err)
     end
 end
 

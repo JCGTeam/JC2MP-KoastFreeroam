@@ -129,7 +129,7 @@ BindMenu.Create = function(locStrings)
         BindMenu.SetEnabledRecursive(self, false)
 
         local label = button:GetDataObject("label")
-        label:SetText("...")
+        label:SetText("…")
 
         self.activatedButton = button
         self.activeAction = nil
@@ -150,7 +150,7 @@ BindMenu.Create = function(locStrings)
         self.activatedButton = button:GetParent()
 
         local label = self.activatedButton:GetDataObject("label")
-        label:SetText("...")
+        label:SetText("…")
     end
 
     function window:UnassignButtonPressed(button)

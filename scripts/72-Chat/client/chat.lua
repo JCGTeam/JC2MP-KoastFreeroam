@@ -82,24 +82,29 @@ end
 function BetterChat:CreateChatModeListItems()
     local locStrings = self.locStrings
 
-    self.chatmodelist:AddItem(locStrings["tGlobal"], locStrings["tGlobal"])
-    self.chatmodelist:AddItem(locStrings["tLocal"], locStrings["tLocal"])
+    local lstGlobal = locStrings["tGlobal"]
+    local lstLocal = locStrings["tLocal"]
+    local lstClan = locStrings["tClan"]
+    local lstPrefix = locStrings["tPrefix"]
+
+    self.chatmodelist:AddItem(lstGlobal, lstGlobal)
+    self.chatmodelist:AddItem(lstLocal, lstLocal)
     if LocalPlayer:GetValue("ClanTag") then
-        self.chatmodelist:AddItem(locStrings["tClan"], locStrings["tClan"])
+        self.chatmodelist:AddItem(lstClan, lstClan)
     end
     if LocalPlayer:GetValue("Tag") or LocalPlayer:GetValue("NT_TagName") then
-        self.chatmodelist:AddItem(locStrings["tPrefix"], locStrings["tPrefix"])
+        self.chatmodelist:AddItem(lstPrefix, lstPrefix)
     end
 
     local chatMode = LocalPlayer:GetValue("ChatMode")
     if chatMode == 0 then
-        self.chatmodelist:SelectItemByName(locStrings["tGlobal"])
+        self.chatmodelist:SelectItemByName(lstGlobal)
     elseif chatMode == 1 then
-        self.chatmodelist:SelectItemByName(locStrings["tLocal"])
+        self.chatmodelist:SelectItemByName(lstLocal)
     elseif chatMode == 2 then
-        self.chatmodelist:SelectItemByName(locStrings["tClan"])
+        self.chatmodelist:SelectItemByName(lstClan)
     elseif chatMode == 3 then
-        self.chatmodelist:SelectItemByName(locStrings["tPrefix"])
+        self.chatmodelist:SelectItemByName(lstPrefix)
     end
 end
 

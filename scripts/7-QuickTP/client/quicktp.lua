@@ -90,7 +90,7 @@ function QuickTP:OpenMenu()
     if not self.subRender then self.subRender = Events:Subscribe("PostRender", self, self.PostRender) end
     if not self.subMouse then self.subMouse = Events:Subscribe("MouseDown", self, self.MouseDown) end
 
-    Animation:Play(0, 1, 0.15, easeIOnut, function(value) self.animationValue = value end)
+    Animation:Play(0, 1, 0.15, easeInOut, function(value) self.animationValue = value end)
 
     Mouse:SetPosition(Vector2(Render.Width / 2, Render.Height / 2))
     Mouse:SetVisible(true)

@@ -3,11 +3,8 @@ class "PDA"
 PDA.ToggleDelay = 0.25
 
 function PDA:__init()
-    circletime = 0
-    oldsize = Render.Height * 0.007
-
-    InitTimer = Timer()
-    CircleTimer = nil
+    self.circletime = 0
+    self.oldsize = Render.Height * 0.007
 
     self.actions = {
         [3] = true,
@@ -39,7 +36,7 @@ function PDA:__init()
     self.map_fadeout_delay = 1000 -- milliseconds
     self.world_fadein_delay = 1000 -- milliseconds
 
-    rendermap = true
+    self.RenderMap = true
 
     self.active = false
     self.mouseDown = false
@@ -59,7 +56,7 @@ function PDA:__init()
         }
     end
 
-    labels = 0
+    self.labels = 0
 
     Events:Subscribe("Lang", self, self.Lang)
     Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
@@ -98,6 +95,8 @@ function PDA:Toggle()
 
     if self.active then
         LocalPlayer:SetValue("ServerMap", 1)
+        LocalPlayer:SetValue("DisableCameraScroll", 1)
+
         if not self.EventPostRender then self.EventPostRender = Events:Subscribe("PostRender", self, self.PostRender) end
         if not self.PlayerUpdateNetwork then self.PlayerUpdateNetwork = Network:Subscribe("PlayerUpdate", self, self.PlayerUpdate) end
         if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
@@ -105,14 +104,15 @@ function PDA:Toggle()
         if not self.MouseMoveEvent then self.MouseMoveEvent = Events:Subscribe("MouseMove", self, self.MouseMove) end
         if not self.MouseUpEvent then self.MouseUpEvent = Events:Subscribe("MouseUp", self, self.MouseUp) end
 
-        Events:Fire("ToggleCamZoom", {zoomcam = false})
         Network:Send("MapShown")
-        CircleTimer = Timer()
-        FadeInTimer = Timer()
+        self.circleTimer = Timer()
+        self.fadeInTimer = Timer()
 
-        Animation:Play(0, 1, 0.15, easeIOnut, function(value) animationValue = value end)
+        Animation:Play(0, 1, 0.15, easeInOut, function(value) animationValue = value end)
     else
         LocalPlayer:SetValue("ServerMap", nil)
+        LocalPlayer:SetValue("DisableCameraScroll", nil)
+
         if self.EventPostRender then Events:Unsubscribe(self.EventPostRender) self.EventPostRender = nil end
         if self.PlayerUpdateNetwork then Network:Unsubscribe(self.PlayerUpdateNetwork) self.PlayerUpdateNetwork = nil end
 
@@ -123,34 +123,33 @@ function PDA:Toggle()
             if self.MouseUpEvent then Events:Unsubscribe(self.MouseUpEvent) self.MouseUpEvent = nil end
         end
 
-        Events:Fire("ToggleCamZoom", {zoomcam = true})
         Network:Send("MapHide")
-        CircleTimer = nil
-        FadeOutTimer = nil
-        DelayTimer = nil
-        FadeInTimer = nil
-        circletime = 0
-        oldsize = 0
+        self.circleTimer = nil
+        self.fadeOutTimer = nil
+        self.delayTimer = nil
+        self.fadeInTimer = nil
+        self.circletime = 0
+        self.oldsize = 0
     end
 end
 
 function PDA:ExtractionSequence()
-    if not extraction_sequence then return end
+    if not self.extraction_sequence then return end
 
     if self.world_fadeout_timer then
         if self.world_fadeout_timer:GetMilliseconds() > self.world_fadeout_delay then
-            Network:Send("InitialTeleport", {position = next_position})
+            Network:Send("InitialTeleport", {position = self.next_position})
             self.world_fadeout_timer = nil
-            extraction_timer = Timer()
+            self.extraction_timer = Timer()
             self.teleporting = true
         end
     elseif self.teleporting then
-        if LocalPlayer:GetPosition() ~= previous_position then
+        if LocalPlayer:GetPosition() ~= self.previous_position then
             self.teleporting = false
             self.loading = true
             Map.Border = false
             Map.Ramka = false
-            rendermap = false
+            self.RenderMap = false
 
             if self.MouseDownEvent then Events:Unsubscribe(self.MouseDownEvent) self.MouseDownEvent = nil end
             if self.MouseUpEvent then Events:Unsubscribe(self.MouseUpEvent) self.MouseUpEvent = nil end
@@ -162,9 +161,9 @@ function PDA:ExtractionSequence()
         end
     end
 
-    if extraction_timer then
-        if extraction_timer:GetSeconds() > extraction_delay then
-            extraction_timer = nil
+    if self.extraction_timer then
+        if self.extraction_timer:GetSeconds() > extraction_delay then
+            self.extraction_timer = nil
             -- locationsvisible = false
             self.map_fadeout_timer = Timer()
         end
@@ -183,28 +182,28 @@ function PDA:ExtractionSequence()
         end
     end
 
-    if not (self.world_fadeout_timer or self.world_fadein_timer or self.teleporting or self.loading or extraction_timer or self.map_fadeout_timer) then
+    if not (self.world_fadeout_timer or self.world_fadein_timer or self.teleporting or self.loading or self.extraction_timer or self.map_fadeout_timer) then
         self.world_fadein_timer = Timer()
-        local ray = Physics:Raycast(Vector3(next_position.x, 2100, next_position.z), Vector3.Down, 0, 2100)
+        local ray = Physics:Raycast(Vector3(self.next_position.x, 2100, self.next_position.z), Vector3.Down, 0, 2100)
         Network:Send("CorrectedTeleport", {position = ray.position})
     end
 
     if self.world_fadein_timer then
         if self.world_fadein_timer:GetMilliseconds() > self.world_fadein_delay then
-            Events:Unsubscribe(extraction_sequence)
+            Events:Unsubscribe(self.extraction_sequence)
             Game:FireEvent("ply.makevulnerable")
             Map.Image:SetAlpha(1)
             -- Map.RamkaAlpha = 1
             -- Location.Icon.Sheet:SetAlpha( 1 )
-            rendermap = true
+            self.RenderMap = true
             PDA:Toggle()
             Map.Border = true
             Map.Ramka = true
+
             self.world_fadein_timer = nil
-            extraction_sequence = nil
-            extraction_render = nil
-            previous_position = nil
-            next_position = nil
+            self.extraction_sequence = nil
+            self.previous_position = nil
+            self.next_position = nil
 
             if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe("KeyUp", self, self.KeyUp) end
         end
@@ -231,7 +230,7 @@ end
 function PDA:MouseUp(args)
     if self.mouseDown == args.button then
         if args.button == 2 then
-            labels = labels < 1 and labels + 1 or 0
+            self.labels = self.labels < 1 and self.labels + 1 or 0
         end
 
         if args.button == 3 then
@@ -270,18 +269,18 @@ function PDA:KeyUp(args)
 
         local position = Map:ScreenToWorld(Mouse:GetPosition())
         if position.x >= -16384 and position.x <= 16383 and position.z >= -16384 and position.z <= 16383 then
-            previous_position = LocalPlayer:GetPosition()
-            next_position = position
-            extraction_delay = Vector3.Distance(previous_position, next_position) / self.extraction_speed
-            extraction_sequence = Events:Subscribe("PreTick", self, self.ExtractionSequence)
+            self.previous_position = LocalPlayer:GetPosition()
+            self.next_position = position
+            extraction_delay = Vector3.Distance(self.previous_position, self.next_position) / self.extraction_speed
+            self.extraction_sequence = Events:Subscribe("PreTick", self, self.ExtractionSequence)
             self.world_fadeout_timer = Timer()
             Game:FireEvent("ply.makeinvulnerable")
-            CircleTimer = nil
-            FadeOutTimer = nil
-            DelayTimer = nil
-            FadeInTimer = nil
-            circletime = 0
-            oldsize = 0
+            self.circleTimer = nil
+            self.fadeOutTimer = nil
+            self.delayTimer = nil
+            self.fadeInTimer = nil
+            self.circletime = 0
+            self.oldsize = 0
             Map.Zoom = 0.98
             Map.Offset = Vector2.Zero
             Mouse:SetVisible(false)
@@ -302,6 +301,7 @@ function PDA:LocalPlayerInput(args)
         if self.actions[args.input] then
             return false
         end
+
         if (args.input == Action.GuiPDAZoomIn or args.input == Action.GuiPDAZoomOut) and args.state > 0.15 then
             local oldZoom = Map.Zoom
 
@@ -333,7 +333,7 @@ function PDA:PostRender()
         return
     end
 
-    if extraction_sequence then
+    if self.extraction_sequence then
         local worldFadeOutTimer = self.world_fadeout_timer
 
         if worldFadeOutTimer then
@@ -345,7 +345,7 @@ function PDA:PostRender()
             end
         end
 
-        if self.teleporting or self.loading or extraction_timer or self.map_fadeout_timer then
+        if self.teleporting or self.loading or self.extraction_timer or self.map_fadeout_timer then
             Render:FillArea(Vector2.Zero, Render.Size, Color.Black)
         end
 

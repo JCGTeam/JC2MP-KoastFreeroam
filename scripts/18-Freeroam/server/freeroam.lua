@@ -276,10 +276,8 @@ function Freeroam:PlayerSpawnFromDB(args)
         local result = qry:Execute()
 
         if #result > 0 then
-            local row = result[1]
-
-            local pos = (row.pos:split(",") or {0, 0, 0})
-            local angle = (row.angle:split(",") or {0, 0, 0})
+            local pos = (result[1].pos:split(",") or {0, 0, 0})
+            local angle = (result[1].angle:split(",") or {0, 0, 0})
 
             local pos_x, pos_y, pos_z = table.unpack(pos)
             local angle_x, angle_y, angle_z = table.unpack(angle)

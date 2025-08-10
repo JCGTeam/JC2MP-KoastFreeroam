@@ -21,9 +21,10 @@ function PM:ChangePmMode(args, sender)
 end
 
 function PM:send(data, player)
+    local pLang = player:GetValue("Lang")
+
     if IsValid(data.player) then
         local pName = player:GetName()
-        local pLang = player:GetValue("Lang")
 
         if not data.player:GetValue("PMDistrub") then
             data.player:SendChatMessage(data.pLang == "EN" and self.tag2_en or self.tag2_ru, self.text_clr, data.pLang == "EN" and " from " or " от ", Color.White, tostring(pName), player:GetColor(), ": " .. tostring(data.text), self.text_clr)

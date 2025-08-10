@@ -8,7 +8,10 @@ function RaceManagerMode:__init(args)
     self.voteSkipLabel = nil
     self.adminSkipButton = nil
     self.adminNextCourseTextBox = nil
-    self.raceMenuHelpText = "Используйте '/" .. settings.command .. "', чтобы открыть меню гонок"
+
+    local locStrings = settings.locStrings
+
+    self.raceMenuHelpText = locStrings["use"] .. settings.command .. locStrings["toopenracemenu"]
 
     self:AddToRaceMenu()
 
@@ -40,6 +43,7 @@ end
 
 function RaceManagerMode:AddToRaceMenu()
     local fontSize = 16
+    local locStrings = settings.locStrings
 
     --
     -- Current race info
@@ -48,24 +52,23 @@ function RaceManagerMode:AddToRaceMenu()
     local groupBox = RaceMenu.CreateGroupBox(RaceMenu.instance.addonArea)
     groupBox:SetDock(GwenPosition.Left)
     groupBox:SetWidthAutoRel(0.5)
-    groupBox:SetText("Текущая гонка")
+    groupBox:SetText(locStrings["currentrace"])
 
     local tableControl
 	local tableArgs = {
-		"Players" ,
-		"Course" ,
-		"Type" ,
-		"Authors" ,
-		"Checkpoints" ,
-		"Collisions" ,
+		"Игроков" ,
+		"Карта" ,
+		"Тип" ,
+		"Авторы" ,
+		"Чекпоинтов" ,
+		"Столкновения" ,
 		-- Distance?
 	}
     tableControl, self.currentRaceLabels, self.currentRaceRows = RaceMenuUtility.CreateTable(fontSize, tableArgs)
     tableControl:SetParent(groupBox)
     tableControl:SetDock(GwenPosition.Top)
-    self.currentRaceLabels.Course:SetTextColor(settings.textColor)
-    self.currentRaceRows.Players:SetToolTip("This is probably broken")
-    self.currentRaceRows.Checkpoints:SetToolTip("Checkpoints per lap")
+    self.currentRaceLabels["Карта"]:SetTextColor(settings.textColor)
+    self.currentRaceRows["Чекпоинтов"]:SetToolTip(locStrings["checkpointsperlap"])
 
     -- Voteskip control
 
@@ -78,7 +81,7 @@ function RaceManagerMode:AddToRaceMenu()
     button:SetDock(GwenPosition.Left)
     button:SetToggleable(true)
     button:SetTextSize(16)
-    button:SetText("Vote skip")
+    button:SetText(locStrings["skip"])
     button:SizeToContents()
     button:Subscribe("ToggleOn", self, self.VoteSkipButtonPressed)
     button:Subscribe("ToggleOff", self, self.VoteSkipButtonUnpressed)
@@ -102,7 +105,7 @@ function RaceManagerMode:AddToRaceMenu()
     button:SetPadding(Vector2(24, 0), Vector2(24, 0))
     button:SetDock(GwenPosition.Left)
     button:SetTextSize(16)
-    button:SetText("Spectate")
+    button:SetText(locStrings["spectate"])
     button:SizeToContents()
     button:Subscribe("Press", self, self.SpectateButtonPressed)
     self.spectateButton = button
@@ -113,26 +116,26 @@ function RaceManagerMode:AddToRaceMenu()
 
     groupBox = RaceMenu.CreateGroupBox(RaceMenu.instance.addonArea)
     groupBox:SetDock(GwenPosition.Fill)
-    groupBox:SetText("Next race")
+    groupBox:SetText(locStrings["nextrace"])
 
-    tableArgs = {"Course", "Collisions"}
+    tableArgs = {"Карта", "Столкновения"}
     tableControl, self.nextRaceLabels, self.nextRaceRows = RaceMenuUtility.CreateTable(fontSize, tableArgs)
     tableControl:SetParent(groupBox)
     tableControl:SetDock(GwenPosition.Fill)
-    self.nextRaceLabels.Course:SetTextColor(settings.textColor)
+    self.nextRaceLabels["Карта"]:SetTextColor(settings.textColor)
 end
 
 function RaceManagerMode:ApplyCurrentRaceInfo(args)
     local labels = self.currentRaceLabels
-    labels.Players:SetText(string.format("%i", args.currentPlayers))
-    labels.Course:SetText(args.course.name)
-    labels.Authors:SetText(table.concat(args.course.authors, ", "))
-    labels.Type:SetText(args.course.type)
-    labels.Checkpoints:SetText(string.format("%i", args.course.checkpointCount))
+    labels["Игроков"]:SetText(string.format("%i", args.currentPlayers))
+    labels["Карта"]:SetText(args.course.name)
+    labels["Авторы"]:SetText(table.concat(args.course.authors, ", "))
+    labels["Тип"]:SetText(args.course.type)
+    labels["Чекпоинтов"]:SetText(string.format("%i", args.course.checkpointCount))
     if args.collisions then
-        labels.Collisions:SetText("On")
+        labels["Столкновения"]:SetText("Включены")
     else
-        labels.Collisions:SetText("Off")
+        labels["Столкновения"]:SetText("Отключены")
     end
 
     for title, label in pairs(labels) do
@@ -142,11 +145,11 @@ end
 
 function RaceManagerMode:ApplyNextRaceInfo(args)
     local labels = self.nextRaceLabels
-    labels.Course:SetText(args.courseName)
+    labels["Карта"]:SetText(args.courseName)
     if args.collisions then
-        labels.Collisions:SetText("On")
+        labels["Столкновения"]:SetText("Включены")
     else
-        labels.Collisions:SetText("Off")
+        labels["Столкновения"]:SetText("Отключены")
     end
 
     for title, label in pairs(labels) do
@@ -186,9 +189,13 @@ end
 function RaceManagerMode:PostRender()
     if Game:GetState() ~= GUIState.Game then return end
 
+    local raceMenuHelpText = self.raceMenuHelpText
+
     -- If we haven't opened the race menu yet, draw help text under the chat box.
-    if self.raceMenuHelpText then
-        DrawText(Vector2(30, Render.Height * 0.9), self.raceMenuHelpText, Color(255, 232, 60), TextSize.Default, "left")
+    if raceMenuHelpText then
+        if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+
+        DrawText(Vector2(30, Render.Height * 0.9), raceMenuHelpText, Color(215, 215, 215), 14, "left")
     end
 end
 
@@ -219,7 +226,7 @@ function RaceManagerMode:RaceAdminInitialize()
     button:SetPadding(Vector2(24, 0), Vector2(24, 0))
     button:SetDock(GwenPosition.Top)
     button:SetTextSize(16)
-    button:SetText("Force skip current race")
+    button:SetText("Принудительно пропустить текущую гонку")
     button:SetHeight(32)
     button:Subscribe("Press", self, self.AdminSkipButtonPressed)
     self.adminSkipButton = button
@@ -229,17 +236,13 @@ function RaceManagerMode:RaceAdminInitialize()
     textBox:Subscribe("ReturnPressed", self, self.NextCourseTextBoxAccepted)
     textBox:SetToolTip([[Example: "BandarSelekeh". Make sure the name is correct, or else it will error.]])
     self.adminNextCourseTextBox = textBox
-    label:SetText("Set next course")
+    label:SetText("Установить следующую карту")
 end
 
 -- Network events
 
 function RaceManagerMode:UpdateVoteSkipInfo(args)
-    local votesString = "votes"
-    if args.skipVotes == 1 then
-        votesString = "vote"
-    end
-    local text = string.format("%i " .. votesString .. " - %i needed", args.skipVotes, args.skipVotesRequired)
+    local text = string.format(settings.locStrings["votes"], args.skipVotes, args.skipVotesRequired)
     self.voteSkipLabel:SetText(text)
 end
 
@@ -260,7 +263,7 @@ end
 
 function RaceManagerMode:RaceSkipped()
     self.voteSkipButton:SetEnabled(false)
-    self.voteSkipLabel:SetText("Skipping race!")
+    self.voteSkipLabel:SetText(settings.locStrings["skippingrace"])
     self.voteSkipLabel:SetTextColor(Color.Green)
 end
 

@@ -1,7 +1,7 @@
 class 'Load'
 
 function Load:__init()
-    self.BackgroundImages = {
+    self.backgroundImages = {
 		Image.Create(AssetLocation.Resource, "BackgroundImage"),
 		Image.Create(AssetLocation.Resource, "BackgroundImageTw"),
 		Image.Create(AssetLocation.Resource, "BackgroundImageTh"),
@@ -9,10 +9,10 @@ function Load:__init()
 		Image.Create(AssetLocation.Resource, "BackgroundImageFi")
 	}
 
-    self.BackgroundImage = table.randomvalue(self.BackgroundImages)
-    self.LoadingCircle_Outer = Image.Create(AssetLocation.Game, "fe_initial_load_icon_dif.dds")
+    self.backgroundImage = table.randomvalue(self.backgroundImages)
+    self.loadingCircle_Outer = Image.Create(AssetLocation.Game, "fe_initial_load_icon_dif.dds")
 
-    self.BackgroundImage:SetSize(Render.Size)
+    self.backgroundImage:SetSize(Render.Size)
 
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
@@ -32,7 +32,7 @@ function Load:__init()
     Events:Subscribe("LocalPlayerDeath", self, self.LocalPlayerDeath)
     self.PostRenderEvent = Events:Subscribe("PostRender", self, self.PostRender)
 
-    self.IsJoining = false
+    self.isJoining = false
 end
 
 function Load:Lang()
@@ -45,19 +45,19 @@ end
 
 function Load:ModuleLoad()
     if Game:GetState() ~= GUIState.Loading then
-        self.IsJoining = false
+        self.isJoining = false
     else
-        self.IsJoining = true
-        self.FadeInTimer = Timer()
+        self.isJoining = true
+        self.fadeInTimer = Timer()
     end
 end
 
 function Load:ResolutionChange(args)
-    self.BackgroundImage:SetSize(args.size)
+    self.backgroundImage:SetSize(args.size)
 end
 
 function Load:GameLoad()
-    self.FadeInTimer = nil
+    self.fadeInTimer = nil
 
     if not self.PostRenderEvent then
         self.PostRenderEvent = Events:Subscribe("PostRender", self, self.PostRender)
@@ -66,8 +66,8 @@ function Load:GameLoad()
 end
 
 function Load:LocalPlayerDeath()
-    self.BackgroundImage = table.randomvalue(self.BackgroundImages)
-    self.FadeInTimer = Timer()
+    self.backgroundImage = table.randomvalue(self.backgroundImages)
+    self.fadeInTimer = Timer()
 end
 
 function Load:PostRender()
@@ -79,17 +79,17 @@ function Load:PostRender()
         local pi = math.pi
 
         Render:FillArea(Vector2.Zero, Render.Size, background_clr)
-        self.BackgroundImage:Draw()
+        self.backgroundImage:Draw()
 
         local TransformOuter = Transform2()
         TransformOuter:Translate(pos)
         TransformOuter:Rotate(pi * rotation)
 
         Render:SetTransform(TransformOuter)
-        self.LoadingCircle_Outer:Draw(-(circleSize / 2), circleSize, Vector2.Zero, Vector2.One)
+        self.loadingCircle_Outer:Draw(-(circleSize / 2), circleSize, Vector2.Zero, Vector2.One)
         Render:ResetTransform()
 
-        local fadeInTimer = self.FadeInTimer
+        local fadeInTimer = self.fadeInTimer
 
         if fadeInTimer and fadeInTimer:GetMinutes() >= 1 then
             if self.PostRenderEvent then Events:Unsubscribe(self.PostRenderEvent) self.PostRenderEvent = nil end
@@ -99,7 +99,7 @@ function Load:PostRender()
 end
 
 function Load:ExitWindow()
-    self.FadeInTimer = nil
+    self.fadeInTimer = nil
     Mouse:SetVisible(true)
 
     if self.window then return end

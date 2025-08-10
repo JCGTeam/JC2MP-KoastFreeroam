@@ -17,7 +17,7 @@ function StateVehicleSelection:__init(race, args)
     -- Contains arrays of {button , radioButton}.
     self.templateControls = {}
 
-    self.timerControl = RaceMenuUtility.CreateTimer("до начала гонки", self.race.vehicleSelectionSeconds)
+    self.timerControl = RaceMenuUtility.CreateTimer(settings.locStrings["untilracestart"], self.race.vehicleSelectionSeconds)
 
     self:EventSubscribe("Render", self.StateLoading)
     self:NetworkSubscribe("VehicleSelectionInitialize")
@@ -54,18 +54,21 @@ end
 
 function StateVehicleSelection:CreateMenus()
     LocalPlayer:SetValue("CustomCrosshairVisible", nil)
+
+    local locStrings = settings.locStrings
+
     self.window = Window.Create()
     local size = Vector2(290, 600)
     self.window:SetSize(size)
     self.window:SetPosition(Vector2(Render.Width - size.x - 5, Render.Height / 2 - size.y / 2))
-    self.window:SetTitle("Гараж")
+    self.window:SetTitle(locStrings["garage"])
     self.window:SetClosable(false)
 
     -- Vehicle list
 
     local groupBoxVehicleList = RaceMenu.CreateGroupBox(self.window)
     groupBoxVehicleList:SetDock(GwenPosition.Top)
-    groupBoxVehicleList:SetText("Модель")
+    groupBoxVehicleList:SetText(locStrings["model"])
 
     local baseButton
 
@@ -121,7 +124,7 @@ function StateVehicleSelection:CreateMenus()
 
     self.groupBoxTemplateList = RaceMenu.CreateGroupBox(self.window)
     self.groupBoxTemplateList:SetDock(GwenPosition.Top)
-    self.groupBoxTemplateList:SetText("Версия")
+    self.groupBoxTemplateList:SetText(locStrings["version"])
 
     self:UpdateTemplateControls()
 
@@ -129,7 +132,7 @@ function StateVehicleSelection:CreateMenus()
 
     self.groupBoxColorPicker = RaceMenu.CreateGroupBox(self.window)
     self.groupBoxColorPicker:SetDock(GwenPosition.Top)
-    self.groupBoxColorPicker:SetText("Цвет")
+    self.groupBoxColorPicker:SetText(locStrings["color"])
     self.groupBoxColorPicker:SetHeight(200)
 
     self.colorPicker = HSVColorPicker.Create(self.groupBoxColorPicker)
@@ -288,7 +291,7 @@ end
 -- Events
 
 function StateVehicleSelection:StateLoading()
-    self:DrawLoadingScreen("Загрузка...")
+    self:DrawLoadingScreen(settings.locStrings["loading"])
     self:RenderAlways()
     -- Wait for a short time.
     -- TODO: Wait until the local player has spawned and then continue. I'm not sure how to do that
@@ -304,7 +307,7 @@ function StateVehicleSelection:StateLoading()
 end
 
 function StateVehicleSelection:StatePreSelection()
-    self:DrawLoadingScreen("Загрузка....")
+    self:DrawLoadingScreen(settings.locStrings["loading"])
     self:RenderAlways()
 end
 

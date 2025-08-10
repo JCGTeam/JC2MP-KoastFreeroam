@@ -535,16 +535,16 @@ function Settings:CreateWindow()
         lpColor = pColorPicker:GetColor()
     end)
 
-    local setPlayerColorBtn = Button.Create(nickcolor)
-    setPlayerColorBtn:SetText(locStrings["setPlayerColorBtn"])
+    self.setPlayerColorBtn = Button.Create(nickcolor)
+    self.setPlayerColorBtn:SetText(locStrings["setPlayerColorBtn"])
     local btnColor = Color.LightGreen
-    setPlayerColorBtn:SetTextHoveredColor(btnColor)
-    setPlayerColorBtn:SetTextPressedColor(btnColor)
-    setPlayerColorBtn:SetTextSize(textSize)
-    setPlayerColorBtn:SetHeight(btnHeight)
-    setPlayerColorBtn:SetDock(GwenPosition.Bottom)
-    setPlayerColorBtn:SetMargin(Vector2(0, 5), Vector2.Zero)
-    setPlayerColorBtn:Subscribe("Up", function()
+    self.setPlayerColorBtn:SetTextHoveredColor(btnColor)
+    self.setPlayerColorBtn:SetTextPressedColor(btnColor)
+    self.setPlayerColorBtn:SetTextSize(textSize)
+    self.setPlayerColorBtn:SetHeight(btnHeight)
+    self.setPlayerColorBtn:SetDock(GwenPosition.Bottom)
+    self.setPlayerColorBtn:SetMargin(Vector2(0, 5), Vector2.Zero)
+    self.setPlayerColorBtn:Subscribe("Up", function()
         Network:Send("SetPlyColor", {pcolor = lpColor})
 
         local sound = ClientSound.Create(AssetLocation.Game, {
@@ -664,7 +664,7 @@ function Settings:CreateWindow()
 
     self.accountInfoText = Label.Create(accountInfo)
     self.accountInfoText:SetDock(GwenPosition.Fill)
-    self.accountInfoText:SetText("...")
+    self.accountInfoText:SetText("…")
 
     local avatar = ImagePanel.Create(self.subcategory7)
     avatar:SetSize(Vector2(100, 100))
@@ -682,7 +682,7 @@ function Settings:CreateWindow()
 
     self.moreInfoText = Label.Create(self.subcategory8)
     self.moreInfoText:SetDock(GwenPosition.Fill)
-    self.moreInfoText:SetText("...")
+    self.moreInfoText:SetText("…")
 
     self.moreInfoText:SizeToContents()
     self.subcategory8:SetHeight((self.moreInfoText:GetSize().y + 4 * 4))
@@ -694,7 +694,7 @@ function Settings:CreateWindow()
 
     self.statsText = Label.Create(self.subcategory9)
     self.statsText:SetDock(GwenPosition.Fill)
-    self.statsText:SetText("...")
+    self.statsText:SetText("…")
     self.statsText:SizeToContents()
 
     self.subcategory9:SetHeight((self.statsText:GetSize().y + 4 * 4))
@@ -757,7 +757,7 @@ function Settings:CreateWindow()
     local btnColor = Color.Yellow
     self.getInvitationsBonusBtn:SetTextHoveredColor(btnColor)
     self.getInvitationsBonusBtn:SetTextPressedColor(btnColor)
-    self.getInvitationsBonusBtn:SetText("...")
+    self.getInvitationsBonusBtn:SetText("…")
     self.getInvitationsBonusBtn:Subscribe("Press", function()
         Network:Send("GetInvitationPromocodesReward")
         Network:Send("RequestPromocodes")
@@ -807,9 +807,9 @@ function Settings:CreateWindow()
     self.getBonusBtn:Subscribe("Press", function() Events:Fire("ApplyPromocode", {type = 0, name = self.promocode:GetText()}) end)
 
     --[[
-    local gettag = LocalPlayer:GetValue("Tag")
+    local tag = LocalPlayer:GetValue("Tag")
 
-    if self.debug_permissions[gettag] then
+    if self.debug_permissions[tag] then
         local debug = BaseWindow.Create(self.window)
         tab:AddPage("DEBUG", debug)
 
@@ -1107,9 +1107,9 @@ function Settings:SetWindowVisible(visible, sound)
             self.buttonLH:GetCheckBox():SetEnabled(false)
         end
 
-        local gettag = LocalPlayer:GetValue("Tag")
+        local tag = LocalPlayer:GetValue("Tag")
 
-        if self.permissions[gettag] then
+        if self.permissions[tag] then
             local pWorld = LocalPlayer:GetWorld() == DefaultWorld
 
             self.subcategory2:SetVisible(true)
@@ -1134,6 +1134,8 @@ function Settings:SetWindowVisible(visible, sound)
             self.button:SetPosition(Vector2(self.subcategory2:GetPosition().x, pos_y))
             self.buttonTw:SetPosition(Vector2(self.button:GetPosition().x + 105, pos_y))
             self.buttonTh:SetPosition(Vector2(self.buttonTw:GetPosition().x + 105, pos_y))
+
+            self.setPlayerColorBtn:SetEnabled(pWorld)
         else
             self.buttonJP:SetEnabled(false)
             self.jpviptip:SetVisible(true)

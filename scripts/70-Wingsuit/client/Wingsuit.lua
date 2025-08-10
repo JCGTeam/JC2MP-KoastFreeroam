@@ -123,7 +123,7 @@ function Pigeon:LocalPlayerInput(args)
         if Game:GetSetting(GameSetting.GamepadInUse) == 1 then
             self:OpenWingsuit()
         end
-    elseif args.input == Action.VehicleCam and self.subs.camera then
+    elseif (args.input == Action.VehicleCam and Input:GetValue(Action.ShoulderCam) ~= 0) and self.subs.camera then
         local elapsedSeconds = Client:GetElapsedSeconds()
         local time = elapsedSeconds
 
@@ -442,9 +442,9 @@ function Pigeon:Input(args)
 end
 
 function Pigeon:Superspeed()
-    local gettag = LocalPlayer:GetValue("Tag")
+    local tag = LocalPlayer:GetValue("Tag")
 
-    if self.permissions[gettag] then
+    if self.permissions[tag] then
         self.superspeed = not self.superspeed
 
         if self.superspeed then

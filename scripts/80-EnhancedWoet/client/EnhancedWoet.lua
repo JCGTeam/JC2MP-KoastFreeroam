@@ -21,7 +21,7 @@ function Woet:UpdateKeyBinds()
     local vehicleJumpBind = keyBinds and keyBinds["VehicleJump"]
 
     self.vehicleTricksKey = woetBind and woetBind.type == "Key" and woetBind.value or 9
-    self.vehicleJumpKey = bivehicleJumpBindnd and vehicleJumpBind.type == "Key" and vehicleJumpBind.value or 9
+    self.vehicleJumpKey = vehicleJumpBind and vehicleJumpBind.type == "Key" and vehicleJumpBind.value or 9
 end
 
 function Woet:LocalPlayerEnterVehicle()
