@@ -681,13 +681,13 @@ function Menu:ChangeStep(step)
         self.linksScreen.youtube.window:SetSize(size)
 
         local linksTable = {
-            [0] = self.linksScreen.telegram.window,
-            [1] = self.linksScreen.discord.window,
-            [2] = self.linksScreen.steam.window,
-            [3] = self.linksScreen.youtube.window
+            self.linksScreen.telegram.window,
+            self.linksScreen.discord.window,
+            self.linksScreen.steam.window,
+            self.linksScreen.youtube.window
         }
 
-        self:PlayLinkAnimation(0, linksTable, (Render.Size.y / 2 - size.x / 2) - 20, size)
+        self:PlayLinkAnimation(1, linksTable, (Render.Size.y / 2 - size.x / 2) - 20, size)
     elseif step == 5 then
         Mouse:SetVisible(true)
 
@@ -818,29 +818,37 @@ function Menu:NextStep()
 end
 
 function Menu:PlayLinkAnimation(currentLink, linksTable, finalPos, size)
-    Animation:Play(Render.Size.y, finalPos, 0.35, easeInOut, function(value) linksTable[currentLink]:SetPosition(Vector2(linksTable[currentLink]:GetPosition().x, value)) end, function()
+    Animation:Play(Render.Size.y, finalPos, 0.35, easeInOut, function(value)
+        local pos = linksTable[currentLink]:GetPosition()
+
+        if pos then
+            linksTable[currentLink]:SetPosition(Vector2(pos.x, value))
+        end
+    end, function()
         if currentLink < #linksTable then
             self:PlayLinkAnimation(currentLink + 1, linksTable, finalPos, size)
         else
             local locStrings = self.locStrings
 
-            self.linksScreen.nextButton = ModernGUI.Button.Create()
-            self.linksScreen.nextButton:SetSize(Vector2(Render:GetTextWidth(locStrings["next"], self.linksScreen.nextButton:GetTextSize()) + 30, 40))
-            self.linksScreen.nextButton:SetPosition(Vector2( Render.Size.x / 2 - self.linksScreen.nextButton:GetSize().x / 2, Render.Size.y))
-            self.linksScreen.nextButton:SetText(locStrings["next"])
-            if LocalPlayer:GetValue("SystemFonts") then
-                self.linksScreen.nextButton:SetFont(AssetLocation.SystemFont, "Impact")
-            end
-
-            self.PressFunction = function() self:NextStep() end
-
-            self.linksScreen.nextButton:Subscribe("Press", self, self.PressFunction)
-
-            Animation:Play(self.linksScreen.nextButton:GetPosition().x, finalPos + size.y + 60, 0.25, easeInOut, function(value)
-                if self.linksScreen then
-                    self.linksScreen.nextButton:SetPosition(Vector2(Render.Size.x / 2 - self.linksScreen.nextButton:GetSize().x / 2, value))
+            if self.linksScreen then
+                self.linksScreen.nextButton = ModernGUI.Button.Create()
+                self.linksScreen.nextButton:SetSize(Vector2(Render:GetTextWidth(locStrings["next"], self.linksScreen.nextButton:GetTextSize()) + 30, 40))
+                self.linksScreen.nextButton:SetPosition(Vector2( Render.Size.x / 2 - self.linksScreen.nextButton:GetSize().x / 2, Render.Size.y))
+                self.linksScreen.nextButton:SetText(locStrings["next"])
+                if LocalPlayer:GetValue("SystemFonts") then
+                    self.linksScreen.nextButton:SetFont(AssetLocation.SystemFont, "Impact")
                 end
-            end)
+
+                self.PressFunction = function() self:NextStep() end
+
+                self.linksScreen.nextButton:Subscribe("Press", self, self.PressFunction)
+
+                Animation:Play(self.linksScreen.nextButton:GetPosition().x, finalPos + size.y + 60, 0.25, easeInOut, function(value)
+                    if self.linksScreen then
+                        self.linksScreen.nextButton:SetPosition(Vector2(Render.Size.x / 2 - self.linksScreen.nextButton:GetSize().x / 2, value))
+                    end
+                end)
+            end
         end
     end)
 end
