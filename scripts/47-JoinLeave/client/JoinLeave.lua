@@ -25,7 +25,7 @@ end
 function JoinLeave:Lang()
     self.locStrings = {
         tag = "[Server] ",
-        join = " joined to the server!",
+        join = " joined the server!",
         left = " left the server :("
     }
 end
