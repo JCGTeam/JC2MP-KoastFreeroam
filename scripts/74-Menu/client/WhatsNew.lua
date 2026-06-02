@@ -21,7 +21,7 @@ function WhatsNew:Open(args)
     self.text = args.text
     self.usepause = args.usepause
 
-    self.copyright_txt = "© JCGTeam 2025"
+    self.copyright_txt = "© JCGTeam 2026"
     self.text_clr = Color.White
     self.background_clr = Color(10, 10, 10, 200)
 

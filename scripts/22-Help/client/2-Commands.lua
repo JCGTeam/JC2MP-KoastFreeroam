@@ -46,7 +46,7 @@ function HCommands:EngHelp()
 end
 
 function HCommands:RusHelp()
-	Events:Fire("HelpRemoveItem", { name = "Commands" })
+	Events:Fire("HelpRemoveItem", {name = "Commands"})
 
 	Events:Fire("HelpAddItem",
 	{
