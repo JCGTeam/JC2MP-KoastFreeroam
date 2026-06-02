@@ -6,7 +6,7 @@ function HInfo:__init()
 end
 
 function HInfo:EngHelp()
-	Events:Fire("HelpRemoveItem", { name = "Информация" })
+	Events:Fire("HelpRemoveItem", {name = "Информация"})
 
 	Events:Fire("HelpAddItem",
 		{
@@ -51,12 +51,12 @@ function HInfo:EngHelp()
 				"     Dragonshifter (RUSSIAN FREEROAM MAYHEM server source code)\n \n" ..
 				"> Open source:\n" ..
 				"     GitHub - github.com/JCGTeam/JC2MP-KoastFreeroam\n \n" ..
-				"© JCGTeam, Hallkezz 2017-2025"
+				"© JCGTeam, Hallkezz 2017-2026"
 		})
 end
 
 function HInfo:RusHelp()
-	Events:Fire("HelpRemoveItem", { name = "Information" })
+	Events:Fire("HelpRemoveItem", {name = "Information"})
 
 	Events:Fire("HelpAddItem",
 		{
@@ -64,7 +64,7 @@ function HInfo:RusHelp()
 			text =
 				"> Ссылки:\n" ..
 				"    Telegram      t.me/koastfreeroam\n" ..
-				"    Discord        t.me/koastfreeroam/197 (ссылка+способ восстановления работы Discord)\n" ..
+				"    Discord        discord.gg/vzew9mDpYn\n" ..
 				"    Steam           steamcommunity.com/groups/koastfreeroam\n" ..
 				"    YouTube      www.youtube.com/@jcgteam\n \n" ..
 				"> Официальные сервера JCGTeam:\n" ..
@@ -101,7 +101,7 @@ function HInfo:RusHelp()
 				"     Dragonshifter (Исходный код сервера RUSSIAN FREEROAM MAYHEM)\n \n" ..
 				"> Открытый исходный код:\n" ..
 				"     GitHub - github.com/JCGTeam/JC2MP-KoastFreeroam\n \n" ..
-				"© JCGTeam, Hallkezz 2017-2025"
+				"© JCGTeam, Hallkezz 2017-2026"
 		})
 end
 
