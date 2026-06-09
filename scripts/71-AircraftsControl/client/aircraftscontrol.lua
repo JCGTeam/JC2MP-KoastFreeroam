@@ -3,7 +3,6 @@ class 'AircraftsControl'
 function AircraftsControl:__init()
     self.planeVehicles = {24, 30, 34, 39, 51, 59, 81, 85}
 
-    self.reverseKey = 88
     -- self.yawLeftKey = 49
     -- self.yawRightKey = 51
 
@@ -17,7 +16,16 @@ function AircraftsControl:__init()
 
     local vehicle = LocalPlayer:GetVehicle()
     if vehicle and vehicle:GetDriver() == LocalPlayer and vehicle:GetClass() == VehicleClass.Air then
-        self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+        if self:CheckList(self.planeVehicles, vehicle:GetModelId()) then
+            if not self.eventsLoaded then
+                self:SharedObjectValueChange()
+
+                self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+                self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+
+                self.eventsLoaded = true
+            end
+        end
     end
 
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
@@ -28,14 +36,34 @@ function AircraftsControl:LocalPlayerEnterVehicle(args)
     if args.is_driver then
         if args.vehicle:GetClass() == VehicleClass.Air then
             if self:CheckList(self.planeVehicles, args.vehicle:GetModelId()) then
-                if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
+                if not self.eventsLoaded then
+                    self:SharedObjectValueChange()
+
+                    self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+                    self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+
+                    self.eventsLoaded = true
+                end
             end
         end
     end
 end
 
 function AircraftsControl:LocalPlayerExitVehicle()
-    if self.LocalPlayerInputEvent then Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil end
+    if not self.eventsLoaded then return end
+
+    Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+    Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil
+
+    self.eventsLoaded = nil
+
+    self.FreezeValue = nil
+end
+
+function AircraftsControl:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.FreezeValue = LocalPlayer:GetValue("Freeze")
 end
 
 function AircraftsControl:CheckThrust()

@@ -6,6 +6,8 @@ function Shop:__init()
     self.items = {}
     self.vehicles = {}
     self.vehicles2 = {}
+    self.decals = {}
+    self.waiting_enters = {}
     self.ammo_counts = {
         --		ID			Mag		Reserve			Weapon Name
         [2] = {12, 300}, --	Pistol
@@ -98,8 +100,8 @@ function Shop:__init()
     Network:Subscribe("BuyMenuSaveColor", self, self.SaveColor)
 end
 
-function Shop:VehicleDecal(message)
-    self.vehicleDecal = message
+function Shop:VehicleDecal(message, sender)
+    self.decals[sender:GetId()] = message
 end
 
 function Shop:UpdateSpawnInHome(args, sender)
@@ -184,12 +186,19 @@ function Shop:PlayerQuit(args)
 
     if IsValid(self.vehicles[pId]) then
         self.vehicles[pId]:Remove()
-        self.vehicles[pId] = nil
     end
 
     if IsValid(self.vehicles2[pId]) then
         self.vehicles2[pId]:Remove()
-        self.vehicles2[pId] = nil
+    end
+
+    self.vehicles[pId] = nil
+    self.vehicles2[pId] = nil
+    self.decals[pId] = nil
+
+    if self.waiting_enters[pId] then
+        Events:Unsubscribe(self.waiting_enters[pId])
+        self.waiting_enters[pId] = nil
     end
 end
 
@@ -213,6 +222,7 @@ function Shop:PlayerFired(args, player)
     local index = args[3]
     local tone1 = args[4]
     local tone2 = args[5]
+    local occupantsSeats = args[6]
 
     if player:GetWorld() ~= DefaultWorld then
 		player:SendErrorMessage(player:GetValue("Lang") == "EN" and "Can't use it here!" or "Невозможно использовать это здесь!")
@@ -229,7 +239,7 @@ function Shop:PlayerFired(args, player)
     local success, err
 
     if category_id == self.types.vehicles then
-        success, err = self:BuyVehicle(player, item, tone1, tone2)
+        success, err = self:BuyVehicle(player, item, tone1, tone2, occupantsSeats)
     elseif category_id == self.types.weapon then
         success, err = self:BuyWeapon(player, item)
     elseif category_id == self.types.character then
@@ -245,12 +255,12 @@ function Shop:PlayerFired(args, player)
     end
 end
 
-function Shop:BuyVehicle(player, item, tone1, tone2)
+function Shop:BuyVehicle(player, item, tone1, tone2, occupantsSeats)
     if item:GetRank() ~= nil then
         local gettag = player:GetValue("Tag")
 
         if self.permissions[gettag] then
-            self:ExecuteVehicle(player, item, tone1, tone2)
+            self:ExecuteVehicle(player, item, tone1, tone2, occupantsSeats)
             return true, ""
         else
             return false, player:GetValue("Lang") == "EN" and "You do not have VIP status!" or "У вас отсутствует VIP статус!", Network:Send(player, "NoVipText")
@@ -272,14 +282,14 @@ function Shop:BuyVehicle(player, item, tone1, tone2)
         end
     end
 
-    self:ExecuteVehicle(player, item, tone1, tone2)
+    self:ExecuteVehicle(player, item, tone1, tone2, occupantsSeats)
     return true, "" --	Return true must be right after the execution else the confirmation message gives an error.
 end
 
-function Shop:ExecuteVehicle(player, item, tone1, tone2)
+function Shop:ExecuteVehicle(player, item, tone1, tone2, occupantsSeats)
     local pId = player:GetId()
 
-    if player:InVehicle() == true then
+    if player:InVehicle() then
         local vehicle = player:GetVehicle()
 
         if IsValid(self.vehicles[pId]) and vehicle == self.vehicles[pId] then
@@ -311,6 +321,16 @@ function Shop:ExecuteVehicle(player, item, tone1, tone2)
         self.vehicles[pId] = nil
     end
 
+    player:DisableCollision(CollisionGroup.Vehicle, CollisionGroup.Player)
+
+    for oId, _ in pairs(occupantsSeats) do
+        local targetPlayer = Player.GetById(oId)
+
+        if IsValid(targetPlayer) and targetPlayer ~= player then
+            targetPlayer:DisableCollision(CollisionGroup.Vehicle, CollisionGroup.Player)
+        end
+    end
+
     local args = {}
     args.model_id = item:GetModelId()
 
@@ -318,7 +338,7 @@ function Shop:ExecuteVehicle(player, item, tone1, tone2)
         args.template = item:GetTemplate()
     end
 
-    args.decal = self.vehicleDecal
+    args.decal = self.decals[player:GetId()]
 
     args.position = player:GetPosition()
     args.angle = player:GetAngle()
@@ -333,7 +353,48 @@ function Shop:ExecuteVehicle(player, item, tone1, tone2)
     v:SetUnoccupiedRespawnTime(nil)
     v:SetDeathRemove(true)
     v:SetNetworkValue("Owner", player)
+
     player:EnterVehicle(v, VehicleSeat.Driver)
+
+    if self.waiting_enters[pId] then 
+        Events:Unsubscribe(self.waiting_enters[pId]) 
+        self.waiting_enters[pId] = nil 
+    end
+
+    self.waiting_enters[pId] = Events:Subscribe("PlayerEnterVehicle", function(args)
+        if args.player == player and args.vehicle == v then
+            player:EnableCollision(CollisionGroup.Vehicle, CollisionGroup.Player)
+
+            Timer.SetTimeout(400, function()
+                if IsValid(v) then
+                    for oId, seatId in pairs(occupantsSeats) do
+                        local targetPlayer = Player.GetById(oId)
+
+                        if IsValid(targetPlayer) and targetPlayer ~= player then
+                            if not targetPlayer:GetVehicle() then
+                                targetPlayer:EnterVehicle(v, seatId)
+                                targetPlayer:EnableCollision(CollisionGroup.Vehicle, CollisionGroup.Player)
+                            end
+                        end
+                    end
+                end
+            end)
+
+            Events:Unsubscribe(self.waiting_enters[pId]) self.waiting_enters[pId] = nil
+        end
+    end)
+
+    Timer.SetTimeout(1000, function()
+        player:EnableCollision(CollisionGroup.Vehicle, CollisionGroup.Player)
+
+        for oId, _ in pairs(occupantsSeats) do
+            local targetPlayer = Player.GetById(oId)
+
+            if IsValid(targetPlayer) and targetPlayer ~= player then
+                targetPlayer:EnableCollision(CollisionGroup.Vehicle, CollisionGroup.Player)
+            end
+        end
+    end)
 
     return true, ""
 end

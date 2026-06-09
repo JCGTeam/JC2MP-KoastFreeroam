@@ -5,7 +5,7 @@ function Killfeed:__init()
 end
 
 function Killfeed:PlayerDeath(args)
-    t = {
+    local t = {
         ["player"] = args.player,
         ["reason"] = args.reason
     }

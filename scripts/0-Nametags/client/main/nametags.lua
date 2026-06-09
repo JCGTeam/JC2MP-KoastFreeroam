@@ -40,8 +40,10 @@ function Nametags:__init()
     self.animationValue = self.visible and 1 or 0
 
     self:Lang(LocalPlayer:GetValue("Lang") or "RU")
+    self:SharedObjectValueChange()
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
     Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
     Events:Subscribe("Render", self, self.Render)
     Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
@@ -50,6 +52,30 @@ end
 
 function Nametags:Lang(lang)
     self.locStrings = locStrings[lang]
+end
+
+function Nametags:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.HiddenHUDValue = LocalPlayer:GetValue("HiddenHUD")
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+    self.SpectatorModeValue = LocalPlayer:GetValue("SpectatorMode")
+end
+
+function Nametags:NetworkObjectValueChange(args)
+    if args.key == "TagHide" and args.object.__type == "LocalPlayer" then
+        if args.value then
+            self.visible = true
+
+            if self.fadeOutAnimation then
+                Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil
+            end
+
+            Animation:Play(0, 1, 0.05, easeInOut, function(value) self.animationValue = value end)
+        else
+            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeInOut, function(value) self.animationValue = value end, function() self.visible = nil end)
+        end
+    end
 end
 
 function Nametags:UpdateLimits()
@@ -199,10 +225,10 @@ end
 function Nametags:DrawNametag(pos_3d, player, colour, scale, alpha, health, draw_healthbar)
     -- Calculate the 2D position on-screen from the 3D position
     local pos_2d, success = Render:WorldToScreen(pos_3d)
-    local text = player:GetName()
 
     -- If we succeeded, continue to draw
     if success then
+        local text = player:GetName()
         local width = Render:GetTextWidth(text, self.size, scale)
         local height = Render:GetTextHeight(text, self.size, scale)
 
@@ -256,10 +282,11 @@ function Nametags:DrawNametag(pos_3d, player, colour, scale, alpha, health, draw
 end
 
 function Nametags:DrawCircle(pos_3d, scale, alpha, colour)
-    local radius = 6
-    local shadow_radius = radius + 1
     local pos_2d, success = Render:WorldToScreen(pos_3d)
     if not success then return end
+
+    local radius = 6
+    local shadow_radius = radius + 1
 
     radius = radius * scale
     shadow_radius = shadow_radius * scale
@@ -295,12 +322,12 @@ end
 
 function Nametags:DrawPlayer(player_data)
     local p = player_data[1]
-    local dist = player_data[2]
-
-    local pos = p:GetBonePosition("ragdoll_Head") + (p:GetAngle() * Vector3(0, 0.3, 0))
-    local colour = p:GetColor()
 
     if not p:GetValue("TagHide") then
+        local dist = player_data[2]
+        local pos = p:GetBonePosition("ragdoll_Head") + (p:GetAngle() * Vector3(0, 0.3, 0))
+        local colour = p:GetColor()
+
         if self.player_count <= 20 then
             local pVehicle = p:GetVehicle()
 
@@ -326,22 +353,23 @@ function Nametags:DrawPlayer(player_data)
 end
 
 function Nametags:DrawVehicle(vehicle_data)
-    local v = vehicle_data[1]
     local dist = vehicle_data[2]
-    local aim_dist = vehicle_data[3]
-
-    -- Get the first colour of the vehicle
-    local colour = v:GetColors()
-
-    -- Use a 30% blend of white and the vehicle colour to give a nice
-    -- colour with a tinge that corresponds to the vehicle
-    colour = math.lerp(Color(200, 200, 200), colour, 0.3)
 
     -- Calculate the alpha for the vehicle nametag
     local scale = Nametags:CalculateAlpha(dist, self.vehicle_bias, self.vehicle_max, self.vehicle_limit)
 
     -- Make sure we're supposed to draw
     if scale ~= nil then
+        local v = vehicle_data[1]
+        local aim_dist = vehicle_data[3]
+
+        -- Get the first colour of the vehicle
+        local colour = v:GetColors()
+
+        -- Use a 30% blend of white and the vehicle colour to give a nice
+        -- colour with a tinge that corresponds to the vehicle
+        colour = math.lerp(Color(200, 200, 200), colour, 0.3)
+
         -- Factor of aim distance from vehicle used to fade in
         local alpha = scale * 255 * (1.0 - (aim_dist * 10))
 
@@ -362,27 +390,13 @@ function Nametags:LocalPlayerInput(args)
     end
 end
 
-function Nametags:NetworkObjectValueChange(args)
-    if args.key == "TagHide" and args.object.__type == "LocalPlayer" then
-        if args.value then
-            self.visible = true
-
-            if self.fadeOutAnimation then
-                Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil
-            end
-
-            Animation:Play(0, 1, 0.05, easeInOut, function(value) self.animationValue = value end)
-        else
-            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeInOut, function(value) self.animationValue = value end, function() self.visible = nil end)
-        end
-    end
-end
-
 function Nametags:Render()
     -- If we're not supposed to draw now, then take us out
-    if not self.enabled or Game:GetState() ~= GUIState.Game or LocalPlayer:GetValue("HiddenHUD") then return end
+    if not self.enabled then return end
+    if self.HiddenHUDValue then return end
+    if Game:GetState() ~= GUIState.Game then return end
 
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     if self.visible then
         local text = "/hidetag"
@@ -450,7 +464,7 @@ function Nametags:Render()
     end
 
     local player_enabled = self.player_enabled
-    local spectatorMode = LocalPlayer:GetValue("SpectatorMode")
+    local spectatorMode = self.SpectatorModeValue
 
     if player_enabled and not spectatorMode and spectatorMode ~= 2 then
         local sorted_players = {}

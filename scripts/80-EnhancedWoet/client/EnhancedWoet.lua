@@ -5,7 +5,7 @@ function Woet:__init()
     self.cooltime = 0
 
     if LocalPlayer:InVehicle() then
-        self.KeyUpEvent = Events:Subscribe("KeyUp", self, self.KeyUp)
+        self:LocalPlayerEnterVehicle()
     end
 
     self:UpdateKeyBinds()
@@ -24,24 +24,58 @@ function Woet:UpdateKeyBinds()
     self.vehicleJumpKey = vehicleJumpBind and vehicleJumpBind.type == "Key" and vehicleJumpBind.value or 9
 end
 
+function Woet:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.FreezeValue = LocalPlayer:GetValue("Freeze")
+    self.EnhancedWoetValue = LocalPlayer:GetValue("EnhancedWoet")
+end
+
+function Woet:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.PassiveValue = LocalPlayer:GetValue("Passive")
+    self.VehicleJumpValue = LocalPlayer:GetValue("VehicleJump")
+end
+
 function Woet:LocalPlayerEnterVehicle()
-    if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe("KeyUp", self, self.KeyUp) end
+    if self.eventsLoaded then return end
+
+    self:SharedObjectValueChange()
+    self:NetworkObjectValueChange()
+
+    self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+    self.NetworkObjectValueChangeEvent = Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
+    self.KeyUpEvent = Events:Subscribe("KeyUp", self, self.KeyUp)
+
+    self.eventsLoaded = true
 end
 
 function Woet:LocalPlayerExitVehicle()
-    if self.KeyUpEvent then Events:Unsubscribe(self.KeyUpEvent) self.KeyUpEvent = nil end
+    if not self.eventsLoaded then return end
+
+    Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+    Events:Unsubscribe(self.NetworkObjectValueChangeEvent) self.NetworkObjectValueChangeEvent = nil
+    Events:Unsubscribe(self.KeyUpEvent) self.KeyUpEvent = nil
+
+    self.eventsLoaded = nil
+
+    self.FreezeValue = nil
+    self.EnhancedWoetValue = nil
+    self.PassiveValue = nil
+    self.VehicleJumpValue = nil
 end
 
 function Woet:KeyUp(args)
+    if self.FreezeValue then return end
     if Game:GetState() ~= GUIState.Game then return end
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
     if LocalPlayer:GetState() ~= PlayerState.InVehicle then return end
-    if LocalPlayer:GetValue("Freeze") then return end
 
-    local enhancedWoet = LocalPlayer:GetValue("EnhancedWoet")
+    local enhancedWoet = self.EnhancedWoetValue
 
     if enhancedWoet and args.key == self.vehicleTricksKey then
-        if not LocalPlayer:GetValue("Passive") then
+        if not self.PassiveValue then
             local vehicle = LocalPlayer:GetVehicle()
 
             if not IsValid(vehicle) then return end
@@ -63,7 +97,7 @@ function Woet:KeyUp(args)
     end
 
     if args.key == self.vehicleJumpKey then
-        if LocalPlayer:GetValue("VehicleJump") then
+        if self.VehicleJumpValue then
             local time = Client:GetElapsedSeconds()
             local vehicle = LocalPlayer:GetVehicle()
 

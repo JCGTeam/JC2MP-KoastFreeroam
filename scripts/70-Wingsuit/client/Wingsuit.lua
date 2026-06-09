@@ -6,6 +6,8 @@ function Pigeon:__init()
     self.score = 0
     self.superspeed = false
 
+    self:SharedObjectValueChange()
+    self:NetworkObjectValueChange()
     self:UpdateKeyBinds()
 
     local lang = LocalPlayer:GetValue("Lang")
@@ -78,6 +80,8 @@ function Pigeon:__init()
 
     Events:Subscribe("Lang", self, self.Lang)
     Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
+    Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+    Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
     Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
     Events:Subscribe("KeyUp", self, self.KeyUp)
     Events:Subscribe("AbortWingsuit", self, self.Abort)
@@ -113,6 +117,24 @@ function Pigeon:UpdateKeyBinds()
     self.openWingsuitKey = openWingsuitBind and openWingsuitBind.type == "Key" and openWingsuitBind.value or 81
     self.boostKey = boostBind and boostBind.type == "Key" and boostBind.value or 16
     self.boostStringKey = boostBind and boostBind.type == "Key" and boostBind.valueString or "Shift"
+end
+
+function Pigeon:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.PigeonModValue = LocalPlayer:GetValue("PigeonMod")
+    self.FreezeValue = LocalPlayer:GetValue("Freeze")
+    self.HiddenHUDValue = LocalPlayer:GetValue("HiddenHUD")
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+    self.SpectatorModeValue = LocalPlayer:GetValue("SpectatorMode")
+end
+
+function Pigeon:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.WingsuitValue = LocalPlayer:GetValue("Wingsuit")
+    self.WingsuitEnabledValue = LocalPlayer:GetValue("WingsuitEnabled")
+    self.PVPModeValue = LocalPlayer:GetValue("PVPMode")
 end
 
 function Pigeon:LocalPlayerInput(args)
@@ -165,8 +187,8 @@ function Pigeon:KeyUp(args)
 end
 
 function Pigeon:OpenWingsuit(args)
-    if not LocalPlayer:GetValue("Wingsuit") then return end
-    if not LocalPlayer:GetValue("WingsuitEnabled") then return end
+    if not self.WingsuitValue then return end
+    if not self.WingsuitEnabledValue then return end
     if self.subs.camera or LocalPlayer:GetVehicle() then return end
 
     local bs = LocalPlayer:GetBaseState()
@@ -177,7 +199,7 @@ function Pigeon:OpenWingsuit(args)
             self.RCtimer = Timer()
         end
 
-        if LocalPlayer:GetValue("PigeonMod") and LocalPlayer:GetValue("PVPMode") then
+        if self.PigeonModValue and self.PVPModeValue then
             Events:Fire("CastCenterText", {text = self.locStrings["pvpblock"], time = 3, color = Color.Red})
             return
         end
@@ -193,7 +215,7 @@ function Pigeon:OpenWingsuit(args)
         if not self.subs.camera then self.subs.camera = Events:Subscribe("CalcView", self, self.Camera) end
         if not self.subs.glide then self.subs.glide = Events:Subscribe("InputPoll", self, self.Glide) end
         if not self.subs.input then self.subs.input = Events:Subscribe("LocalPlayerInput", self, self.Input) end
-    elseif LocalPlayer:GetValue("PigeonMod") then
+    elseif self.PigeonModValue then
         if self.whitelist.animations[bs] then
             local timer = Timer()
             self.timers.camera_start = Timer()
@@ -251,10 +273,10 @@ function Pigeon:SetVelocity()
     end
 
     local angle = LocalPlayer:GetAngle()
-    local pigeonMod = LocalPlayer:GetValue("PigeonMod")
+    local pigeonMod = self.PigeonModValue
 
     if pigeonMod then
-        local freeze = LocalPlayer:GetValue("Freeze")
+        local freeze = self.FreezeValue
         local gamepad = Game:GetSetting(GameSetting.GamepadInUse) == 1
         local inputBoost = Input:GetValue(Action.Dash) > 0
         local inputBrake = Input:GetValue(Action.Handbrake) > 0
@@ -332,9 +354,9 @@ function Pigeon:SetVelocity()
         self.roll_right = nil
     end
 
-    if Game:GetState() ~= GUIState.Game then return end
-    if LocalPlayer:GetValue("HiddenHUD") then return end
     if not pigeonMod then return end
+    if self.HiddenHUDValue then return end
+    if Game:GetState() ~= GUIState.Game then return end
 
     local locStrings = self.locStrings
     local text = locStrings["press"] .. self.boostStringKey .. locStrings["name"]
@@ -348,7 +370,7 @@ function Pigeon:SetVelocity()
 
     Render:DrawShadowedText(screen_pos, hud_str, boostColor, Color(0, 0, 0, 100), TextSize.Large)
 
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     local textSize = 15
     local size = Render:GetTextSize(text, textSize)
@@ -358,7 +380,7 @@ function Pigeon:SetVelocity()
 end
 
 function Pigeon:Glide()
-    if LocalPlayer:GetValue("PigeonMod") then return end
+    if self.PigeonModValue then return end
 
     if not self.hit then
         if Input:GetValue(Action.MoveBackward) > 0 and LocalPlayer:GetAngle().pitch > 0 then
@@ -378,7 +400,7 @@ end
 function Pigeon:Input(args)
     if Game:GetState() ~= GUIState.Game then return end
 
-    if not LocalPlayer:GetValue("PigeonMod") and self.grapple and not LocalPlayer:GetValue("Freeze") and args.input == Action.FireGrapple then
+    if not self.PigeonModValue and self.grapple and not self.FreezeValue and args.input == Action.FireGrapple then
         if self.subs.grapple or self.subs.roll_left or self.subs.roll_right or self.timers.grapple:GetMilliseconds() < 500 then
             return false
         end
@@ -501,7 +523,7 @@ function Pigeon:Abort()
 end
 
 function Pigeon:Camera()
-    if LocalPlayer:GetValue("SpectatorMode") then return end
+    if self.SpectatorModeValue then return end
 
     local player_pos = LocalPlayer:GetPosition()
     local player_angle = LocalPlayer:GetAngle()

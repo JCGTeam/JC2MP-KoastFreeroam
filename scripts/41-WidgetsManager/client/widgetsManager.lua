@@ -1,12 +1,18 @@
 class "WidgetsManager"
 
 function WidgetsManager:__init()
+    self:ObjectValueChange()
+
     Events:Subscribe("Lang", self, self.Lang)
     Events:Subscribe("NetworkObjectValueChange", self, self.ObjectValueChange)
     Events:Subscribe("SharedObjectValueChange", self, self.ObjectValueChange)
 
     if LocalPlayer:GetValue("BestRecordVisible") or not LocalPlayer:GetValue("HiddenHUD") then
+        if self.eventsLoaded then return end
+
         self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+
+        self.eventsLoaded = true
     end
 
     local lang = LocalPlayer:GetValue("Lang")
@@ -36,17 +42,31 @@ function WidgetsManager:Lang()
 end
 
 function WidgetsManager:ObjectValueChange(args)
-    if args.object.__type ~= "LocalPlayer" then return end
+    if args and args.object.__type ~= "LocalPlayer" then return end
 
-    if args.key == "Lang" then
-        self:UpdateBestScoreWidget(self.currentWidget)
-    end
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
 
-    if args.key == "BestRecordVisible" or args.key == "HiddenHUD" then
-        if LocalPlayer:GetValue("BestRecordVisible") and not LocalPlayer:GetValue("HiddenHUD") then
-            if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
-        else
-            if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+    if args then
+        if args.key == "Lang" then
+            self:UpdateBestScoreWidget(self.currentWidget)
+        end
+
+        if args.key == "BestRecordVisible" or args.key == "HiddenHUD" then
+            if LocalPlayer:GetValue("BestRecordVisible") and not LocalPlayer:GetValue("HiddenHUD") then
+                if self.eventsLoaded then return end
+
+                self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+
+                self.eventsLoaded = true
+            else
+                if not self.eventsLoaded then return end
+
+                Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil
+
+                self.eventsLoaded = nil
+
+                self.SystemFontsValue = nil
+            end
         end
     end
 end
@@ -72,9 +92,8 @@ function WidgetsManager:Render()
     local gameAlpha = Game:GetSetting(4)
 
     if gameAlpha >= 1 then
-        if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+        if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
-        local sett_alpha = gameAlpha * 2.25
         local object = self.object
 
         if object then
@@ -82,6 +101,7 @@ function WidgetsManager:Render()
             local locStrings = self.locStrings
             local text1 = locStrings["fantastic"]
             local text2 = self.text2
+            local sett_alpha = gameAlpha * 2.25
 
             local color = Color(255, 255, 255, sett_alpha)
             local color2 = Color(185, 215, 255, sett_alpha)

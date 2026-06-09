@@ -1,9 +1,12 @@
 class 'Logo'
 
 function Logo:__init()
+    self:SharedObjectValueChange()
+
     self.logo_txt = "Koast Freeroam! [Open Source]"
     self.logo_clr = Color(255, 255, 255, 30)
 
+    Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
     Events:Subscribe("Render", self, self.Render)
 
     local build = LocalPlayer:GetValue("KoastBuild")
@@ -14,8 +17,14 @@ function Logo:__init()
     end
 end
 
+function Logo:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+end
+
 function Logo:Render()
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     local logo_txt = self.logo_txt
     local logo_clr = self.logo_clr

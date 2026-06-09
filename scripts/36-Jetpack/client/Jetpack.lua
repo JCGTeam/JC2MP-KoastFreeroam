@@ -16,11 +16,14 @@ function Jetpack:__init()
         }
     end
 
+    self:NetworkObjectValueChange()
+
     if not LocalPlayer:InVehicle() then
         self.InputPollEvent = Events:Subscribe("InputPoll", self, self.onInputPoll)
     end
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
     Events:Subscribe("UseJetpack", self, self.UseJetpack)
     Events:Subscribe("Render", self, self.Render)
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
@@ -33,6 +36,12 @@ function Jetpack:Lang()
         on = "Jetpack enabled",
         off = "Jetpack disabled"
     }
+end
+
+function Jetpack:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.JPValue = LocalPlayer:GetValue("JP")
 end
 
 function Jetpack:LocalPlayerEnterVehicle()
@@ -48,7 +57,7 @@ function Jetpack:UseJetpack()
 
     local locStrings = self.locStrings
 
-    Events:Fire("CastCenterText", {text = LocalPlayer:GetValue("JP") and locStrings["off"] or locStrings["on"], time = 2})
+    Events:Fire("CastCenterText", {text = self.JPValue and locStrings["off"] or locStrings["on"], time = 2})
 end
 
 function Jetpack:Render()
@@ -127,9 +136,7 @@ function Jetpack:Render()
         end
     end
 
-    local JP = LocalPlayer:GetValue("JP")
-
-    if not JP then return end
+    if not self.JPValue then return end
     if lpVehicle then return end
 
     local impulse = self.impulse
@@ -141,7 +148,6 @@ function Jetpack:Render()
     local cameraAngleYaw = cameraAngle.yaw
     local angle = Angle.Slerp(pAngle, Angle(cameraAngleYaw, 0, 0), 0.1)
 
-
     LocalPlayer:SetAngle(angle)
 
     local timer = self.timer
@@ -151,8 +157,8 @@ function Jetpack:Render()
 end
 
 function Jetpack:onInputPoll()
+    if not self.JPValue then return end
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
-    if not LocalPlayer:GetValue("JP") then return end
     if LocalPlayer:GetVehicle() then return end
 
     local velocity = Vector3.Zero

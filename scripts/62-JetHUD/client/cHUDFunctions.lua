@@ -29,10 +29,10 @@ function HUD:DrawLineHUD(pos1, pos2, noRoll)
 end
 
 function HUD:DrawCircleHUD(radius, center, numSegments)
-    local posPrevious = Vector2(radius, 0) + center
-    local pos
-
     for n = 1, numSegments do
+        local posPrevious = Vector2(radius, 0) + center
+        local pos
+
         pos = Vector2(radius, 0)
         pos = GUIUtil.Rot(pos, Vector2.Zero, (n / numSegments) * math.tau)
         pos = pos + center

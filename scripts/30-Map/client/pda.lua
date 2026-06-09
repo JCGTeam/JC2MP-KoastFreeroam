@@ -94,6 +94,8 @@ function PDA:Toggle()
     Mouse:SetVisible(not PDA:IsUsingGamepad() and self.active)
 
     if self.active then
+        self.blackout_clr = Color.Black
+
         LocalPlayer:SetValue("ServerMap", 1)
         LocalPlayer:SetValue("DisableCameraScroll", 1)
 
@@ -122,6 +124,8 @@ function PDA:Toggle()
             if self.MouseMoveEvent then Events:Unsubscribe(self.MouseMoveEvent) self.MouseMoveEvent = nil end
             if self.MouseUpEvent then Events:Unsubscribe(self.MouseUpEvent) self.MouseUpEvent = nil end
         end
+
+        self.blackout_clr = nil
 
         Network:Send("MapHide")
         self.circleTimer = nil
@@ -341,12 +345,12 @@ function PDA:PostRender()
             local delay = self.world_fadeout_delay
 
             if dt < delay then
-                Render:FillArea(Vector2.Zero, Render.Size, self:ColorA(Color.Black, 255 * (dt / delay)))
+                Render:FillArea(Vector2.Zero, Render.Size, self:ColorA(self.blackout_clr, 255 * (dt / delay)))
             end
         end
 
         if self.teleporting or self.loading or self.extraction_timer or self.map_fadeout_timer then
-            Render:FillArea(Vector2.Zero, Render.Size, Color.Black)
+            Render:FillArea(Vector2.Zero, Render.Size, self.blackout_clr)
         end
 
         local worldFadeInTimer = self.world_fadein_timer
@@ -356,7 +360,7 @@ function PDA:PostRender()
             local delay = self.world_fadein_delay
 
             if dt < delay then
-                Render:FillArea(Vector2.Zero, Render.Size, self:ColorA(Color.Black, 255 * (1 - dt / delay)))
+                Render:FillArea(Vector2.Zero, Render.Size, self:ColorA(self.blackout_clr, 255 * (1 - dt / delay)))
             end
         end
     end

@@ -37,6 +37,12 @@ function QuickTP:UpdateKeyBinds()
     self.expectedKey = bind and bind.type == "Key" and bind.value or 74
 end
 
+function QuickTP:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+end
+
 function QuickTP:KeyDown(args)
     if args.key == self.expectedKey and Game:GetState() == GUIState.Game then
         if self.subKey then Events:Unsubscribe(self.subKey) self.subKey = nil end
@@ -87,8 +93,15 @@ end
 function QuickTP:OpenMenu()
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-    if not self.subRender then self.subRender = Events:Subscribe("PostRender", self, self.PostRender) end
-    if not self.subMouse then self.subMouse = Events:Subscribe("MouseDown", self, self.MouseDown) end
+    if not self.eventsLoaded then
+        self:SharedObjectValueChange()
+
+        self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+        self.subRender = Events:Subscribe("PostRender", self, self.PostRender)
+        self.subMouse = Events:Subscribe("MouseDown", self, self.MouseDown)
+
+        self.eventsLoaded = true
+    end
 
     Animation:Play(0, 1, 0.15, easeInOut, function(value) self.animationValue = value end)
 
@@ -101,13 +114,23 @@ function QuickTP:OpenMenu()
 end
 
 function QuickTP:CloseMenu()
-    if self.subRender then Events:Unsubscribe(self.subRender) self.subRender = nil end
-    if self.subMouse then Events:Unsubscribe(self.subMouse) self.subMouse = nil end
+    if self.eventsLoaded then
+        Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+        Events:Unsubscribe(self.subRender) self.subRender = nil
+        Events:Unsubscribe(self.subMouse) self.subMouse = nil
+
+        self.eventsLoaded = nil
+
+        self.SystemFontsValue = nil
+    end
 
     Mouse:SetVisible(false)
     Input:SetEnabled(true)
 
-    if self.sound then self.sound = nil end
+    if self.sound then
+        self.sound:Remove()
+        self.sound = nil
+    end
 
     self.menuOpen = false
 end
@@ -115,7 +138,7 @@ end
 function QuickTP:PostRender()
     if Game:GetState() ~= GUIState.Game then return end
 
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     local fontSize = 42
     local menu = self.menu

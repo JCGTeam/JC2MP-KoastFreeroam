@@ -81,6 +81,12 @@ function Bank:Lang()
     end
 end
 
+function Bank:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+end
+
 function Bank:SetWindowVisible(visible, sound)
     if self.activeWindow ~= visible then
         self.activeWindow = visible
@@ -297,14 +303,21 @@ function Bank:Render()
                 self.posY = nil
                 self.fadeOutAnimation = nil
 
-                if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+                if self.eventsLoaded then
+                    Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+                    Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil
+
+                    self.eventsLoaded = nil
+
+                    self.SystemFontsValue = nil
+                end
             end)
 
             self.message_timer = nil
         end
     end
 
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     local size = 25
     local pos = Vector2((Render.Size.x / 2) - (Render:GetTextSize(message .. " | " .. self.submessage, size).x / 2), math.lerp(110, 100, self.posY))
@@ -327,7 +340,14 @@ function Bank:MoneyChange(args)
 
     if Game:GetState() ~= GUIState.Game then return end
 
-    if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
+    if not self.eventsLoaded then
+        self:SharedObjectValueChange()
+
+        self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+
+        self.eventsLoaded = true
+    end
 
     -- Very unlikely you'll be able to get any money in the first 2 seconds!
     local diff = args.new_money - args.old_money

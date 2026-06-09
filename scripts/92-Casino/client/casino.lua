@@ -500,6 +500,9 @@ function Casino:PlayerQuit(args)
 
     self.coinflip.playerList:RemoveItem(rows[playerId])
     self.rows[playerId] = nil
+    self.requestButtons[playerId] = nil
+    self.acceptButtons[playerId] = nil
+    self.sendedRequests[playerId] = nil
 end
 
 --  Player adding

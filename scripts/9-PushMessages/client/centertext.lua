@@ -15,7 +15,20 @@ function CenterText:CastCenterText(args)
 
     Animation:Play(0, 1, 0.15, easeInOut, function(value) self.animationValue = value end)
 
-    if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
+    if not self.eventsLoaded then
+        self:SharedObjectValueChange()
+
+        self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+
+        self.eventsLoaded = true
+    end
+end
+
+function CenterText:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
 end
 
 function CenterText:Render()
@@ -36,14 +49,21 @@ function CenterText:Render()
                 self.animationValue = nil
                 self.fadeOutAnimation = nil
 
-                if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+                if self.eventsLoaded then
+                    Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+                    Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil
+
+                    self.eventsLoaded = nil
+
+                    self.SystemFontsValue = nil
+                end
             end)
 
             self.timerF = nil
         end
     end
 
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     local size = 30
     local pos = Vector2(Render.Width / 2, Render.Height * 0.42) - Render:GetTextSize(textF, size) / 2

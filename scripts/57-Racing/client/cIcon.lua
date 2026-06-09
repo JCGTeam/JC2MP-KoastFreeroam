@@ -23,6 +23,7 @@ function Icon:__init(objName)
     -- I'm not sure if non-relative works at this point.
     self.useRelative = false
     self.isCentered = false
+    self.transform2 = Transform2()
 
     local args = { path = self.objName, type = OBJLoader.Type.MultipleDepthSorted, is2D = true }
     OBJLoader.Request(args, self, self.ReceiveIconModels)
@@ -77,7 +78,7 @@ function Icon:Render()
 
     -- Setup transform
 
-    local transform = Transform2()
+    local transform = self.transform2
     local translation = self.position
     local scale = self.size
     if self.useRelative then
@@ -87,6 +88,7 @@ function Icon:Render()
     if self.isCentered then
         translation = translation - scale / 2
     end
+    transform:SetIdentity()
     transform:Translate(translation)
     transform:Scale(scale)
     Render:SetTransform(transform)

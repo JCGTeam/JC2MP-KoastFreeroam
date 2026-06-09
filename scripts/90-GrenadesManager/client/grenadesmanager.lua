@@ -1,7 +1,10 @@
 class 'GrenadesManager'
 
 function GrenadesManager:__init()
-    if LocalPlayer:GetValue("Explosive") ~= 0 then
+    self:SharedObjectValueChange()
+    self:NetworkObjectValueChange()
+
+    if self.ExplosiveValue and self.ExplosiveValue ~= 0 then
         self.TossTimer = Timer()
     end
 
@@ -32,6 +35,8 @@ function GrenadesManager:__init()
     end
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+    Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
     Events:Subscribe("KeyUp", self, self.KeyUp)
     Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
     Events:Subscribe("Render", self, self.Render)
@@ -48,6 +53,22 @@ function GrenadesManager:Lang()
     }
 end
 
+function GrenadesManager:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.ExplosiveValue = LocalPlayer:GetValue("Explosive")
+    self.FreezeValue = LocalPlayer:GetValue("Freeze")
+    self.ServerMapValue = LocalPlayer:GetValue("ServerMap")
+    self.C4CountValue = LocalPlayer:GetValue("C4Count")
+end
+
+function GrenadesManager:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.PassiveValue = LocalPlayer:GetValue("Passive")
+    self.SuperNuclearBombValue = LocalPlayer:GetValue("SuperNuclearBomb")
+end
+
 function GrenadesManager:CheckList(tableList, modelID)
     for k, v in ipairs(tableList) do
         if v == modelID then
@@ -59,13 +80,15 @@ end
 
 function GrenadesManager:KeyUp(args)
     if args.key == 50 then
-        LocalPlayer:SetValue("l_exp", LocalPlayer:GetValue("Explosive"))
+        LocalPlayer:SetValue("l_exp", self.ExplosiveValue)
         LocalPlayer:SetValue("Explosive", 0)
 
         self.FadeOutTimer = nil
     elseif args.key == 49 then
-        if LocalPlayer:GetValue("l_exp") then
-            LocalPlayer:SetValue("Explosive", LocalPlayer:GetValue("l_exp"))
+        local l_exp = LocalPlayer:GetValue("l_exp")
+
+        if l_exp then
+            LocalPlayer:SetValue("Explosive", l_exp)
             LocalPlayer:SetValue("l_exp", nil)
 
             if self.FadeOutTimer then
@@ -102,9 +125,9 @@ function GrenadesManager:LocalPlayerInput(args)
 
     if args.input == Action.ThrowGrenade then
         if Game:GetState() ~= GUIState.Game then return end
-        if LocalPlayer:GetValue("Freeze") then return end
-        if LocalPlayer:GetValue("Passive") then return end
-        if LocalPlayer:GetValue("ServerMap") then return end
+        if self.FreezeValue then return end
+        if self.PassiveValue then return end
+        if self.ServerMapValue then return end
 
         local vehicle = LocalPlayer:GetVehicle()
 
@@ -128,7 +151,7 @@ function GrenadesManager:LocalPlayerInput(args)
         -- local bs = LocalPlayer:GetBaseState()
         -- if self.leftarm_blacklist[bs] then return end
 
-        local explosive = LocalPlayer:GetValue("Explosive")
+        local explosive = self.ExplosiveValue
 
         if explosive == 1 and self.grenade then
             Events:Fire("FireGrenade", {type = "Frag"})
@@ -177,7 +200,7 @@ function GrenadesManager:ToggleGrenades()
         self.TossTimer:Restart()
     end
 
-    local explosive = LocalPlayer:GetValue("Explosive")
+    local explosive = self.ExplosiveValue
 
     if not explosive then
         LocalPlayer:SetValue("Explosive", 1)
@@ -234,7 +257,7 @@ function GrenadesManager:ToggleGrenades()
             self.FadeOutTimer = Timer()
         end
     elseif explosive == 5 then
-        if LocalPlayer:GetValue("SuperNuclearBomb") then
+        if self.SuperNuclearBombValue then
             LocalPlayer:SetValue("Explosive", 6)
         else
             LocalPlayer:SetValue("Explosive", 0)
@@ -255,7 +278,7 @@ end
 function GrenadesManager:Render()
     if Game:GetState() ~= GUIState.Game then return end
 
-    local explosive = LocalPlayer:GetValue("Explosive")
+    local explosive = self.ExplosiveValue
     local fadeOutTimer = self.FadeOutTimer
 
     if explosive ~= 0 and explosive ~= nil and fadeOutTimer then
@@ -291,7 +314,7 @@ function GrenadesManager:Render()
             text = locStrings["triggered"]
             text_max = self.C4Max
 
-            local c4Count = LocalPlayer:GetValue("C4Count")
+            local c4Count = self.C4CountValue
 
             text_timer = c4Count and tostring(c4Count) or "0"
 
@@ -362,18 +385,20 @@ function GrenadesManager:Render()
         local backgroundSize = self.background:GetSize()
         local textbSize = self.textb:GetSize()
 
-        local timerwidth = Render:GetTextSize(text_timer, imgaSize.y / 1.8).x / 2
-        local c4maxwidth = Render:GetTextSize(text_max, imgaSize.y / 1.8).x / 2
+        local timerWidth = Render:GetTextSize(text_timer, imgaSize.y / 1.8).x / 2
+        local c4maxWidth = Render:GetTextSize(text_max, imgaSize.y / 1.8).x / 2
+
+        local bTextResoliton = Render:GetTextWidth("BTextResoliton")
 
         local pos_2d = Vector2(Render.Size.x / 0.995 - backgroundSize.x, (Render.Height - Render.Height * 0.24) - imgaSize.y / 2)
         local pos_2d_a = Vector2(Render.Size.x / 1.003 - backgroundSize.x, (Render.Height - Render.Height * 0.24) - backgroundSize.y / 2)
         local pos_2d_t = Vector2(Render.Size.x / 1.014 - textbSize.x, (Render.Height - Render.Height * 0.193) - textbSize.y / 2)
-        local pos_2d_timer = Vector2(Render.Size.x / 1.007 - timerwidth / 2 - imgaSize.x / 2, (Render.Height - Render.Height * 0.234) - textbSize.y / 2)
+        local pos_2d_timer = Vector2(Render.Size.x / 1.007 - timerWidth / 2 - imgaSize.x / 2, (Render.Height - Render.Height * 0.234) - textbSize.y / 2)
         if self.c4actv then
-            pos_2d_timer = Vector2(Render.Size.x / 1.006 - timerwidth / 2 - imgaSize.x / 2, (Render.Height - Render.Height * 0.242) - textbSize.y / 2)
+            pos_2d_timer = Vector2(Render.Size.x / 1.006 - timerWidth / 2 - imgaSize.x / 2, (Render.Height - Render.Height * 0.242) - textbSize.y / 2)
         end
-        local pos_2d_c4max = Vector2(Render.Size.x / 1.0055 - c4maxwidth / 2 - imgaSize.x / 2, (Render.Height - Render.Height * 0.22) - textbSize.y / 2)
-        local pos_2d_text = Vector2(Render.Size.x - (Render:GetTextWidth(text, textbSize.y / 0.018 / Render:GetTextWidth("BTextResoliton"))) - Render.Size.x / 40, (Render.Height - Render.Height * 0.186) - textbSize.y / 2)
+        local pos_2d_c4max = Vector2(Render.Size.x / 1.0055 - c4maxWidth / 2 - imgaSize.x / 2, (Render.Height - Render.Height * 0.22) - textbSize.y / 2)
+        local pos_2d_text = Vector2(Render.Size.x - (Render:GetTextWidth(text, textbSize.y / 0.018 / bTextResoliton)) - Render.Size.x / 40, (Render.Height - Render.Height * 0.186) - textbSize.y / 2)
 
         local gameAlpha = Game:GetSetting(4)
         if gameAlpha >= 1 then
@@ -399,7 +424,7 @@ function GrenadesManager:Render()
             local color2 = Color(169, 169, 169, sett_alpha)
             local shadow = Color(0, 0, 0, sett_alpha)
 
-            Render:DrawShadowedText(pos_2d_text, text, color, shadow, textbSize.y / 0.018 / Render:GetTextWidth("BTextResoliton"))
+            Render:DrawShadowedText(pos_2d_text, text, color, shadow, textbSize.y / 0.018 / bTextResoliton)
 
             local textWidth = Render:GetTextWidth("00")
             Render:DrawText(pos_2d_timer, text_timer, color, imgaSize.y / 0.13 / textWidth)

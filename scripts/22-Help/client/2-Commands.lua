@@ -26,6 +26,8 @@ function HCommands:EngHelp()
 			"    /angle                   Get character angle\n" ..
 			"    /tp                         Teleport to location\n" ..
 			"    /bind                     Key binding\n" ..
+			"    /sharewp              Toggle waypoint sharing\n" ..
+			"    /getwp <player>   Get player's active waypoint\n" ..
 			"    /myhomes            Get coordinates of your homes\n" ..
 			"    /mass <value>      Change vehicle mass\n \n" ..
 			"> Chat:\n" ..
@@ -66,6 +68,8 @@ function HCommands:RusHelp()
 			"    /angle                   Узнать угол персонажа\n" ..
 			"    /tp                         Телепортироваться в доступное место\n" ..
 			"    /bind                    Привязка клавиш\n" ..
+			"    /sharewp             Включить/отключить трансляцию пукта маршрута\n" ..
+			"    /getwp <игрок>  Получить пункт маршрута игрока\n" ..
 			"    /myhomes           Получить координаты домов\n" ..
 			"    /mass <число>   Изменить массу транспорта\n \n" ..
 			"> Чат:\n" ..

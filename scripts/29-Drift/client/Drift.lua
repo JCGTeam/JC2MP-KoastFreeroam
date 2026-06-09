@@ -3,9 +3,12 @@ class "Drift"
 function Drift:__init()
     self.textSize = 30
 
+    self:SharedObjectValueChange()
+    self:NetworkObjectValueChange()
+
     Events:Subscribe("Lang", self, self.Lang)
     Events:Subscribe("Render", self, self.Render)
-
+    Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
     Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
     Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
     Events:Subscribe("LocalPlayerDeath", self, self.LocalPlayerDeath)
@@ -45,50 +48,60 @@ function Drift:Lang()
     }
 end
 
-function Drift:ResetMass()
+function Drift:ResetMass(vehicle)
     if self.mass then
         self.mass = false
-        Network:Send("ChangeMass", {veh = LocalPlayer:GetVehicle(), bool = self.mass})
+
+        if IsValid(vehicle) then
+            Network:Send("ChangeMass", {veh = vehicle, bool = self.mass})
+        end
     end
 end
 
+function Drift:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+    self.HiddenHUDValue = LocalPlayer:GetValue("HiddenHUD")
+end
+
 function Drift:NetworkObjectValueChange(args)
-    if args.key == "DriftPhysics" and args.object.__type == "LocalPlayer" then
-        if not args.value then
-            if IsValid(LocalPlayer:GetVehicle()) then
-                self:ResetMass()
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.DriftPhysicsValue = LocalPlayer:GetValue("DriftPhysics")
+    self.BestRecordVisibleValue = LocalPlayer:GetValue("BestRecordVisible")
+
+    if args then
+        if args.key == "DriftPhysics" then
+            if not args.value then
+                self:ResetMass(LocalPlayer:GetVehicle())
             end
         end
     end
 end
 
-function Drift:LocalPlayerExitVehicle()
-    if not LocalPlayer:GetValue("DriftPhysics") then return end
+function Drift:LocalPlayerExitVehicle(args)
+    if not self.DriftPhysicsValue then return end
 
-    if IsValid(LocalPlayer:GetVehicle()) then
-        self:ResetMass()
-    end
+    self:ResetMass(args.vehicle)
 end
 
 function Drift:LocalPlayerDeath()
-    if not LocalPlayer:GetValue("DriftPhysics") then return end
+    if not self.DriftPhysicsValue then return end
 
-    if IsValid(LocalPlayer:GetVehicle()) then
-        self:ResetMass()
-    end
+    self:ResetMass(LocalPlayer:GetVehicle())
 end
 
 function Drift:PlayerQuit(args)
-    if not LocalPlayer:GetValue("DriftPhysics") then return end
+    if not self.DriftPhysicsValue then return end
 
     if args.player == LocalPlayer then
-        self:ResetMass()
+        self:ResetMass(LocalPlayer:GetVehicle())
     end
 end
 
 function Drift:Render()
-    local object = NetworkObject.GetByName("Drift")
-    local driftPhysics = LocalPlayer:GetValue("DriftPhysics")
+    local driftPhysics = self.DriftPhysicsValue
 
     if driftPhysics then
         local slide = self.slide
@@ -100,14 +113,19 @@ function Drift:Render()
                     Network:Send("ChangeMass", {veh = LocalPlayer:GetVehicle(), bool = self.mass})
                 end
             else
-                self:ResetMass()
+                self:ResetMass(LocalPlayer:GetVehicle())
             end
         else
-            self:ResetMass()
+            self:ResetMass(LocalPlayer:GetVehicle())
         end
     end
 
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+
+    local bestRecordsVisible = self.BestRecordVisibleValue
+    local hiddenHUD = self.HiddenHUDValue
+
+    local object = NetworkObject.GetByName("Drift")
 
     local locStrings = self.locStrings
 
@@ -156,7 +174,7 @@ function Drift:Render()
             text = locStrings["tDrift9"] .. scoreMult
         end
 
-        if LocalPlayer:GetValue("BestRecordVisible") and not LocalPlayer:GetValue("HiddenHUD") and Game:GetState() == GUIState.Game then
+        if bestRecordsVisible and not hiddenHUD and Game:GetState() == GUIState.Game then
             local textSize = Render:GetTextSize(text, self.textSize)
             local textSize_mult = Render:GetTextSize(text_mult, self.textSize)
             local alpha = 1 - self.slide / 265
@@ -172,12 +190,9 @@ function Drift:Render()
         end
 
         if self.slide >= 255 then
-            local object = NetworkObject.GetByName("Drift")
-
             if not object or scoreMult > (object:GetValue("S") or 0) then
                 Network:Send("onDriftRecord", scoreMult)
-            elseif scoreMult > ((object:GetValue("S") or 0) * 0.6) and (object:GetValue("N") or "None") ~=
-                LocalPlayer:GetName() then
+            elseif scoreMult > ((object:GetValue("S") or 0) * 0.6) and (object:GetValue("N") or "None") ~= LocalPlayer:GetName() then
                 Network:Send("onDriftAttempt", scoreMult)
             end
 
@@ -309,9 +324,6 @@ function Drift:Render()
         btext = locStrings["tDrift9"]
         text = locStrings["tDrift9"] .. scoreMult
     end
-
-    local bestRecordsVisible = LocalPlayer:GetValue("BestRecordVisible")
-    local hiddenHUD = LocalPlayer:GetValue("HiddenHUD")
 
     if bestRecordsVisible and not hiddenHUD and Game:GetState() == GUIState.Game then
         local textSize = Render:GetTextSize(text, self.textSize)

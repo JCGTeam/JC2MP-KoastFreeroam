@@ -16,7 +16,6 @@ function sClaymores:initVars()
     self.rotation = math.pi / 2 -- Claymore angle yaw rotation
 end
 
--- Events
 function sClaymores:onModuleUnload()
     for triggerId, objectId in pairs(self.objects) do
         local object = WorldNetworkObject.GetById(objectId)
@@ -27,7 +26,6 @@ function sClaymores:onModuleUnload()
     end
 end
 
--- Network
 function sClaymores:addClaymore(_, player)
     local position = player:GetPosition()
     position.y = position.y - self.reduction
@@ -59,4 +57,4 @@ function sClaymores:removeClaymore(args, player)
     Network:Broadcast("EffectClay", {position = args.position, angle = args.angle})
 end
 
-sclaymores = sClaymores()
+local sclaymores = sClaymores()

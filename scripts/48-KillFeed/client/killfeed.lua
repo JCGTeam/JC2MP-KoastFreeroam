@@ -222,9 +222,12 @@ function Killfeed:Render()
     local center_hint = Vector2(Render.Width - 25, Render.Height / 4.8)
     local height_offset = 0
 	local list = self.list
+	local active_list = {}
 
     for i, v in ipairs(list) do
         if os.clock() - v.time < self.removal_time then
+			table.insert(active_list, v)
+
             local pos = center_hint + Vector2(-Render:GetTextWidth(v.message), height_offset)
             local alpha = self:CalculateAlpha(v.time)
 
@@ -250,10 +253,10 @@ function Killfeed:Render()
             end
 
             height_offset = height_offset + Render:GetTextHeight(v.message) + 4
-        else
-            table.remove(list, i)
         end
     end
+
+	self.list = active_list
 end
 
 local killfeed = Killfeed()

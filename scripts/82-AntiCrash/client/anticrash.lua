@@ -26,13 +26,13 @@ function AntiCrash:InputPoll()
 end
 
 function AntiCrash:LocalPlayerEnterVehicle(args)
-    if not args.vehicle:GetClass() == VehicleClass.Land then return end
+    if args.vehicle:GetClass() ~= VehicleClass.Land then return end
 
     if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe("InputPoll", self, self.InputPoll) end
 end
 
 function AntiCrash:LocalPlayerExitVehicle(args)
-    if not args.vehicle:GetClass() == VehicleClass.Land then return end
+    if args.vehicle:GetClass() ~= VehicleClass.Land then return end
 
     if self.InputPollEvent then Events:Unsubscribe(self.InputPollEvent) self.InputPollEvent = nil end
 end

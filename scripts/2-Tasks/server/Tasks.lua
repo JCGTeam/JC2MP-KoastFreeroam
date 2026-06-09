@@ -475,22 +475,24 @@ function Tasks:ClientModuleLoad(args)
 end
 
 function Tasks:PlayerQuit(args)
-    pId = args.player:GetId()
-    self.playerJobs[pId] = nil
+    local pId = args.player:GetId()
+    local thatJob = self.playerJobs[pId]
+
+    if thatJob then
+        local pVehicle = thatJob.vehiclePointer
+
+        if IsValid(pVehicle) then
+            pVehicle:Remove()
+        end
+
+        self.playerJobs[pId] = nil
+    end
 end
 
 function Tasks:ModuleUnload()
-    local playerJobs = self.playerJobs
-
-    for p in Server:GetPlayers() do
-        if not playerJobs[p:GetId()] then return end
-
-        local pVehicle = p:GetVehicle()
-
-        if not pVehicle then return end
-
-        if IsValid(playerJobs[p:GetId()].vehiclePointer) and pVehicle == playerJobs[p:GetId()].vehiclePointer then
-            pVehicle:Remove()
+    for _, v in pairs(self.playerJobs) do
+        if IsValid(v) then
+            v.vehiclePointer:Remove()
         end
     end
 end

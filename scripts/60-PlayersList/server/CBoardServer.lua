@@ -52,10 +52,6 @@ function CBoardServer:getPlayersDataList()
         for k, f in pairs(tSyncData) do
             data[id][k] = f(p)
         end
-
-        for p1 in Server:GetPlayers() do
-            p:DisableAutoAim(p1)
-        end
     end
 
     return data
@@ -63,9 +59,11 @@ end
 
 -- Event Handlers:
 function CBoardServer:onPostTick()
-    if Server:GetElapsedSeconds() - self.fLastUpdate >= self.iSyncInterval then
+    local elapsedSeconds = Server:GetElapsedSeconds()
+
+    if elapsedSeconds - self.fLastUpdate >= self.iSyncInterval then
         self:SyncPlayersData()
-        self.fLastUpdate = Server:GetElapsedSeconds()
+        self.fLastUpdate = elapsedSeconds
     end
 end
 

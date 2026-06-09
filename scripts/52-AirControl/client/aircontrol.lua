@@ -1,18 +1,22 @@
 class 'AirControl'
 
 function AirControl:__init()
-    self.speed = 0.02
-
     if LocalPlayer:InVehicle() then
-        self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+        self:LocalPlayerEnterVehicle()
     end
 
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
     Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
 end
 
+function AirControl:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.AirControlValue = LocalPlayer:GetValue("AirControl")
+end
+
 function AirControl:LocalPlayerInput(args)
-    if not LocalPlayer:GetValue("AirControl") then return end
+    if not self.AirControlValue then return end
 
     local vehicle = LocalPlayer:GetVehicle()
 
@@ -53,11 +57,28 @@ function AirControl:LocalPlayerInput(args)
 end
 
 function AirControl:LocalPlayerEnterVehicle()
-    if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
+    if self.eventsLoaded then return end
+
+    self.speed = 0.02
+
+    self:NetworkObjectValueChange()
+
+    self.NetworkObjectValueChangeEvent = Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
+    self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+
+    self.eventsLoaded = true
 end
 
 function AirControl:LocalPlayerExitVehicle()
-    if self.LocalPlayerInputEvent then Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil end
+    if not self.eventsLoaded then return end
+
+    Events:Unsubscribe(self.NetworkObjectValueChangeEvent) self.NetworkObjectValueChangeEvent = nil
+    Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil
+
+    self.eventsLoaded = nil
+    self.speed = nil
+
+    self.AirControlValue = nil
 end
 
 local aircontrol = AirControl()

@@ -7,8 +7,7 @@ function SuperGrapple:__init()
     self.disttext = "%i м"
 
     if not LocalPlayer:InVehicle() then
-        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
-        self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+        self:LocalPlayerExitVehicle()
     end
 
     Events:Subscribe("Lang", self, self.Lang)
@@ -22,19 +21,53 @@ function SuperGrapple:Lang()
 end
 
 function SuperGrapple:LocalPlayerEnterVehicle()
-    if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
-    if self.LocalPlayerInputEvent then Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil end
+    if not self.eventsLoaded then return end
+
+    Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+    Events:Unsubscribe(self.NetworkObjectValueChangeEvent) self.NetworkObjectValueChangeEvent = nil
+    Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil
+    Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil
+
+    self.eventsLoaded = nil
+
+    self.HiddenHUDValue = nil
+    self.LongerGrappleValue = nil
+    self.LongerGrappleEnabledValue = nil
+    self.LongerGrappleVisibleValue = nil
 end
 
 function SuperGrapple:LocalPlayerExitVehicle()
-    if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
-    if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
+    if self.eventsLoaded then return end
+
+    self:SharedObjectValueChange()
+    self:NetworkObjectValueChange()
+
+    self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+    self.NetworkObjectValueChangeEvent = Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
+    self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+    self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+
+    self.eventsLoaded = true
+end
+
+function SuperGrapple:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.HiddenHUDValue = LocalPlayer:GetValue("HiddenHUD")
+end
+
+function SuperGrapple:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.LongerGrappleValue = LocalPlayer:GetValue("LongerGrapple")
+    self.LongerGrappleEnabledValue = LocalPlayer:GetValue("LongerGrappleEnabled")
+    self.LongerGrappleVisibleValue = LocalPlayer:GetValue("LongerGrappleVisible")
 end
 
 function SuperGrapple:Render()
-    local longerGrapple = LocalPlayer:GetValue("LongerGrapple")
+    local longerGrapple = self.LongerGrappleValue
 
-    if LocalPlayer:GetValue("LongerGrappleEnabled") and longerGrapple then
+    if self.LongerGrappleEnabledValue and longerGrapple then
         if LocalPlayer:InVehicle() or LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
         local object = self.object
@@ -59,7 +92,7 @@ function SuperGrapple:Render()
         local distance = self.distance
 
         if distance > 1 and (distance > 80 or (velocity > 20 and bs ~= AnimationState.SSkydive)) then
-            if LocalPlayer:GetValue("LongerGrappleVisible") and Game:GetState() == GUIState.Game and not LocalPlayer:GetValue("HiddenHUD") then
+            if self.LongerGrappleVisibleValue and not self.HiddenHUDValue and Game:GetState() == GUIState.Game then
                 if bs ~= 45 and bs ~= 43 and bs ~= 41 and bs ~= 208 and bs ~= 38 and bs ~= 47 and bs ~= 42 and bs ~= 191 and bs ~= 56 and bs ~= 143 and bs ~= 142 then
                     Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
 
@@ -115,8 +148,10 @@ function SuperGrapple:ModuleUnload()
 end
 
 function SuperGrapple:LocalPlayerInput(args)
-    if LocalPlayer:GetValue("LongerGrappleEnabled") then
-        if Game:GetSetting(GameSetting.GamepadInUse) == 0 then
+    if self.LongerGrappleEnabledValue then
+        local gamepadInUse = Game:GetSetting(GameSetting.GamepadInUse)
+
+        if gamepadInUse == 0 then
             if args.input == Action.FireGrapple and self.timer:GetSeconds() > 3 then
                 self.destroyTimer:Restart()
                 if self.object then self.object:Remove() self.object = nil end
@@ -132,7 +167,7 @@ function SuperGrapple:LocalPlayerInput(args)
             end
         end
 
-        if Game:GetSetting(GameSetting.GamepadInUse) == 1 then
+        if gamepadInUse == 1 then
             if Input:GetValue(Action.FireGrapple) > 0 then
                 self.destroyTimer:Restart()
                 if self.object then self.object:Remove() self.object = nil end

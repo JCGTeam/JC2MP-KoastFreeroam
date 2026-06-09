@@ -1094,6 +1094,7 @@ function ClanSystem:PlayerQuit(args)
 
     if playerToRow then
         self.clanList.playersList:RemoveItem(playerToRow)
+        self.playerToRow[pId] = nil
     end
 end
 

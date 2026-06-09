@@ -559,7 +559,7 @@ function Admin:executeAction(args, player)
                             local veh = args[2]:GetVehicle()
                             if veh then
                                 veh:Remove()
-                                self.vehicles[veh] = nil
+                                self.vehicles[args[2]:GetId()] = nil
                             end
                         end
 
@@ -583,10 +583,12 @@ function Admin:executeAction(args, player)
                             template = ""
                         end
 
-                        if self.vehicles[args[2]:GetId()] then
+                        local pId = args[2]:GetId()
+
+                        if self.vehicles[pId] then
                             if IsValid(self.vehicles[pId]) then
-                                self.vehicles[args[2]:GetId()]:Remove()
-                                self.vehicles[args[2]:GetId()] = nil
+                                self.vehicles[pId]:Remove()
+                                self.vehicles[pId] = nil
                             end
                         end
 
@@ -603,7 +605,7 @@ function Admin:executeAction(args, player)
                             vehicle:SetUnoccupiedRemove(true)
                             -- vehicle:SetWorld( args [ 2 ]:GetWorld() )
                             args[2]:EnterVehicle(vehicle, VehicleSeat.Driver)
-                            self.vehicles[args[2]:GetId()] = vehicle
+                            self.vehicles[pId] = vehicle
                             player:Message("Вы дали " .. args[2]:GetName() .. " транспорт " .. tostring(Vehicle.GetNameByModelId(args[3])), "info")
                             args[2]:Message(player:GetName() .. " дал тебе " .. tostring(Vehicle.GetNameByModelId(args[3])), "info")
 --							for _, thePlayer in pairs ( self.canChat ) do
@@ -647,7 +649,7 @@ function Admin:executeAction(args, player)
                         local veh = args[2]:GetVehicle()
                         if veh then
                             veh:Remove()
-                            self.vehicles[veh] = nil
+                            self.vehicles[args[2]:GetId()] = nil
                             player:Message("Вы удалили транспорт игрока " .. args[2]:GetName(), "info")
                             args[2]:Message(player:GetName() .. " удалил ваш транспорт", "info")
 --							for _, thePlayer in pairs ( self.canChat ) do

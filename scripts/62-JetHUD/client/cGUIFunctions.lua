@@ -6,7 +6,7 @@ M.Rot = function(vec, center, angle)
     -- Copy vector.
     vec = Vector2(vec.x, vec.y)
 
-    vec3 = Vector3(vec.x - center.x, 0, vec.y - center.y)
+    local vec3 = Vector3(vec.x - center.x, 0, vec.y - center.y)
     vec3 = Angle(angle, 0, 0) * vec3
 
     vec.x = vec3.x + center.x

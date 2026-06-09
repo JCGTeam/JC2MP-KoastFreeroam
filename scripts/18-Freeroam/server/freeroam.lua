@@ -419,7 +419,7 @@ function Freeroam:PlayerDeath(args)
                 end
             end
 
-            -- Network:Send( args.player, "EnableKillerCamera", args.killer )
+            Network:Send(args.player, "EnableKillerCamera", args.killer)
         end
 
         args.player:SetValue("SpawnMode", 0) -- 2 to respawn in random position

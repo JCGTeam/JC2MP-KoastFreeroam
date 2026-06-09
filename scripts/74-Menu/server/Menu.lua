@@ -10,7 +10,7 @@ function Menu:__init()
         ["BY"] = true,
         ["KZ"] = true,
         ["MD"] = true,
-        ["N/A"] = true
+        ["ZZ"] = true
     }
 
     -- self.worlds = {}
@@ -85,7 +85,7 @@ function Menu:SetLang(args, sender)
         sender:SetNetworkValue("Lang", args.lang)
 
         if args.lang == "RU" then
-            if sender:GetValue("Country") and sender:GetValue("Country") == "N/A" then
+            if sender:GetValue("Country") and sender:GetValue("Country") == "ZZ" then
                 sender:SetNetworkValue("Country", "RU")
             end
         end

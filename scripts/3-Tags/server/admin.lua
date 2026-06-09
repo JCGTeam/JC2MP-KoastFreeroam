@@ -194,6 +194,7 @@ end
 function Admin:__init()
     Network:Subscribe("EffectPlay", self, self.EffectPlay)
     Network:Subscribe("ToggleForcePassive", self, self.ToggleForcePassive)
+    Network:Subscribe("SetPlayerWaypoint", self, self.SetPlayerWaypoint)
 
     Events:Subscribe("PlayerJoin", self, self.PlayerJoin)
     Events:Subscribe("ModuleLoad", self, self.ModuleLoad)
@@ -223,6 +224,15 @@ end
 
 function Admin:EffectPlay(args, sender)
     Network:SendNearby(sender, "BoomToSkyEffect", {targerp = sender})
+end
+
+function Admin:SetPlayerWaypoint(args, sender)
+    if args.wEnabled then
+        Network:Send(args.wRequester, "SetWaypoint", args.wPos)
+        confirmationMessage(args.wRequester, "Получен пункт маршрута от " .. sender:GetName())
+    else
+        deniedMessage(args.wRequester, "Игрок не имеет установленного пункта маршрута")
+    end
 end
 
 function Admin:ToggleForcePassive(enabled, sender)
@@ -647,6 +657,12 @@ function Admin:PlayerJoin(args)
     if self.noCollision then
         args.player:DisableCollision(CollisionGroup.Vehicle)
     end
+
+    -- VIP for all players 01.04.2024
+    if not args.player:GetValue("Tag") then
+        vips[1] = tostring(args.player:GetSteamId())
+        args.player:SetNetworkValue("Tag", tagTable[isVip])
+    end
 end
 
 function Admin:PlayerChat(args)
@@ -1061,14 +1077,14 @@ function Admin:PlayerChat(args)
                 return false
             end
 
-            local time = tonumber(cmd_args[3])
+            local time = tonumber(cmd_args[2])
             if not time or time <= 0 then
                 deniedMessage(sender, invalidNum)
                 return false
             end
 
-            self.timerDuration = cmd_args[3]
-            self.timerText = cmd_args[2]
+            self.timerDuration = cmd_args[2]
+            self.timerText = table.concat(cmd_args, " ", 3)
 
             local now = os.time()
             self.endTime = now + time
@@ -1255,6 +1271,31 @@ function Admin:PlayerChat(args)
             Network:Send(sender, "BoomToSky", {boomvelocity = Vector3(0, -100, 0)})
         else
             deniedMessage(sender, inVehicle)
+        end
+    elseif cmd_args[1] == "/sharewp" then
+        if sender:GetValue("ShareWaypoint") then
+            sender:SetValue("ShareWaypoint", nil)
+            confirmationMessage(sender, "Трансляция пункта маршрута отключена")
+        else
+            sender:SetValue("ShareWaypoint", 1)
+            confirmationMessage(sender, "Трансляция пункта маршрута включена")
+        end
+    elseif cmd_args[1] == "/getwp" then
+        if #cmd_args < 2 then
+            deniedMessage(sender, invalidArgs)
+            return false
+        end
+
+        local player = Player.Match(cmd_args[2])[1]
+        if not IsValid(player) then
+            deniedMessage(sender, nullPlayer)
+            return false
+        end
+
+        if player:GetValue("ShareWaypoint") then
+            Network:Send(player, "GetPlayerWaypoint", sender)
+        else
+            deniedMessage(sender, "Игрок не транслирует свой пункт маршрута")
         end
     end
 

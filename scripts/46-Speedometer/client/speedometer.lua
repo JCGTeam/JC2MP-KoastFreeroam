@@ -57,11 +57,7 @@ function Speedometer:__init()
     self.text_shadow = Color(0, 0, 0, 100)
 
     if LocalPlayer:InVehicle() then
-        self.PreTickEvent = Events:Subscribe("PreTick", self, self.PreTick)
-        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
-        self.GameRenderEvent = Events:Subscribe("Render", self, self.GameRender)
-
-        self.animationValue = 1
+        self:LocalPlayerEnterVehicle()
     end
 
     Events:Subscribe("Lang", self, self.Lang)
@@ -73,20 +69,37 @@ function Speedometer:__init()
 end
 
 function Speedometer:LocalPlayerEnterVehicle()
-    if not self.PreTickEvent then self.PreTickEvent = Events:Subscribe("PreTick", self, self.PreTick) end
-    if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
-    if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe("Render", self, self.GameRender) end
+    if self.eventsLoaded then return end
+
+    self.transform3 = Transform3()
+
+    self:SharedObjectValueChange()
+
+    self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+    self.PreTickEvent = Events:Subscribe("PreTick", self, self.PreTick)
+    self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+    self.GameRenderEvent = Events:Subscribe("Render", self, self.GameRender)
+
+    self.eventsLoaded = true
 
     self.animationValue = 1
     -- Animation:Play( 0, 1, 0.25, easeInOut, function( value ) self.animationValue = value end )
 end
 
 function Speedometer:LocalPlayerExitVehicle()
-    if self.PreTickEvent then Events:Unsubscribe(self.PreTickEvent) self.PreTickEvent = nil end
-    if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
-    if self.GameRenderEvent then Events:Unsubscribe(self.GameRenderEvent) self.GameRenderEvent = nil end
+    if not self.eventsLoaded then return end
 
+    Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+    Events:Unsubscribe(self.PreTickEvent) self.PreTickEvent = nil
+    Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil
+    Events:Unsubscribe(self.GameRenderEvent) self.GameRenderEvent = nil
+
+    self.eventsLoaded = nil
     self.animationValue = nil
+    self.transform3 = nil
+
+    self.HiddenHUDValue = nil
+    self.VehBrakeValue = nil
 end
 
 function Speedometer:Lang()
@@ -100,6 +113,13 @@ function Speedometer:Lang()
         onscreenmode = "On-screen mode",
         firstpersonmode = "First-person mode"
     }
+end
+
+function Speedometer:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.HiddenHUDValue = LocalPlayer:GetValue("HiddenHUD")
+    self.VehBrakeValue = LocalPlayer:GetValue("VehBrake")
 end
 
 function Speedometer:CreateWindow()
@@ -244,8 +264,10 @@ function Speedometer:PreTick()
 end
 
 function Speedometer:Render()
-    if Game:GetState() ~= GUIState.Game or not self.enabled or LocalPlayer:GetValue("HiddenHUD") then return end
+    if not self.enabled then return end
     if not self.bottom_aligned then return end
+    if self.HiddenHUDValue then return end
+    if Game:GetState() ~= GUIState.Game then return end
     if not LocalPlayer:InVehicle() then return end
 
     Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
@@ -285,7 +307,7 @@ function Speedometer:Render()
 
     local factor = math.clamp(vHelath - 0.4, 0.0, 0.6) * 2.5
 
-    local vehBrake = LocalPlayer:GetValue("VehBrake")
+    local vehBrake = self.VehBrakeValue
 
     local fHealth = self.fHealth
     local zHealth = self.zHealth
@@ -325,8 +347,10 @@ function Speedometer:Render()
 end
 
 function Speedometer:GameRender()
-    if Game:GetState() ~= GUIState.Game or not self.enabled or LocalPlayer:GetValue("HiddenHUD") then return end
+    if not self.enabled then return end
     if self.bottom_aligned then return end
+    if self.HiddenHUDValue then return end
+    if Game:GetState() ~= GUIState.Game then return end
     if not LocalPlayer:InVehicle() then return end
 
     Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
@@ -366,7 +390,7 @@ function Speedometer:GameRender()
 
     local factor = math.clamp(vHelath - 0.4, 0.0, 0.6) * 2.5
 
-    local vehBrake = LocalPlayer:GetValue("VehBrake")
+    local vehBrake = self.VehBrakeValue
 
     local fHealth = self.fHealth
     local zHealth = self.zHealth
@@ -385,7 +409,8 @@ function Speedometer:GameRender()
     local text_shadow = self.text_shadow
     local text_shadow_col = Color(text_shadow.r, text_shadow.g, text_shadow.b, math.lerp(0, text_shadow.a, animationValue))
 
-    local t = Transform3()
+    local t = self.transform3
+    t:SetIdentity()
 
     if self.center_aligned then
         local pos_3d = vehicle:GetPosition()
@@ -405,7 +430,6 @@ function Speedometer:GameRender()
         local scale = math.clamp(Camera:GetPosition():Distance(pos_3d), 0, 500)
         scale = scale / 20
 
-        t = Transform3()
         t:Translate(pos_3d)
         t:Scale(0.0050 * scale)
         t:Rotate(angle)

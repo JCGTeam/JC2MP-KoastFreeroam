@@ -5,7 +5,7 @@ function HookHit:__init()
     self.cooltime = 0
 
     if not LocalPlayer:InVehicle() then
-        self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+        self:LocalPlayerExitVehicle()
     end
 
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
@@ -13,11 +13,31 @@ function HookHit:__init()
 end
 
 function HookHit:LocalPlayerEnterVehicle()
-    if self.LocalPlayerInputEvent then Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil end
+    if not self.eventsLoaded then return end
+
+    Events:Unsubscribe(self.NetworkObjectValueChangeEvent) self.NetworkObjectValueChangeEvent = nil
+    Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil
+
+    self.eventsLoaded = nil
+
+    self.PassiveValue = nil
 end
 
 function HookHit:LocalPlayerExitVehicle()
-    if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
+    if self.eventsLoaded then return end
+
+    self:NetworkObjectValueChange()
+
+    self.NetworkObjectValueChangeEvent = Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
+    self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+
+    self.eventsLoaded = true
+end
+
+function HookHit:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.PassiveValue = LocalPlayer:GetValue("Passive")
 end
 
 function HookHit:LocalPlayerInput(args)
@@ -25,7 +45,7 @@ function HookHit:LocalPlayerInput(args)
         local time = Client:GetElapsedSeconds()
 
         if time > self.cooltime then
-            if not LocalPlayer:GetValue("Passive") then
+            if not self.PassiveValue then
                 Network:Send("HitPlayers")
             end
 

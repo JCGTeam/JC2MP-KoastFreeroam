@@ -1,11 +1,10 @@
 class 'OpenGates'
 
 function OpenGates:__init()
-    self.places = {}
-
-    self.tipDistance = 40
-
     self:UpdateKeyBinds()
+
+    self.places = {}
+    self.tipDistance = 40
 
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
@@ -22,11 +21,17 @@ function OpenGates:__init()
 
     Events:Subscribe("Lang", self, self.Lang)
     Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
-    Events:Subscribe("NetworkObjectValueChange", self, self.ObjectValueChange)
-    Events:Subscribe("SharedObjectValueChange", self, self.ObjectValueChange)
+    Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
     Events:Subscribe("KeyUp", self, self.KeyUp)
 
     if LocalPlayer:GetValue("OpenDoorsTipsVisible") or not LocalPlayer:GetValue("HiddenHUD") then
+        if self.eventsLoaded then return end
+
+        self:SharedObjectValueChange()
+
+        self.transform3 = Transform3()
+
+        self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
         self.GameRenderEvent = Events:Subscribe("GameRender", self, self.GameRender)
     end
 
@@ -49,14 +54,37 @@ function OpenGates:UpdateKeyBinds()
     self.stringKey = bind and bind.type == "Key" and bind.valueString or "L"
 end
 
-function OpenGates:ObjectValueChange(args)
+function OpenGates:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+end
+
+function OpenGates:NetworkObjectValueChange(args)
     if args.object.__type ~= "LocalPlayer" then return end
 
     if args.key == "OpenDoorsTipsVisible" or args.key == "HiddenHUD" then
         if LocalPlayer:GetValue("OpenDoorsTipsVisible") and not LocalPlayer:GetValue("HiddenHUD") then
-            if not self.GameRenderEvent then self.GameRenderEvent = Events:Subscribe("GameRender", self, self.GameRender) end
+            if self.eventsLoaded then return end
+
+            self:SharedObjectValueChange()
+
+            self.transform3 = Transform3()
+
+            self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+            self.GameRenderEvent = Events:Subscribe("GameRender", self, self.GameRender)
+
+            self.eventsLoaded = true
         else
-            if self.GameRenderEvent then Events:Unsubscribe(self.GameRenderEvent) self.GameRenderEvent = nil end
+            if not self.eventsLoaded then return end
+
+            Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+            Events:Unsubscribe(self.GameRenderEvent) self.GameRenderEvent = nil
+
+            self.eventsLoaded = nil
+            self.transform3 = nil
+
+            self.SystemFontsValue = nil
         end
     end
 end
@@ -93,7 +121,8 @@ function OpenGates:DrawHotspot(v, dist)
 
     local getTextSize = Render:GetTextSize(text, textSize)
 
-    local t = Transform3()
+    local t = self.transform3
+    t:SetIdentity()
     t:Translate(v[2])
     t:Scale(0.0045)
     t:Rotate(angle)
@@ -113,7 +142,7 @@ function OpenGates:GameRender()
     local places = self.places
     local tipDistance = self.tipDistance
 
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     for _, v in ipairs(places) do
         local dist = v[2]:Distance(cameraPos)

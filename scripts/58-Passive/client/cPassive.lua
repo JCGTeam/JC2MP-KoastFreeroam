@@ -5,9 +5,6 @@ function Passive:__init()
     self.tagOffset = 10
     self.textSize = 16
 
-    self.visible = LocalPlayer:GetValue("Passive")
-    self.animationValue = self.visible and 1 or 0
-
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
         self:Lang()
@@ -36,6 +33,15 @@ function Passive:__init()
         [139] = true
     }
 
+    self:SharedObjectValueChange()
+    self:NetworkObjectValueChange()
+
+    self.visible = self.PassiveValue
+    self.animationValue = self.visible and 1 or 0
+
+    Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+    Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
     Events:Subscribe("LocalPlayerChat", self, self.LocalPlayerChat)
     Events:Subscribe("TogglePassive", self, self.TogglePassive)
     Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
@@ -43,9 +49,7 @@ function Passive:__init()
     Events:Subscribe("LocalPlayerBulletHit", self, self.LocalPlayerDamage)
     Events:Subscribe("LocalPlayerExplosionHit", self, self.LocalPlayerDamage)
     Events:Subscribe("LocalPlayerForcePulseHit", self, self.LocalPlayerDamage)
-    Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
     Events:Subscribe("Render", self, self.Render)
-    Events:Subscribe("Lang", self, self.Lang)
     Events:Subscribe("LocalPlayerWorldChange", self, self.LocalPlayerWorldChange)
 end
 
@@ -62,20 +66,54 @@ function Passive:Lang()
     }
 end
 
-function Passive:LocalPlayerWorldChange()
-    if not LocalPlayer:GetValue("Passive") then return end
+function Passive:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
 
-    Network:Send("Toggle", not LocalPlayer:GetValue("Passive"))
+    self.PassiveValue = LocalPlayer:GetValue("Passive")
+    self.HiddenHUDValue = LocalPlayer:GetValue("HiddenHUD")
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+end
+
+function Passive:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.PassiveModeVisibleValue = LocalPlayer:GetValue("PassiveModeVisible")
+
+    if args then
+        if args.key == "Passive" then
+            if args.value then
+                Game:FireEvent("ply.invulnerable")
+                Events:Fire("AntiCheat", false)
+                self.visible = true
+
+                if self.fadeOutAnimation then Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil end
+                Animation:Play(0, 1, 0.05, easeInOut, function(value) self.animationValue = value end)
+            else
+                Game:FireEvent("ply.vulnerable")
+                Events:Fire("AntiCheat", true)
+
+                self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeInOut, function(value) self.animationValue = value end, function() self.visible = nil end)
+            end
+        end
+    end
+end
+
+function Passive:LocalPlayerWorldChange()
+    local state = LocalPlayer:GetValue("Passive")
+
+    if not state then return end
+
+    Network:Send("Toggle", not state)
 end
 
 function Passive:LocalPlayerInput(args)
-    if self.actions[args.input] and (LocalPlayer:GetValue("Passive") or LocalPlayer:InVehicle() and LocalPlayer:GetVehicle():GetInvulnerable()) then
+    if self.actions[args.input] and (self.PassiveValue or LocalPlayer:InVehicle() and LocalPlayer:GetVehicle():GetInvulnerable()) then
         return false
     end
 end
 
 function Passive:InputPoll()
-    if not LocalPlayer:GetValue("Passive") then return end
+    if not self.PassiveValue then return end
 
     Input:SetValue(Action.VehicleFireLeft, 0)
     Input:SetValue(Action.VehicleFireRight, 0)
@@ -123,34 +161,18 @@ function Passive:TogglePassive(force)
 end
 
 function Passive:LocalPlayerDamage(args)
-    if LocalPlayer:GetValue("Passive") or args.attacker and args.attacker.__type == 'Player' and (args.attacker:GetValue("Passive") or args.attacker:InVehicle() and args.attacker:GetVehicle():GetInvulnerable()) then
+    local state = self.PassiveValue
+
+    if state or args.attacker and args.attacker.__type == 'Player' and (args.attacker:GetValue("Passive") or args.attacker:InVehicle() and args.attacker:GetVehicle():GetInvulnerable()) then
         return false
     end
 
-    if not LocalPlayer:GetValue("Passive") then
+    if not state then
         if not self.pvpTimer then
             self.pvpTimer = Timer()
             Network:Send("TogglePVPMode", {enabled = true})
         else
             self.pvpTimer:Restart()
-        end
-    end
-end
-
-function Passive:NetworkObjectValueChange(args)
-    if args.key == "Passive" and args.object.__type == "LocalPlayer" then
-        if args.value then
-            Game:FireEvent("ply.invulnerable")
-            Events:Fire("AntiCheat", false)
-            self.visible = true
-
-            if self.fadeOutAnimation then Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil end
-            Animation:Play(0, 1, 0.05, easeInOut, function(value) self.animationValue = value end)
-        else
-            Game:FireEvent("ply.vulnerable")
-            Events:Fire("AntiCheat", true)
-
-            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeInOut, function(value) self.animationValue = value end, function() self.visible = nil end)
         end
     end
 end
@@ -164,13 +186,14 @@ function Passive:Render()
     end
 
     if not self.visible then return end
+    if not self.PassiveModeVisibleValue then return end
+    if self.HiddenHUDValue then return end
     if Game:GetState() ~= GUIState.Game then return end
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
-    if not LocalPlayer:GetValue("PassiveModeVisible") or LocalPlayer:GetValue("HiddenHUD") then return end
 
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
-    -- if LocalPlayer:GetValue("Passive") then
+    -- if self.PassiveValue then
     --	if LocalPlayer:GetVehicle() then
     --		if LocalPlayer:GetVehicle():GetLinearVelocity():Length() >= 20 then
     --			Network:Send("CheckPassive")

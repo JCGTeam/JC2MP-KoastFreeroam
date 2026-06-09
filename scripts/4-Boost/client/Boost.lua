@@ -106,7 +106,16 @@ function Boost:__init()
 
     local vehicle = LocalPlayer:GetVehicle()
     if vehicle and vehicle:GetDriver() == LocalPlayer then
-        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+        if not self.eventsLoaded then
+            self:SharedObjectValueChange()
+            self:NetworkObjectValueChange()
+
+            self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+            self.NetworkObjectValueChangeEvent = Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
+            self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+
+            self.eventsLoaded = true
+        end
     end
 
     Events:Subscribe("Lang", self, self.Lang)
@@ -147,6 +156,21 @@ function Boost:UpdateKeyBinds()
     self.landBoostStringKey = landBoostBind and landBoostBind.type == "Key" and landBoostBind.valueString or "Shift"
     self.planeBoostStringKey = planeBoostBind and planeBoostBind.type == "Key" and planeBoostBind.valueString or "Q"
     self.brakeStringKey = brakeBind and brakeBind.type == "Key" and brakeBind.valueString or "F"
+end
+
+function Boost:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.VahBrakeValue = LocalPlayer:GetValue("VehBrake")
+    self.FreezeValue = LocalPlayer:GetValue("Freeze")
+    self.HiddenHUDValue = LocalPlayer:GetValue("HiddenHUD")
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+end
+
+function Boost:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.BoostValue = LocalPlayer:GetValue("Boost")
 end
 
 function Boost:UpdateSettings(settings)
@@ -249,7 +273,9 @@ function Boost:Render(args)
         self.hinttimer = nil
     end
 
-    if not LocalPlayer:GetValue("Boost") then return end
+    local abilityBoost = self.BoostValue
+
+    if not abilityBoost then return end
 
     local gameState = Game:GetState()
 
@@ -261,13 +287,16 @@ function Boost:Render(args)
     if not vehicle then return end
 
     self.delta = args.delta
-    local land = self:LandCheck(vehicle)
-    local boat = self:BoatCheck(vehicle)
-    local heli = self:HeliCheck(vehicle)
-    local plane = self:PlaneCheck(vehicle)
 
-    local vehBrake = LocalPlayer:GetValue("VehBrake")
-    local freeze = LocalPlayer:GetValue("Freeze")
+    local vMId = vehicle:GetModelId()
+
+    local land = self:LandCheck(vMId, abilityBoost)
+    local boat = self:BoatCheck(vMId, abilityBoost)
+    local heli = self:HeliCheck(vMId, abilityBoost)
+    local plane = self:PlaneCheck(vMId, abilityBoost)
+
+    local vehBrake = self.VahBrakeValue
+    local freeze = self.FreezeValue
 
     if not (vehBrake or freeze) then
         if land or boat then
@@ -312,14 +341,14 @@ function Boost:Render(args)
         end
     end
 
-    if LocalPlayer:GetValue("HiddenHUD") then return end
+    if self.HiddenHUDValue then return end
 
     local animationValue = self.animationValue
 
     if not animationValue then return end
 
     if self.textEnabled and (land or boat or heli or plane) then
-        if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+        if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
         local locStrings = self.locStrings
         local lsPress = locStrings["press"]
@@ -377,51 +406,53 @@ function Boost:Boost(vehicle)
     vehicle:SetLinearVelocity(vehicle:GetLinearVelocity() + vehicle:GetAngle() * Vector3(0, 0, -self.strength * self.delta))
 end
 
-function Boost:LandCheck(vehicle)
-    local id = vehicle:GetModelId()
-    local boost = LocalPlayer:GetValue("Boost")
+function Boost:LandCheck(vModelId, abilityBoost)
+    local id = vModelId
 
-    if not boost then return end
+    if not abilityBoost then return end
 
-    if boost >= 1 then
+    if abilityBoost >= 1 then
         return self.landBoost and not (self.boats[id] or self.helis[id] or self.planes[id])
     end
 end
 
-function Boost:BoatCheck(vehicle)
-    local boost = LocalPlayer:GetValue("Boost")
+function Boost:BoatCheck(vModelId, abilityBoost)
+    if not abilityBoost then return end
 
-    if not boost then return end
-
-    if boost >= 2 then
-        return self.boatBoost and self.boats[vehicle:GetModelId()]
+    if abilityBoost >= 2 then
+        return self.boatBoost and self.boats[vModelId]
     end
 end
 
-function Boost:HeliCheck(vehicle)
-    local boost = LocalPlayer:GetValue("Boost")
+function Boost:HeliCheck(vModelId, abilityBoost)
+    if not abilityBoost then return end
 
-    if not boost then return end
-
-    if boost >= 3 then
-        return self.heliBoost and self.helis[vehicle:GetModelId()]
+    if abilityBoost >= 3 then
+        return self.heliBoost and self.helis[vModelId]
     end
 end
 
-function Boost:PlaneCheck(vehicle)
-    local boost = LocalPlayer:GetValue("Boost")
+function Boost:PlaneCheck(vModelId, abilityBoost)
+    if not abilityBoost then return end
 
-    if not boost then return end
-
-    if boost >= 3 then
-        return self.planeBoost and self.planes[vehicle:GetModelId()]
+    if abilityBoost >= 3 then
+        return self.planeBoost and self.planes[vModelId]
     end
 end
 
 function Boost:LocalPlayerEnterVehicle(args)
     if not args.is_driver then return end
 
-    if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
+    if not self.eventsLoaded then
+        self:SharedObjectValueChange()
+        self:NetworkObjectValueChange()
+
+        self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+        self.NetworkObjectValueChangeEvent = Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
+        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+
+        self.eventsLoaded = true
+    end
 
     if self.fadeOutAnimation then
         Animation:Stop(self.fadeOutAnimation)
@@ -445,11 +476,35 @@ function Boost:LocalPlayerExitVehicle()
             self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.15, easeInOut, function(value) self.animationValue = value end, function()
                 self.animationValue = nil
 
-                if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+                if self.eventsLoaded then
+                    Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+                    Events:Unsubscribe(self.NetworkObjectValueChangeEvent) self.NetworkObjectValueChangeEvent = nil
+                    Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil
+
+                    self.eventsLoaded = nil
+
+                    self.VahBrakeValue = nil
+                    self.FreezeValue = nil
+                    self.HiddenHUDValue = nil
+                    self.SystemFontsValue = nil
+                    self.BoostValue = nil
+                end
             end)
         end
     else
-        if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+        if self.eventsLoaded then
+            Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+            Events:Unsubscribe(self.NetworkObjectValueChangeEvent) self.NetworkObjectValueChangeEvent = nil
+            Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil
+
+            self.eventsLoaded = nil
+
+            self.VahBrakeValue = nil
+            self.FreezeValue = nil
+            self.HiddenHUDValue = nil
+            self.SystemFontsValue = nil
+            self.BoostValue = nil
+        end
     end
 end
 

@@ -33,5 +33,8 @@ function Animation:Play(startValue, endValue, duration, easingFunction, updateFu
 end
 
 function Animation:Stop(renderEvent, updateFunction, endValue)
-    if IsValid(renderEvent) then Events:Unsubscribe(renderEvent) renderEvent = nil end
+    if renderEvent then
+        pcall(Events.Unsubscribe, Events, renderEvent) 
+        renderEvent = nil
+    end
 end

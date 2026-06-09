@@ -21,9 +21,10 @@ function Admin:__init()
 
     Events:Subscribe("Lang", self, self.Lang)
 
+    Network:Subscribe("GetPlayerWaypoint", self, self.GetPlayerWaypoint)
+    Network:Subscribe("SetWaypoint", self, self.SetWaypoint)
     Network:Subscribe("Notice", self, self.Notice)
     Network:Subscribe("SetTimer", self, self.SetTimer)
-
     Network:Subscribe("ToggleForcePassive", self, self.ToggleForcePassive)
     Network:Subscribe("EnableForcePassive", self, self.EnableForcePassive)
 end
@@ -116,6 +117,15 @@ function Admin:PreTick()
     Network:Send("ToggleForcePassive", true)
 
     self.forcePassiveTimer:Restart()
+end
+
+function Admin:GetPlayerWaypoint(wRequester)
+    local wPos, wEnabled = Waypoint:GetPosition()
+    Network:Send("SetPlayerWaypoint", {wRequester = wRequester, wPos = wPos, wEnabled=wEnabled})
+end
+
+function Admin:SetWaypoint(wPos)
+    Waypoint:SetPosition(wPos)
 end
 
 function Admin:Notice(text)

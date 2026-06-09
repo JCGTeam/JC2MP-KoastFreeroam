@@ -90,6 +90,7 @@ Map = {
 	Image = Image.Create(AssetLocation.Game, "pda_map_dif.dds"),
 	Zoom = 1,
 	Offset = Vector2(),
+	Transform2 = Transform2(),
 	IconScale = 0.4,
 	Ramka = true,
 	Border = true,
@@ -567,11 +568,14 @@ function Map:Draw()
     if Map.LocationsVisible then
         Map.ActiveLocation = nil
 
+		local screenWidth = Render.Width
+    	local screenHeight = Render.Height
+
         for i = 1, #locations do
             local location = locations[i]
             local position = Map:WorldToScreen(location.position)
 
-            if position.x > 0 and position.y > 0 and position.x < Render.Width and position.y < Render.Height then
+            if position.x > 0 and position.y > 0 and position.x < screenWidth and position.y < screenHeight then
                 if location:IsActive(position, scaleFactor) then
                     Map.ActiveLocation = location
                 end
@@ -606,11 +610,12 @@ function Map:Draw()
             end
         end
 
-        local Transform = Transform2()
-        Transform:Translate(Map:WorldToScreen(LocalPlayer:GetPosition()) - Map.Marker:GetSize() / 2 + Map.Marker:GetSize() / 2)
-        Transform:Rotate(-LocalPlayer:GetAngle().yaw)
+        local transform = Map.Transform2
+		transform:SetIdentity()
+        transform:Translate(Map:WorldToScreen(LocalPlayer:GetPosition()) - Map.Marker:GetSize() / 2 + Map.Marker:GetSize() / 2)
+        transform:Rotate(-LocalPlayer:GetAngle().yaw)
 
-        Render:SetTransform(Transform)
+        Render:SetTransform(transform)
 
         Map.Marker:SetSize(Vector2(Render.Height * 0.027, Render.Height * 0.027))
         Map.Marker:Draw(-Map.Marker:GetSize() / 2, Map.Marker:GetSize(), Vector2.Zero, Vector2.One)
@@ -668,6 +673,4 @@ function Map:Draw()
         Map.Heli:SetPosition(position - 0.5 * Map.Heli:GetSize())
         Map.Heli:Draw()
     end
-
-    collectgarbage()
 end

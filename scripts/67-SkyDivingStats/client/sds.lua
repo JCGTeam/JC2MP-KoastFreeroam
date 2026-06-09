@@ -46,11 +46,10 @@ function SkydivingStats:__init()
     self.x_offset = 1
 
     if not LocalPlayer:InVehicle() then
-        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+        self:LocalPlayerExitVehicle()
     end
 
     Events:Subscribe("Lang", self, self.Lang)
-    Events:Subscribe("PostTick", self, self.PostTick)
     Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
 
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
@@ -59,11 +58,32 @@ function SkydivingStats:__init()
 end
 
 function SkydivingStats:LocalPlayerEnterVehicle()
-    if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+    if not self.eventsLoaded then return end
+
+    Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+    Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil
+    Events:Unsubscribe(self.PostTickEvent) self.PostTickEvent = nil
+
+    self.eventsLoaded = nil
+    self.transform3 = nil
+
+    self.HiddenHUDValue = nil
+    self.SpectatorModeValue = nil
+    self.IsPigeonModValue = nil
 end
 
 function SkydivingStats:LocalPlayerExitVehicle()
-    if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
+    if self.eventsLoaded then return end
+
+    self:SharedObjectValueChange()
+
+    self.transform3 = Transform3()
+
+    self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+    self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+    self.PostTickEvent = Events:Subscribe("PostTick", self, self.PostTick)
+
+    self.eventsLoaded = true
 end
 
 function SkydivingStats:Lang()
@@ -76,6 +96,14 @@ function SkydivingStats:Lang()
         title = "Skydiving Settings",
         enabled = "Enabled"
     }
+end
+
+function SkydivingStats:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.HiddenHUDValue = LocalPlayer:GetValue("HiddenHUD")
+    self.SpectatorModeValue = LocalPlayer:GetValue("SpectatorMode")
+    self.IsPigeonModValue = LocalPlayer:GetValue("IsPigeonMod")
 end
 
 function SkydivingStats:CreateWindow()
@@ -271,20 +299,21 @@ function SkydivingStats:DrawTimer(t)
 end
 
 function SkydivingStats:Render()
-    if not self.enabled or LocalPlayer:GetValue("HiddenHUD") then return end
+    if not self.enabled then return end
+    if self.HiddenHUDValue then return end
+    if self.SpectatorModeValue then return end
     if Game:GetState() ~= GUIState.Game then return end
-    if LocalPlayer:GetValue("SpectatorMode") then return end
 
     local bs = LocalPlayer:GetBaseState()
-
     if bs ~= AnimationState.SSkydive and bs ~= AnimationState.SSkydiveDash then return end
 
     Render:SetFont(AssetLocation.Disk, "Archivo.ttf")
 
-    local t = Transform3()
+    local t = self.transform3
     local cameraPos = Camera:GetPosition()
     local cameraAngle = Camera:GetAngle()
 
+    t:SetIdentity()
     t:Translate(cameraPos)
     t:Rotate(cameraAngle)
 
@@ -295,13 +324,13 @@ function SkydivingStats:Render()
 end
 
 function SkydivingStats:PostTick()
-    if not self.enabled or LocalPlayer:GetValue("HiddenHUD") then return end
+    if not self.enabled then return end
+    if self.HiddenHUDValue then return end
 
     local bs = LocalPlayer:GetBaseState()
-
     if bs == self.last_bs then return end
 
-    if not LocalPlayer:GetValue("IsPigeonMod") then
+    if not self.IsPigeonModValue then
         self.flight_timer:Restart()
     end
 

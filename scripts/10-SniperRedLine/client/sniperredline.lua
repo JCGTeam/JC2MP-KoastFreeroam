@@ -13,8 +13,6 @@ function SniperRedLine:GameRender()
 
         if ubs == 347 and equippedWeapon == Weapon(Weapon.Sniper) then
             local ahr_bonepos = p:GetBonePosition("ragdoll_AttachHandRight") + Vector3(0, 0.1, 0)
-            local rfa_bonepos = p:GetBonePosition("ragdoll_RightForeArm")
-            local rfa_boneangle = p:GetBoneAngle("ragdoll_RightForeArm")
 
             if ahr_bonepos and p:GetAimTarget() and p:GetAimTarget().position then
                 local aimPos = p:GetAimTarget().position
@@ -24,6 +22,9 @@ function SniperRedLine:GameRender()
                 if distance <= 250 then
                     Render:DrawLine(ahr_bonepos, aimPos, linecolor)
                 else
+                    local rfa_bonepos = p:GetBonePosition("ragdoll_RightForeArm")
+                    local rfa_boneangle = p:GetBoneAngle("ragdoll_RightForeArm")
+
                     Render:DrawLine(ahr_bonepos, rfa_bonepos + rfa_boneangle * Vector3(250, -1.2, 0.1), linecolor)
                 end
             end

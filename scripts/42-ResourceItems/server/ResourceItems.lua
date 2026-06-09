@@ -16,7 +16,7 @@ end
 
 function ResourceItems:CreateCrates()
     self.ents = {}
-    self.poss = {}
+    self.needsRespawn = false
 
     local count = 0
     local file = io.open("lootspawns.txt", "r")
@@ -34,18 +34,16 @@ function ResourceItems:CreateCrates()
                 line = line:gsub(" ", "")
 
                 local tokens = line:split(",")
-                local mdl_str = tokens[1]
-                local model = tostring(mdl_str)
+                local model = tostring(tokens[1])
 
                 if model == "pickup.boost.cash.eez/pu05-a.lod" then
-                    local pos_str = {tokens[3], tokens[4], tokens[5]}
-                    local pos = Vector3(tonumber(pos_str[1]), tonumber(pos_str[2]), tonumber(pos_str[3]))
-                    local ang_str = {tokens[6], tokens[7], tokens[8]}
+                    local pos = Vector3(tonumber(tokens[3]), tonumber(tokens[4]), tonumber(tokens[5]))
+                    local ang = Angle(tonumber(tokens[6]), tonumber(tokens[7]), tonumber(tokens[8]))
                     local col_str = tokens[2]
 
                     if pos:Distance2D(Vector3(-6568, 208, -3442)) > 650 and pos:Distance2D(Vector3(13199, 1094, -4928)) > 250 and pos:Distance2D(Vector3(2150, 711, 1397)) > 300 and pos:Distance2D(Vector3(-1573, 358, 990)) > 750 and pos:Distance2D(Vector3(13753, 270, -2373)) > 900 and pos:Distance2D(Vector3(-13603, 422, -13746)) > 900 then
-                        args.position = Vector3(tonumber(pos_str[1]), tonumber(pos_str[2]), tonumber(pos_str[3]))
-                        args.angle = Angle(tonumber(ang_str[1]), tonumber(ang_str[2]), tonumber(ang_str[3]))
+                        args.position = pos
+                        args.angle = ang
                         args.model = model
                         args.collision = col_str
                         args.world = DefaultWorld
@@ -81,8 +79,6 @@ function ResourceItems:CreateCrates()
                         end
 
                         table.insert(self.ents, {ent = ent, cash = cash, checkpoint = checkpoint})
-                        table.insert(self.poss, {pos = pos, id = ent:GetId()})
-
                         count = count + 1
                     end
                 end
@@ -99,10 +95,12 @@ end
 function ResourceItems:PlayerEnterCheckpoint(args)
     if args.player:GetWorld() ~= DefaultWorld then return end
 
-    for _, ent2 in pairs(self.ents) do
+    local cpId = args.checkpoint:GetId()
+
+    for i, ent2 in pairs(self.ents) do
         if ent2 and ent2.checkpoint then
             if IsValid(ent2.checkpoint) then
-                if ent2.checkpoint:GetId() == args.checkpoint:GetId() then
+                if ent2.checkpoint:GetId() == cpId then
                     args.player:SetMoney(args.player:GetMoney() + 10)
                     args.player:SetNetworkValue("CollectedResourceItemsCount", (args.player:GetValue("CollectedResourceItemsCount") or 0) + 1)
 
@@ -113,7 +111,9 @@ function ResourceItems:PlayerEnterCheckpoint(args)
 
                     ent2.ent:Remove()
                     ent2.checkpoint:Remove()
-                    ent2 = nil
+
+                    self.ents[i] = nil
+                    self.needsRespawn = true
                     break
                 end
             end
@@ -123,19 +123,10 @@ end
 
 function ResourceItems:PostTick()
     if self.timer:GetHours() >= self.resptime then
-        local count = 0
-
-        for _, ent2 in pairs(self.ents) do
-            if not IsValid(ent2.ent) then
-                count = count + 1
-
-                if count >= 1 then
-                    print("All crates has been respawned.")
-                    self:ModuleUnload()
-                    self:CreateCrates()
-                    break
-                end
-            end
+        if self.needsRespawn then
+            print("All crates has been respawned")
+            self:ModuleUnload()
+            self:CreateCrates()
         end
 
         self.timer:Restart()
@@ -147,32 +138,34 @@ function ResourceItems:onSyncRequest(source)
 end
 
 function ResourceItems:SyncPlayerData(player)
-    self.poss = {}
+    local poss = {}
 
     for _, ent2 in pairs(self.ents) do
         if IsValid(ent2.ent) then
-            table.insert(self.poss, {pos = ent2.ent:GetPosition(), id = ent2.ent:GetId()})
+            table.insert(poss, {pos = ent2.ent:GetPosition(), id = ent2.ent:GetId()})
         end
     end
 
     if player then
-        Network:Send(player, "SyncTriggers", self.poss)
+        Network:Send(player, "SyncTriggers", poss)
     end
 end
 
 function ResourceItems:ModuleUnload()
-    for _, ent2 in pairs(self.ents) do
-        if IsValid(ent2.ent) then
-            ent2.ent:Remove()
-        end
+    if self.ents then
+        for _, ent2 in pairs(self.ents) do
+            if ent2 then
+                if IsValid(ent2.ent) then
+                    ent2.ent:Remove()
+                end
 
-        if IsValid(ent2.checkpoint) then
-            ent2.checkpoint:Remove()
+                if IsValid(ent2.checkpoint) then
+                    ent2.checkpoint:Remove()
+                end
+            end
         end
+        self.ents = nil
     end
-
-    if self.ents then self.ents = nil end
-    if self.poss then self.poss = nil end
 end
 
 local resourceitems = ResourceItems()

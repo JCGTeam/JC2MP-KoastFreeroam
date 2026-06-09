@@ -3,6 +3,8 @@ class 'Tips'
 function Tips:__init()
     self.active = true
 
+    self:SharedObjectValueChange()
+    self:NetworkObjectValueChange()
     self:UpdateKeyBinds()
 
     local lang = LocalPlayer:GetValue("Lang")
@@ -19,6 +21,8 @@ function Tips:__init()
     end
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+    Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
     Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("Render", self, self.Render)
 
@@ -34,6 +38,19 @@ function Tips:Lang()
     }
 
     Network:Send("GetAds", {file = "adsEN.txt"})
+end
+
+function Tips:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+end
+
+function Tips:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.ChatBackgroundVisibleValue = LocalPlayer:GetValue("ChatBackgroundVisible")
+    self.ChatTipsVisibleValue = LocalPlayer:GetValue("ChatTipsVisible")
 end
 
 function Tips:UpdateKeyBinds()
@@ -64,11 +81,11 @@ function Tips:Render()
         local text = locStrings["tip"] .. self.serverMenuStringKey .. locStrings["tip2"] .. self.actionsMenuStringKey
         local chatPos = Chat:GetPosition()
 
-        if LocalPlayer:GetValue("ChatBackgroundVisible") then
+        if self.ChatBackgroundVisibleValue then
             Render:FillArea(chatPos + Vector2(-4, 0), Vector2(508, -Render:GetTextHeight(text) * 13.5), Color(0, 0, 0, 80))
         end
 
-        if LocalPlayer:GetValue("ChatTipsVisible") then
+        if self.ChatTipsVisibleValue then
             local color = Color(215, 215, 215)
             local lineSize = Vector2(500, 1)
             local linePos = chatPos + Vector2(0, 3)
@@ -76,7 +93,7 @@ function Tips:Render()
             Render:FillArea(linePos + Vector2.One, lineSize, Color(25, 25, 25, 100))
             Render:FillArea(linePos, lineSize, color)
 
-            if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+            if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
             local textpos = chatPos + Vector2(1, 11)
             Render:DrawShadowedText(textpos, text, color, Color(25, 25, 25, 150), 14)

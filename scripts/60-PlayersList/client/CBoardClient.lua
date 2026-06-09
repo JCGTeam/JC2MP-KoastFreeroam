@@ -12,6 +12,7 @@ function CBoardClient:__init()
     self.fScrollKoeff = SCOREBOARD_CONFIGURATION.SCROLL_SPEED
 
     self:UpdateKeyBinds()
+    self:SharedObjectValueChange()
 
     self.tServerPlayersData = {}
     self.iServerSlots = 0
@@ -21,6 +22,7 @@ function CBoardClient:__init()
 
     -- Attach events handlers
     Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
+    Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
     Events:Subscribe("MouseScroll", self, self.onMouseScroll)
     Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
 
@@ -81,7 +83,7 @@ end
 function CBoardClient:isHudVisible()
     if Game:GetState() ~= GUIState.Game then return end
 
-    local disableCameraScroll = LocalPlayer:GetValue("DisableCameraScroll")
+    local disableCameraScroll = self.DisableCameraScrollEvent
 
     if Key:IsDown(self.expectedKey) then
         if not disableCameraScroll then
@@ -102,6 +104,12 @@ function CBoardClient:UpdateKeyBinds()
     local bind = keyBinds and keyBinds["PlayersList"]
 
     self.expectedKey = bind and bind.type == "Key" and bind.value or 116
+end
+
+function CBoardClient:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.DisableCameraScrollEvent = LocalPlayer:GetValue("DisableCameraScroll")
 end
 
 function CBoardClient:onMouseScroll(args)

@@ -11,9 +11,7 @@ end
 
 function Hydraulics:ModuleLoad()
     if LocalPlayer:InVehicle() then
-        self:LocalPlayerEnterVehicle({
-            vehicle = LocalPlayer:GetVehicle()
-        })
+        self:LocalPlayerEnterVehicle({vehicle = LocalPlayer:GetVehicle()})
     end
 
     Events:Subscribe("LocalPlayerEnterVehicle", self, self.LocalPlayerEnterVehicle)
@@ -21,16 +19,22 @@ function Hydraulics:ModuleLoad()
     Events:Subscribe("PreTick", self, self.PreTick)
 end
 
+function Hydraulics:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.HydraulicsEnabledValue = LocalPlayer:GetValue("HydraulicsEnabled")
+end
+
 function Hydraulics:InputPoll()
-    if LocalPlayer:GetValue("HydraulicsEnabled") then
+    if self.HydraulicsEnabledValue then
         if not LocalPlayer:InVehicle() then return end
 
         local vehicle = LocalPlayer:GetVehicle()
 
         if vehicle:GetDriver() and vehicle ~= 'ClientActor' then
-            local wheelCount = vehicle:GetWheelCount()
-
             if Input:GetValue(Action.Handbrake) ~= 0 then
+                local wheelCount = vehicle:GetWheelCount()
+
                 if vehicle:GetLinearVelocity():Length() < 2.5 then
                     for wheelIndex = 1, math.floor(wheelCount / (wheelCount == 6 and 3 or wheelCount == 8 and 4 or 2)) do
                         if Input:GetValue(Action.MoveBackward) > 0 then
@@ -93,7 +97,14 @@ function Hydraulics:LocalPlayerEnterVehicle(args)
 
     self.targetLengths = Copy(self.defaultLengths)
 
-    if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe("InputPoll", self, self.InputPoll) end
+    if not self.eventsLoaded then
+        self:NetworkObjectValueChange()
+
+        self.NetworkObjectValueChangeEvent = Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
+        self.InputPollEvent = Events:Subscribe("InputPoll", self, self.InputPoll)
+
+        self.eventsLoaded = true
+    end
 end
 
 function Hydraulics:LocalPlayerExitVehicle(args)
@@ -109,7 +120,14 @@ function Hydraulics:LocalPlayerExitVehicle(args)
     self.defaultLengths = {}
     self.targetLengths = {}
 
-    if self.InputPollEvent then Events:Unsubscribe(self.InputPollEvent) self.InputPollEvent = nil end
+    if self.eventsLoaded then
+        Events:Unsubscribe(self.NetworkObjectValueChangeEvent) self.NetworkObjectValueChangeEvent = nil
+        Events:Unsubscribe(self.InputPollEvent) self.InputPollEvent = nil
+
+        self.eventsLoaded = nil
+
+        self.HydraulicsEnabledValue = nil
+    end
 end
 
 function Hydraulics:PreTick(args)

@@ -26,14 +26,17 @@ function Jesus:__init()
 
     self.surfaces = {}
 
+    self:ObjectValueChange()
+
     Events:Subscribe("Lang", self, self.Lang)
     Events:Subscribe("PostTick", self, self.PostTick)
     Events:Subscribe("ModuleUnload", self, self.RemoveAllSurfaces)
     Events:Subscribe("PlayerQuit", self, self.PlayerQuit)
+    Events:Subscribe("EntityDespawn", self, self.EntityDespawn)
     Events:Subscribe("LocalPlayerChat", self, self.LocalPlayerChat)
     Events:Subscribe("ToggleJesus", self, self.ToggleJesus)
-    Events:Subscribe("NetworkObjectValueChange", self, self.ObjectValueChange)
     Events:Subscribe("SharedObjectValueChange", self, self.ObjectValueChange)
+    Events:Subscribe("NetworkObjectValueChange", self, self.ObjectValueChange)
 
     if LocalPlayer:GetValue("JesusModeVisible") or not LocalPlayer:GetValue("HiddenHUD") then
         self.RenderEvent = Events:Subscribe("Render", self, self.Render)
@@ -52,6 +55,12 @@ end
 
 function Jesus:PlayerQuit(args)
     self:Remove(args.player)
+end
+
+function Jesus:EntityDespawn(args)
+    if args.entity.__type == "Player" then
+        self:Remove(args.entity)
+    end
 end
 
 function Jesus:Master(player)
@@ -110,12 +119,12 @@ end
 function Jesus:Position(player)
     local anchor = self:Anchor(player)
     local playerPos = anchor:GetPosition()
-    local playerAngle = anchor:GetAngle()
     local effectiveAngle = Angle.Zero
     local effectiveHeight = self.surfaceHeight
 
     local pState = player:GetState()
     if pState == 1 or pState == 2 or pState == 3 or pState == 5 then
+        local playerAngle = anchor:GetAngle()
         local playerAngleYaw = playerAngle.yaw
         local pi = math.pi
 
@@ -182,24 +191,28 @@ function Jesus:PostTick()
 end
 
 function Jesus:ObjectValueChange(args)
-    if args.object.__type ~= "LocalPlayer" then return end
+    if args and args.object.__type ~= "LocalPlayer" then return end
 
-    if args.key == "WaterWalk" then
-        if args.value then
-            self.visible = true
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
 
-            if self.fadeOutAnimation then Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil end
-            Animation:Play(0, 1, 0.05, easeInOut, function(value) self.animationValue = value end)
-        else
-            self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeInOut, function(value) self.animationValue = value end, function() self.visible = nil end)
+    if args then
+        if args.key == "WaterWalk" then
+            if args.value then
+                self.visible = true
+
+                if self.fadeOutAnimation then Animation:Stop(self.fadeOutAnimation) self.fadeOutAnimation = nil end
+                Animation:Play(0, 1, 0.05, easeInOut, function(value) self.animationValue = value end)
+            else
+                self.fadeOutAnimation = Animation:Play(self.animationValue, 0, 0.05, easeInOut, function(value) self.animationValue = value end, function() self.visible = nil end)
+            end
         end
-    end
 
-    if args.key == "JesusModeVisible" or args.key == "HiddenHUD" then
-        if LocalPlayer:GetValue("JesusModeVisible") and not LocalPlayer:GetValue("HiddenHUD") then
-            if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
-        else
-            if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+        if args.key == "JesusModeVisible" or args.key == "HiddenHUD" then
+            if LocalPlayer:GetValue("JesusModeVisible") and not LocalPlayer:GetValue("HiddenHUD") then
+                if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
+            else
+                if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+            end
         end
     end
 end
@@ -209,7 +222,7 @@ function Jesus:Render()
     if Game:GetState() ~= GUIState.Game then return end
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     local locStrings = self.locStrings
     local text = locStrings["nameSizer"]
@@ -251,8 +264,10 @@ function Jesus:ToggleJesus()
         return
     end
 
-    LocalPlayer:SetSystemValue("WaterWalk", not LocalPlayer:GetValue("WaterWalk"))
-    Events:Fire("CastCenterText", {text = locStrings["name"] .. (LocalPlayer:GetValue("WaterWalk") and locStrings["disable"] or self.locStrings["enable"]), time = 2, color = Color(185, 215, 255)})
+    local waterWalk = LocalPlayer:GetValue("WaterWalk")
+
+    LocalPlayer:SetSystemValue("WaterWalk", not waterWalk)
+    Events:Fire("CastCenterText", {text = locStrings["name"] .. (waterWalk and locStrings["disable"] or self.locStrings["enable"]), time = 2, color = Color(185, 215, 255)})
 end
 
 function LocalPlayer:SetSystemValue(valueName, value)

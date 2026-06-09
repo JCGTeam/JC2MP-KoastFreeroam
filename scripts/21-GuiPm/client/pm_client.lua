@@ -338,7 +338,7 @@ function PM:loadMessages()
         self.GUI.messagesLabel:SetText("")
         if self.messages[tostring(pId)] then
             for index, msg in ipairs(self.messages[tostring(pId)]) do
-                if IsValid(msg) then
+                if msg then
                     if index > 1 then
                         self.GUI.messagesLabel:SetText(self.GUI.messagesLabel:GetText() .. "\n" .. tostring(msg))
                     else

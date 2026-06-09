@@ -1,5 +1,4 @@
 function HUD:DrawHUD()
-    local roll = self:GetRoll()
     local pitch = self:GetPitch()
 
     self:DrawLineHUD(Vector2(-0.09, 0), Vector2(0.09, 0))

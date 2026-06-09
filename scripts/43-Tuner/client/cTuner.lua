@@ -264,9 +264,13 @@ function Tuner:Render()
 end
 
 function Tuner:PostTick()
-    local vehicles = Client:GetVehicles()
+    local vehiclesList = {}
 
-    for v in vehicles do
+    for v in Client:GetVehicles() do
+        table.insert(vehiclesList, v)
+    end
+
+    for _, v in ipairs(vehiclesList) do
         local vId = v:GetId()
         local neons = self.neons[vId]
 
@@ -280,7 +284,7 @@ function Tuner:PostTick()
 
     if self.syncTimer:GetSeconds() <= 1 then return end
 
-    for v in vehicles do
+    for _, v in ipairs(vehiclesList) do
         local vehid = v:GetValue("vehid")
 
         if vehid then
@@ -338,6 +342,10 @@ function Tuner:PostTick()
 end
 
 function Tuner:InitGUI()
+    if self.gui and self.gui.window then
+        self.gui.window:Remove()
+    end
+
     self.peredacha = 1
 
     self.gui = {

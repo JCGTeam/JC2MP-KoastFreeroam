@@ -1,6 +1,8 @@
 class 'Clock'
 
 function Clock:__init()
+    self:ObjectValueChange()
+
     Events:Subscribe("NetworkObjectValueChange", self, self.ObjectValueChange)
     Events:Subscribe("SharedObjectValueChange", self, self.ObjectValueChange)
 
@@ -10,23 +12,28 @@ function Clock:__init()
 end
 
 function Clock:ObjectValueChange(args)
-    if args.object.__type ~= "LocalPlayer" then return end
+    if args and args.object.__type ~= "LocalPlayer" then return end
 
-    if args.key == "ClockVisible" or args.key == "HiddenHUD" then
-        if LocalPlayer:GetValue("ClockVisible") and not LocalPlayer:GetValue("HiddenHUD") then
-            if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
-        else
-            if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+    self.ClockPendosFormatValue = LocalPlayer:GetValue("ClockPendosFormat")
+
+    if args then
+        if args.key == "ClockVisible" or args.key == "HiddenHUD" then
+            if LocalPlayer:GetValue("ClockVisible") and not LocalPlayer:GetValue("HiddenHUD") then
+                if not self.RenderEvent then self.RenderEvent = Events:Subscribe("Render", self, self.Render) end
+            else
+                if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
+            end
         end
     end
 end
 
 function Clock:Render()
+    if Game:GetState() ~= GUIState.Game then return end
+
     local gameAlpha = Game:GetSetting(4)
+    if gameAlpha <= 1 then return end
 
-    if Game:GetState() ~= GUIState.Game or gameAlpha <= 1 then return end
-
-    local format = LocalPlayer:GetValue("ClockPendosFormat") and "%I:%M:%S %p" or "%X"
+    local format = self.ClockPendosFormatValue and "%I:%M:%S %p" or "%X"
 
     local time_txt = os.date(format)
     local date_txt = os.date("%d/%m/%Y")

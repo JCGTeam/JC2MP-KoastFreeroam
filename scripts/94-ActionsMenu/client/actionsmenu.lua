@@ -437,15 +437,6 @@ function ActionsMenu:Render()
     end
 end
 
-function ActionsMenu:SeatInput(args)
-    if args.input == 39 or args.input == 40 or args.input == 41 or args.input == 42 then
-        LocalPlayer:SetBaseState(AnimationState.SUprightIdle)
-
-        if self.SeatInputEvent then Events:Unsubscribe(self.SeatInputEvent) self.SeatInputEvent = nil end
-        if self.CalcViewEvent then Events:Unsubscribe(self.CalcViewEvent) self.CalcViewEvent = nil end
-    end
-end
-
 function ActionsMenu:CalcView()
     Camera:SetPosition(Camera:GetPosition() - Vector3(0, 1, 0))
 end

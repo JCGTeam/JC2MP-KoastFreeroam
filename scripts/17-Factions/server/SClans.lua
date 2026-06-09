@@ -170,7 +170,10 @@ function ClanSystem:PlayerJoin(args)
 end
 
 function ClanSystem:PlayerQuit(args)
-    self.playerList[args.player:GetId()] = nil
+    local pId = args.player:GetId()
+
+    self.playerList[pId] = nil
+    self.invitations[pId] = nil
 end
 
 function ClanSystem:SendPlayerList(player)

@@ -1098,7 +1098,16 @@ function Shop:Buy()
             self.cooltime = time + self.cooldown
         end
 
-        Network:Send("PlayerFired", {self.types[category_name], subcategory_name, index, self.tone1, self.tone2})
+        local occupantsSeats = {}
+        local vehicle = LocalPlayer:GetVehicle()
+
+        if IsValid(vehicle) then
+            for _, player in ipairs(vehicle:GetOccupants()) do
+                occupantsSeats[player:GetId()] = player:GetSeat()
+            end
+        end
+
+        Network:Send("PlayerFired", {self.types[category_name], subcategory_name, index, self.tone1, self.tone2, occupantsSeats})
         return false
     end
 end

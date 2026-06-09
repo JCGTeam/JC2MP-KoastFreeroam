@@ -304,7 +304,7 @@ end
 function Reports:ReportMenuClosed()
     self:WindowClosed()
 
-    local effect = ClientEffect.Create(AssetLocation.Game, {
+    local effect = ClientEffect.Play(AssetLocation.Game, {
         effect_id = 383,
 
         position = Camera:GetPosition(),

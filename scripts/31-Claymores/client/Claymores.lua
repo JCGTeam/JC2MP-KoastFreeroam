@@ -2,12 +2,16 @@ class "Claymores"
 
 function Claymores:__init()
     self:initVars()
+    self:SharedObjectValueChange()
+    self:NetworkObjectValueChange()
 
+    Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+    Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
     Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
-    Events:Subscribe("PostTick", self, self.onPostTick)
-    Events:Subscribe("WorldNetworkObjectCreate", self, self.onWorldNetworkObjectCreate)
-    Events:Subscribe("WorldNetworkObjectDestroy", self, self.onWorldNetworkObjectDestroy)
-    Events:Subscribe("ModuleUnload", self, self.onModuleUnload)
+    Events:Subscribe("PostTick", self, self.PostTick)
+    Events:Subscribe("WorldNetworkObjectCreate", self, self.WorldNetworkObjectCreate)
+    Events:Subscribe("WorldNetworkObjectDestroy", self, self.WorldNetworkObjectDestroy)
+    Events:Subscribe("ModuleUnload", self, self.ModuleUnload)
 
     Network:Subscribe("EffectClay", self, self.EffectClay)
 end
@@ -20,12 +24,27 @@ function Claymores:initVars()
     self.timer = Timer()
 end
 
+function Claymores:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.FreezeValue = LocalPlayer:GetValue("Freeze")
+    self.ServerMapValue = LocalPlayer:GetValue("ServerMap")
+    self.ExplosiveValue = LocalPlayer:GetValue("Explosive")
+end
+
+function Claymores:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.PassiveValue = LocalPlayer:GetValue("Passive")
+end
+
 function Claymores:EffectClay(args)
     local effect = ClientEffect.Play(AssetLocation.Game, {
         effect_id = 33,
         position = args.position,
         angle = args.angle
     })
+
     local effect = ClientEffect.Play(AssetLocation.Game, {
         effect_id = 19,
         position = args.position,
@@ -34,12 +53,12 @@ function Claymores:EffectClay(args)
 end
 
 function Claymores:LocalPlayerInput(args)
+    if self.FreezeValue then return end
+    if self.PassiveValue then return end
+    if self.ServerMapValue then return end
     if Game:GetState() ~= GUIState.Game then return end
-    if LocalPlayer:GetValue("Freeze") then return end
-    if LocalPlayer:GetValue("Passive") then return end
-    if LocalPlayer:GetValue("ServerMap") then return end
 
-    if args.input == Action.ThrowGrenade and LocalPlayer:GetValue("Explosive") == 3 then
+    if args.input == Action.ThrowGrenade and self.ExplosiveValue == 3 then
         if self.placing then return end
         if self.timer:GetMilliseconds() < self.cooldown then return end
         if LocalPlayer:GetBaseState() ~= AnimationState.SUprightIdle then return end
@@ -57,7 +76,7 @@ function Claymores:LocalPlayerInput(args)
     end
 end
 
-function Claymores:onPostTick()
+function Claymores:PostTick()
     local placing = self.placing
 
     if not placing then return end
@@ -74,7 +93,7 @@ function Claymores:onPostTick()
     self.placing = nil
 end
 
-function Claymores:onWorldNetworkObjectCreate(args)
+function Claymores:WorldNetworkObjectCreate(args)
     local class = args.object:GetValue("C")
 
     if class == Class.ClaymoreTrigger then
@@ -105,7 +124,7 @@ function Claymores:onWorldNetworkObjectCreate(args)
     self.claymores[args.object:GetId()] = object
 end
 
-function Claymores:onWorldNetworkObjectDestroy(args)
+function Claymores:WorldNetworkObjectDestroy(args)
     local class = args.object:GetValue("C")
 
     if class ~= Class.ClaymoreObject then return end
@@ -117,7 +136,7 @@ function Claymores:onWorldNetworkObjectDestroy(args)
     object:Remove()
 end
 
-function Claymores:onModuleUnload()
+function Claymores:ModuleUnload()
     for _, claymore in pairs(self.claymores) do
         if IsValid(claymore) then
             claymore:Remove()
@@ -125,4 +144,4 @@ function Claymores:onModuleUnload()
     end
 end
 
-claymores = Claymores()
+local claymores = Claymores()

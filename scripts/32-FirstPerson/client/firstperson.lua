@@ -36,6 +36,7 @@ function FirstPerson:__init()
     self.bering = {[85] = true}
     self.aero = {[39] = true}
 
+    self:SharedObjectValueChange()
     self:UpdateKeyBinds()
 
     self.locStrings = {
@@ -44,6 +45,7 @@ function FirstPerson:__init()
     }
 
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
     Events:Subscribe("UpdateKeyBinds", self, self.UpdateKeyBinds)
     Events:Subscribe("LocalPlayerExitVehicle", self, self.LocalPlayerExitVehicle)
     Events:Subscribe("KeyUp", self, self.KeyUp)
@@ -54,6 +56,12 @@ function FirstPerson:Lang()
         on = "First-person View Enabled",
         off = "First-person View Disabled"
     }
+end
+
+function FirstPerson:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.SpectatorModeValue = LocalPlayer:GetValue("SpectatorMode")
 end
 
 function FirstPerson:UpdateKeyBinds()
@@ -71,7 +79,7 @@ end
 
 function FirstPerson:CalcView()
     if not self.enabled then return end
-    if LocalPlayer:GetValue("SpectatorMode") then return end
+    if self.SpectatorModeValue then return end
 
     local position = LocalPlayer:GetBonePosition("ragdoll_Head")
     local vehicle = LocalPlayer:GetVehicle()
@@ -114,7 +122,7 @@ end
 
 function FirstPerson:KeyUp(args)
     if Game:GetState() ~= GUIState.Game then return end
-    if LocalPlayer:GetValue("SpectatorMode") then return end
+    if self.SpectatorModeValue then return end
 
     if args.key == self.expectedKey then
         self:Active()

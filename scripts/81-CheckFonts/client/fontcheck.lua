@@ -18,17 +18,17 @@ function FontCheck:LoadFonts()
     if self.checkFont then self.checkFont:Remove() self.checkFont = nil end
     if self.ModuleLoadEvent then Events:Unsubscribe(self.ModuleLoadEvent) self.ModuleLoadEvent = nil end
 
-    Network:Send("ToggleSystemFonts", {enabled = true})
+    LocalPlayer:SetValue("SystemFonts", true)
 end
 
 function FontCheck:FontToggle(args)
     local print_txt = "Font set:"
 
     if args.text == "default" then
-        Network:Send("ToggleSystemFonts", {enabled = nil})
+        LocalPlayer:SetValue("SystemFonts", nil)
         print(print_txt .. " " .. "Default")
     elseif args.text == "server" then
-        Network:Send("ToggleSystemFonts", {enabled = true})
+        LocalPlayer:SetValue("SystemFonts", true)
         print(print_txt .. " " .. "Server")
     end
 end

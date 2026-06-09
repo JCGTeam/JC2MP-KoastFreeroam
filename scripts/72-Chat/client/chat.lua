@@ -23,8 +23,11 @@ function BetterChat:__init()
         [71] = true
     }
 
+    self:SharedObjectValueChange()
+
     Events:Subscribe("OpenChatMenu", self, self.OpenChatMenu)
     Events:Subscribe("Lang", self, self.Lang)
+    Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
     Events:Subscribe("Render", self, self.Render)
 
     local lang = LocalPlayer:GetValue("Lang")
@@ -77,6 +80,12 @@ function BetterChat:Lang()
         sc_cb_2 = "Friends",
         sc_cb_3 = "Nobody"
     }
+end
+
+function BetterChat:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
 end
 
 function BetterChat:CreateChatModeListItems()
@@ -185,11 +194,19 @@ function BetterChat:CloseWindow()
 
         Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil
     end
+
+    if self.controlstipSh then self.controlstipSh:Remove() self.controlstipSh = nil end
+    if self.controlstip then self.controlstip:Remove() self.controlstip = nil end
+
+    if self.MouseUpEvent then
+        Events:Unsubscribe(self.MouseUpEvent) self.MouseUpEvent = nil
+        Events:Unsubscribe(self.MouseMoveEvent) self.MouseMoveEvent = nil
+    end
 end
 
 function BetterChat:ChatPosChanger()
     if not self.controlstipSh then
-        local systemFonts = LocalPlayer:GetValue("SystemFonts")
+        local systemFonts = self.SystemFontsValue
 
         local locStrings = self.locStrings
 
@@ -260,7 +277,7 @@ end
 
 function BetterChat:Render()
     if Chat:GetActive() then
-        if LocalPlayer:GetValue("SystemFonts") then
+        if self.SystemFontsValue then
             Render:SetFont(AssetLocation.SystemFont, "Impact")
             self.chatmodelist:SetFont(AssetLocation.SystemFont, "Impact")
         end

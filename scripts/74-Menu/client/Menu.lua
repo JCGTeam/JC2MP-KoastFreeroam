@@ -39,12 +39,19 @@ function Menu:__init()
         }
     end
 
-    self.LangEvent = Events:Subscribe("Lang", self, self.Lang)
-    self.ModuleUnloadEvent = Events:Subscribe("ModuleUnload", self, self.ModuleUnload)
-    self.RenderEvent = Events:Subscribe("Render", self, self.Render)
-    self.ResolutionChangeEvent = Events:Subscribe("ResolutionChange", self, self.ResolutionChange)
-    self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
-    -- self.CalcViewEvent = Events:Subscribe("CalcView", self, self.CalcView)
+    if not self.eventsLoaded then
+        self:SharedObjectValueChange()
+
+        self.LangEvent = Events:Subscribe("Lang", self, self.Lang)
+        self.ModuleUnloadEvent = Events:Subscribe("ModuleUnload", self, self.ModuleUnload)
+        self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+        self.ResolutionChangeEvent = Events:Subscribe("ResolutionChange", self, self.ResolutionChange)
+        self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+        -- self.CalcViewEvent = Events:Subscribe("CalcView", self, self.CalcView)
+
+        self.eventsLoaded = true
+    end
 
     if Game:GetState() ~= GUIState.Loading then
         self:GameLoad()
@@ -73,8 +80,15 @@ function Menu:Lang()
     }
 end
 
+function Menu:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.KoastBuildValue = LocalPlayer:GetValue("KoastBuild")
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+end
+
 function Menu:LangItem(langCode, langFull, flag)
-    local systemFonts = LocalPlayer:GetValue("SystemFonts")
+    local systemFonts = self.SystemFontsValue
 
     local langItem = ModernGUI.Button.Create(self.langScreen.list)
     langItem:SetDock(GwenPosition.Top)
@@ -174,7 +188,7 @@ function Menu:QRLink(parent, titleText, qrImage, linkText)
     title:SetAlignment(GwenPosition.Center)
     title:SetText(titleText)
     title:SetTextSize(20)
-    if LocalPlayer:GetValue("SystemFonts") then
+    if self.SystemFontsValue then
         title:SetFont(AssetLocation.SystemFont, "Impact")
     end
     title:SizeToContents()
@@ -227,17 +241,17 @@ function Menu:Render()
         self.rico:Draw()
     end
 
-    local build = LocalPlayer:GetValue("KoastBuild")
-    local version_txt = "KMod Version: " .. tostring(build)
+    local build = self.KoastBuildValue
 
     if build then
+        local version_txt = "KMod Version: " .. tostring(build)
         -- Render:DrawText(Vector2((Render.Width - Render:GetTextWidth(version_txt, 15) - 30), Render.Size.y - 45), version_txt, Color(255, 255, 255, 100), 15)
     end
 
     local welcomeTextAlpha = self.welcomeTextAlpha
 
     if welcomeTextAlpha then
-        if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+        if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
         local locStrings = self.locStrings
         local textSize = 36
@@ -284,7 +298,7 @@ function Menu:Render()
     if self.nicknameColorScreen then self.nicknameColorScreen.bw:SetVisible(visiblity) end
     if self.rulesScreen then self.rulesScreen.label:SetVisible(visiblity) end
 
-    local systemFonts = LocalPlayer:GetValue("SystemFonts")
+    local systemFonts = self.SystemFontsValue
 
     if systemFonts then
         local langList = self.langList
@@ -461,7 +475,7 @@ function Menu:ChangeStep(step)
             sound:SetParameter(0, 1)
         end)
 
-        local systemFonts = LocalPlayer:GetValue("SystemFonts")
+        local systemFonts = self.SystemFontsValue
 
         self.promocodes = {}
 
@@ -562,7 +576,7 @@ function Menu:ChangeStep(step)
 
         if self.nicknameColorScreen then return end
 
-        local systemFonts = LocalPlayer:GetValue("SystemFonts")
+        local systemFonts = self.SystemFontsValue
 
         self.nicknameColorScreen = {}
 
@@ -725,7 +739,7 @@ function Menu:ChangeStep(step)
                 self.donateScreen.nextButton:SetSize(Vector2(Render:GetTextWidth(locStrings["continue"], self.donateScreen.nextButton:GetTextSize()) + 30, 40))
                 self.donateScreen.nextButton:SetPosition(Vector2(Render.Size.x / 2 - self.donateScreen.nextButton:GetSize().x / 2, Render.Size.y))
                 self.donateScreen.nextButton:SetText(locStrings["continue"])
-                if LocalPlayer:GetValue("SystemFonts") then
+                if self.SystemFontsValue then
                     self.donateScreen.nextButton:SetFont(AssetLocation.SystemFont, "Impact")
                 end
 
@@ -754,13 +768,20 @@ function Menu:ChangeStep(step)
             Events:Fire("CastCenterText", {text = self.locStrings["setupFinished"], time = 5})
         end
 
-        if self.LangEvent then Events:Unsubscribe(self.LangEvent) self.LangEvent = nil end
-        if self.HealAppItemEvent then Events:Unsubscribe(self.HealAppItemEvent) self.HealAppItemEvent = nil end
-        if self.ModuleUnloadEvent then Events:Unsubscribe(self.ModuleUnloadEvent) self.ModuleUnloadEvent = nil end
-        if self.RenderEvent then Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil end
-        if self.ResolutionChangeEvent then Events:Unsubscribe(self.ResolutionChangeEvent) self.ResolutionChangeEvent = nil end
-        if self.LocalPlayerInputEvent then Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil end
-        -- if self.CalcViewEvent then Events:Unsubscribe(self.CalcViewEvent) self.CalcViewEvent = nil end
+        if self.eventsLoaded then
+            Events:Unsubscribe(self.LangEvent) self.LangEvent = nil
+            Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+            Events:Unsubscribe(self.ModuleUnloadEvent) self.ModuleUnloadEvent = nil
+            Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil
+            Events:Unsubscribe(self.ResolutionChangeEvent) self.ResolutionChangeEvent = nil
+            Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil
+            -- Events:Unsubscribe(self.CalcViewEvent) self.CalcViewEvent = nil
+
+            self.eventsLoaded = nil
+
+            self.KoastBuildValue = nil
+            self.SystemFontsValue = nil
+        end
 
         self.PressFunction = nil
 
@@ -793,8 +814,8 @@ function Menu:ChangeStep(step)
             local lang = LocalPlayer:GetValue("Lang")
             if lang and lang == "EN" then
                 Events:Fire("OpenWhatsNew", {
-                    titletext = "Warning!",
-                    text = "This server is open source and is not official.",
+                    titletext = "SPONSOR THE SERVER",
+                    text = "Donate more than 6,16$ to be in the list of sponsors!\nBy sponsoring the server and its author, you motivate and prolong the life of the project (and not only).\n \nLinks:\n> Donate - bit.ly/45x8U0n\n> Discord - t.me/koastfreeroam/197\n> Telegram - t.me/koastfreeroam\n \nWith donation, you can also buy some service on the server or a privilege.",
                     usepause = true
                 })
             else
@@ -802,8 +823,8 @@ function Menu:ChangeStep(step)
 
                 if type == 0 then
                     Events:Fire("OpenWhatsNew", {
-                        titletext = "Внимание!",
-                        text = "Данный сервер основан на открытом исходном коде и не является официальным.",
+                        titletext = "VIP ДЛЯ ВСЕХ!",
+                        text = "В связи с неактуальностью и очень низким спросом на донат, мы дарим VIP каждому игроку.\n \nПолезные ссылки:\n> Discord - t.me/koastfreeroam/197\n> Telegram - t.me/koastfreeroam\n> Steam - steamcommunity.com/groups/koastfreeroam\n \nНаслаждайтесь :)",
                         usepause = true
                     })
                 end
@@ -835,7 +856,7 @@ function Menu:PlayLinkAnimation(currentLink, linksTable, finalPos, size)
                 self.linksScreen.nextButton:SetSize(Vector2(Render:GetTextWidth(locStrings["next"], self.linksScreen.nextButton:GetTextSize()) + 30, 40))
                 self.linksScreen.nextButton:SetPosition(Vector2( Render.Size.x / 2 - self.linksScreen.nextButton:GetSize().x / 2, Render.Size.y))
                 self.linksScreen.nextButton:SetText(locStrings["next"])
-                if LocalPlayer:GetValue("SystemFonts") then
+                if self.SystemFontsValue then
                     self.linksScreen.nextButton:SetFont(AssetLocation.SystemFont, "Impact")
                 end
 
@@ -855,9 +876,10 @@ end
 
 function Menu:RemoveScreen(table)
     for _, v in pairs(table) do
-        if IsValid(v) and v.Remove then
+        if type(v) == "table" and type(v.Remove) == "function" then
             v:Remove()
-            v = nil
+        elseif IsValid(v) and v.Remove then
+            v:Remove()
         end
     end
 end

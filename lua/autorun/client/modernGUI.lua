@@ -65,7 +65,7 @@ function ModernGUI.Button.Create(parent)
     button:SetTextSize(20)
 
     button:Subscribe("HoverEnter", function()
-        Animation:Play(defaultAlpha, hoverAlpha, hoverSpeed, easeIOnut, function(value)
+        Animation:Play(defaultAlpha, hoverAlpha, hoverSpeed, easeInOut, function(value)
             if IsValid(background) then
                 background:SetColor(Color(defaultColor.r, defaultColor.g, defaultColor.b, value))
             end
@@ -73,7 +73,7 @@ function ModernGUI.Button.Create(parent)
     end)
 
     button:Subscribe("HoverLeave", function()
-        Animation:Play(hoverAlpha, defaultAlpha, hoverSpeed, easeIOnut, function(value)
+        Animation:Play(hoverAlpha, defaultAlpha, hoverSpeed, easeInOut, function(value)
             if IsValid(background) then
                 background:SetColor(Color(defaultColor.r, defaultColor.g, defaultColor.b, value))
             end
@@ -81,7 +81,7 @@ function ModernGUI.Button.Create(parent)
     end)
 
     button:Subscribe("Press", function()
-        Animation:Play(0, hoverAlpha, hoverSpeed, easeIOnut, function(value)
+        Animation:Play(0, hoverAlpha, hoverSpeed, easeInOut, function(value)
             if IsValid(background) then
                 background:SetColor(Color(defaultColor.r, defaultColor.g, defaultColor.b, value))
             end
@@ -197,7 +197,7 @@ function ModernGUI.TextBox.Create(parent)
     textBox:SetBackgroundVisible(false)
 
     textBox:Subscribe("HoverEnter", function()
-        Animation:Play(defaultAlpha, hoverAlpha, hoverSpeed, easeIOnut, function(value)
+        Animation:Play(defaultAlpha, hoverAlpha, hoverSpeed, easeInOut, function(value)
             if IsValid(background) then
                 background:SetColor(Color(defaultColor.r, defaultColor.g, defaultColor.b, value))
             end
@@ -205,7 +205,7 @@ function ModernGUI.TextBox.Create(parent)
     end)
 
     textBox:Subscribe("HoverLeave", function()
-        Animation:Play(hoverAlpha, defaultAlpha, hoverSpeed, easeIOnut, function(value)
+        Animation:Play(hoverAlpha, defaultAlpha, hoverSpeed, easeInOut, function(value)
             if IsValid(background) then
                 background:SetColor(Color(defaultColor.r, defaultColor.g, defaultColor.b, value))
             end

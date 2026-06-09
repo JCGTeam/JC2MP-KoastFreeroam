@@ -30,10 +30,17 @@ function CameraView:__init()
     end
 
     if LocalPlayer:InVehicle() then
-        self.CalcViewEvent = Events:Subscribe("CalcView", self, self.CalcView)
-        self.MouseScrollEvent = Events:Subscribe("MouseScroll", self, self.MouseScroll)
-        self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
-        self.InputPollEvent = Events:Subscribe("InputPoll", self, self.InputPoll)
+        if not self.eventsLoaded then
+            self:SharedObjectValueChange()
+
+            self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+            self.CalcViewEvent = Events:Subscribe("CalcView", self, self.CalcView)
+            self.MouseScrollEvent = Events:Subscribe("MouseScroll", self, self.MouseScroll)
+            self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+            self.InputPollEvent = Events:Subscribe("InputPoll", self, self.InputPoll)
+
+            self.eventsLoaded = true
+        end
     end
 
     Events:Subscribe("Lang", self, self.Lang)
@@ -155,6 +162,14 @@ function CameraView:Lang()
     }
 end
 
+function CameraView:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+    self.SpectatorModeValue = LocalPlayer:GetValue("SpectatorMode")
+    self.DisableCameraScrollValue = LocalPlayer:GetValue("DisableCameraScroll")
+end
+
 function CameraView:CastCenterText(text)
     self.timerF = Timer()
     self.textF = text
@@ -189,7 +204,7 @@ function CameraView:Render()
         end
     end
 
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
     local size = 15
     local pos = Vector2(Render.Width / 2, Render.Height / 1.075) - Render:GetTextSize(textF, size) / 2
@@ -204,7 +219,7 @@ function CameraView:Render()
 end
 
 function CameraView:CalcView()
-    if LocalPlayer:GetValue("SpectatorMode") then return end
+    if self.SpectatorModeValue then return end
 
     if not LocalPlayer:InVehicle() then return end
 
@@ -221,7 +236,7 @@ function CameraView:CalcView()
     local t = Vector3()
     local s = 0
 
-    if Game:GetState() == GUIState.Game and not LocalPlayer:GetValue("DisableCameraScroll") then
+    if Game:GetState() == GUIState.Game and not self.DisableCameraScrollValue then
         local keyDown = Key:IsDown(4)
 
         if keyDown and not self.keyWasDown then
@@ -301,7 +316,7 @@ function CameraView:ZoomReset()
 end
 
 function CameraView:InputPoll()
-    if LocalPlayer:GetValue("DisableCameraScroll") then
+    if self.DisableCameraScrollValue then
         if self.antiSnap and Game:GetState() == GUIState.Game and LocalPlayer:InVehicle() and self.camera == 3 and Input:GetValue(Action.LookLeft) == 0 and Input:GetValue(Action.LookRight) == 0 then
             if self.as_toggle then
                 Input:SetValue(Action.LookLeft, 0.0005)
@@ -316,8 +331,8 @@ end
 
 function CameraView:MouseScroll(args)
     if Game:GetState() ~= GUIState.Game then return end
-    if LocalPlayer:GetValue("SpectatorMode") then return end
-    if LocalPlayer:GetValue("DisableCameraScroll") then return end
+    if self.SpectatorModeValue then return end
+    if self.DisableCameraScrollValue then return end
 
     self.zoom = math.clamp(self.zoom + (args.delta * 0.25), 0, 15)
 end
@@ -325,22 +340,38 @@ end
 function CameraView:EnterVehicle()
     Events:Fire("CameraState", {camera = self.names[self.camera], altview = self.reverse})
 
-    if not self.CalcViewEvent then self.CalcViewEvent = Events:Subscribe("CalcView", self, self.CalcView) end
-    if not self.MouseScrollEvent then self.MouseScrollEvent = Events:Subscribe("MouseScroll", self, self.MouseScroll) end
-    if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput) end
-    if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe("InputPoll", self, self.InputPoll) end
+    if not self.eventsLoaded then
+        self:SharedObjectValueChange()
+
+        self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+        self.CalcViewEvent = Events:Subscribe("CalcView", self, self.CalcView)
+        self.MouseScrollEvent = Events:Subscribe("MouseScroll", self, self.MouseScroll)
+        self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+        self.InputPollEvent = Events:Subscribe("InputPoll", self, self.InputPoll)
+
+        self.eventsLoaded = true
+    end
 end
 
 function CameraView:LocalPlayerExitVehicle()
-    if self.CalcViewEvent then Events:Unsubscribe(self.CalcViewEvent) self.CalcViewEvent = nil end
-    if self.MouseScrollEvent then Events:Unsubscribe(self.MouseScrollEvent) self.MouseScrollEvent = nil end
-    if self.LocalPlayerInputEvent then Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil end
-    if self.InputPollEvent then Events:Unsubscribe(self.InputPollEvent) self.InputPollEvent = nil end
+    if not self.eventsLoaded then return end
+
+    Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
+    Events:Unsubscribe(self.CalcViewEvent) self.CalcViewEvent = nil
+    Events:Unsubscribe(self.MouseScrollEvent) self.MouseScrollEvent = nil
+    Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil
+    Events:Unsubscribe(self.InputPollEvent) self.InputPollEvent = nil
+
+    self.eventsLoaded = nil
+
+    self.SystemFontsValue = nil
+    self.SpectatorModeValue = nil
+    self.DisableCameraScrollValue = nil
 end
 
 function CameraView:LocalPlayerInput(args)
     if Game:GetState() ~= GUIState.Game then return end
-    if LocalPlayer:GetValue("SpectatorMode") then return end
+    if self.SpectatorModeValue then return end
 
     if LocalPlayer:InVehicle() then
         if args.input == Action.VehicleCam and Input:GetValue(Action.ShoulderCam) ~= 0 then

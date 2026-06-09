@@ -438,6 +438,9 @@ function WarpGui:PlayerQuit(args)
 
     self.playerList:RemoveItem(rows[playerId])
     self.rows[playerId] = nil
+    self.acceptButtons[playerId] = nil
+    self.whitelistButtons[playerId] = nil
+    self.warpRequests[playerId] = nil
 end
 
 function WarpGui:Render()

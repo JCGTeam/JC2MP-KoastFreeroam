@@ -57,6 +57,11 @@ function Autopilot:__init()
         local vehicle = LocalPlayer:GetVehicle()
 
         if vehicle:GetClass() == VehicleClass.Air then
+            self:SharedObjectValueChange()
+            self:NetworkObjectValueChange()
+
+            self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+            self.NetworkObjectValueChangeEvent = Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange)
             self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.InputBlock)
             self.InputPollEvent = Events:Subscribe("InputPoll", self, self.Input)
             self.KeyUpEvent = Events:Subscribe("KeyUp", self, self.PanelOpen)
@@ -86,6 +91,19 @@ function Autopilot:UpdateKeyBinds()
 
     self.expectedKey = bind and bind.type == "Key" and bind.value or 82
     self.stringKey = bind and bind.type == "Key" and bind.valueString or "R"
+end
+
+function Autopilot:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.HiddenHUDValue = LocalPlayer:GetValue("HiddenHUD")
+    self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
+end
+
+function Autopilot:NetworkObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.BoostValue = LocalPlayer:GetValue("Boost")
 end
 
 function Autopilot:InitGUI()
@@ -649,6 +667,11 @@ function Autopilot:EnterPlane(args)
                 self.vehicle = args.vehicle
                 self.model = model
 
+                self:SharedObjectValueChange()
+                self:NetworkObjectValueChange()
+
+                if not self.SharedObjectValueChangeEvent then self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange) end
+                if not self.NetworkObjectValueChangeEvent then self.NetworkObjectValueChangeEvent = Events:Subscribe("NetworkObjectValueChange", self, self.NetworkObjectValueChange) end
                 if not self.LocalPlayerInputEvent then self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.InputBlock) end
                 if not self.InputPollEvent then self.InputPollEvent = Events:Subscribe("InputPoll", self, self.Input) end
                 if not self.KeyUpEvent then self.KeyUpEvent = Events:Subscribe("KeyUp", self, self.PanelOpen) end
@@ -674,6 +697,8 @@ function Autopilot:ExitPlane()
     if self.vehicle then
         self:Disable()
 
+        if self.SharedObjectValueChangeEvent then Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil end
+        if self.NetworkObjectValueChangeEvent then Events:Unsubscribe(self.NetworkObjectValueChangeEvent) self.NetworkObjectValueChangeEvent = nil end
         if self.LocalPlayerInputEvent then Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil end
         if self.InputPollEvent then Events:Unsubscribe(self.InputPollEvent) self.InputPollEvent = nil end
         if self.KeyUpEvent then Events:Unsubscribe(self.KeyUpEvent) self.KeyUpEvent = nil end
@@ -1003,16 +1028,16 @@ function Autopilot:Render()
         end
     end
 
-    if LocalPlayer:GetValue("HiddenHUD") then return end
+    if self.HiddenHUDValue then return end
     if LocalPlayer:GetWorld() ~= DefaultWorld then return end
 
     local animationValue = self.animationValue
 
     if not animationValue then return end
 
-    if LocalPlayer:GetValue("SystemFonts") then Render:SetFont(AssetLocation.SystemFont, "Impact") end
+    if self.SystemFontsValue then Render:SetFont(AssetLocation.SystemFont, "Impact") end
 
-    local boost = LocalPlayer:GetValue("Boost")
+    local boost = self.BoostValue
     local locStrings = self.locStrings
     local text = locStrings["press"] .. self.stringKey .. locStrings["toopenpanel"]
     local textSize = 14

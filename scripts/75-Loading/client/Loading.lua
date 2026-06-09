@@ -12,8 +12,6 @@ function Load:__init()
     self.backgroundImage = table.randomvalue(self.backgroundImages)
     self.loadingCircle_Outer = Image.Create(AssetLocation.Game, "fe_initial_load_icon_dif.dds")
 
-    self.backgroundImage:SetSize(Render.Size)
-
     local lang = LocalPlayer:GetValue("Lang")
     if lang and lang == "EN" then
         self:Lang()
@@ -25,9 +23,10 @@ function Load:__init()
         }
     end
 
+    self.transform2 = Transform2()
+
     Events:Subscribe("Lang", self, self.Lang)
     Events:Subscribe("ModuleLoad", self, self.ModuleLoad)
-    Events:Subscribe("ResolutionChange", self, self.ResolutionChange)
     Events:Subscribe("GameLoad", self, self.GameLoad)
     Events:Subscribe("LocalPlayerDeath", self, self.LocalPlayerDeath)
     self.PostRenderEvent = Events:Subscribe("PostRender", self, self.PostRender)
@@ -52,10 +51,6 @@ function Load:ModuleLoad()
     end
 end
 
-function Load:ResolutionChange(args)
-    self.backgroundImage:SetSize(args.size)
-end
-
 function Load:GameLoad()
     self.fadeInTimer = nil
 
@@ -71,30 +66,31 @@ function Load:LocalPlayerDeath()
 end
 
 function Load:PostRender()
-    if Game:GetState() == GUIState.Loading then
-        local circleSize = Vector2(70, 70)
-        local rotation = self:GetRotation()
-        local pos = Vector2(Render.Size.x - 80, Render.Size.y - 80)
-        local background_clr = Color.Black
-        local pi = math.pi
+    if Game:GetState() ~= GUIState.Loading then return end
 
-        Render:FillArea(Vector2.Zero, Render.Size, background_clr)
-        self.backgroundImage:Draw()
+    local circleSize = Vector2(70, 70)
+    local rotation = self:GetRotation()
+    local pos = Vector2(Render.Size.x - 80, Render.Size.y - 80)
+    local background_clr = Color.Black
+    local pi = math.pi
 
-        local TransformOuter = Transform2()
-        TransformOuter:Translate(pos)
-        TransformOuter:Rotate(pi * rotation)
+    Render:FillArea(Vector2.Zero, Render.Size, background_clr)
+    self.backgroundImage:Draw(Vector2.Zero, Render.Size, Vector2.Zero, Vector2.One)
 
-        Render:SetTransform(TransformOuter)
-        self.loadingCircle_Outer:Draw(-(circleSize / 2), circleSize, Vector2.Zero, Vector2.One)
-        Render:ResetTransform()
+    local transformOuter = self.transform2
+    transformOuter:SetIdentity()
+    transformOuter:Translate(pos)
+    transformOuter:Rotate(pi * rotation)
 
-        local fadeInTimer = self.fadeInTimer
+    Render:SetTransform(transformOuter)
+    self.loadingCircle_Outer:Draw(-(circleSize / 2), circleSize, Vector2.Zero, Vector2.One)
+    Render:ResetTransform()
 
-        if fadeInTimer and fadeInTimer:GetMinutes() >= 1 then
-            if self.PostRenderEvent then Events:Unsubscribe(self.PostRenderEvent) self.PostRenderEvent = nil end
-            self:ExitWindow()
-        end
+    local fadeInTimer = self.fadeInTimer
+
+    if fadeInTimer and fadeInTimer:GetMinutes() >= 1 then
+        if self.PostRenderEvent then Events:Unsubscribe(self.PostRenderEvent) self.PostRenderEvent = nil end
+        self:ExitWindow()
     end
 end
 

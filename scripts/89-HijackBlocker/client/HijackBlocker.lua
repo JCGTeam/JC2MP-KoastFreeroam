@@ -70,7 +70,7 @@ function HijackBlocker:LocalPlayerInput(args)
 
     local vehicle = LocalPlayer:GetVehicle()
 
-    if not ( vehicle and vehicle:GetDriver() ) then return end
+    if not (vehicle and vehicle:GetDriver()) then return end
 
     local vehicleModel = vehicle:GetModelId()
 

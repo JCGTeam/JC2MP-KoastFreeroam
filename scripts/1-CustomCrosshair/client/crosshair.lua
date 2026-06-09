@@ -3,7 +3,9 @@ class 'Crosshair'
 function Crosshair:__init()
     self.vehicleslist = {3, 7, 11, 18, 20, 21, 24, 30, 32, 34, 35, 36, 37, 43, 47, 53, 56, 57, 61, 62, 64, 74, 75, 77, 83, 88, 89, 90}
 
-    if not LocalPlayer:GetValue("CustomCrosshairVisible") then
+    self:SharedObjectValueChange()
+
+    if not self.customCrosshairVisibleValue then
         LocalPlayer:SetValue("CustomCrosshairVisible", 1)
     end
 
@@ -83,24 +85,47 @@ end
 
 function Crosshair:GetOption(args)
     if args.actCH then
-        if not self.RenderEvent then
-            self.RenderEvent = Events:Subscribe("Render", self, self.Render)
-            self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
-            self.EntityBulletHitEvent = Events:Subscribe("EntityBulletHit", self, self.EntityBulletHit)
-            self.ModuleUnloadEvent = Events:Subscribe("ModuleUnload", self, self.ModuleUnload)
-        end
+        if self.eventsLoaded then return end
+
+        self.transform2 = Transform2()
+
+        self:SharedObjectValueChange()
+
+        self.SharedObjectValueChangeEvent = Events:Subscribe("SharedObjectValueChange", self, self.SharedObjectValueChange)
+        self.RenderEvent = Events:Subscribe("Render", self, self.Render)
+        self.LocalPlayerInputEvent = Events:Subscribe("LocalPlayerInput", self, self.LocalPlayerInput)
+        self.EntityBulletHitEvent = Events:Subscribe("EntityBulletHit", self, self.EntityBulletHit)
+        self.ModuleUnloadEvent = Events:Subscribe("ModuleUnload", self, self.ModuleUnload)
+
+        self.eventsLoaded = true
     else
-        if self.RenderEvent then
+        if self.eventsLoaded then
             self:ModuleUnload()
 
+            Events:Unsubscribe(self.SharedObjectValueChangeEvent) self.SharedObjectValueChangeEvent = nil
             Events:Unsubscribe(self.RenderEvent) self.RenderEvent = nil
             Events:Unsubscribe(self.LocalPlayerInputEvent) self.LocalPlayerInputEvent = nil
             Events:Unsubscribe(self.EntityBulletHitEvent) self.EntityBulletHitEvent = nil
             Events:Unsubscribe(self.ModuleUnloadEvent) self.ModuleUnloadEvent = nil
+
+            self.eventsLoaded = nil
+            self.transform2 = nil
+
+            self.customCrosshairVisibleValue = nil
+            self.spectatorModeValue = nil
+            -- self.passiveValue = nil
         end
 
         if self.popalTimer then self.popalTimer = nil end
     end
+end
+
+function Crosshair:SharedObjectValueChange(args)
+    if args and args.object.__type ~= "LocalPlayer" then return end
+
+    self.customCrosshairVisibleValue = LocalPlayer:GetValue("CustomCrosshairVisible")
+    self.spectatorModeValue = LocalPlayer:GetValue("SpectatorMode")
+    -- self.passiveValue = LocalPlayer:GetValue("Passive")
 end
 
 function Crosshair:EntityBulletHit()
@@ -139,8 +164,8 @@ function Crosshair:Render()
 
     Game:FireEvent("gui.aim.hide")
 
-    if not LocalPlayer:GetValue("CustomCrosshairVisible") then return end
-    if LocalPlayer:GetValue("SpectatorMode") then return end
+    if not self.customCrosshairVisibleValue then return end
+    if self.spectatorModeValue then return end
 
     local aimTarget = LocalPlayer:GetAimTarget()
     if not popalTimer and aimTarget then
@@ -160,13 +185,14 @@ function Crosshair:Render()
 
     -- self.size = Render.Height / 400
     local pos_2d = Vector2(Render.Size.x / 2, Render.Size.y / 2)
-    --[[if not inVehicle and not animations2[bs] and LocalPlayer:GetEquippedSlot() <= 3 and not (animations3[bs] or LocalPlayer:GetValue("Passive")) then
+    --[[if not inVehicle and not animations2[bs] and LocalPlayer:GetEquippedSlot() <= 3 and not (animations3[bs] or self.passiveValue) then
 		--Тут хуйня для рисовки перекрестья
 	end]] --
 
-    local Transform = Transform2()
-    Transform:Translate(pos_2d)
-    Render:SetTransform(Transform)
+    local transform = self.transform2
+    transform:SetIdentity()
+    transform:Translate(pos_2d)
+    Render:SetTransform(transform)
 
     local cameraPos = Camera:GetPosition()
     local cameraAngle = Camera:GetAngle()
@@ -268,7 +294,7 @@ function Crosshair:LocalPlayerInput(args)
         local ubs = LocalPlayer:GetUpperBodyState()
 
         if LocalPlayer:GetEquippedWeapon() == Weapon(Weapon.Sniper) and (ubs == 347 or ubs == 353 or ubs == 371) then
-            if LocalPlayer:GetValue("CustomCrosshairVisible") then
+            if self.customCrosshairVisibleValue then
                 LocalPlayer:SetValue("CustomCrosshairVisible", nil)
             end
 
@@ -285,7 +311,7 @@ function Crosshair:ShowCrosshair()
     local ubs = LocalPlayer:GetUpperBodyState()
 
     if not (ubs == 347 or ubs == 353 or ubs == 371) then
-        if not LocalPlayer:GetValue("CustomCrosshairVisible") then
+        if not self.customCrosshairVisibleValue then
             LocalPlayer:SetValue("CustomCrosshairVisible", 1)
 
             if self.resetTimer then self.resetTimer = nil end
