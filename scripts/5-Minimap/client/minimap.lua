@@ -39,7 +39,14 @@ end
 function BetterMinimap:Render()
     if Game:GetState() ~= GUIState.Game then return end
 
-    if Game:GetSetting(4) >= 1 then
+    local gameAlpha = Game:GetSetting(4)
+
+    if gameAlpha >= 1 then
+        local sett_alpha = gameAlpha * 2.25
+        local shadowColor = Color(0, 0, 0, sett_alpha)
+        local sizeX = Render.Size.x
+        local size = sizeX / 350
+        local shadowSize = sizeX / 300
         local lpPos = LocalPlayer:GetPosition()
         local streamedPlayers = Client:GetStreamedPlayers()
         local updatedPlayers = {}
@@ -55,7 +62,7 @@ function BetterMinimap:Render()
 
                 local triangle = self:GetTriangle(lpPos.y, position.y)
 
-                self:DrawPlayer(lpPos, position, triangle, pColor)
+                self:DrawPlayer(lpPos, position, triangle, pColor, shadowColor, size, shadowSize, sett_alpha)
             end
         end
 
@@ -65,26 +72,19 @@ function BetterMinimap:Render()
 
         for playerId, data in pairs(playerPositions) do
             if not updatedPlayers[playerId] and currentPlayerId ~= playerId and lpWorldId == data.worldId then
-                self:DrawPlayer(lpPos, data.position, data.triangle, data.color)
+                self:DrawPlayer(lpPos, data.position, data.triangle, data.color, shadowColor, size, shadowSize, sett_alpha)
             end
         end
     end
 end
 
-function BetterMinimap:DrawPlayer(lpPos, pos, triangle, color)
+function BetterMinimap:DrawPlayer(lpPos, pos, triangle, color, shadowColor, size, shadowSize, sett_alpha)
     local pos, ok = Render:WorldToMinimap(pos)
     local playerPos = LocalPlayer:GetPosition()
     local distance = Vector3.Distance(playerPos, pos)
 
     if distance <= 5000 then
-        local sett_alpha = Game:GetSetting(4) * 2.25
         local color = Color(color.r, color.g, color.b, sett_alpha)
-        local shadowColor = Color(0, 0, 0, sett_alpha)
-
-        local sizeX = Render.Size.x
-        local size = sizeX / 350
-        local shadowSize = sizeX / 300
-
         local posX, posY = pos.x, pos.y
 
         if triangle == 1 then

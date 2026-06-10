@@ -69,7 +69,6 @@ end
 function Passive:SharedObjectValueChange(args)
     if args and args.object.__type ~= "LocalPlayer" then return end
 
-    self.PassiveValue = LocalPlayer:GetValue("Passive")
     self.HiddenHUDValue = LocalPlayer:GetValue("HiddenHUD")
     self.SystemFontsValue = LocalPlayer:GetValue("SystemFonts")
 end
@@ -77,6 +76,7 @@ end
 function Passive:NetworkObjectValueChange(args)
     if args and args.object.__type ~= "LocalPlayer" then return end
 
+    self.PassiveValue = LocalPlayer:GetValue("Passive")
     self.PassiveModeVisibleValue = LocalPlayer:GetValue("PassiveModeVisible")
 
     if args then

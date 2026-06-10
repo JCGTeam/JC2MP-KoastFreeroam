@@ -121,8 +121,8 @@ function FirstPerson:Active()
 end
 
 function FirstPerson:KeyUp(args)
-    if Game:GetState() ~= GUIState.Game then return end
     if self.SpectatorModeValue then return end
+    if Game:GetState() ~= GUIState.Game then return end
 
     if args.key == self.expectedKey then
         self:Active()

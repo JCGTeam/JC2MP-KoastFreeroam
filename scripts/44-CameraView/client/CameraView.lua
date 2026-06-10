@@ -330,9 +330,9 @@ function CameraView:InputPoll()
 end
 
 function CameraView:MouseScroll(args)
-    if Game:GetState() ~= GUIState.Game then return end
     if self.SpectatorModeValue then return end
     if self.DisableCameraScrollValue then return end
+    if Game:GetState() ~= GUIState.Game then return end
 
     self.zoom = math.clamp(self.zoom + (args.delta * 0.25), 0, 15)
 end
@@ -370,8 +370,8 @@ function CameraView:LocalPlayerExitVehicle()
 end
 
 function CameraView:LocalPlayerInput(args)
-    if Game:GetState() ~= GUIState.Game then return end
     if self.SpectatorModeValue then return end
+    if Game:GetState() ~= GUIState.Game then return end
 
     if LocalPlayer:InVehicle() then
         if args.input == Action.VehicleCam and Input:GetValue(Action.ShoulderCam) ~= 0 then

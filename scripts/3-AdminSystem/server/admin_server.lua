@@ -555,11 +555,13 @@ function Admin:executeAction(args, player)
             elseif args[1] == "player.givevehicle" then
                 if IsValid(args[2], false) then
                     if args[3] and Vehicle.GetNameByModelId(args[3]) then
+                        local pId = args[2]:GetId()
+
                         if args[2]:InVehicle() then
                             local veh = args[2]:GetVehicle()
                             if veh then
                                 veh:Remove()
-                                self.vehicles[args[2]:GetId()] = nil
+                                self.vehicles[pId] = nil
                             end
                         end
 
@@ -582,8 +584,6 @@ function Admin:executeAction(args, player)
                         else
                             template = ""
                         end
-
-                        local pId = args[2]:GetId()
 
                         if self.vehicles[pId] then
                             if IsValid(self.vehicles[pId]) then

@@ -124,10 +124,10 @@ function GrenadesManager:LocalPlayerInput(args)
     end
 
     if args.input == Action.ThrowGrenade then
-        if Game:GetState() ~= GUIState.Game then return end
         if self.FreezeValue then return end
         if self.PassiveValue then return end
         if self.ServerMapValue then return end
+        if Game:GetState() ~= GUIState.Game then return end
 
         local vehicle = LocalPlayer:GetVehicle()
 
