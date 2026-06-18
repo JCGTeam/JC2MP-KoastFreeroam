@@ -32,7 +32,7 @@ function C4Controller:InputPoll()
     if not self.planted then
         local maxC4 = LocalPlayer:GetValue("MoreC4") or 3
 
-        local c4Count = LocalPlayer:GetValue("C4Count")
+        local c4Count = LocalPlayer:GetValue("C4Count") or 0
         if c4Count and c4Count >= maxC4 then return end
 
         local actions = {Action.LookLeft, Action.LookUp, Action.LookRight, Action.LookDown, Action.MoveLeft, Action.MoveForward, Action.MoveRight, Action.MoveBackward}

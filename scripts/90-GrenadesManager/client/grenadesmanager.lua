@@ -59,13 +59,13 @@ function GrenadesManager:SharedObjectValueChange(args)
     self.ExplosiveValue = LocalPlayer:GetValue("Explosive")
     self.FreezeValue = LocalPlayer:GetValue("Freeze")
     self.ServerMapValue = LocalPlayer:GetValue("ServerMap")
-    self.C4CountValue = LocalPlayer:GetValue("C4Count")
 end
 
 function GrenadesManager:NetworkObjectValueChange(args)
     if args and args.object.__type ~= "LocalPlayer" then return end
 
     self.PassiveValue = LocalPlayer:GetValue("Passive")
+    self.C4CountValue = LocalPlayer:GetValue("C4Count") or 0
     self.SuperNuclearBombValue = LocalPlayer:GetValue("SuperNuclearBomb")
 end
 
@@ -316,7 +316,7 @@ function GrenadesManager:Render()
 
             local c4Count = self.C4CountValue
 
-            text_timer = c4Count and tostring(c4Count) or "0"
+            text_timer = tostring(c4Count)
 
             self.c4actv = true
         elseif explosive == 3 then

@@ -25,9 +25,6 @@ end
 
 function C4Spawner:PlayerJoin(args)
     local player = args.player
-
-    player:SetNetworkValue("C4Count", 0)
-
     self.playerData[player:GetId()] = {count = 0, timer = Timer()}
 end
 
@@ -86,7 +83,6 @@ function C4Spawner:Spawn(args, sender)
             args.values.owner = sender
 
             WorldNetworkObject.Create(args):SetStreamDistance(500)
-            sender:SetValue("C4Count", sender:GetValue("C4Count") + 1)
         end
     end
 end
@@ -101,7 +97,7 @@ function C4Spawner:Detonate(args, sender)
     end
 
     playerData.count = 0
-    sender:SetNetworkValue("C4Count", 0)
+    sender:SetNetworkValue("C4Count", playerData.count)
 end
 
 C4Spawner = C4Spawner()
